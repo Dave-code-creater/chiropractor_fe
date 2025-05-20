@@ -7,8 +7,8 @@ const About = () => {
             <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 {/* Doctor Bio */}
                 <div className="space-y-6">
-                    <h2 className="text-4xl font-extrabold text-gray-900 sm:text-5xl">
-                        Meet Dr. Dieu Phan - Denver Trusted Chiropractor for Car Accident Recovery and Wellness Care.
+                    <h2 className="text-3xl font-extrabold text-gray-900 sm:text-5xl">
+                        Meet Dr. Dieu Phan.
                     </h2>
                     <p className="text-lg text-gray-700 leading-relaxed">
                         Welcome! I’m Dr. Dieu Phan, a dedicated chiropractor with over 20 years of hands-on experience
@@ -18,57 +18,23 @@ const About = () => {
                         Since then, I’ve proudly served the Denver community with a deep focus on results, compassion, and 
                         long-term recovery.
                     </p>
-                    <p className="text-lg text-gray-700 leading-relaxed"> 
-                        My approach to care is rooted in personalized treatment plans tailored to each patient’s needs—whether 
-                        they’re recovering from a collision, suffering from joint or muscle pain, or seeking preventive wellness care.
-                    </p>
-                    <p className="text-lg text-gray-700 leading-relaxed"> 
+                    <p className="text-md text-gray-700 leading-relaxed"> 
                             
-                                <h2 class="text-3xl font-bold text-dark-900 mb-6">My Areas of Specialization:</h2>
+                        <h2 class="text-2xl font-semibold text-dark-800 mb-3">Specialties Include:</h2>
 
-                                <div class="mb-6">
-                                    <h3 class="text-xl font-semibold text-dark-800 mb-2">Upper Extremities including spine and head:</h3>
-                                        <ul class="list-disc list-inside text-gray-800 space-y-1">
-                                            <li>Shoulders, elbows, wrists, and hands</li>
-                                            <li>Entire back – upper, mid, and lower regions</li>
-                                            <li>Headaches and migraines related to neck or spinal misalignment</li>
-                                        </ul>
-                                </div>
-
-                                {/* <!-- Lower Extremities --> */}
-                                <div class="mb-6">
-                                    <h3 class="text-xl font-semibold text-dark-800 mb-2">Lower Extremities:</h3>
-                                    <ul class="list-disc list-inside text-gray-800 space-y-1">
-                                        <li>Hips, thighs, knees, and ankles</li>
-                                    </ul>
-                                </div>
-
-                                {/* <!-- Muscle Pain Treatment --> */}
-                                <div class="mb-6">
-                                    <h3 class="text-xl font-semibold text-dark-800 mb-2">Comprehensive Muscle Pain Treatment:</h3>
-                                        <ul class="list-disc list-inside text-gray-800 space-y-1">
-                                            <li>Trigger Point Pain</li>
-                                            <li>Myofascial Pain Syndrome</li>
-                                            <li>Strain and Overuse Injuries</li>
-                                            <li>Post-Traumatic Muscle Imbalance</li>
-                                            <li>Tension and Stress-Related Muscle Pain</li>
-                                        </ul>
-                                    </div>
+                            <ul class="text-md list-disc list-inside text-gray-800 space-y-1 mb-4">
+                                <li class="text-lg"><strong>Upper extremities:</strong> shoulders, elbows, wrists, hands, full spine, and headaches</li>
+                                <li class="text-lg"><strong>Lower extremities:</strong> hips, thighs, knees, ankles</li>
+                                <li class="text-lg"><strong>Muscle pain:</strong> trigger points, myofascial pain, post-traumatic and overuse injuries</li>
+                            </ul>
                     </p>
                     <p className="text-lg text-gray-700 leading-relaxed">
                         I focus not only on relieving symptoms but also on correcting the underlying cause—whether it's spinal misalignment, joint dysfunction, or soft tissue imbalance. 
                         My goal is to help you restore mobility, reduce inflammation, and support long-lasting healing.
                     </p>
 
-                    
                     <p className="text-lg text-gray-700 leading-relaxed">
-                        In addition to injury care, I offer Wellness Chiropractic Services for patients who want to maintain their health and prevent future problems. 
-                        Just like routine dental or vision checkups, regular chiropractic visits can detect small imbalances before they become major issues. 
-                        This type of care is ideal for health-conscious adults and families who want to stay aligned, active, and pain-free.
-                    </p>
-
-                    <p className="text-lg text-gray-700 leading-relaxed">
-                        Whether you're recovering from an auto injury, managing ongoing discomfort, or looking to improve your long-term wellness, you deserve care that’s experienced, trusted, and focused on results.
+                       I also offer Wellness Care to help patients maintain alignment, prevent future issues, and live pain-free.
                     </p>
 
                     <h2><em>Schedule your visit today—your path to healing and whole-body wellness starts here.</em></h2>
@@ -76,7 +42,7 @@ const About = () => {
                     <div className="flex justify-center">
                         <a
                             href="/login"
-                            className="mt-6 px-6 py-3 bg-indigo-600 text-white font-semibold rounded shadow hover:bg-indigo-500 transition"
+                            className="mt-8 pt-1 px-6 bg-indigo-600 text-white font-semibold rounded shadow hover:bg-indigo-500 transition"
                         >
                             Book Your Appointment
                         </a>
