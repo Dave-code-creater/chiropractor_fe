@@ -5,15 +5,16 @@ import { useSelector } from "react-redux"
 
 export default function Hero() {
     const navigate = useNavigate()
-    const user = false
+    const user = useSelector((state) => state.auth.user);
+    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
     const handleBookAppointment = () => {
-        if (user) {
-            navigate(`/services/${user.id}/booking`)
+        if (isAuthenticated && user?.id) {
+            navigate(`/services/${user.id}/booking`);
         } else {
-            navigate('/login')
+            navigate('/login');
         }
-    }
+    };
 
     return (
         <section className="relative bg-[url('/images/background.jpg')] bg-cover bg-center bg-no-repeat min-h-screen flex items-center">
