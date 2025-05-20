@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MainLayout from '../layouts/MainLayout';
+import MainLayout from '../layouts/DefaultLayout.jsx';
 import {
     FAQ_QUESTION_GENERAL,
     FAQ_TYPES_QUESTION,

@@ -13,7 +13,7 @@ export default function Login() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            navigate("/"); // Redirect to home or dashboard
+            navigate(`/dashboard/${user.id}`); // Redirect to home or dashboard
         }
     }, [isAuthenticated, navigate]);
 
