@@ -75,7 +75,9 @@ function Setting() {
 
                                 <div className="mb-1"><label htmlForfor="user_new_password">Confirm new password</label></div>
                                 <input type="password" className="form-control pb-2 px-1 py-1 border border-gray-600 rounded-md" />
-                                <div className="mt-6 flex items-center justify-between">
+                                <div className="mt-6 w-full flex items-center justify-between">
+                                </div>
+                                <div className="mt-6 w-full flex items-center justify-between">
                                     {/* “Forgot password?” link */}
                                     <a
                                         href="/password_reset"
@@ -83,27 +85,22 @@ function Setting() {
                                     >
                                         I forgot my password
                                     </a>
-
                                     {/* Update button */}
                                     <button
                                         type="submit"
                                         className="
                                             px-4 py-2
-                                            text-gray-600 text-sm font-medium
+                                            border border-gray-600 text-gray-800 text-sm font-medium
                                             rounded-md
-                                            hover: dark
-                                            focus:outline-none focus:ring-1 focus:ring-dark
-                                            "
+                                            hover:bg-gray-50
+                                            focus:outline-none focus:ring-2 focus:ring-gray-400
+                                        "
                                     >
                                         Update Password
                                     </button>
                                 </div>
                             </dl>
-
                         </div>
-
-
-
                     </div>
                 </div>
             </div>
