@@ -1,27 +1,24 @@
+import { useLocation, useNavigate, Outlet, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Navigate, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
-const ProtectedRoute = () => {
-    const user = useSelector((state) => state.auth.user);
-    const navigate = useNavigate();
+export default function ProtectRoute() {
+    const navigate = useNavigate(); // ✅ move inside the component
     const location = useLocation();
+    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+    const user = useSelector(state => state.auth.user);
+
+    const from = location.state?.from?.pathname || `/dashboard/${user?.id || ''}`;
 
     useEffect(() => {
-        if (user) {
-            const needsRedirect = !location.pathname.includes(user.id);
-            if (needsRedirect) {
-                const correctedPath = location.pathname.replace(/\/$/, '') + `/${user.id}`;
-                navigate(correctedPath, { replace: true });
-            }
+        if (isAuthenticated && location.pathname === '/login') {
+            navigate(from, { replace: true });
         }
-    }, [user, location, navigate]);
+    }, [isAuthenticated, from, navigate, location.pathname]);
 
-    if (!user) {
+    if (!isAuthenticated) {
         return <Navigate to="/login" replace state={{ from: location }} />;
     }
 
     return <Outlet />;
-};
-
-export default ProtectedRoute;
+}

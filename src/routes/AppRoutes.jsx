@@ -29,17 +29,16 @@ export default function AppRoutes() {
                 <Route path="/reset-password" element={<div>Reset Password</div>} />
                 <Route path="/register" element={<Register />} />
 
-                {/* protected routes */}
-
-
             </Route>
-            <Route element={<HomepageLayout />}>
-                <Route path="/dashboard/:id" element={<div>Dashboard</div>} />
-                <Route path="/profile/:id" element={<div>Profile</div>} />
-                <Route path="/settings/:id" element={<Setting/>} />
-                <Route path="/services/:id/physical-therapy" element={<div>Physical Therapy</div>} />
-                <Route path='/services/:id/chiropractic' element={<div>Chiropractic</div>} />
-                <Route path='/services/:id/booking' element={<Booking/>} />
+            <Route path="/dashboard/:id" element={<ProtectRoute />}>
+                <Route element={<HomepageLayout />}>
+                    <Route index element={<Homepage />} />
+                    <Route path="profile" element={<div>Profile</div>} />
+                    <Route path="settings" element={<Setting />} />
+                    <Route path="services/physical-therapy" element={<div>Physical Therapy</div>} />
+                    <Route path="services/chiropractic" element={<div>Chiropractic</div>} />
+                    <Route path="services/booking" element={<Booking />} />
+                </Route>
             </Route>
 
             {/* Fallback route for 404 */}
