@@ -10,6 +10,8 @@ import ProtectRoute from './ProtectRoute';
 import Homepage from '../features/homepage/components/Homepage';
 import HomepageLayout from '../layouts/HomepageLayout';
 import Setting from '../features/setting/components/Setting';
+import Booking from '../features/booking/components/Booking';
+
 
 export default function AppRoutes() {
     return (
@@ -34,10 +36,10 @@ export default function AppRoutes() {
             <Route element={<HomepageLayout />}>
                 <Route path="/dashboard/:id" element={<div>Dashboard</div>} />
                 <Route path="/profile/:id" element={<div>Profile</div>} />
-                <Route path="/settings/:id" element={<Setting />} />
+                <Route path="/settings/:id" element={<Setting/>} />
                 <Route path="/services/:id/physical-therapy" element={<div>Physical Therapy</div>} />
                 <Route path='/services/:id/chiropractic' element={<div>Chiropractic</div>} />
-                <Route path='/services/:id/booking' element={<div>Booking</div>} />
+                <Route path='/services/:id/booking' element={<Booking/>} />
             </Route>
 
             {/* Fallback route for 404 */}

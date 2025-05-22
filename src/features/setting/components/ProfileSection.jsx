@@ -1,0 +1,247 @@
+import React, { useState } from 'react';
+
+function Profile() {
+    const [areaCode, setAreaCode] = useState("720");
+    const [phoneNumber, setPhoneNumber] = useState("567 890");
+    const [insurance, setInsurance] = useState("Select or type your insurance…");
+    const [dateAccident, setDateAccident] = useState("2023-10-01");
+    const [timeAccident, setTimeAccident] = useState("12:00");
+
+    return (
+        <div>
+            <div className="hidden space-y-6 w-full md:block">
+                <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+                    <div className="flex-1 pb-2 lg:max-w-5xl mb-10">
+                        {/* About Page Content */}
+                        <h2 className="text-lg font-bold tracking-tight py-1">Basic Info</h2>
+                        <p className="text-md text-muted-foreground size-3xl">
+                            Update your basic information.
+                        </p>
+                        <div className=" rounded-lg divide-y divide-gray-200">
+                            <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-2 pt-4">
+                                {/* Full Name */}
+                                <dt className="text-md font-bold text-gray-900">Full name:</dt>
+                                <dd className="text-md text-gray-900">Huy Doan</dd>
+
+                                {/* SSN */}
+                                <dt className="text-md font-bold text-gray-900">SSN:</dt>
+                                <dd>
+                                    <input
+                                        type="number"
+                                        className="w-full text-md text-gray-900 border rounded-xl px-2 py-1"
+                                        value="1000"
+                                        readOnly
+                                    />
+                                </dd>
+
+                                {/* Date of Birth */}
+                                <dt className="text-md font-bold text-gray-900">Date of Birth:</dt>
+                                <dd>
+                                    <input
+                                        type="date"
+                                        id="date"
+                                        name="date"
+                                        className="w-full border rounded-xl px-2 py-1 text-md"
+                                        value="1998-01-01"
+                                        readOnly
+                                    />
+                                </dd>
+
+                                {/* Age */}
+                                <dt className="text-md font-bold text-gray-900">Age:</dt>
+                                <dd>
+                                    <input
+                                        type="number"
+                                        className="w-full text-md text-gray-900 border rounded-xl px-2 py-1"
+                                        value="25"
+                                        readOnly
+                                    />
+                                </dd>
+
+                                {/* Gender */}
+                                <dt className="text-md font-bold text-gray-900">Gender:</dt>
+                                <dd className="flex items-center gap-4">
+                                    <input
+                                        id="gender-male"
+                                        name="gender"
+                                        type="radio"
+                                        value="male"
+                                        className="w-4 h-4 text-green-600 border-gray-300 focus:ring-blue-500"
+                                    />
+                                    <label htmlFor="gender-male" className="text-md text-gray-900">Male</label>
+                                    <input
+                                        id="gender-female"
+                                        name="gender"
+                                        type="radio"
+                                        value="female"
+                                        className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
+                                    />
+                                    <label htmlFor="gender-female" className="text-md text-gray-900">Female</label>
+                                </dd>
+
+                                {/* Nationality */}
+                                <dt className="text-md font-bold text-gray-900">Nationality:</dt>
+                                <dd>
+                                    <input
+                                        className="w-full text-md text-gray-900 border rounded-xl px-2 py-1"
+                                        value="Asia"
+                                        readOnly
+                                    />
+                                </dd>
+
+                                {/* Cell Phone */}
+                                <dt className="text-md font-bold text-gray-900">Cell phone:</dt>
+                                <dd>
+                                    <div className="flex gap-2">
+                                        <select
+                                            id="areaCode"
+                                            name="areaCode"
+                                            value={areaCode}
+                                            onChange={(e) => setAreaCode(e.target.value)}
+                                            className="px-2 py-1 border border-gray-300 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        >
+                                            <optgroup label="Minnesota">
+                                                <option value="612">612</option>
+                                                <option value="651">651</option>
+                                                <option value="763">763</option>
+                                                <option value="952">952</option>
+                                            </optgroup>
+                                            <optgroup label="Colorado">
+                                                <option value="303">303</option>
+                                                <option value="719">719</option>
+                                                <option value="720">720</option>
+                                                <option value="970">970</option>
+                                            </optgroup>
+                                        </select>
+                                        <input
+                                            type="tel"
+                                            id="phoneNumber"
+                                            name="phoneNumber"
+                                            value={phoneNumber}
+                                            onChange={(e) => setPhoneNumber(e.target.value)}
+                                            placeholder="567 890"
+                                            className="flex-1 px-2 py-1 text-md border border-gray-300 rounded-xl"
+                                        />
+                                    </div>
+                                </dd>
+
+                                {/* Home Address */}
+                                <dt className="text-md font-bold text-gray-900">Home Address:</dt>
+                                <dd>
+                                    <input
+                                        type="text"
+                                        className="w-full text-md text-gray-900 border rounded-xl px-2 py-1"
+                                        value="1385 W Alameda Ave, Denver, CO 80223"
+                                        readOnly
+                                    />
+                                </dd>
+
+                                {/* Medical History */}
+                                <dt className="text-md font-bold text-gray-900">Medical History:</dt>
+                                <dd>
+                                    <textarea
+                                        id="medical-history"
+                                        rows="2"
+                                        className="w-full border rounded-xl px-2 py-1 text-md text-gray-900"
+                                        readOnly
+                                    >Allergies: None; Chronic: Hypertension</textarea>
+                                </dd>
+
+                                {/* Medical Insurance */}
+                                <dt className="text-md font-bold text-gray-900">Medical Insurance:</dt>
+                                <dd>
+                                    <div className="flex flex-col gap-2">
+                                        <select
+                                            id="insuranceSelect"
+                                            name="insurance"
+                                            value={insurance}
+                                            onChange={(e) => setInsurance(e.target.value)}
+                                            className="px-2 py-1 border border-gray-300 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                        >
+                                            <option value="Select or type your insurance…" disabled>Select or type your insurance…</option>
+                                            <option value="Group Insurance">Group Insurance</option>
+                                            <option value="Blue Cross / Blue Shield">Blue Cross / Blue Shield</option>
+                                            <option value="Worker’s Compensation">Worker’s Compensation</option>
+                                            <option value="Auto Insurance">Auto Insurance</option>
+                                            <option value="Medicare">Medicare</option>
+                                            <option value="Personal Injury">Personal Injury</option>
+                                            <option value="Other Insurance">Other Insurance</option>
+                                        </select>
+                                        <input
+                                            type="file"
+                                            multiple
+                                            className="w-full border rounded-xl px-2 py-1"
+                                            placeholder="Choose your file"
+                                        />
+                                    </div>
+                                </dd>
+
+                                {/* Date & Time of Accident */}
+                                <dt className="text-md font-bold text-gray-900 col-span-1 md:col-span-2">Date & Time of Accident:</dt>
+                                <dd className="col-span-1 md:col-span-2 flex flex-wrap gap-4 items-center">
+                                    <label htmlFor="dateAccident" className="text-md text-gray-900">Date:</label>
+                                    <input
+                                        type="date"
+                                        id="dateAccident"
+                                        name="dateAccident"
+                                        value={dateAccident}
+                                        onChange={e => setDateAccident(e.target.value)}
+                                        className="text-center w-48 border rounded-xl px-2 py-1 text-md"
+                                    />
+                                    <label htmlFor="timeAccident" className="text-md text-gray-900">Time:</label>
+                                    <input
+                                        type="time"
+                                        id="timeAccident"
+                                        name="timeAccident"
+                                        value={timeAccident}
+                                        onChange={e => setTimeAccident(e.target.value)}
+                                        className="w-32 border rounded-xl px-2 py-1 text-md"
+                                    />
+                                </dd>
+
+                                {/* Location of Accident */}
+                                <dt className="text-md font-bold text-gray-900">Location of Accident:</dt>
+                                <dd>
+                                    <input
+                                        type="text"
+                                        id="location"
+                                        name="location"
+                                        defaultValue="1385 W Alameda Ave, Denver, CO 80223"
+                                        className="w-full border rounded-xl px-2 py-1"
+                                    />
+                                </dd>
+
+                                {/* How it occurs */}
+                                <dt className="text-md font-bold text-gray-900">How it occurs:</dt>
+                                <dd>
+                                    <input
+                                        type="text"
+                                        id="howItOccurs"
+                                        name="howItOccurs"
+                                        defaultValue="Auto collision"
+                                        className="w-full border rounded-xl px-2 py-1"
+                                    />
+                                </dd>
+
+                                {/* Emergency Contact */}
+                                <dt className="text-md font-bold text-gray-900">Emergency Contact:</dt>
+                                <dd>
+                                    <input
+                                        id="emergency-contact"
+                                        type="text"
+                                        className="w-full px-2 py-1 border rounded-xl focus:ring-2 focus:ring-blue-500"
+                                        value="Huy Doan, Spouse, 123-456-7890"
+                                        readOnly
+                                    />
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default Profile;
+

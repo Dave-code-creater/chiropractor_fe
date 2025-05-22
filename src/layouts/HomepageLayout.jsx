@@ -10,7 +10,7 @@ export default function HomepageLayout() {
       {/* top of page could have a header if you want */}
       <div className="flex flex-1">
         {/* Sidebar takes its natural width */}
-        <aside className="flex-shrink-0 hidden-md:block">
+        <aside className="flex-shrink-0 hidden md:block">
           <Sidebar />
         </aside>
         {/* Main content (Outlet) fills remaining space */}
