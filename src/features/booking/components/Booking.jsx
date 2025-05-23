@@ -31,8 +31,8 @@ function Booking() {
 
     return (
         
-        <div className=" flex justify-center w-full h-full min-h-screen bg-white from-emerald-100 to-emerald-300 font-sans">
-            <div className="grid grid-cols-1 md:grid-cols-2 bg-white text-black w-full shadow-2xl">
+        <div className=" flex justify-center bg-white from-emerald-100 to-emerald-300 font-sans">
+            <div className="grid grid-cols-1 md:grid-cols-2 bg-white text-black w-full">
                 {/* Booking Form */}
                 <div className="w-full">
                     <div className="relative mx-auto mt-10 mb-10 max-w-2xl overflow-hidden rounded-t-2xl bg-white bg-opacity-100 py-16 text-center">
