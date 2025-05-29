@@ -14,7 +14,7 @@ export default function Services() {
 
     const handleBookAppointment = (serviceId) => {
         if (user && user.id) {
-            navigate(`/services/${user.id}/booking/${serviceId}`)
+            navigate(`/services/${user.id}/appointments/${serviceId}`)
         } else {
             navigate('/login')
         }

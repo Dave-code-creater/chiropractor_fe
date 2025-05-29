@@ -14,16 +14,12 @@ function Profile() {
     const [emergencyContact, setEmergencyContact] = useState("Huy Doan, Spouse, 123-456-7890");
     return (
         <div>
-            <div className="hidden text:start space-y-6 w-full md:block">
-                <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-                    <div className="flex-1 pb-2 lg:max-w-5xl mb-10">
-                        {/* About Page Content */}
-                        <h2 className="text-lg font-bold tracking-tight py-1">Basic Info</h2>
-                        <p className="text-md text-muted-foreground size-3xl">
-                            Update your basic information.
-                        </p>
+            <div className="hidden text:start md:block">
+                <div className="flex flex-col space-y-8 lg:flex-row  lg:space-y-0">
+                    <div className="flex-1 lg:max-w-5xl">
+
                         <div className=" rounded-lg divide-y divide-gray-200">
-                            <dl className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-2 pt-4">
+                            <dl className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {/* Full Name */}
                                 <dt className="text-md font-bold text-gray-900">Full name:</dt>
                                 <dd className="text-md text-gray-900">Huy Doan</dd>
@@ -33,13 +29,13 @@ function Profile() {
                                 <dd>
                                     <input
                                         type="number"
-                                        onChange = {(e) => setNumberSSN(e.target.value)}
+                                        onChange={(e) => setNumberSSN(e.target.value)}
                                         id="ssn"
                                         name="ssn"
                                         placeholder="XXX-XX-XXXX"
-                                        className="w-full text-md text-gray-900 border rounded-xl px-2 "
-                                        value = {numberSSN}
-                                        
+                                        className="w-full text-md text-gray-900 border rounded-xl∂"
+                                        value={numberSSN}
+
                                     />
                                 </dd>
 
@@ -49,10 +45,10 @@ function Profile() {
                                     <input
                                         type="date"
                                         id="date"
-                                        onChange = {(e) => setDateBirth(e.target.value)}    
+                                        onChange={(e) => setDateBirth(e.target.value)}
                                         name="date"
-                                        className="w-full border rounded-xl px-2  text-md"
-                                        value= {dateBirth}
+                                        className="w-full border rounded-xl∂ text-md"
+                                        value={dateBirth}
                                         placeholder='YYYY-MM-DD'
                                     />
                                 </dd>
@@ -62,9 +58,9 @@ function Profile() {
                                 <dd>
                                     <input
                                         type="number"
-                                        className="w-full text-md text-gray-900 border rounded-xl px-2 "
+                                        className="w-full text-md text-gray-900 border rounded-xl∂"
                                         value={ageUser}
-                                        onChange = {(e) => setAge(e.target.value)}
+                                        onChange={(e) => setAge(e.target.value)}
                                         placeholder="XX or XXX"
                                     />
                                 </dd>
@@ -77,10 +73,10 @@ function Profile() {
                                         name="gender"
                                         type="radio"
                                         value="male"
-                                        checked = {gender === "male"}
-                                        onChange = {(e) => setGender(e.target.value)}
+                                        checked={gender === "male"}
+                                        onChange={(e) => setGender(e.target.value)}
                                         className="w-4 h-4 text-green-600 border-gray-300 focus:ring-blue-500"
-                                        
+
                                     />
                                     <label htmlFor="gender-male" className="text-md text-gray-900">Male</label>
                                     <input
@@ -88,8 +84,8 @@ function Profile() {
                                         name="gender"
                                         type="radio"
                                         value="female"
-                                        checked = {gender === "female"}
-                                        onChange = {(e) => setGender(e.target.value)}
+                                        checked={gender === "female"}
+                                        onChange={(e) => setGender(e.target.value)}
                                         className="w-4 h-4 text-green-600 border-gray-300 focus:ring-green-500"
                                     />
                                     <label htmlFor="gender-female" className="text-md text-gray-900">Female</label>
@@ -99,10 +95,10 @@ function Profile() {
                                 <dt className="text-md font-bold text-gray-900">Nationality:</dt>
                                 <dd>
                                     <input
-                                        className="w-full text-md text-gray-900 border rounded-xl px-2 "
-                                        value= {nationality}
-                                        type ="text"
-                                        onChange = {(e) => setNationality(e.target.value)}
+                                        className="w-full text-md text-gray-900 border rounded-xl∂"
+                                        value={nationality}
+                                        type="text"
+                                        onChange={(e) => setNationality(e.target.value)}
                                     />
                                 </dd>
 
@@ -115,7 +111,7 @@ function Profile() {
                                             name="areaCode"
                                             value={areaCode}
                                             onChange={(e) => setAreaCode(e.target.value)}
-                                            className="px-2  border border-gray-300 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            className="border border-gray-300 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                                         >
                                             <optgroup label="Minnesota">
                                                 <option value="612">612</option>
@@ -137,7 +133,7 @@ function Profile() {
                                             value={phoneNumber}
                                             onChange={(e) => setPhoneNumber(e.target.value)}
                                             placeholder="567 890"
-                                            className="flex-1 px-2  text-md border border-gray-300 rounded-xl"
+                                            className="flex-1∂ text-md border border-gray-300 rounded-xl"
                                         />
                                     </div>
                                 </dd>
@@ -147,9 +143,9 @@ function Profile() {
                                 <dd>
                                     <input
                                         type="text"
-                                        className="w-full text-md text-gray-900 border rounded-xl px-2 "
+                                        className="w-full text-md text-gray-900 border rounded-xl∂"
                                         value={homeAdress}
-                                        onChange = {(e) => setHomeAddress(e.target.value)}
+                                        onChange={(e) => setHomeAddress(e.target.value)}
                                         placeholder="1385 W Alameda Ave, Denver, CO 80223"
                                     />
                                 </dd>
@@ -160,12 +156,12 @@ function Profile() {
                                     <textarea
                                         id="medical-history"
                                         rows="2"
-                                        className="w-full border rounded-xl px-2  text-md text-gray-900"
+                                        className="w-full border rounded-xl∂ text-md text-gray-900"
                                         value={medicalHistory}
                                         onChange={(e) => setMedicalHistory(e.target.value)}
                                         placeholder="Allergies: None; Chronic: Hypertension; Surgeries: None; Medications: None"
                                     >Allergies: None; Chronic: Hypertension; Surgeries: None; Medications: None</textarea>
-                                    
+
                                 </dd>
 
                                 {/* Medical Insurance */}
@@ -177,7 +173,7 @@ function Profile() {
                                             name="insurance"
                                             value={insurance}
                                             onChange={(e) => setInsurance(e.target.value)}
-                                            className="px-2  border border-gray-300 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                                            className="border border-gray-300 rounded-xl text-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
                                         >
                                             <option value="Select or type your insurance…" disabled>Select or type your insurance…</option>
                                             <option value="Group Insurance">Group Insurance</option>
@@ -191,7 +187,7 @@ function Profile() {
                                         <input
                                             type="file"
                                             multiple
-                                            className="w-full border rounded-xl px-2 "
+                                            className="w-full border rounded-xl∂"
                                             placeholder="Choose your file"
                                         />
                                     </div>
@@ -207,7 +203,7 @@ function Profile() {
                                         name="dateAccident"
                                         value={dateAccident}
                                         onChange={e => setDateAccident(e.target.value)}
-                                        className="text-center w-48 border rounded-xl px-2 py-1 text-md"
+                                        className="text-center w-48 border rounded-xl∂py-1 text-md"
                                     />
                                     <label htmlFor="timeAccident" className="text-md text-gray-900">Time:</label>
                                     <input
@@ -216,7 +212,7 @@ function Profile() {
                                         name="timeAccident"
                                         value={timeAccident}
                                         onChange={e => setTimeAccident(e.target.value)}
-                                        className="w-32 border rounded-xl px-2 py-1 text-md"
+                                        className="w-32 border rounded-xl∂py-1 text-md"
                                     />
                                 </dd>
 
@@ -228,7 +224,7 @@ function Profile() {
                                         id="location"
                                         name="location"
                                         defaultValue="1385 W Alameda Ave, Denver, CO 80223"
-                                        className="w-full border rounded-xl px-2 py-1"
+                                        className="w-full border rounded-xl∂py-1"
                                     />
                                 </dd>
 
@@ -240,7 +236,7 @@ function Profile() {
                                         id="howItOccurs"
                                         name="howItOccurs"
                                         defaultValue="Auto collision"
-                                        className="w-full border rounded-xl px-2 py-1"
+                                        className="w-full border rounded-xl∂py-1"
                                     />
                                 </dd>  */}
 
@@ -250,8 +246,8 @@ function Profile() {
                                     <input
                                         id="emergency-contact"
                                         type="text"
-                                        className="w-full px-2 py-1 border rounded-xl focus:ring-2 focus:ring-blue-500"
-                                        value= {emergencyContact}
+                                        className="w-full∂border rounded-xl focus:ring-2 focus:ring-blue-500"
+                                        value={emergencyContact}
                                         onChange={(e) => setEmergencyContact(e.target.value)}
                                         placeholder="Name, Relationship, Phone Number"
                                     />

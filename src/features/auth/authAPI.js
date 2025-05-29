@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_URL } from "../../constants/api";
+import { API_URL, API_BASE_URL } from "../../constants/api";
 
 export const loginUser = async (credentials) => {
     // try {
@@ -19,6 +19,17 @@ export const loginUser = async (credentials) => {
                     id: 1,
                     name: "Test User",
                     email: "test@example.com",
+                    role: "user",
+                },
+            };
+        }
+        if (credentials.email === "admin@example.com" && credentials.password === "admin123") {
+            return {
+                user: {
+                    id: 2,
+                    name: "Admin User",
+                    email: "admin@example.com",
+                    role: "admin",
                 },
             };
         } else {
@@ -31,12 +42,12 @@ export const loginUser = async (credentials) => {
 
 
 export const registerUser = async (userData) => {
-    // try {
-    //     const response = await axios.post(`${API_URL}/auth/register`, userData);
-    //     return response.data;
-    // } catch (error) {
-    //     throw new Error(error.response.data.message || "Registration failed");
-    // }
+    try {
+        const response = await axios.post(`${API_BASE_URL}/signup`, userData);
+        return response.data;
+    } catch (error) {
+        throw new Error(error.response.data.message || "Registration failed");
+    }
     try {
         // simulate delay
         await new Promise((resolve) => setTimeout(resolve, 1000));

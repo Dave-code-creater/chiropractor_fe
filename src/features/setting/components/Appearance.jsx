@@ -3,88 +3,134 @@ import { useState } from "react";
 function Appearance() {
     const [theme, setTheme] = useState("light");
     const [fontSize, setFontSize] = useState("medium");
-    const [colorScheme, setColorScheme] = useState("blue");
+    const [colorScheme, setColorScheme] = useState("indigo");
     const [sidebarPosition, setSidebarPosition] = useState("left");
     const [buttonStyle, setButtonStyle] = useState("rounded");
 
     return (
-        <div className="hidden space-y-6 w-full md:block">
-            <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
-                <div className="flex-1 pb-2 lg:max-w-2xl mb-10">
-                    <h2 className="text-lg font-bold tracking-tight ">Appearance</h2>
-                    <p className="text-muted-foreground text-md size-3xl">
+        <div className="w-full space-y-8">
+            <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-xl p-8 border border-gray-200">
+                <div className="mb-6">
+                    <h2 className="text-xl font-semibold text-gray-900">Appearance</h2>
+                    <p className="text-sm text-gray-500 mt-1">
                         Customize your appearance settings.
                     </p>
-                    <div className=" rounded-lg divide-y divide-gray-200">
-                        <dl className="grid grid-cols-3 gap-4 pb-2 pt-4">
-                            {/* Theme */}
-                            <h2 className="text-md font-bold tracking-tight">Theme</h2>
-                            <p className="text-muted-foreground text-md size-2xl">
-                                Choose your preferred theme.
-                            </p>
-                            <div className="flex items-center space-x-4 mt-4">
-                                <label className="text-md size-2xl">Light</label>
-                                <input type="radio" name="theme" value="light" checked={theme === "light"} onChange={() => setTheme("light")} />
-                                <label className="text-md size-2xl">Dark</label>
-                                <input type="radio" name="theme" value="dark" checked={theme === "dark"} onChange={() => setTheme("dark")} />
-                            </div>
-                            {/* Font Size */}
-                            <h2 className="text-md font-bold tracking-tight">Font Size</h2>
-                            <p className="text-muted-foreground text-md size-2xl">
-                                Choose your preferred font size.
-                            </p>
-                            <div className="flex items-center space-x-4 mt-4">
-                                <label className="text-md size-2xl">Small</label>
-                                <input type="radio" name="font-size" value="small" checked={fontSize === "small"} onChange={() => setFontSize("small")} />
-                                <label className="text-md size-2xl">Medium</label>
-                                <input type="radio" name="font-size" value="medium" checked={fontSize === "medium"} onChange={() => setFontSize("medium")} />
-                                <label className="text-md size-2xl">Large</label>
-                                <input type="radio" name="font-size" value="large" checked={fontSize === "large"} onChange={() => setFontSize("large")} />
-                            </div>
-                            {/* Color Scheme */}
-                            <h2 className="text-md font-bold tracking-tight">Color Scheme</h2>
-                            <p className="text-muted-foreground text-md size-2xl">
-                                Choose your preferred color scheme.
-                            </p>
-                            <div className="flex items-center space-x-4 mt-4">
-                                <label className="text-md size-2xl">Blue</label>
-                                <input type="radio" name="color-scheme" value="blue" checked={colorScheme === "blue"} onChange={() => setColorScheme("blue")} />
-                                <label className="text-md size-2xl">Green</label>
-                                <input type="radio" name="color-scheme" value="green" checked={colorScheme === "green"} onChange={() => setColorScheme("green")} />
-                                <label className="text-md size-2xl">Red</label>
-                                <input type="radio" name="color-scheme" value="red" checked={colorScheme === "red"} onChange={() => setColorScheme("red")} />
-                            </div>
-                            {/* Sidebar Position */}
-                            <h2 className="text-md font-bold tracking-tight">Sidebar Position</h2>
-                            <p className="text-muted-foreground text-md size-2xl">
-                                Choose your preferred sidebar position.
-                            </p>
-                            <div className="flex items-center space-x-4 mt-4">
-                                <label className="text-md size-2xl">Left</label>
-                                <input type="radio" name="sidebar-position" value="left" checked={sidebarPosition === "left"} onChange={() => setSidebarPosition("left")} />
-                                <label className="text-md size-2xl">Right</label>
-                                <input type="radio" name="sidebar-position" value="right" checked={sidebarPosition === "right"} onChange={() => setSidebarPosition("right")} />
-                                <label className="text-md size-2xl">Hidden</label>
-                                <input type="radio" name="sidebar-position" value="hidden" checked={sidebarPosition === "hidden"} onChange={() => setSidebarPosition("hidden")} />
-                            </div>
-                            {/* Button Style */}
-                            <h2 className="text-md font-bold tracking-tight">Button Style</h2>
-                            <p className="text-muted-foreground text-md size-2xl">
-                                Choose your preferred button style.
-                            </p>
-                            <div className="flex items-center space-x-4 mt-4">
-                                <label className="text-md size-2xl">Rounded</label>
-                                <input type="radio" name="button-style" value="rounded" checked={buttonStyle === "rounded"} onChange={() => setButtonStyle("rounded")} />
-                                <label className="text-md size-2xl">Square</label>
-                                <input type="radio" name="button-style" value="square" checked={buttonStyle === "square"} onChange={() => setButtonStyle("square")} />
-                                <label className="text-md size-2xl">Outline</label>
-                                <input type="radio" name="button-style" value="outline" checked={buttonStyle === "outline"} onChange={() => setButtonStyle("outline")} />
-                            </div>
-                        </dl>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Theme */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Theme</label>
+                        <div className="space-y-2">
+                            {["light", "dark"].map((option) => (
+                                <label key={option} className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="theme"
+                                        value={option}
+                                        checked={theme === option}
+                                        onChange={() => setTheme(option)}
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                                    />
+                                    <span className="text-sm text-gray-700 capitalize">{option}</span>
+                                </label>
+                            ))}
+                        </div>
                     </div>
+
+                    {/* Font Size */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Font Size</label>
+                        <div className="space-y-2">
+                            {["small", "medium", "large"].map((size) => (
+                                <label key={size} className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="fontSize"
+                                        value={size}
+                                        checked={fontSize === size}
+                                        onChange={() => setFontSize(size)}
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                                    />
+                                    <span className="text-sm text-gray-700 capitalize">{size}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Color Scheme */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Color Scheme</label>
+                        <div className="space-y-2">
+                            {["indigo", "green", "red"].map((color) => (
+                                <label key={color} className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="colorScheme"
+                                        value={color}
+                                        checked={colorScheme === color}
+                                        onChange={() => setColorScheme(color)}
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                                    />
+                                    <span className="text-sm text-gray-700 capitalize">{color}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Sidebar Position */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Sidebar Position</label>
+                        <div className="space-y-2">
+                            {["left", "right", "hidden"].map((position) => (
+                                <label key={position} className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="sidebarPosition"
+                                        value={position}
+                                        checked={sidebarPosition === position}
+                                        onChange={() => setSidebarPosition(position)}
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                                    />
+                                    <span className="text-sm text-gray-700 capitalize">{position}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Button Style */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">Button Style</label>
+                        <div className="space-y-2">
+                            {["rounded", "square", "outline"].map((style) => (
+                                <label key={style} className="flex items-center space-x-2 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="buttonStyle"
+                                        value={style}
+                                        checked={buttonStyle === style}
+                                        onChange={() => setButtonStyle(style)}
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                                    />
+                                    <span className="text-sm text-gray-700 capitalize">{style}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Save Button */}
+                <div className="mt-8">
+                    <button
+                        onClick={() => alert("Appearance settings saved!")}
+                        className="px-6 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md text-sm font-medium transition"
+                    >
+                        Save Changes
+                    </button>
                 </div>
             </div>
         </div>
-    )
+    );
 }
-export default Appearance
+
+export default Appearance;

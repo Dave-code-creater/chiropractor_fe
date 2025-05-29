@@ -1,48 +1,72 @@
 import { Routes, Route } from 'react-router-dom';
 import MainLayout from '../layouts/DefaultLayout';
-import Contact from '../pages/Contact';
-import About from '../pages/About';
-import FAQ from '../pages/FAQ';
+import HomepageLayout from '../layouts/user/HomepageLayout';
+import AdminLayout from '../layouts/admin/HomepageLayout';
+
 import LandingPage from '../pages/LandingPage';
+import About from '../pages/About';
+import Contact from '../pages/Contact';
+import FAQ from '../pages/FAQ';
+
 import Login from '../features/auth/components/Login';
 import Register from '../features/auth/components/Register';
-import ProtectRoute from './ProtectRoute';
-import Homepage from '../features/homepage/components/Homepage';
-import HomepageLayout from '../layouts/HomepageLayout';
-import Setting from '../features/setting/components/Setting';
-import Booking from '../features/booking/components/Booking';
 
+import Homepage from '../features/homepage/components/user/Homepage';
+import Setting from '../features/setting/components/Setting';
+import Appointments from '../features/appointments/components/Appointments';
+import Blog from '../features/blog/components/Blog';
+import Inbox from '../features/chat/components/Chat';
+
+import AdminDashboard from '../features/homepage/components/admin/Homepage';
+
+import ProtectRoute from './ProtectRoute';
 
 export default function AppRoutes() {
     return (
         <Routes>
+            {/* Public Layout */}
             <Route element={<MainLayout />}>
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/services" element={<div>Services</div>} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/faq" element={<FAQ />} />
-                <Route path="/guides" element={<div>Guides</div>} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
                 <Route path="/privacy-policy" element={<div>Privacy Policy</div>} />
                 <Route path="/terms-of-service" element={<div>Terms of Service</div>} />
-                <Route path='/login' element={<Login />} />
                 <Route path="/reset-password" element={<div>Reset Password</div>} />
-                <Route path="/register" element={<Register />} />
-
             </Route>
-            <Route path="/dashboard/:id" element={<ProtectRoute />}>
+
+            {/* User Dashboard */}
+            <Route path="/dashboard/:id" element={<ProtectRoute allowedRoles={['user']} />}>
                 <Route element={<HomepageLayout />}>
                     <Route index element={<Homepage />} />
-                    <Route path="profile" element={<div>Profile</div>} />
-                    <Route path="settings" element={<Setting />} />
+                    <Route path="services/profile" element={<div>Profile</div>} />
+                    <Route path="services/settings" element={<Setting />} />
+                    <Route path="services/blog" element={<Blog />} />
+                    <Route path="services/inbox" element={<Inbox />} />
                     <Route path="services/physical-therapy" element={<div>Physical Therapy</div>} />
                     <Route path="services/chiropractic" element={<div>Chiropractic</div>} />
-                    <Route path="services/booking" element={<Booking />} />
+                    <Route path="services/appointments" element={<Appointments />} />
+                    <Route path="services/doctor-notes" element={<div>Doctor Notes</div>} />
+                    <Route path="services/initial-report" element={<div>Initial Report</div>} />
+                    <Route path="services/report" element={<div>Reporting</div>} />
                 </Route>
             </Route>
 
-            {/* Fallback route for 404 */}
+            {/* Admin Portal */}
+            <Route path="/admin/:id" element={<ProtectRoute allowedRoles={['admin']} />}>
+                <Route element={<AdminLayout />}>
+                    <Route index element={<AdminDashboard />} />
+                    <Route path="manage-users" element={<div>Manage Users</div>} />
+                    <Route path="analytics" element={<div>Analytics</div>} />
+                    {/* Add more admin routes here */}
+                </Route>
+            </Route>
 
+            {/* Fallback */}
+            <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
     );
 }

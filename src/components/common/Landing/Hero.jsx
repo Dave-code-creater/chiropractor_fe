@@ -10,7 +10,7 @@ export default function Hero() {
 
     const handleBookAppointment = () => {
         if (isAuthenticated && user?.id) {
-            navigate(`/services/${user.id}/booking`);
+            navigate(`/services/${user.id}/appointments`);
         } else {
             navigate('/login');
         }

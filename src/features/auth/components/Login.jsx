@@ -12,8 +12,10 @@ export default function Login() {
     const [password, setPassword] = useState("");
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (isAuthenticated && user.role === "user") {
             navigate(`/dashboard/${user.id}`); // Redirect to home or dashboard
+        } else if (isAuthenticated && user.role === "admin") {
+            navigate(`/admin/${user.id}`); // Redirect to admin dashboard
         }
     }, [isAuthenticated, navigate]);
 
