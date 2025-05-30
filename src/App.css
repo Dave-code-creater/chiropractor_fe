@@ -1,3 +1,9 @@
-html {
-    overflow-y: scroll;
+/* Add this to your global CSS (tailwind.config.js or globals.css) */
+.scroll-area::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-area::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
 }

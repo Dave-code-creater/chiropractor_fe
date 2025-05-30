@@ -36,7 +36,7 @@ function Sidebar() {
             {/* Mobile menu toggle */}
             <div className="lg:hidden p-4">
                 <button onClick={() => setMobileOpen(true)}>
-                    <Bars3Icon className="h-6 w-6 text-gray-700" />
+                    <Bars3Icon className="h-6 text-gray-700" />
                 </button>
             </div>
 

@@ -14,8 +14,9 @@ import Register from '../features/auth/components/Register';
 import Homepage from '../features/homepage/components/user/Homepage';
 import Setting from '../features/setting/components/Setting';
 import Appointments from '../features/appointments/components/Appointments';
-import Blog from '../features/blog/components/Blog';
+import Blog from '../features/blog/components/user/Blog';
 import Inbox from '../features/chat/components/Chat';
+import Profile from '../features/profile/components/Profile';
 
 import AdminDashboard from '../features/homepage/components/admin/Homepage';
 
@@ -42,7 +43,7 @@ export default function AppRoutes() {
             <Route path="/dashboard/:id" element={<ProtectRoute allowedRoles={['user']} />}>
                 <Route element={<HomepageLayout />}>
                     <Route index element={<Homepage />} />
-                    <Route path="services/profile" element={<div>Profile</div>} />
+                    <Route path="services/profile" element={<Profile />} />
                     <Route path="services/settings" element={<Setting />} />
                     <Route path="services/blog" element={<Blog />} />
                     <Route path="services/inbox" element={<Inbox />} />
