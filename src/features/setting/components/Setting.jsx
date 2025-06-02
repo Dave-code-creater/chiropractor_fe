@@ -40,20 +40,35 @@ export default function Setting() {
         <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1 mb-10">
           <button
             onClick={() => setTab("account")}
-            className={`${tab === "account" ? "" : ""} inline-flex items-center rounded-md text-md font-medium  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none  hover:text-accent-foreground h-9 px-4  hover: justify-start`}
-          >Account</button>
+            className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "account" ? "bg-accent text-accent-foreground" : ""
+              }`}
+          >
+            Account
+          </button>
+
           <button
             onClick={() => setTab("appearance")}
-            className={`${tab === "appearance" ? "" : ""} inline-flex items-center rounded-md text-md font-medium  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none  hover:text-accent-foreground h-9 px-4  hover: justify-start`}
-          >Appearance</button>
+            className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "appearance" ? "bg-accent text-accent-foreground" : ""
+              }`}
+          >
+            Appearance
+          </button>
+
           <button
             onClick={() => setTab("notifications")}
-            className={`${tab === "Notifications" ? "" : ""} inline-flex items-center rounded-md text-md font-medium  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none  hover:text-accent-foreground h-9 px-4  hover: justify-start`}
-          >Notifications</button>
+            className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "notifications" ? "bg-accent text-accent-foreground" : ""
+              }`}
+          >
+            Notifications
+          </button>
+
           <button
             onClick={() => setTab("display")}
-            className={`${tab === "display" ? "" : ""} inline-flex items-center rounded-md text-md font-medium  focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none  hover:text-accent-foreground h-9 px-4  hover: justify-start`}
-          >Display</button>
+            className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "display" ? "bg-accent text-accent-foreground" : ""
+              }`}
+          >
+            Display
+          </button>
         </nav>
         <div className="flex-1">{renderTab()}</div>
       </div>

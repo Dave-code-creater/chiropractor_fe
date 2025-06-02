@@ -1,11 +1,11 @@
 const FAQ_TYPES_QUESTION = {
-    types: ['general', 'technical', 'account', 'privacy', 'other'],
+    types: ['General', 'Technical', 'Account', 'Privacy', 'Other'],
 }
 
 const FAQ_QUESTION_GENERAL = [
     {
         question: "What is the purpose of this website?",
-        answer: "This website is designed to provide users with a platform to access various resources and information related to our services. It aims to enhance user experience and facilitate easy navigation through our offerings."
+        answer: "This website is designed to provide users with a platform to access resources and information related to our services. It aims to enhance user experience and facilitate easy navigation through our services."
     },
     {
         question: "How can I contact customer support?",
@@ -13,7 +13,7 @@ const FAQ_QUESTION_GENERAL = [
     },
     {
         question: "What services do you offer?",
-        answer: "We offer a wide range of services including web development, digital marketing, and content creation. For a detailed list of our services, please visit the 'Services' section of our website."
+        answer: "We offer a wide range of services including chiropractic care, physical therapy, and wellness programs. For a complete list of services, please visit the 'Services' section of our website."
     },
     {
         question: "How do I create an account?",
@@ -66,7 +66,7 @@ const FAQ_QUESTION_ACCOUNT = [
     },
     {
         question: "Is two-factor authentication available?",
-        answer: "Yes, we support two-factor authentication for enhanced account security. You can enable it in your security settings."
+        answer: "Not for now, but we are planning to implement it in the future for enhanced security."
     }
 ]
 const FAQ_QUESTION_PRIVACY = [
@@ -84,12 +84,9 @@ const FAQ_QUESTION_PRIVACY = [
     },
     {
         question: "Is my payment information secure?",
-        answer: "Yes, all transactions are encrypted and processed through secure, PCI-compliant third-party providers."
+        answer: "We don't do any payment processingg on our website. All payment transactions are handled in-person at our clinics. We do not store any payment information on our servers."
     },
-    {
-        question: "Do you use cookies?",
-        answer: "Yes, we use cookies to improve user experience and analyze website traffic. You can manage cookie preferences in your browser settings."
-    }
+
 ]
 
 const FAQ_QUESTION_OTHER = [
@@ -103,11 +100,7 @@ const FAQ_QUESTION_OTHER = [
     },
     {
         question: "Do you collaborate with other companies?",
-        answer: "Yes, we are open to partnerships and collaborations. Reach out via the 'Contact Us' page for inquiries."
-    },
-    {
-        question: "Can I request a demo of your services?",
-        answer: "Yes, you can request a demo by filling out the form on our 'Request a Demo' page."
+        answer: "No, this website was created to enhance user experience and digitize user profiles to improve efficiency."
     },
     {
         question: "Where can I find your terms and conditions?",

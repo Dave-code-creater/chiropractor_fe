@@ -3,6 +3,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import Footer from "../Footer";
+import { Toaster } from "@/components/ui/sonner"
 
 export default function HomepageLayout() {
   return (
@@ -25,6 +26,7 @@ export default function HomepageLayout() {
         {/* Main content */}
         <main className="flex-1 overflow-auto bg-gray-50">
           <Outlet />
+          <Toaster richColors />
         </main>
       </div>
 

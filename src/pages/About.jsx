@@ -3,58 +3,66 @@ import dr from "../assets/images/dr.png";
 
 const About = () => {
     return (
-        <section className="relative isolate bg-gray-100 py-20 px-6 sm:py-28 lg:px-8">
+        <section className=" py-24 px-6 sm:py-28 lg:px-8">
             <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-                {/* Doctor Bio */}
+
+                {/* Left: Text Content */}
                 <div className="space-y-6">
-                    <h2 className="text-3xl font-extrabold text-gray-900 sm:text-5xl">
-                        Meet Dr. Dieu Phan.
+                    <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+                        Meet Dr. Dieu Phan
                     </h2>
-                    <p className="text-lg text-gray-700 leading-relaxed">
-                        Welcome! I’m Dr. Dieu Phan, a dedicated chiropractor with over 20 years of hands-on experience
-                        helping patients heal after car accidents, relieve chronic pain, and improve their quality of 
-                        life through natural, proven chiropractic care. I received my Doctor of Chiropractic degree from 
-                        Northwestern College of Chiropractic at Northwestern Health Sciences University in November 2005. 
-                        Since then, I’ve proudly served the Denver community with a deep focus on results, compassion, and 
-                        long-term recovery.
-                    </p>
-                    <p className="text-md text-gray-700 leading-relaxed"> 
-                            
-                        <h2 class="text-2xl font-semibold text-dark-800 mb-3">Specialties Include:</h2>
 
-                            <ul class="text-md list-disc list-inside text-gray-800 space-y-1 mb-4">
-                                <li class="text-lg"><strong>Upper extremities:</strong> shoulders, elbows, wrists, hands, full spine, and headaches</li>
-                                <li class="text-lg"><strong>Lower extremities:</strong> hips, thighs, knees, ankles</li>
-                                <li class="text-lg"><strong>Muscle pain:</strong> trigger points, myofascial pain, post-traumatic and overuse injuries</li>
-                            </ul>
-                    </p>
-                    <p className="text-lg text-gray-700 leading-relaxed">
-                        I focus not only on relieving symptoms but also on correcting the underlying cause—whether it's spinal misalignment, joint dysfunction, or soft tissue imbalance. 
-                        My goal is to help you restore mobility, reduce inflammation, and support long-lasting healing.
+                    <p className="text-muted-foreground text-lg leading-relaxed">
+                        I’m Dr. Dieu Phan, a dedicated chiropractor with 20+ years of experience helping patients recover after car accidents, reduce chronic pain, and live healthier lives through proven chiropractic methods.
                     </p>
 
-                    <p className="text-lg text-gray-700 leading-relaxed">
-                       I also offer Wellness Care to help patients maintain alignment, prevent future issues, and live pain-free.
+                    <p className="text-muted-foreground text-lg leading-relaxed">
+                        I earned my Doctor of Chiropractic from Northwestern Health Sciences University in 2005 and have been proudly serving the Denver community since then—focused on results, compassion, and long-term wellness.
                     </p>
 
-                    <h2><em>Schedule your visit today—your path to healing and whole-body wellness starts here.</em></h2>
+                    <div>
+                        <h3 className="text-xl font-semibold text-foreground mb-2">Specialties:</h3>
+                        <ul className="list-disc list-inside text-muted-foreground space-y-2">
+                            <li><strong>Upper extremities:</strong> shoulders, elbows, wrists, hands, spine, and headaches</li>
+                            <li><strong>Lower extremities:</strong> hips, thighs, knees, ankles</li>
+                            <li><strong>Muscle pain:</strong> trigger points, myofascial pain, overuse and post-traumatic injuries</li>
+                        </ul>
+                    </div>
 
-                    <div className="flex justify-center">
-                        <a
-                            href="/login"
-                            className="mt-8 pt-1 px-6 bg-indigo-600 text-white font-semibold rounded shadow hover:bg-indigo-500 transition"
+                    <p className="text-muted-foreground text-lg leading-relaxed">
+                        My goal is not just symptom relief — I target root causes like spinal misalignment and soft tissue dysfunction to help you restore mobility, reduce inflammation, and heal fully.
+                    </p>
+
+                    <p className="text-muted-foreground text-lg leading-relaxed">
+                        I also provide ongoing wellness care to help patients stay aligned, prevent pain, and maintain a vibrant, active lifestyle.
+                    </p>
+
+                    <em className="block text-base text-muted-foreground">
+                        Schedule your visit today — your path to whole-body wellness starts here.
+                    </em>
+
+                    <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <button
+
+                            className="inline-block rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-indigo-500 transition"
                         >
-                            Book Your Appointment
+                            Book an Appointment
+                        </button>
+                        <a
+                            href="/about"
+                            className="text-sm font-semibold text-white underline underline-offset-4 hover:text-indigo-300"
+                        >
+                            Learn more →
                         </a>
                     </div>
                 </div>
 
-                {/* Doctor Image */}
-                <div className="w-full">
+                {/* Right: Image */}
+                <div>
                     <img
                         src={dr}
                         alt="Dr. Dieu Phan"
-                        className="rounded-2xl shadow-xl w-full object-cover "
+                        className="rounded-xl shadow-md w-full object-cover"
                     />
                 </div>
             </div>

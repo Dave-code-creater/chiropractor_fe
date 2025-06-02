@@ -17,7 +17,7 @@ import Appointments from '../features/appointments/components/Appointments';
 import Blog from '../features/blog/components/user/Blog';
 import Inbox from '../features/chat/components/Chat';
 import Profile from '../features/profile/components/Profile';
-
+import Report from '../features/report/components/user/Report';
 import AdminDashboard from '../features/homepage/components/admin/Homepage';
 
 import ProtectRoute from './ProtectRoute';
@@ -51,7 +51,7 @@ export default function AppRoutes() {
                     <Route path="services/chiropractic" element={<div>Chiropractic</div>} />
                     <Route path="services/appointments" element={<Appointments />} />
                     <Route path="services/doctor-notes" element={<div>Doctor Notes</div>} />
-                    <Route path="services/initial-report" element={<div>Initial Report</div>} />
+                    <Route path="services/initial-report" element={<Report />} />
                     <Route path="services/report" element={<div>Reporting</div>} />
                 </Route>
             </Route>
