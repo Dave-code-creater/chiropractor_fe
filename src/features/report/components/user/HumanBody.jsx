@@ -9,12 +9,20 @@ const painFields = {
         { id: "upperBack", label: "Upper Back" },
         { id: "arms", label: "Arms" },
         { id: "lowerBack", label: "Lower Back" },
+        { id: "feet", label: "Feet" },
+        { id: "hips", label: "Hips" },
+        { id: "knees", label: "Knees" },
+        { id: "ankles", label: "Ankles" },
     ],
     right: [
         { id: "neck", label: "Neck" },
         { id: "shoulders", label: "Shoulders" },
         { id: "midBack", label: "Mid Back" },
         { id: "legs", label: "Legs" },
+        { id: "toes", label: "Toes" },
+        { id: "wrists", label: "Wrists" },
+        { id: "elbows", label: "Elbows" },
+        { id: "shoulderBlades", label: "Shoulder Blades" },
     ],
 };
 

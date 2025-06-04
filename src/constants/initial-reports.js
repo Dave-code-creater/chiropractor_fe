@@ -159,6 +159,12 @@ const PATIENT_INFO = [
                 type: "group",
                 fields: [
                     {
+                        id: "typeCar",
+                        label: "Type of Your Car",
+                        type: "textArea",
+                        extra_info: "If applicable, please provide the make and model of your vehicle."
+                    },
+                    {
                         id: "accidentDate",
                         label: "Date of Accident / Beginning of Illness",
                         type: "text",
@@ -194,6 +200,43 @@ const PATIENT_INFO = [
                         label: "Please describe the circumstances",
                         type: "textarea",
                         extra_info: "Describe what happened in your own words. Be as specific as possible."
+                    },
+                    {
+                        id: "accidentAwareness",
+                        label: "Were you aware of the accident at the time it occurred?",
+                        type: "radio",
+                        options: ["Yes", "No"],
+
+                    },
+                    {
+                        id: "acciddentAppearanceOfAmbulance",
+                        label: "Did an ambulance appear at the scene?",
+                        type: "textarea",
+                        extra_info: "If yes, please describe the circumstances."
+                    },
+                    {
+                        id: "AirbagDeployment",
+                        label: "Did the airbag deploy?",
+                        type: "radio",
+                        options: ["Yes", "No"],
+                    },
+                    {
+                        id: "seatbeltUse",
+                        label: "Were you wearing a seatbelt?",
+                        type: "radio",
+                        options: ["Yes", "No"],
+                    },
+                    {
+                        id: "PoliceAppearance",
+                        label: "Did the police appear at the scene?",
+                        type: "radio",
+                        options: ["Yes", "No"],
+                    },
+                    {
+                        id: "anyPastAccidents",
+                        label: "Have you had any past accidents?",
+                        type: "textarea",
+                        extra_info: "If yes, please describe the health circumstances of each accident till now."
                     }
                 ]
             },
@@ -294,6 +337,13 @@ const PATIENT_INFO = [
                 type: "checkbox",
                 options: ["Sharp", "Dull", "Burning", "Aching", "Stabbing", "Muscle tension", "Numbness", "Pins & Needles"],
                 extra_info: "Check all types of pain that apply to your condition."
+            },
+            {
+                id: "painLevel",
+                label: "Rate your pain level",
+                type: "checkbox",
+                options: ["0 - No pain", "1 - Very mild", "2 - Mild", "3 - Moderate", "4 - Severe", "5 - Very severe", "6 - Excruciating"],
+                extra_info: "Select the option that best describes your current pain level."
             },
             {
                 id: "painTiming",
