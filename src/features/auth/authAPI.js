@@ -6,13 +6,17 @@ export const loginUser = async (credentials) => {
         const response = await axios.post(`${API_BASE_URL}/login`, credentials);
         const { metadata } = response.data;
 
+        // store refresh token in cookie instead of state
+        if (metadata?.refreshToken) {
+            document.cookie = `refreshToken=${metadata.refreshToken}; path=/; secure; samesite=strict`;
+        }
+
         return {
             user: {
                 id: metadata?.profile_id || metadata?.identity_id,
                 role: metadata?.role_id,
             },
             accessToken: metadata?.accessToken,
-            refreshToken: metadata?.refreshToken,
         };
     } catch (error) {
         const message =
@@ -27,13 +31,16 @@ export const registerUser = async (userData) => {
         const response = await axios.post(`${API_BASE_URL}/signup`, userData);
         const { metadata } = response.data;
 
+        if (metadata?.refreshToken) {
+            document.cookie = `refreshToken=${metadata.refreshToken}; path=/; secure; samesite=strict`;
+        }
+
         return {
             user: {
                 id: metadata?.profile_id || metadata?.identity_id,
                 role: metadata?.role_id,
             },
             accessToken: metadata?.accessToken,
-            refreshToken: metadata?.refreshToken,
         };
     } catch (error) {
         const message =

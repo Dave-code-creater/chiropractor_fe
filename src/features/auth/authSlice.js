@@ -4,7 +4,6 @@ import { login, register } from "./authThunks";
 const initialState = {
     user: null,
     accessToken: null,
-    refreshToken: null,
     isAuthenticated: false,
     loading: false,
     error: null,
@@ -21,7 +20,6 @@ const authSlice = createSlice({
         logoutUser: (state) => {
             state.user = null;
             state.accessToken = null;
-            state.refreshToken = null;
             state.role = null;
             state.isAuthenticated = false;
         },
@@ -36,7 +34,6 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken;
-                state.refreshToken = action.payload.refreshToken;
                 state.role = action.payload.user?.role || null;
                 state.isAuthenticated = true;
             })
@@ -52,7 +49,6 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken;
-                state.refreshToken = action.payload.refreshToken;
                 state.role = action.payload.user?.role || null;
                 state.isAuthenticated = true;
             })
