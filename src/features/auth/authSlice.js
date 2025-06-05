@@ -3,6 +3,8 @@ import { login, register } from "./authThunks";
 
 const initialState = {
     user: null,
+    accessToken: null,
+    refreshToken: null,
     isAuthenticated: false,
     loading: false,
     error: null,
@@ -18,6 +20,9 @@ const authSlice = createSlice({
         },
         logoutUser: (state) => {
             state.user = null;
+            state.accessToken = null;
+            state.refreshToken = null;
+            state.role = null;
             state.isAuthenticated = false;
         },
     },
@@ -30,6 +35,9 @@ const authSlice = createSlice({
             .addCase(login.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.user;
+                state.accessToken = action.payload.accessToken;
+                state.refreshToken = action.payload.refreshToken;
+                state.role = action.payload.user?.role || null;
                 state.isAuthenticated = true;
             })
             .addCase(login.rejected, (state, action) => {
@@ -43,6 +51,9 @@ const authSlice = createSlice({
             .addCase(register.fulfilled, (state, action) => {
                 state.loading = false;
                 state.user = action.payload.user;
+                state.accessToken = action.payload.accessToken;
+                state.refreshToken = action.payload.refreshToken;
+                state.role = action.payload.user?.role || null;
                 state.isAuthenticated = true;
             })
             .addCase(register.rejected, (state, action) => {

@@ -2,78 +2,43 @@ import axios from "axios";
 import { API_URL, API_BASE_URL } from "../../constants/api";
 
 export const loginUser = async (credentials) => {
-    // try {
-    //     const response = await axios.post(`${API_URL}/auth/login`, credentials);
-    //     return response.data;
-    // } catch (error) {
-    //     throw new Error(error.response.data.message || "Login failed");
-    // }
     try {
-        // simulate delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const response = await axios.post(`${API_BASE_URL}/login`, credentials);
+        const { metadata } = response.data;
 
-        // fake user data
-        if (credentials.email === "test@example.com" && credentials.password === "123456") {
-            return {
-                user: {
-                    id: 1,
-                    name: "Test User",
-                    email: "test@example.com",
-                    role: "user",
-                },
-            };
-        }
-        if (credentials.email === "admin@example.com" && credentials.password === "admin123") {
-            return {
-                user: {
-                    id: 2,
-                    name: "Admin User",
-                    email: "admin@example.com",
-                    role: "admin",
-                },
-            };
-        } else {
-            throw new Error("Invalid email or password");
-        }
+        return {
+            user: {
+                id: metadata?.profile_id || metadata?.identity_id,
+                role: metadata?.role_id,
+            },
+            accessToken: metadata?.accessToken,
+            refreshToken: metadata?.refreshToken,
+        };
     } catch (error) {
-        throw new Error(error.message || "Login failed");
+        const message =
+            error.response?.data?.message || error.message || "Login failed";
+        throw new Error(message);
     }
-}
+};
 
 
 export const registerUser = async (userData) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/signup`, userData);
-        return response.data;
-    } catch (error) {
-        throw new Error(error.response.data.message || "Registration failed");
-    }
-    try {
-        // simulate delay
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        const { metadata } = response.data;
 
-        // strict credential match
-        if (
-            userData.firstName === "Dat" &&
-            userData.lastName === "Ta" &&
-            userData.phone === "6477787816" &&
-            userData.email === "Linh@gmail.com" &&
-            userData.password === "123123" &&
-            userData.confirmPassword === "123123"
-        ) {
-            return {
-                user: {
-                    id: 1,
-                    name: "Dat Ta",
-                    email: "Linh@gmail.com",
-                    phone: "6477787816",
-                },
-            };
-        } else {
-            throw new Error("Invalid registration details");
-        }
+        return {
+            user: {
+                id: metadata?.profile_id || metadata?.identity_id,
+                role: metadata?.role_id,
+            },
+            accessToken: metadata?.accessToken,
+            refreshToken: metadata?.refreshToken,
+        };
     } catch (error) {
-        throw new Error(error.message || "Registration failed");
+        const message =
+            error.response?.data?.message || error.message || "Registration failed";
+        throw new Error(message);
     }
-}
+};
 
