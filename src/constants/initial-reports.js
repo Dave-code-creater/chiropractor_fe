@@ -317,60 +317,6 @@ const PATIENT_INFO = [
                 type: "image-map",
                 extra_info: "Click on the parts of the body that hurt. You can select multiple areas by clicking them one by one."
             },
-            {
-                id: "painIntensity",
-                label: "How much does it hurt?",
-                type: "group",
-                fields: [
-                    { id: "headache", label: "Headache", type: "slider", min: 0, max: 10 },
-                    { id: "neck", label: "Neck", type: "slider", min: 0, max: 10 },
-                    { id: "upperBack", label: "Upper Back", type: "slider", min: 0, max: 10 },
-                    { id: "midBack", label: "Mid Back", type: "slider", min: 0, max: 10 },
-                    { id: "lowerBack", label: "Lower Back", type: "slider", min: 0, max: 10 },
-                    { id: "arms", label: "Arms", type: "slider", min: 0, max: 10 },
-                    { id: "legs", label: "Legs", type: "slider", min: 0, max: 10 }
-                ]
-            },
-            {
-                id: "painType",
-                label: "What kind of pain do you feel?",
-                type: "checkbox",
-                options: ["Sharp", "Dull", "Burning", "Aching", "Stabbing", "Muscle tension", "Numbness", "Pins & Needles"],
-                extra_info: "Check all types of pain that apply to your condition."
-            },
-            {
-                id: "painLevel",
-                label: "Rate your pain level",
-                type: "checkbox",
-                options: ["0 - No pain", "1 - Very mild", "2 - Mild", "3 - Moderate", "4 - Severe", "5 - Very severe", "6 - Excruciating"],
-                extra_info: "Select the option that best describes your current pain level."
-            },
-            {
-                id: "painTiming",
-                label: "How often is the pain present?",
-                type: "radio",
-                options: ["Constant", "Comes and goes", "Worse with activity", "Twice a day", "Once a day", "Daily", "Monthly"]
-            },
-            {
-                id: "painChanges",
-                label: "Is the pain better, worse, or the same today?",
-                type: "radio",
-                options: ["Same", "Better", "Worse"]
-            },
-            {
-                id: "painTriggers",
-                label: "What makes it worse?",
-                type: "checkbox",
-                options: ["Sitting", "Standing", "Working", "Lifting", "Sleeping", "Bending", "Twisting", "Other"],
-                extra_info: "What actions or conditions worsen your pain? Select all that apply."
-            },
-            {
-                id: "radiatingPain",
-                label: "Does the pain travel or radiate?",
-                type: "radio",
-                options: ["Yes", "No"],
-                extra_info: "Does the pain move from one area to another (e.g., from back to legs)?"
-            }
         ]
     },
     {
