@@ -1,63 +1,57 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { login, register } from "./authThunks";
 
 const initialState = {
-    user: null,
-    accessToken: null,
-    isAuthenticated: false,
-    loading: false,
-    error: null,
-    role: null,
+  user: null,
+  accessToken: null,
+  isAuthenticated: false,
+  loading: false,
+  error: null,
+  role: null,
 };
 
 const authSlice = createSlice({
-    name: "auth",
-    initialState,
-    reducers: {
-        clearError: (state) => {
-            state.error = null;
-        },
-        logoutUser: (state) => {
-            state.user = null;
-            state.accessToken = null;
-            state.role = null;
-            state.isAuthenticated = false;
-        },
+  name: "auth",
+  initialState,
+  reducers: {
+    setCredentials: (state, action) => {
+      const { user, accessToken } = action.payload;
+      state.user = user;
+      state.accessToken = accessToken;
+      state.role = user?.role || null;
+      state.isAuthenticated = true;
+      state.loading = false;
+      state.error = null;
     },
-    extraReducers: (builder) => {
-        builder
-            .addCase(login.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(login.fulfilled, (state, action) => {
-                state.loading = false;
-                state.user = action.payload.user;
-                state.accessToken = action.payload.accessToken;
-                state.role = action.payload.user?.role || null;
-                state.isAuthenticated = true;
-            })
-            .addCase(login.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            })
-            .addCase(register.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(register.fulfilled, (state, action) => {
-                state.loading = false;
-                state.user = action.payload.user;
-                state.accessToken = action.payload.accessToken;
-                state.role = action.payload.user?.role || null;
-                state.isAuthenticated = true;
-            })
-            .addCase(register.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.payload;
-            });
+    logOut: (state) => {
+      state.user = null;
+      state.accessToken = null;
+      state.role = null;
+      state.isAuthenticated = false;
+      state.loading = false;
+      state.error = null;
     },
+    clearError: (state) => {
+      state.error = null;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addMatcher(
+        (action) => action.type.endsWith("/pending"),
+        (state) => {
+          state.loading = true;
+          state.error = null;
+        }
+      )
+      .addMatcher(
+        (action) => action.type.endsWith("/rejected"),
+        (state, action) => {
+          state.loading = false;
+          state.error = action.error?.data || action.error?.message;
+        }
+      );
+  },
 });
 
-export const { clearError, logoutUser } = authSlice.actions;
+export const { setCredentials, logOut, clearError } = authSlice.actions;
 export default authSlice.reducer;
