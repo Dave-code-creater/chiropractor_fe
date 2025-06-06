@@ -1,34 +1,34 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { login } from "../authThunks";
+import { useSelector } from "react-redux";
+import { useLoginMutation } from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-    const dispatch = useDispatch();
     const navigate = useNavigate();
+    const { user, isAuthenticated } = useSelector((state) => state.auth);
 
-    const { user, isAuthenticated, loading, error } = useSelector((state) => state.auth);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
+    const [loginMutation, { isLoading, error: loginError }] = useLoginMutation();
+
     useEffect(() => {
-        if (isAuthenticated && user.role === "user") {
-            navigate(`/dashboard/${user.id}`); // Redirect to home or dashboard
-        } else if (isAuthenticated && user.role === "admin") {
-            navigate(`/admin/${user.id}`); // Redirect to admin dashboard
+        if (isAuthenticated) {
+            if (user.role.name === "admin") {
+                navigate(`/admin/${user.id}`);
+            } else {
+                navigate(`/dashboard/${user.id}`);
+            }
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, navigate, user]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
-
-        const credentials = {
-            email,
-            password,
-        };
-        console.log(email, password);
-
-        dispatch(login(credentials));
+        try {
+            await loginMutation({ email, password }).unwrap();
+        } catch {
+            // any error will be displayed below
+        }
     };
 
     return (
@@ -76,19 +76,26 @@ export default function Login() {
                     <div>
                         <button
                             type="submit"
-                            disabled={loading}
+                            disabled={isLoading}
                             className="w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500"
                         >
-                            {loading ? "Signing in..." : "Sign in"}
+                            {isLoading ? "Signing in..." : "Sign in"}
                         </button>
                     </div>
 
-                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    {loginError && (
+                        <p className="text-sm text-red-600">
+                            {loginError.data?.message || loginError.error || "Login failed"}
+                        </p>
+                    )}
                 </form>
 
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Not a member?{" "}
-                    <a href="/register" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                    <a
+                        href="/register"
+                        className="font-semibold text-indigo-600 hover:text-indigo-500"
+                    >
                         Register with us
                     </a>
                 </p>
