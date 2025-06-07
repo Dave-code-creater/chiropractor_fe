@@ -20,8 +20,8 @@ export default function ProtectRoute({ allowedRoles }) {
         return <Navigate to="/login" replace state={{ from: location }} />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user?.role)) {
-        console.warn(`Unauthorized access attempt by user with role: ${user?.role}`);
+    if (allowedRoles && !allowedRoles.includes(user?.role?.name)) {
+        console.warn(`Unauthorized access attempt by user with role: ${user?.role?.name}`);
         return <Navigate to="/unauthorized" replace />;
     }
 

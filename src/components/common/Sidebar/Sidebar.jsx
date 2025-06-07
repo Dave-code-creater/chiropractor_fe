@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { logoutUser } from '../../../features/auth/authSlice'
+import { useLogoutMutation } from '../../../services/api'
 import sidebar from '../../../constants/sidebar'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
 
@@ -13,13 +13,22 @@ function Sidebar() {
     })
     const [mobileOpen, setMobileOpen] = useState(false)
 
-    const dispatch = useDispatch()
     const navigate = useNavigate()
     const user = useSelector((state) => state.auth.user)
+    const error = useSelector((state) => state.auth.error)
+    const [logoutApi] = useLogoutMutation()
 
     const handleLogout = () => {
-        dispatch(logoutUser())
-        navigate('/')
+        // Call the RTK Query logout mutation
+        logoutApi(user.id)
+            .unwrap()
+            .then(() => {
+                navigate('/')
+            })
+            .catch((err) => {
+                console.error('Logout failed:', err)
+                navigate('/')
+            })
     }
 
     const handleNavigation = (path) => {
@@ -51,9 +60,7 @@ function Sidebar() {
                         <XMarkIcon className="h-6 w-6 text-gray-700" />
                     </button>
                 </div>
-                <div className="p-4">
-                    {renderNav({ isCollapsed: false })}
-                </div>
+                <div className="p-4">{renderNav({ isCollapsed: false })}</div>
             </div>
 
             {/* Sidebar (Desktop) */}
