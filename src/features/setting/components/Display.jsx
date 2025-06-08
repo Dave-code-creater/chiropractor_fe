@@ -1,4 +1,10 @@
+"use client";
+
 import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function Display() {
   const [language, setLanguage] = useState("vi");
@@ -9,127 +15,88 @@ export default function Display() {
 
   return (
     <div className="w-full space-y-8">
-      <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-xl p-8 border border-gray-200">
-        <div className="mb-6">
-          <h2 className="text-xl font-semibold text-gray-900">Display Settings</h2>
-          <p className="text-sm text-gray-500 mt-1">Customize how your data is presented across the platform.</p>
-        </div>
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle className="text-xl">Display Settings</CardTitle>
+          <p className="text-sm text-muted-foreground">
+            Customize how your data is presented across the platform.
+          </p>
+        </CardHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Language */}
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-            <div className="space-y-2">
-              {["vi", "en"].map((lang) => (
-                <label key={lang} className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="language"
-                    value={lang}
-                    checked={language === lang}
-                    onChange={() => setLanguage(lang)}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="text-sm text-gray-700">{lang === "vi" ? "Tiếng Việt" : "English"}</span>
-                </label>
-              ))}
-            </div>
+            <Label className="mb-2 block">Language</Label>
+            <RadioGroup value={language} onValueChange={setLanguage}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="vi" id="lang-vi" />
+                <Label htmlFor="lang-vi">Tiếng Việt</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="en" id="lang-en" />
+                <Label htmlFor="lang-en">English</Label>
+              </div>
+            </RadioGroup>
           </div>
 
-          {/* Date Format */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Date Format</label>
-            <div className="space-y-2">
+            <Label className="mb-2 block">Date Format</Label>
+            <RadioGroup value={dateFormat} onValueChange={setDateFormat}>
               {["DD/MM/YYYY", "MM/DD/YYYY"].map((fmt) => (
-                <label key={fmt} className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="dateFormat"
-                    value={fmt}
-                    checked={dateFormat === fmt}
-                    onChange={() => setDateFormat(fmt)}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="text-sm text-gray-700">{fmt}</span>
-                </label>
+                <div key={fmt} className="flex items-center space-x-2">
+                  <RadioGroupItem value={fmt} id={`fmt-${fmt}`} />
+                  <Label htmlFor={`fmt-${fmt}`}>{fmt}</Label>
+                </div>
               ))}
-            </div>
+            </RadioGroup>
           </div>
 
-          {/* Time Zone */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Time Zone</label>
-            <div className="space-y-2">
-              {["UTC+7", "system"].map((tz) => (
-                <label key={tz} className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="timeZone"
-                    value={tz}
-                    checked={timeZone === tz}
-                    onChange={() => setTimeZone(tz)}
-                    className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                  />
-                  <span className="text-sm text-gray-700">{tz === "system" ? "System Default" : tz}</span>
-                </label>
-              ))}
-            </div>
+            <Label className="mb-2 block">Time Zone</Label>
+            <RadioGroup value={timeZone} onValueChange={setTimeZone}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="UTC+7" id="tz-utc7" />
+                <Label htmlFor="tz-utc7">UTC+7</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="system" id="tz-system" />
+                <Label htmlFor="tz-system">System Default</Label>
+              </div>
+            </RadioGroup>
           </div>
 
-          {/* Units */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Measurement Units</label>
+            <Label className="mb-2 block">Measurement Units</Label>
             <div className="space-y-2">
               <div>
-                <span className="text-sm font-medium text-gray-600">Height</span>
-                <div className="flex space-x-4 mt-1">
+                <span className="text-sm font-medium">Height</span>
+                <RadioGroup value={heightUnit} onValueChange={setHeightUnit}>
                   {["cm", "ft-in"].map((h) => (
-                    <label key={h} className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="heightUnit"
-                        value={h}
-                        checked={heightUnit === h}
-                        onChange={() => setHeightUnit(h)}
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                      />
-                      <span className="text-sm text-gray-700">{h}</span>
-                    </label>
+                    <div key={h} className="flex items-center space-x-2">
+                      <RadioGroupItem value={h} id={`height-${h}`} />
+                      <Label htmlFor={`height-${h}`}>{h}</Label>
+                    </div>
                   ))}
-                </div>
+                </RadioGroup>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-600">Weight</span>
-                <div className="flex space-x-4 mt-1">
+                <span className="text-sm font-medium">Weight</span>
+                <RadioGroup value={weightUnit} onValueChange={setWeightUnit}>
                   {["kg", "lb"].map((w) => (
-                    <label key={w} className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="weightUnit"
-                        value={w}
-                        checked={weightUnit === w}
-                        onChange={() => setWeightUnit(w)}
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                      />
-                      <span className="text-sm text-gray-700">{w}</span>
-                    </label>
+                    <div key={w} className="flex items-center space-x-2">
+                      <RadioGroupItem value={w} id={`weight-${w}`} />
+                      <Label htmlFor={`weight-${w}`}>{w}</Label>
+                    </div>
                   ))}
-                </div>
+                </RadioGroup>
               </div>
             </div>
           </div>
-        </div>
+        </CardContent>
 
-        {/* Optional Save Button */}
-        <div className="mt-8">
-          <button
-            onClick={() => alert("Preferences saved!")}
-            className="px-6 py-2 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md text-sm font-medium transition"
-          >
-            Save Changes
-          </button>
+        <div className="px-6 pb-6">
+          <Button onClick={() => alert("Preferences saved!")}>Save Changes</Button>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

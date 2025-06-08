@@ -1,11 +1,44 @@
-// Profile.jsx
-import React, { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
+import { ArrowLeft, UserCircle, Mail, HeartPulse } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 import PersonalInfo from "./PersonalInfo";
 import ContactInfo from "./ContactInfo";
+import MedicalInfo from "./MedicalInfo";
+
+const tabs = [
+    { id: "profile", label: "Profile", icon: UserCircle },
+    { id: "contact", label: "Contact", icon: Mail },
+    { id: "medical", label: "Medical", icon: HeartPulse },
+];
+
+function useIsMobile(breakpoint = 768) {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < breakpoint);
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, [breakpoint]);
+
+    return isMobile;
+}
 
 export default function Profile() {
-    const [tab, setTab] = useState();
+    const isMobile = useIsMobile();
+    const [tab, setTab] = useState(() => {
+        // Default to "profile" for desktop, null for mobile
+        if (typeof window !== "undefined") {
+            return window.innerWidth < 768 ? null : "profile";
+        }
+        return "profile";
+    });
 
     const renderTab = () => {
         switch (tab) {
@@ -14,53 +47,55 @@ export default function Profile() {
             case "contact":
                 return <ContactInfo />;
             case "medical":
-                return <div>Notification Settings</div>;
+                return <MedicalInfo />;
             default:
                 return <PersonalInfo />;
         }
     };
 
     return (
-        <div className="hidden mt-8 space-y-6 p-8 pb-16 md:block">
-            <div className="space-y-0.5">
-                <h2 className="text-2xl font-bold tracking-tight ">Profile</h2>
-                <p className="text-muted-foreground">
-                    Update your profiles information from personal details to medical and emergency contacts.
-                </p>
-            </div>
-            {/* <!-- Seperator --> */}
-            <div className="shrink-0 bg-border h-[1px]"></div>
+        <div className="flex flex-col md:flex-row h-screen bg-background">
+            {/* Sidebar */}
             <div
-                className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0"
+                className={cn(
+                    "w-full md:w-1/3 lg:w-1/4 max-w-sm p-4",
+                    tab && isMobile && "hidden"
+                )}
             >
-                <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1 mb-10">
-                    <button
-                        onClick={() => setTab("profile")}
-                        className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "account" ? "bg-accent text-accent-foreground" : ""
-                            }`}
-                    >
-                        Profile
-                    </button>
-
-                    <button
-                        onClick={() => setTab("contact")}
-                        className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "appearance" ? "bg-accent text-accent-foreground" : ""
-                            }`}
-                    >
-                        Contact
-                    </button>
-
-                    <button
-                        onClick={() => setTab("medical")}
-                        className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "notifications" ? "bg-accent text-accent-foreground" : ""
-                            }`}
-                    >
-                        Medical
-                    </button>
-
-                </nav>
-                <div className="flex-1">{renderTab()}</div>
+                <h2 className="text-2xl font-semibold mb-4 px-1">My Profile</h2>
+                <ScrollArea className="space-y-3">
+                    {tabs.map(({ id, label, icon: Icon }) => (
+                        <Card
+                            key={id}
+                            className={cn(
+                                "cursor-pointer flex items-center gap-4 p-4 my-4 hover:bg-muted transition",
+                                tab === id && "border-primary bg-muted"
+                            )}
+                            onClick={() => setTab(id)}
+                        >
+                            <Icon className="w-5 h-5 text-muted-foreground" />
+                            <span className="text-sm font-medium">{label}</span>
+                        </Card>
+                    ))}
+                </ScrollArea>
             </div>
+
+            {/* Main Content */}
+            {tab && (
+                <div className="flex-1 flex flex-col bg-white border-l md:border-t-0 border-t">
+                    <div className="flex items-center p-4 border-b  gap-3">
+                        {isMobile && (
+                            <Button variant="ghost" size="icon" onClick={() => setTab(null)}>
+                                <ArrowLeft className="h-5 w-5" />
+                            </Button>
+                        )}
+                        <h2 className="text-lg font-semibold capitalize">{tab}</h2>
+                    </div>
+                    <div className="flex-1 overflow-auto p-4 pb-12">
+                        <ScrollArea className="h-full">{renderTab()}</ScrollArea>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
