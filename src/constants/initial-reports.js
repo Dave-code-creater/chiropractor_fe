@@ -1,4 +1,4 @@
-const PATIENT_INFO = [
+export const PATIENT_INFO = [
     {
         id: "1",
         title: "Patient Intake Form",
@@ -506,4 +506,35 @@ const PATIENT_INFO = [
     }
 ];
 
+export const PATIENT_INTAKE_FORM = PATIENT_INFO[0];
+export const ACCIDENT_INSURANCE_DETAILS = PATIENT_INFO[1];
+export const PAIN_SYMPTOM_EVAL = PATIENT_INFO[2];
+export const SYMPTOM_DESCRIPTION = PATIENT_INFO[3];
+export const RECOVERY_WORK_IMPACT = PATIENT_INFO[4];
+export const EXTENDED_HEALTH_HISTORY = PATIENT_INFO[5];
+
 export default PATIENT_INFO;
+
+// Group sections into four logical forms so they can be submitted separately
+export const REPORT_FORMS = [
+    {
+        id: "form1",
+        title: PATIENT_INTAKE_FORM.title,
+        sections: [PATIENT_INTAKE_FORM],
+    },
+    {
+        id: "form2",
+        title: ACCIDENT_INSURANCE_DETAILS.title,
+        sections: [ACCIDENT_INSURANCE_DETAILS],
+    },
+    {
+        id: "form3",
+        title: "Pain & Symptoms",
+        sections: [PAIN_SYMPTOM_EVAL, SYMPTOM_DESCRIPTION],
+    },
+    {
+        id: "form4",
+        title: "Work & History",
+        sections: [RECOVERY_WORK_IMPACT, EXTENDED_HEALTH_HISTORY],
+    },
+];
