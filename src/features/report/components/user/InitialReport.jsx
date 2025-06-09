@@ -7,18 +7,38 @@ import {
 
 import INITIAL_REPORT_SECTIONS from "../../../../constants/initial-reports";
 import SectionForm from "./SectionForm";
+import {
+    sendIntakeForm,
+    sendInsuranceDetails,
+    sendPainEvaluation,
+    sendDetailedDescription,
+    sendImpact,
+    sendHealthHistory,
+} from "../../reportAPI";
 
 export default function InitialReport() {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [responses, setResponses] = useState({});
 
-    const handleSectionSubmit = (data) => {
+    const handleSectionSubmit = async (data) => {
         const currentId = INITIAL_REPORT_SECTIONS[currentIndex].id;
-        setResponses((prev) => ({ ...prev, [currentId]: data }));
+        const updated = { ...responses, [currentId]: data };
+        setResponses(updated);
         if (currentIndex < INITIAL_REPORT_SECTIONS.length - 1) {
             setCurrentIndex((i) => i + 1);
         } else {
-            console.log("All sections data:", { ...responses, [currentId]: data });
+            try {
+                await Promise.all([
+                    sendIntakeForm(updated["1"]),
+                    sendInsuranceDetails(updated["2"]),
+                    sendPainEvaluation(updated["3"]),
+                    sendDetailedDescription(updated["4"]),
+                    sendImpact(updated["5"]),
+                    sendHealthHistory(updated["6"]),
+                ]);
+            } catch (err) {
+                console.error("Failed to submit reports", err);
+            }
         }
     };
 
