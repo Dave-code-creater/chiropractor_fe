@@ -1,4 +1,4 @@
-const PATIENT_INFO = [
+const INITIAL_REPORT_SECTIONS = [
     {
         id: "1",
         title: "Patient Intake Form",
@@ -552,4 +552,4 @@ const PATIENT_INFO = [
     }
 ];
 
-export default PATIENT_INFO;
+export default INITIAL_REPORT_SECTIONS;
