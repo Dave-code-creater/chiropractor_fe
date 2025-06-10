@@ -10,9 +10,6 @@ export const sendInsuranceDetails = (data) =>
 export const sendPainEvaluation = (data) =>
     axios.post(`${API_URL}/reports/pain-evaluation`, data);
 
-export const sendDetailedDescription = (data) =>
-    axios.post(`${API_URL}/reports/detailed-description`, data);
-
 export const sendImpact = (data) =>
     axios.post(`${API_URL}/reports/impact`, data);
 

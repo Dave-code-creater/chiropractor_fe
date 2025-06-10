@@ -321,7 +321,7 @@ const INITIAL_REPORT_SECTIONS = [
     },
     {
         id: "3",
-        title: "Pain & Symptom Evaluation",
+        title: "Pain & Symptom Description",
         questions: [
             {
                 id: "painChart",
@@ -329,13 +329,7 @@ const INITIAL_REPORT_SECTIONS = [
                 type: "image-map",
                 extra_info:
                     "Click on the parts of the body that hurt. You can select multiple areas by clicking them one by one."
-            }
-        ]
-    },
-    {
-        id: "4",
-        title: "Detailed Symptom Description",
-        questions: [
+            },
             {
                 id: "symptomDetails",
                 label:
@@ -347,7 +341,7 @@ const INITIAL_REPORT_SECTIONS = [
         ]
     },
     {
-        id: "5",
+        id: "4",
         title: "Recovery and Work Impact",
         questions: [
             {
@@ -374,7 +368,7 @@ const INITIAL_REPORT_SECTIONS = [
         ]
     },
     {
-        id: "6",
+        id: "5",
         title: "Extended Health History",
         questions: [
             {

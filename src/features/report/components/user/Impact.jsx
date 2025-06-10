@@ -6,5 +6,5 @@ export default function Impact() {
         await sendImpact(data);
     };
 
-    return <SectionForm sectionId="5" isLast onSubmit={handleSubmit} />;
+    return <SectionForm sectionId="4" isLast onSubmit={handleSubmit} />;
 }

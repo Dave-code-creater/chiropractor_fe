@@ -6,5 +6,5 @@ export default function HealthHistory() {
         await sendHealthHistory(data);
     };
 
-    return <SectionForm sectionId="6" isLast onSubmit={handleSubmit} />;
+    return <SectionForm sectionId="5" isLast onSubmit={handleSubmit} />;
 }

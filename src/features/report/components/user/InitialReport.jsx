@@ -11,7 +11,6 @@ import {
     sendIntakeForm,
     sendInsuranceDetails,
     sendPainEvaluation,
-    sendDetailedDescription,
     sendImpact,
     sendHealthHistory,
 } from "../../reportAPI";
@@ -32,9 +31,8 @@ export default function InitialReport() {
                     sendIntakeForm(updated["1"]),
                     sendInsuranceDetails(updated["2"]),
                     sendPainEvaluation(updated["3"]),
-                    sendDetailedDescription(updated["4"]),
-                    sendImpact(updated["5"]),
-                    sendHealthHistory(updated["6"]),
+                    sendImpact(updated["4"]),
+                    sendHealthHistory(updated["5"]),
                 ]);
             } catch (err) {
                 console.error("Failed to submit reports", err);
