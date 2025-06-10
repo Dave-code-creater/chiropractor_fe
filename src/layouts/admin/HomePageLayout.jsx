@@ -3,7 +3,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 import { SiteHeader } from "@/components/site-header"
 
 
-export default function HomepageLayout() {
+export default function HomePageLayout() {
     return (
         <SidebarProvider>
             <SidebarInset>

@@ -1,11 +1,11 @@
-// src/layouts/HomepageLayout.jsx
+// src/layouts/HomePageLayout.jsx
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import Footer from "../Footer";
 import { Toaster } from "@/components/ui/sonner"
 
-export default function HomepageLayout() {
+export default function HomePageLayout() {
   return (
     <div className="flex flex-col min-h-screen">
 
