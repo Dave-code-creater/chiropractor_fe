@@ -50,6 +50,11 @@ const painFields = {
         { id: "shoulderBlades", label: "Shoulder Blades" },
     ],
 };
+import { RenderQuesFuncs,
+  RenderTextAreaQues,
+  RenderRadioQues,
+  RenderCheckboxQues,
+  RenderOtherQues }from "../../../../utils/renderQuesFuncs.jsx";
 
 export default function PainChartSection({ painMap, setPainMap }) {
     const objectHuman = {
@@ -130,232 +135,23 @@ export default function PainChartSection({ painMap, setPainMap }) {
 
     const newrenderQuestion = (question) => {
         const commonFieldsetClasses = "border rounded-md p-4 space-y-4";
-        return question.type === "group" ? (
-            <fieldset key={question.id} className={commonFieldsetClasses}>
-                <legend className="text-sm font-medium text-muted-foreground px-2 flex items-center gap-2">
-                    {question.label}
-                    {question.extra_info && (
-                        <HoverCard>
-                            <HoverCardTrigger asChild>
-                                <Info size={16} className="text-muted-foreground cursor-pointer" />
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-80 text-sm">
-                                {question.extra_info}
-                            </HoverCardContent>
-                        </HoverCard>
-                    )}
-                </legend>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {question.fields?.map((field) => {
-                        const value = formData[field.id] || "";
-                        return (
-                            <div key={field.id}>
-                                <div className="flex items-center gap-1">
-                                    <Label htmlFor={field.id}>{field.label}</Label>
-                                    {field.extra_info && (
-                                        <HoverCard>
-                                            <HoverCardTrigger asChild>
-                                                <Info size={14} className="text-muted-foreground cursor-pointer" />
-                                            </HoverCardTrigger>
-                                            <HoverCardContent className="w-72 text-sm">
-                                                {field.extra_info}
-                                            </HoverCardContent>
-                                        </HoverCard>
-                                    )}
-                                </div>
-                                {field.type === "radio" ? (
-                                    <Select
-                                        value={value}
-                                        onValueChange={(val) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                [field.id]: val,
-                                            }))
-                                        }
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder={`Select ${field.label}`} />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {field.options.map((opt) => (
-                                                <SelectItem key={opt} value={opt}>
-                                                    {opt}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                ) : (
-                                    <Input
-                                        id={field.id}
-                                        type={field.type === "number" ? "number" : "text"}
-                                        value={value}
-                                        onChange={(e) =>
-                                            setFormData((prev) => ({
-                                                ...prev,
-                                                [field.id]: e.target.value,
-                                            }))
-                                        }
-                                    />
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            </fieldset>
-        ) : question.type === "textarea" ? (
-            <fieldset key={question.id} className={commonFieldsetClasses}>
-                <legend className="text-sm font-medium text-muted-foreground px-2 flex items-center gap-2">
-                    {question.label}
-                    {question.extra_info && (
-                        <HoverCard>
-                            <HoverCardTrigger asChild>
-                                <Info size={16} className="text-muted-foreground cursor-pointer" />
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-80 text-sm">
-                                {question.extra_info}
-                            </HoverCardContent>
-                        </HoverCard>
-                    )}
-                </legend>
-                <div>
-                    <Label htmlFor={question.id}>{question.label}</Label>
-                    <textarea
-                        id={question.id}
-                        className="w-full border rounded px-3 py-2"
-                        rows={4}
-                        value={formData[question.id] || ""}
-                        onChange={(e) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                [question.id]: e.target.value,
-                            }))
-                        }
-                    />
-                </div>
-            </fieldset>
-        ) : question.type === "radio" ? (
-            <fieldset key={question.id} className={commonFieldsetClasses}>
-                <legend className="text-sm font-medium text-muted-foreground px-2 flex items-center gap-2">
-                    {question.label}
-                    {question.extra_info && (
-                        <HoverCard>
-                            <HoverCardTrigger asChild>
-                                <Info size={16} className="text-muted-foreground cursor-pointer" />
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-80 text-sm">
-                                {question.extra_info}
-                            </HoverCardContent>
-                        </HoverCard>
-                    )}
-                </legend>
-                <div>
-                    <Label>{question.label}</Label>
-                    <Select
-                        value={formData[question.id] || ""}
-                        onValueChange={(val) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                [question.id]: val,
-                            }))
-                        }
-                    >
-                        <SelectTrigger>
-                            <SelectValue placeholder={`Select ${question.label}`} />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {question.options.map((opt) => (
-                                <SelectItem key={opt} value={opt}>
-                                    {opt}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
-            </fieldset>
-        ) : question.type === "checkbox" ? (
-            <fieldset key={question.id} className={commonFieldsetClasses}>
-                <legend className="text-sm font-medium text-muted-foreground px-2 flex items-center gap-2">
-                    {question.label}
-                    {question.extra_info && (
-                        <HoverCard>
-                            <HoverCardTrigger asChild>
-                                <Info size={16} className="text-muted-foreground cursor-pointer" />
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-80 text-sm">
-                                {question.extra_info}
-                            </HoverCardContent>
-                        </HoverCard>
-                    )}
-                </legend>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-y-2 gap-x-4">
-                    {question.options.map((opt) => (
-                        <div key={opt} className="flex items-center text-lg">
-                            <Checkbox
-                                id={`${question.id}-${opt}`}
-                                checked={formData[question.id]?.includes(opt)}
-                                onCheckedChange={(checked) => {
-                                    setFormData((prev) => {
-                                        const currentValues = prev[question.id] || [];
-                                        if (checked) {
-                                            return {
-                                                ...prev,
-                                                [question.id]: [...currentValues, opt],
-                                            };
-                                        } else {
-                                            return {
-                                                ...prev,
-                                                [question.id]: currentValues.filter(
-                                                    (v) => v !== opt
-                                                ),
-                                            };
-                                        }
-                                    });
-                                }}
-                            />
-                            <Label htmlFor={`${question.id}-${opt}`} className="ml-2">
-                                {opt}
-                            </Label>
-                        </div>
-                    ))}
-                </div>
-            </fieldset>
-        ) : (
-            <fieldset key={question.id} className={commonFieldsetClasses}>
-                <legend className="text-sm font-medium text-muted-foreground px-2 flex items-center gap-2">
-                    {question.label}
-                    {question.extra_info && (
-                        <HoverCard>
-                            <HoverCardTrigger asChild>
-                                <Info size={16} className="text-muted-foreground cursor-pointer" />
-                            </HoverCardTrigger>
-                            <HoverCardContent className="w-80 text-sm">
-                                {question.extra_info}
-                            </HoverCardContent>
-                        </HoverCard>
-                    )}
-                </legend>
-                <div>
-                    <Label htmlFor={question.id}>{question.label}</Label>
-                    <Input
-                        id={question.id}
-                        type={question.type === "number" ? "number" : "text"}
-                        value={formData[question.id] || ""}
-                        onChange={(e) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                [question.id]: e.target.value,
-                            }))
-                        }
-                    />
-                </div>
-            </fieldset>
-        );
+        if (question.type === "group") {
+            return <RenderQuesFuncs question={question} formData={formData} setFormData={setFormData} commonFieldsetClasses={commonFieldsetClasses} />;
+        } else if (question.type === "textarea") {
+            return <RenderTextAreaQues question={question} formData={formData} setFormData={setFormData} commonFieldsetClasses={commonFieldsetClasses} />;
+        } else if (question.type === "radio") {
+            return <RenderRadioQues question={question} formData={formData} setFormData={setFormData} commonFieldsetClasses={commonFieldsetClasses} />;
+        } else if (question.type === "checkbox") {
+            return <RenderCheckboxQues question={question} formData={formData} setFormData={setFormData} commonFieldsetClasses={commonFieldsetClasses} />;
+        } else {
+            return <RenderOtherQues question={question} formData={formData} setFormData={setFormData} commonFieldsetClasses={commonFieldsetClasses} />;
+        }
     };
 
     return (
         <div className="flex justify-center items-start gap-4 w-full">
             {/* Left Panel */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 mt-20">
                 {painFields.left.map((field) => (
                     <div key={field.id} className="text-center">
                         <Label className="font-semibold text-sm">{field.label}</Label>
@@ -433,7 +229,7 @@ export default function PainChartSection({ painMap, setPainMap }) {
                 </div>
             </div>
             {/* Right Panel */}
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-6 mt-20">
                 {painFields.right.map((field) => (
                     <div key={field.id} className="text-center">
                         <Label className="font-semibold text-sm">{field.label}</Label>

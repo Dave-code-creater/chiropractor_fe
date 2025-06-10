@@ -102,11 +102,6 @@ const PATIENT_INFO = [
                 label: "Spouse Information",
                 type: "group",
                 fields: [
-                    { id: "spouseFirst", label: "First", type: "text", placeholder: "Jane" },
-                    { id: "spouseMiddle", label: "Middle", type: "text", placeholder: "B." },
-                    { id: "spouseLast", label: "Last", type: "text", placeholder: "Smith" },
-                    { id: "spouseSSN", label: "SSN", type: "text", placeholder: "987-65-4321" },
-                    { id: "spouseEmployer", label: "Employed By", type: "text", placeholder: "XYZ Inc" },
                     {
                         id: "spousePhone",
                         label: "Phone",
