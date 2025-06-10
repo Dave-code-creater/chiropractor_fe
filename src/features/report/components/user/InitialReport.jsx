@@ -26,6 +26,7 @@ export default function InitialReport() {
         if (currentIndex < INITIAL_REPORT_SECTIONS.length - 1) {
             setCurrentIndex((i) => i + 1);
         } else {
+            console.log("All collected responses before sending:", updated);
             try {
                 await Promise.all([
                     sendIntakeForm(updated["1"]),

@@ -3,6 +3,7 @@ import { sendIntakeForm } from '../../reportAPI';
 
 export default function IntakeForm() {
     const handleSubmit = async (data) => {
+        console.log('Submitting intake form data:', data);
         await sendIntakeForm(data);
     };
 
