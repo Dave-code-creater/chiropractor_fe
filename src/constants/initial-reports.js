@@ -8,20 +8,23 @@ const PATIENT_INFO = [
                 label: "Patient Name",
                 type: "group",
                 fields: [
-                    { id: "firstName", label: "First", type: "text" },
-                    { id: "middleName", label: "Middle", type: "text" },
-                    { id: "lastName", label: "Last", type: "text" }
+                    { id: "firstName", label: "First", type: "text", placeholder: "John" },
+                    { id: "middleName", label: "Middle", type: "text", placeholder: "A." },
+                    { id: "lastName", label: "Last", type: "text", placeholder: "Doe" }
                 ]
             },
-            { id: "ssn", label: "SSN", type: "text" },
+            { id: "ssn", label: "SSN", type: "text", placeholder: "123-45-6789" },
             {
                 id: "dobGender",
                 label: "Date of Birth, Age & Gender",
                 type: "group",
                 fields: [
-                    { id: "dobMonth", label: "Month", type: "number" },
-                    { id: "dobDay", label: "Day", type: "number" },
-                    { id: "dobYear", label: "Year", type: "number" },
+                    {
+                        id: "dob",
+                        label: "Date of Birth",
+                        type: "date",
+                        extra_info: "Select your birth date"
+                    },
                     {
                         id: "age",
                         label: "Age",
@@ -51,8 +54,8 @@ const PATIENT_INFO = [
                         extra_info: "Choose your current marital status."
                     },
                     {
-                        id: "nationality",
-                        label: "Nationality",
+                        id: "race",
+                        label: "Race/Ethnicity",
                         type: "radio",
                         options: ["Asian", "Black", "Caucasian", "Hispanic", "Other"],
                         extra_info: "Select the ethnicity or race you most closely identify with."
@@ -64,14 +67,15 @@ const PATIENT_INFO = [
                 label: "Home Address",
                 type: "group",
                 fields: [
-                    { id: "street", label: "Street", type: "text" },
-                    { id: "city", label: "City", type: "text" },
-                    { id: "state", label: "State", type: "text" },
-                    { id: "zip", label: "Zip", type: "text" },
+                    { id: "street", label: "Street", type: "text", placeholder: "123 Main St" },
+                    { id: "city", label: "City", type: "text", placeholder: "Toronto" },
+                    { id: "state", label: "State", type: "text", placeholder: "ON" },
+                    { id: "zip", label: "Zip", type: "text", placeholder: "M4B 1B3" },
                     {
                         id: "homePhone",
                         label: "Home Phone",
                         type: "tel",
+                        placeholder: "(123) 456-7890",
                         extra_info: "Include area code. Example: (123) 456-7890."
                     }
                 ]
@@ -81,13 +85,14 @@ const PATIENT_INFO = [
                 label: "Employment & Occupation",
                 type: "group",
                 fields: [
-                    { id: "employer", label: "Patient Employed By", type: "text" },
-                    { id: "occupation", label: "Occupation", type: "text" },
-                    { id: "workAddress", label: "Work Address", type: "text" },
+                    { id: "employer", label: "Patient Employed By", type: "text", placeholder: "ABC Corp" },
+                    { id: "occupation", label: "Occupation", type: "text", placeholder: "Software Engineer" },
+                    { id: "workAddress", label: "Work Address", type: "text", placeholder: "456 Business Rd" },
                     {
                         id: "workPhone",
                         label: "Work Phone",
                         type: "tel",
+                        placeholder: "(234) 567-8901",
                         extra_info: "Include area code. If none, leave blank."
                     }
                 ]
@@ -97,16 +102,13 @@ const PATIENT_INFO = [
                 label: "Spouse Information",
                 type: "group",
                 fields: [
-                    { id: "spouseFirst", label: "First", type: "text" },
-                    { id: "spouseMiddle", label: "Middle", type: "text" },
-                    { id: "spouseLast", label: "Last", type: "text" },
-                    { id: "spouseEmployer", label: "Employed By", type: "text" },
                     {
                         id: "spousePhone",
                         label: "Phone",
                         type: "tel",
+                        placeholder: "(345) 678-9012",
                         extra_info: "Include area code if known."
-                    },
+                    }
                 ]
             },
             {
@@ -118,12 +120,14 @@ const PATIENT_INFO = [
                         id: "contact1",
                         label: "Contact Person Name",
                         type: "text",
+                        placeholder: "John Doe",
                         extra_info: "Include full name of the contact person."
                     },
                     {
                         id: "contact1Phone",
                         label: "Phone",
                         type: "tel",
+                        placeholder: "(456) 789-0123",
                         extra_info: "Include area code. Example: (123) 456-7890."
                     },
                     {
@@ -132,8 +136,8 @@ const PATIENT_INFO = [
                         type: "radio",
                         options: ["Spouse", "Parent", "Sibling", "Child", "Friend", "Other"],
                         extra_info: "Select the relationship of the contact person to you."
-
-                    }],
+                    }
+                ],
                 extra_info: "Include full name, relationship, and phone number. You may list more than one contact."
             }
         ]
@@ -167,12 +171,14 @@ const PATIENT_INFO = [
                         id: "accidentDate",
                         label: "Date of Accident / Beginning of Illness",
                         type: "text",
+                        placeholder: "08/15/2025",
                         extra_info: "Use MM/DD/YYYY format."
                     },
                     {
                         id: "accidentTime",
                         label: "Time",
                         type: "text",
+                        placeholder: "14:30",
                         extra_info: "Include exact or approximate time of the event."
                     },
                     {
@@ -185,6 +191,7 @@ const PATIENT_INFO = [
                         id: "accidentLocation",
                         label: "Location of Accident",
                         type: "text",
+                        placeholder: "Downtown Toronto",
                         extra_info: "Provide the city, address, or general location where the accident occurred."
                     },
                     {
@@ -204,8 +211,7 @@ const PATIENT_INFO = [
                         id: "accidentAwareness",
                         label: "Were you aware of the accident at the time it occurred?",
                         type: "radio",
-                        options: ["Yes", "No"],
-
+                        options: ["Yes", "No"]
                     },
                     {
                         id: "acciddentAppearanceOfAmbulance",
@@ -217,19 +223,19 @@ const PATIENT_INFO = [
                         id: "AirbagDeployment",
                         label: "Did the airbag deploy?",
                         type: "radio",
-                        options: ["Yes", "No"],
+                        options: ["Yes", "No"]
                     },
                     {
                         id: "seatbeltUse",
                         label: "Were you wearing a seatbelt?",
                         type: "radio",
-                        options: ["Yes", "No"],
+                        options: ["Yes", "No"]
                     },
                     {
                         id: "PoliceAppearance",
                         label: "Did the police appear at the scene?",
                         type: "radio",
-                        options: ["Yes", "No"],
+                        options: ["Yes", "No"]
                     },
                     {
                         id: "anyPastAccidents",
@@ -254,6 +260,7 @@ const PATIENT_INFO = [
                         id: "lostWorkDates",
                         label: "Dates",
                         type: "text",
+                        placeholder: "Jan 1–Jan 10",
                         extra_info: "Indicate the dates you missed work, if applicable. Example: Jan 1–Jan 10."
                     }
                 ]
@@ -273,7 +280,8 @@ const PATIENT_INFO = [
                     {
                         id: "childrenInfo",
                         label: "Number & Ages of Children",
-                        type: "text"
+                        type: "text",
+                        placeholder: "2 (ages 5, 3)"
                     }
                 ]
             },
@@ -314,8 +322,9 @@ const PATIENT_INFO = [
                 id: "painChart",
                 label: "Where do you feel pain?",
                 type: "image-map",
-                extra_info: "Click on the parts of the body that hurt. You can select multiple areas by clicking them one by one."
-            },
+                extra_info:
+                    "Click on the parts of the body that hurt. You can select multiple areas by clicking them one by one."
+            }
         ]
     },
     {
@@ -324,9 +333,11 @@ const PATIENT_INFO = [
         questions: [
             {
                 id: "symptomDetails",
-                label: "Please describe your symptoms, history, and onset as best you can.",
+                label:
+                    "Please describe your symptoms, history, and onset as best you can.",
                 type: "textarea",
-                extra_info: "Include when your symptoms began, how they have changed, and any previous treatments."
+                extra_info:
+                    "Include when your symptoms began, how they have changed, and any previous treatments."
             }
         ]
     },
@@ -336,10 +347,24 @@ const PATIENT_INFO = [
         questions: [
             {
                 id: "workActivities",
-                label: "Please describe your work activities and how your condition affects them.",
+                label:
+                    "Please describe your work activities and how your condition affects them.",
                 type: "checkbox",
-                options: ["Standing", "Sitting", "Walking", "Driving", "Typing", "Lifting", "Bending", "Twisting", "Stooping", "Operating Equipment", "Other"],
-                extra_info: "Select the activities that are part of your work and are currently affected by your condition."
+                options: [
+                    "Standing",
+                    "Sitting",
+                    "Walking",
+                    "Driving",
+                    "Typing",
+                    "Lifting",
+                    "Bending",
+                    "Twisting",
+                    "Stooping",
+                    "Operating Equipment",
+                    "Other"
+                ],
+                extra_info:
+                    "Select the activities that are part of your work and are currently affected by your condition."
             }
         ]
     },
@@ -356,7 +381,10 @@ const PATIENT_INFO = [
                         id: "hasMedicalCondition",
                         label: "Do you have any past medical conditions?",
                         type: "radio",
-                        options: ["No major medical history", "Yes, I do have a past medical condition(s)"]
+                        options: [
+                            "No major medical history",
+                            "Yes, I do have a past medical condition(s)"
+                        ]
                     },
                     {
                         id: "medicalConditionDetails",
@@ -374,7 +402,10 @@ const PATIENT_INFO = [
                         id: "hasSurgicalHistory",
                         label: "Do you have any past surgical history?",
                         type: "radio",
-                        options: ["No major surgical history", "Yes, I do have a past surgical history"]
+                        options: [
+                            "No major surgical history",
+                            "Yes, I do have a past surgical history"
+                        ]
                     },
                     {
                         id: "surgicalHistoryDetails",
@@ -392,7 +423,10 @@ const PATIENT_INFO = [
                         id: "isTakingMedication",
                         label: "Are you currently taking any medication?",
                         type: "radio",
-                        options: ["Not taking any medications", "Yes, I am currently taking a medication"]
+                        options: [
+                            "Not taking any medications",
+                            "Yes, I am currently taking a medication"
+                        ]
                     },
                     {
                         id: "medicationNames",
@@ -405,7 +439,13 @@ const PATIENT_INFO = [
                 id: "familyHistory",
                 label: "Family History",
                 type: "custom-table",
-                columns: ["Relative", "Age if Living", "Age at Death", "Cause of Death", "Illnesses"],
+                columns: [
+                    "Relative",
+                    "Age if Living",
+                    "Age at Death",
+                    "Cause of Death",
+                    "Illnesses"
+                ],
                 rows: ["Father", "Mother", "Brother(s)", "Sister(s)"],
                 extra_info: "Please fill in as much as you can about your immediate family."
             },
@@ -414,41 +454,41 @@ const PATIENT_INFO = [
                 label: "Social History",
                 type: "group",
                 fields: [
-                    { id: "currentWeight", label: "Current Weight", type: "text" },
-                    { id: "recentWeightChange", label: "Have you recently lost or gained weight?", type: "text" },
+                    { id: "currentWeight", label: "Current Weight", type: "text", placeholder: "70 kg" },
+                    { id: "recentWeightChange", label: "Weight Change", type: "text", placeholder: "Lost 2 kg" },
                     {
                         id: "mentalWork",
                         label: "Mental work level",
                         type: "radio",
                         options: ["Heavy", "Moderate", "Light"]
                     },
-                    { id: "mentalWorkHours", label: "Mental work hours/day", type: "text" },
+                    { id: "mentalWorkHours", label: "Mental work hours/day", type: "text", placeholder: "8" },
                     {
                         id: "physicalWork",
                         label: "Physical work level",
                         type: "radio",
                         options: ["Heavy", "Moderate", "Light"]
                     },
-                    { id: "physicalWorkHours", label: "Physical work hours/day", type: "text" },
+                    { id: "physicalWorkHours", label: "Physical work hours/day", type: "text", placeholder: "4" },
                     {
                         id: "exercise",
                         label: "Exercise level",
                         type: "radio",
                         options: ["Heavy", "Moderate", "Light"]
                     },
-                    { id: "exerciseHours", label: "Exercise hours/day", type: "text" },
+                    { id: "exerciseHours", label: "Exercise hours/day", type: "text", placeholder: "1" },
                     {
                         id: "smokingStatus",
                         label: "Smoking status",
                         type: "radio",
                         options: ["Current", "Previous"]
                     },
-                    { id: "packsPerDay", label: "Packs per day", type: "text" },
-                    { id: "smokingYears", label: "Number of years smoking", type: "text" },
-                    { id: "beerPerWeek", label: "Beer per week", type: "text" },
-                    { id: "liquorPerWeek", label: "Liquor per week", type: "text" },
-                    { id: "winePerWeek", label: "Wine per week", type: "text" },
-                    { id: "alcoholYears", label: "Number of years drinking", type: "text" }
+                    { id: "packsPerDay", label: "Packs per day", type: "text", placeholder: "0" },
+                    { id: "smokingYears", label: "Years smoking", type: "text", placeholder: "0" },
+                    { id: "beerPerWeek", label: "Beer per week", type: "text", placeholder: "3" },
+                    { id: "liquorPerWeek", label: "Liquor per week", type: "text", placeholder: "1" },
+                    { id: "winePerWeek", label: "Wine per week", type: "text", placeholder: "0" },
+                    { id: "alcoholYears", label: "Years drinking", type: "text", placeholder: "5" }
                 ]
             },
             {
@@ -468,8 +508,8 @@ const PATIENT_INFO = [
                         type: "radio",
                         options: ["Full Time", "Part Time"]
                     },
-                    { id: "workHoursPerDay", label: "Hours per day", type: "text" },
-                    { id: "workDaysPerWeek", label: "Days per week", type: "text" },
+                    { id: "workHoursPerDay", label: "Hours per day", type: "text", placeholder: "8" },
+                    { id: "workDaysPerWeek", label: "Days per week", type: "text", placeholder: "5" },
                     {
                         id: "jobDescription",
                         label: "Describe your present job requirements",
@@ -486,6 +526,7 @@ const PATIENT_INFO = [
                         id: "lastMenstrualPeriod",
                         label: "When was your last menstrual period?",
                         type: "text",
+                        placeholder: "4 weeks ago",
                         extra_info: "Weeks ago"
                     },
                     {
@@ -497,7 +538,8 @@ const PATIENT_INFO = [
                     {
                         id: "weeksPregnant",
                         label: "If yes, number of weeks",
-                        type: "text"
+                        type: "text",
+                        placeholder: "12"
                     }
                 ]
             }

@@ -1,14 +1,45 @@
-// Setting.jsx
-import React, { useState } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Card } from "@/components/ui/card";
+import { ArrowLeft, UserCog, Paintbrush, Bell, Monitor } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import Account from "./Account";
 import Appearance from "./Appearance";
 import Notifications from "./Notifications";
 import Display from "./Display";
-// …
+
+const tabs = [
+  { id: "account", label: "Account", icon: UserCog },
+  { id: "appearance", label: "Appearance", icon: Paintbrush },
+  { id: "notifications", label: "Notifications", icon: Bell },
+  { id: "display", label: "Display", icon: Monitor },
+];
+
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < breakpoint);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, [breakpoint]);
+
+  return isMobile;
+}
 
 export default function Setting() {
-  const [tab, setTab] = useState();
+  const isMobile = useIsMobile();
+  const [tab, setTab] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.innerWidth < 768 ? null : "account";
+    }
+    return "account";
+  });
 
   const renderTab = () => {
     switch (tab) {
@@ -18,60 +49,56 @@ export default function Setting() {
         return <Appearance />;
       case "notifications":
         return <Notifications />;
-      default:
+      case "display":
         return <Display />;
-
+      default:
+        return null;
     }
   };
 
   return (
-    <div className="hidden mt-8 space-y-6 p-8 pb-16 md:block">
-      <div className="space-y-0.5">
-        <h2 className="text-2xl font-bold tracking-tight ">Settings</h2>
-        <p className="text-muted-foreground">
-          Manage your account settings and set e-mail preferences.
-        </p>
-      </div>
-      {/* <!-- Seperator --> */}
-      <div className="shrink-0 bg-border h-[1px]"></div>
+    <div className="flex flex-col md:flex-row h-screen bg-background">
+      {/* Sidebar */}
       <div
-        className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0"
+        className={cn(
+          "w-full md:w-1/3 lg:w-1/4 max-w-sm p-4",
+          tab && isMobile && "hidden"
+        )}
       >
-        <nav className="flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1 mb-10">
-          <button
-            onClick={() => setTab("account")}
-            className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "account" ? "bg-accent text-accent-foreground" : ""
-              }`}
-          >
-            Account
-          </button>
-
-          <button
-            onClick={() => setTab("appearance")}
-            className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "appearance" ? "bg-accent text-accent-foreground" : ""
-              }`}
-          >
-            Appearance
-          </button>
-
-          <button
-            onClick={() => setTab("notifications")}
-            className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "notifications" ? "bg-accent text-accent-foreground" : ""
-              }`}
-          >
-            Notifications
-          </button>
-
-          <button
-            onClick={() => setTab("display")}
-            className={`inline-flex items-center rounded-md text-md font-medium h-9 px-4 justify-start focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none hover:text-accent-foreground focus:text-gray-900 focus:bg-gray-200 ${tab === "display" ? "bg-accent text-accent-foreground" : ""
-              }`}
-          >
-            Display
-          </button>
-        </nav>
-        <div className="flex-1">{renderTab()}</div>
+        <h2 className="text-2xl font-semibold mb-4 px-1">Settings</h2>
+        <ScrollArea className="space-y-3">
+          {tabs.map(({ id, label, icon: Icon }) => (
+            <Card
+              key={id}
+              className={cn(
+                "cursor-pointer flex items-center gap-4 p-4 hover:bg-muted transition my-4",
+                tab === id && "border-primary bg-muted"
+              )}
+              onClick={() => setTab(id)}
+            >
+              <Icon className="w-5 h-5 text-muted-foreground" />
+              <span className="text-sm font-medium">{label}</span>
+            </Card>
+          ))}
+        </ScrollArea>
       </div>
+
+      {/* Main Content */}
+      {tab && (
+        <div className="flex-1 flex flex-col bg-white border-l md:border-t-0 border-t">
+          <div className="flex items-center p-4 border-b gap-3">
+            {isMobile && (
+              <Button variant="ghost" size="icon" onClick={() => setTab(null)}>
+                <ArrowLeft className="h-5 w-5" />
+              </Button>
+            )}
+            <h2 className="text-lg font-semibold capitalize">{tab}</h2>
+          </div>
+          <div className="flex-1 overflow-auto p-4 pb-12">
+            <ScrollArea className="h-full">{renderTab()}</ScrollArea>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,12 @@
-import React, { useState } from "react";
+"use client";
+
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function Notifications() {
     const [reminders, setReminders] = useState({
@@ -6,7 +14,6 @@ export default function Notifications() {
         SMS: false,
         "Phone Call": false,
     });
-
     const [reminderTimes, setReminderTimes] = useState(["08:00", "18:00"]);
     const [followUp, setFollowUp] = useState("1day");
     const [leadTime, setLeadTime] = useState("24h");
@@ -33,131 +40,101 @@ export default function Notifications() {
         setReminderTimes(updated);
     };
 
-    const selectedReminders = Object.keys(reminders).filter((key) => reminders[key]);
-
     return (
         <div className="w-full space-y-8">
-            <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-xl p-8 border border-gray-200">
-                <div className="mb-6">
-                    <h2 className="text-xl font-semibold text-gray-900">Notifications</h2>
-                    <p className="text-sm text-gray-500 mt-1">
+            <Card className="max-w-4xl mx-auto">
+                <CardHeader>
+                    <CardTitle className="text-xl">Notifications</CardTitle>
+                    <p className="text-sm text-muted-foreground">
                         Configure how you want to receive appointment updates and health alerts.
                     </p>
-                </div>
+                </CardHeader>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Communication Methods */}
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Reminder Channels */}
                     <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-2">Appointment Reminders</h3>
-                        <div className="space-y-2">
-                            {["Email", "SMS", "Phone Call"].map((label) => (
-                                <label key={label} className="flex items-center space-x-2 cursor-pointer">
-                                    <input
-                                        type="checkbox"
-                                        checked={reminders[label]}
-                                        onChange={() => handleReminderChange(label)}
-                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                                    />
-                                    <span className="text-sm text-gray-700">{label}</span>
-                                </label>
-                            ))}
-                        </div>
+                        <Label className="mb-4 block">Appointment Reminders</Label>
+                        {Object.keys(reminders).map((label) => (
+                            <div key={label} className="flex items-center space-x-2 mb-4">
+                                <Checkbox
+                                    id={label}
+                                    checked={reminders[label]}
+                                    onCheckedChange={() => handleReminderChange(label)}
+                                    className="h-4 w-4 "
+                                />
+                                <Label htmlFor={label}>{label}</Label>
+                            </div>
+                        ))}
                     </div>
 
                     {/* Reminder Times */}
                     <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-2">Reminder Times</h3>
+                        <Label className="mb-2 block">Reminder Times</Label>
                         <div className="space-y-2">
                             {reminderTimes.map((time, index) => (
                                 <div key={index} className="flex items-center gap-2">
-                                    <input
+                                    <Input
                                         type="time"
                                         value={time}
                                         onChange={(e) => handleTimeChange(index, e.target.value)}
-                                        className="px-3 py-1 border rounded-lg text-sm"
+                                        className="w-full"
                                     />
-                                    <button
+                                    <Button
+                                        variant="destructive"
                                         type="button"
+                                        size="sm"
                                         onClick={() => removeReminderTime(index)}
-                                        className="text-sm text-red-500 hover:underline"
                                     >
                                         Remove
-                                    </button>
+                                    </Button>
                                 </div>
                             ))}
-                            <button
+                            <Button
                                 type="button"
+                                variant="outline"
+                                size="sm"
                                 onClick={addReminderTime}
-                                className="text-indigo-600 hover:underline text-sm"
                             >
                                 + Add Time
-                            </button>
+                            </Button>
                         </div>
                     </div>
 
-                    {/* Follow-Up */}
+                    {/* Follow-up */}
                     <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-2">Follow-Up Check-Ins</h3>
-                        <div className="flex gap-4">
-                            {["1day", "3days", "none"].map((value) => (
-                                <label key={value} className="flex items-center space-x-2 cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="followUp"
-                                        value={value}
-                                        checked={followUp === value}
-                                        onChange={() => setFollowUp(value)}
-                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                                    />
-                                    <span className="text-sm text-gray-700">
-                                        {value === "1day" ? "1 Day" : value === "3days" ? "3 Days" : "None"}
-                                    </span>
-                                </label>
+                        <Label className="mb-2 block">Follow-Up Check-Ins</Label>
+                        <RadioGroup value={followUp} onValueChange={setFollowUp}>
+                            {["1day", "3days", "none"].map((val) => (
+                                <div key={val} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={val} id={`follow-${val}`} />
+                                    <Label htmlFor={`follow-${val}`}>
+                                        {val === "1day" ? "1 Day" : val === "3days" ? "3 Days" : "None"}
+                                    </Label>
+                                </div>
                             ))}
-                        </div>
+                        </RadioGroup>
                     </div>
 
                     {/* Lead Time */}
                     <div>
-                        <h3 className="text-sm font-medium text-gray-700 mb-2">Reminder Lead Time</h3>
-                        <div className="flex gap-6">
-                            {["24h", "2h", "30m"].map((value) => (
-                                <label key={value} className="flex items-center space-x-2 cursor-pointer">
-                                    <input
-                                        type="radio"
-                                        name="leadTime"
-                                        value={value}
-                                        checked={leadTime === value}
-                                        onChange={() => setLeadTime(value)}
-                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
-                                    />
-                                    <span className="text-sm text-gray-700">
-                                        {value === "24h" ? "24 hours" : value === "2h" ? "2 hours" : "30 minutes"}
-                                    </span>
-                                </label>
+                        <Label className="mb-2 block">Reminder Lead Time</Label>
+                        <RadioGroup value={leadTime} onValueChange={setLeadTime}>
+                            {["24h", "2h", "30m"].map((val) => (
+                                <div key={val} className="flex items-center space-x-2">
+                                    <RadioGroupItem value={val} id={`lead-${val}`} />
+                                    <Label htmlFor={`lead-${val}`}>
+                                        {val === "24h" ? "24 Hours" : val === "2h" ? "2 Hours" : "30 Minutes"}
+                                    </Label>
+                                </div>
                             ))}
-                        </div>
+                        </RadioGroup>
                     </div>
-                </div>
+                </CardContent>
 
-                {/* Summary */}
-                <div className="mt-8 text-sm text-gray-600 space-y-1">
-                    <p>
-                        <span className="font-medium text-gray-800">Reminders via:</span>{" "}
-                        {selectedReminders.length > 0 ? selectedReminders.join(", ") : "None"}
-                    </p>
-                    <p>
-                        <span className="font-medium text-gray-800">Reminder Times:</span>{" "}
-                        {reminderTimes.length > 0 ? reminderTimes.join(", ") : "None"}
-                    </p>
-                    <p>
-                        <span className="font-medium text-gray-800">Follow-Up:</span> {followUp}
-                    </p>
-                    <p>
-                        <span className="font-medium text-gray-800">Lead Time:</span> {leadTime}
-                    </p>
+                <div className="px-6 pb-6">
+                    <Button onClick={() => alert("Notifications settings saved!")}>Save Changes</Button>
                 </div>
-            </div>
+            </Card>
         </div>
     );
 }
