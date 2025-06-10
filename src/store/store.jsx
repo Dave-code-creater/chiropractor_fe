@@ -1,7 +1,7 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-
+import formErrorReducer from '../utils/formerrorSlice'
 import authReducer from "../features/auth/authSlice";
 import { apiSlice } from "../services/api";
 
@@ -14,6 +14,8 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authReducer,
   [apiSlice.reducerPath]: apiSlice.reducer,
+  formError: formErrorReducer,
+  
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -24,6 +26,7 @@ export const store = configureStore({
     getDefaultMiddleware({
       serializableCheck: false,
     }).concat(apiSlice.middleware),
+  
 });
 
 export const persistor = persistStore(store);

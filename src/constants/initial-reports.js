@@ -100,7 +100,6 @@ const PATIENT_INFO = [
                     { id: "spouseFirst", label: "First", type: "text" },
                     { id: "spouseMiddle", label: "Middle", type: "text" },
                     { id: "spouseLast", label: "Last", type: "text" },
-                    { id: "spouseSSN", label: "SSN", type: "text" },
                     { id: "spouseEmployer", label: "Employed By", type: "text" },
                     {
                         id: "spousePhone",

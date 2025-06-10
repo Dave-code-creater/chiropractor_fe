@@ -1,18 +1,23 @@
 import { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector,useDispatch } from "react-redux";
 import { useRegisterMutation } from "../../../services/api";
 import { useNavigate } from "react-router-dom";
+import { renderPhoneNumber, renderGmailExprs, renderPwRegister } from "../../../utils/renderUtilsFunc";
+import { setEmailError, clearEmailError, setPasswordError, clearPasswordError, setConfirmpassword, clearConfirmPwError, } from "../../../utils/formerrorSlice";
 
 export default function Register() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { user, isAuthenticated } = useSelector((state) => state.auth);
-
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const errorEmail = useSelector(state => state.formError.email)
+    const pwError = useSelector(state => state.formError.password)
+    const confirmpwError = useSelector(state => state.formError.confirmPassword)
 
     // RTK Query mutation hook
     const [registerMutation, { isLoading, error: registerError }] = useRegisterMutation();
@@ -27,6 +32,36 @@ export default function Register() {
             }
         }
     }, [isAuthenticated, navigate, user]);
+
+    const handleEmailBlur = () => {
+        try {
+            const good = renderGmailExprs(email)
+            dispatch(clearEmailError(good))
+        } catch(err){
+            dispatch(setEmailError(err.message));
+        }
+    }
+    
+    const handlePwBlur = () => {
+        try {
+            const good = renderPwRegister(password)
+            dispatch(clearPasswordError(good))
+        } catch (err){
+            dispatch(setPasswordError(err.message))
+        }
+    }
+
+    const handleConfirmPwBlur = () => {
+        if (confirmPassword !== password) {
+            dispatch(setConfirmpassword('Passwords do not match'));
+        } else {
+            dispatch(clearConfirmPwError());
+            }
+    }
+    const handlePhoneBlur = () => {
+        const formatted = renderPhoneNumber(phone);
+        setPhone(formatted)
+    }
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -47,7 +82,7 @@ export default function Register() {
             // Validation or network errors will be shown below
         }
     };
-
+    console.log(registerError)
     return (
         <section>
             <div className="flex justify-center items-center">
@@ -60,7 +95,7 @@ export default function Register() {
                         Let’s get you all set up so you can start your journey with us.
                     </p>
 
-                    <form onSubmit={handleRegister} className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <form noValidate onSubmit={handleRegister} className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
                             <label htmlFor="firstName" className="text-sm block mb-1">
                                 First Name
@@ -100,6 +135,7 @@ export default function Register() {
                                 id="phone"
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
+                                onBlur = {handlePhoneBlur}
                                 placeholder="123-456-7890"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
@@ -115,10 +151,12 @@ export default function Register() {
                                 id="email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
+                                onBlur = {handleEmailBlur}
                                 placeholder="you@example.com"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />
+                            {errorEmail && <p style={{ color: 'red' }}>{errorEmail}</p>}
                         </div>
 
                         <div>
@@ -130,10 +168,12 @@ export default function Register() {
                                 id="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
+                                onBlur = {handlePwBlur}
                                 placeholder="••••••••"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />
+                            {pwError && <p className="text-red-500">{pwError}</p>}
                         </div>
 
                         <div>
@@ -145,10 +185,12 @@ export default function Register() {
                                 id="confirmPassword"
                                 value={confirmPassword}
                                 onChange={(e) => setConfirmPassword(e.target.value)}
+                                onBlur = {handleConfirmPwBlur}
                                 placeholder="••••••••"
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />
+                            {confirmpwError && <p className="text-red-500">{confirmpwError}</p>}
                         </div>
 
                         <div className="col-span-1 sm:col-span-2">
@@ -164,10 +206,12 @@ export default function Register() {
                         {registerError && (
                             <p className="text-sm text-red-600">
                                 {registerError.data?.message || registerError.error || "Login failed"}
+                                
                             </p>
                         )}
+                        
                     </form>
-
+                    
                     <p className="mt-6 text-center text-sm text-gray-600">
                         Already have an account?{" "}
                         <a
