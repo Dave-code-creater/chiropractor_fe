@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import MainLayout from '../layouts/DefaultLayout.jsx';
+
 import {
     FAQ_QUESTION_GENERAL,
     FAQ_TYPES_QUESTION,
@@ -15,11 +15,11 @@ export default function FAQ() {
 
     function getActiveFAQs() {
         switch (activeType) {
-            case 'general': return FAQ_QUESTION_GENERAL;
-            case 'technical': return FAQ_QUESTION_TECHNICAL;
-            case 'account': return FAQ_QUESTION_ACCOUNT;
-            case 'privacy': return FAQ_QUESTION_PRIVACY;
-            case 'other': return FAQ_QUESTION_OTHER;
+            case 'General': return FAQ_QUESTION_GENERAL;
+            case 'Technical': return FAQ_QUESTION_TECHNICAL;
+            case 'Account': return FAQ_QUESTION_ACCOUNT;
+            case 'Privacy': return FAQ_QUESTION_PRIVACY;
+            case 'Other': return FAQ_QUESTION_OTHER;
             default: return [];
         }
     }
