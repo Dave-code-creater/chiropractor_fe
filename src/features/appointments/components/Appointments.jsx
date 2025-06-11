@@ -3,6 +3,16 @@ import React, { useState } from 'react';
 function Appointments() {
     const times = ["09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"];
     const timesSat = ["10:00", "11:00", "12:00", "13:00", "14:00"];
+    const pastAppointments = [
+        {
+            id: 1,
+            doctor: 'Dr John Doe',
+            date: '2024-05-30',
+            time: '10:00',
+        },
+    ];
+
+    const isNewUser = pastAppointments.length === 0;
     const [selectedDate, setSelectedDate] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -29,9 +39,22 @@ function Appointments() {
             <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 bg-white shadow-xl rounded-2xl overflow-hidden">
 
                 {/* Left: Appointments form */}
-                <div className="p-10">
-                    <h1 className="text-4xl font-bold text-indigo-800 mb-4">Book an Appointment</h1>
-                    <p className="text-gray-600 mb-8">Schedule a session with our expert chiropractors</p>
+                <div className="p-10 space-y-8">
+                    <div>
+                        <h2 className="text-2xl font-bold text-indigo-800 mb-4">Past Appointment</h2>
+                        {isNewUser ? (
+                            <p className="text-gray-600">You do not have any past appointments.</p>
+                        ) : (
+                            <div className="border rounded-lg p-4 space-y-1 text-gray-700">
+                                <p><strong>Date:</strong> {pastAppointments[0].date}</p>
+                                <p><strong>Time:</strong> {pastAppointments[0].time}</p>
+                                <p><strong>Doctor:</strong> {pastAppointments[0].doctor}</p>
+                            </div>
+                        )}
+                    </div>
+                    <div>
+                        <h1 className="text-4xl font-bold text-indigo-800 mb-4">Book an Appointment</h1>
+                        <p className="text-gray-600 mb-8">Schedule a session with our expert chiropractors</p>
 
                     {/* Service Type */}
                     <div className="mb-6">
