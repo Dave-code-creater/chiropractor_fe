@@ -173,7 +173,7 @@ export default function PainChartSection({ painMap, setPainMap }) {
                                 </Button>
                             </DialogTrigger>
 
-                            <DialogContent className="max-w-2xl w-full bg-white rounded-lg shadow-lg">
+                            <DialogContent className="max-w-2xl w-full bg-card rounded-lg shadow-lg">
                                 <DialogHeader>
                                     <DialogTitle>Details your {field.label}</DialogTitle>
                                     <DialogDescription asChild>

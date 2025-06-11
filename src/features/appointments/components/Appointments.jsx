@@ -25,17 +25,17 @@ function Appointments() {
     };
 
     return (
-        <div className="min-h-screen  to-indigo-100 mt-12 px-6 md:px-16 font-sans">
-            <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 bg-white shadow-xl rounded-2xl overflow-hidden">
+        <div className="min-h-screen bg-background mt-12 px-6 md:px-16 font-sans">
+            <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 bg-card shadow-xl rounded-2xl overflow-hidden">
 
                 {/* Left: Appointments form */}
                 <div className="p-10">
                     <h1 className="text-4xl font-bold text-indigo-800 mb-4">Book an Appointment</h1>
-                    <p className="text-gray-600 mb-8">Schedule a session with our expert chiropractors</p>
+                    <p className="text-muted-foreground mb-8">Schedule a session with our expert chiropractors</p>
 
                     {/* Service Type */}
                     <div className="mb-6">
-                        <label className="block text-lg font-semibold text-gray-700 mb-2">Service Type</label>
+                        <label className="block text-lg font-semibold text-foreground mb-2">Service Type</label>
                         <div className="flex gap-4">
                             {["New patient", "Returning patient"].map((label, idx) => (
                                 <label key={label} className="flex items-center gap-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-800 px-4 py-2 rounded-xl cursor-pointer border border-indigo-200">
@@ -48,7 +48,7 @@ function Appointments() {
 
                     {/* Date Picker */}
                     <div className="mb-6">
-                        <label className="block text-lg font-semibold text-gray-700 mb-2">Select Date</label>
+                        <label className="block text-lg font-semibold text-foreground mb-2">Select Date</label>
                         <input
                             type="date"
                             value={selectedDate}
@@ -61,7 +61,7 @@ function Appointments() {
                     {/* Time Picker */}
                     {selectedDate && (
                         <div className="mb-8">
-                            <label className="block text-lg font-semibold text-gray-700 mb-2">Select Time</label>
+                            <label className="block text-lg font-semibold text-foreground mb-2">Select Time</label>
                             <div className="grid grid-cols-3 gap-3">
                                 {availableTimes.map((time) => (
                                     <button
@@ -70,7 +70,7 @@ function Appointments() {
                                         className={`px-4 py-2 rounded-lg border transition-all duration-150
                       ${selectedTime === time
                                                 ? 'bg-indigo-600 text-white border-indigo-600'
-                                                : 'bg-white text-indigo-800 border-indigo-300 hover:bg-indigo-100'}`}
+                                                : 'bg-card text-indigo-800 border-indigo-300 hover:bg-indigo-100'}`}
                                     >
                                         {time}
                                     </button>
@@ -95,9 +95,9 @@ function Appointments() {
                 <div className=" p-10 flex flex-col justify-center">
                     <div>
                         <h2 className="text-2xl font-bold text-indigo-800 mb-4">Contact Us</h2>
-                        <p className="text-gray-700 mb-2">Phone: <strong>+1 720-579-7655</strong></p>
-                        <p className="text-gray-700 mb-2">Email: <strong>drdieuphanchiropractor@gmail.com</strong></p>
-                        <p className="text-gray-700 mb-6">Address: <strong>1385W Alameda Ave, Denver, CO, 80223</strong></p>
+                        <p className="text-foreground mb-2">Phone: <strong>+1 720-579-7655</strong></p>
+                        <p className="text-foreground mb-2">Email: <strong>drdieuphanchiropractor@gmail.com</strong></p>
+                        <p className="text-foreground mb-6">Address: <strong>1385W Alameda Ave, Denver, CO, 80223</strong></p>
                     </div>
                     <div className="mt-8">
                         <h3 className="text-lg font-semibold text-indigo-700 mb-2">📍 Location Map</h3>
@@ -117,7 +117,7 @@ function Appointments() {
 
                     <div className="mt-8">
                         <h2 className="text-2xl font-bold text-indigo-800 mb-4">Office Hours</h2>
-                        <div className="grid grid-cols-2 gap-3 text-gray-700">
+                        <div className="grid grid-cols-2 gap-3 text-foreground">
                             <div>Tuesday - Thursday:</div>
                             <div>9:00 AM – 5:00 PM</div>
                             <div>Saturday:</div>

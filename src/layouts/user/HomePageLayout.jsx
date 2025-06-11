@@ -32,7 +32,7 @@ export default function HomePageLayout() {
           </aside>
         )}
 
-        <main className="flex-1 min-w-0 overflow-auto bg-gray-50 main-content">          <Outlet />
+        <main className="flex-1 min-w-0 overflow-auto bg-background main-content">          <Outlet />
           <Toaster richColors />
         </main>
       </div>

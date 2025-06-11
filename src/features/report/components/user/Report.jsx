@@ -101,8 +101,8 @@ export default function Report() {
             className="flex flex-col md:flex-row flex-1 h-full overflow-hidden"
         >
             {/* Sidebar: visible only on md+ screens */}
-            <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full">
-                <h2 className="text-lg font-semibold mb-4">Initial Reports</h2>
+            <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full bg-card">
+                <h2 className="text-lg font-semibold mb-4 text-foreground">Initial Reports</h2>
                 <Accordion
                     type="single"
                     collapsible
