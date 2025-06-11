@@ -1,45 +1,49 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-/**
- * Simple list of blog posts for the homepage.
- */
+import { BookText } from "lucide-react";
 const posts = [
-    {
-        title: "How to manage sinus symptoms",
-        date: "28 May, 2025",
-        summary: "Natural remedies and modern treatments to relieve sinus pressure and improve breathing."
-    },
-    {
-        title: "Benefits of seasonal checkups",
-        date: "15 May, 2025",
-        summary: "Learn why routine visits matter for long-term health and chronic issue prevention."
-    },
-    {
-        title: "Understanding chiropractic care",
-        date: "03 May, 2025",
-        summary: "A beginner-friendly guide to what chiropractors do and how it can help."
-    }
+    // {
+    //     title: "How to manage sinus symptoms",
+    //     date: "28 May, 2025",
+    //     summary: "Natural remedies and modern treatments to relieve sinus pressure."
+    // },
+    // {
+    //     title: "Benefits of seasonal checkups",
+    //     date: "15 May, 2025",
+    //     summary: "Why routine visits matter for long-term health."
+    // },
+    // {
+    //     title: "Understanding chiropractic care",
+    //     date: "03 May, 2025",
+    //     summary: "A beginner's guide to chiropractic benefits."
+    // }
 ];
 
 export default function BlogCard() {
     return (
-        <Card className="col-span-3 col-start-7 row-span-4 row-start-6">
+        <Card className="h-full w-full">
             <CardHeader>
-                <CardTitle className="text-sm">Blog</CardTitle>
+                <CardTitle className="text-base font-semibold">Blog</CardTitle>
             </CardHeader>
-            <ScrollArea className="max-h-[300px]">
-                <CardContent className="space-y-4 py-2">
-                    {posts.map(({ title, date, summary }) => (
-                        <div key={title} className="space-y-1">
-                            <div className="flex justify-between items-center">
-                                <p className="text-sm font-medium text-gray-900">{title}</p>
-                                <span className="text-xs text-gray-400">{date}</span>
+            <ScrollArea className="max-h-[300px] h-full">
+                <CardContent className="h-full">
+                    {posts.length > 0 ? (
+                        posts.map(({ title, date, summary }) => (
+                            <div key={title} className="space-y-1 mb-4">
+                                <div className="flex justify-between items-center">
+                                    <p className="text-sm font-medium text-gray-900">{title}</p>
+                                    <span className="text-xs text-gray-400">{date}</span>
+                                </div>
+                                <p className="text-sm text-gray-700">{summary}</p>
                             </div>
-                            <p className="text-sm text-gray-700">{summary}</p>
+                        ))
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-full text-sm text-muted-foreground text-center py-6">
+                            <BookText className="w-6 h-6 mb-2 text-gray-400" />
+                            No blog posts available.
                         </div>
-                    ))}
+                    )}
                 </CardContent>
             </ScrollArea>
         </Card>
