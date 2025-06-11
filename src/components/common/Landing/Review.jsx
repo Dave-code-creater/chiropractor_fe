@@ -2,18 +2,18 @@ import React from 'react'
 
 export default function Review() {
     return (
-        <section class="py-24 relative">
-            <div class="w-full max-w-7xl px-4 md:px-5 lg:px-6 mx-auto">
-                <div class="">
-                    <h2 class="font-manrope font-bold text-3xl sm:text-4xl leading-10 text-foreground mb-8 text-center">
+        <section className="py-24 relative bg-background text-foreground">
+            <div className="w-full max-w-7xl px-4 md:px-5 lg:px-6 mx-auto">
+                <div>
+                    <h2 className="font-manrope font-bold text-3xl sm:text-4xl leading-10 text-foreground mb-8 text-center">
                         Customer reviews &
                         rating</h2>
-                    <div class="grid grid-cols-12 mb-11">
+                    <div className="grid grid-cols-12 mb-11">
 
-                        <div class="col-span-12 xl:col-span-4 flex items-center">
-                            <div class="box flex flex-col gap-y-4 w-full max-xl:max-w-3xl mx-auto">
-                                <div class="flex items-center w-full">
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">5</p>
+                        <div className="col-span-12 xl:col-span-4 flex items-center">
+                            <div className="box flex flex-col gap-y-4 w-full max-xl:max-w-3xl mx-auto">
+                                <div className="flex items-center w-full">
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">5</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -27,13 +27,13 @@ export default function Review() {
                                             </clipPath>
                                         </defs>
                                     </svg>
-                                    <p class="h-2 w-full sm:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
-                                        <span class="h-full w-[75%] rounded-[30px] bg-indigo-500 flex"></span>
+                                    <p className="h-2 w-full sm:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
+                                        <span className="h-full w-[75%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">3</p>
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">3</p>
                                 </div>
-                                <div class="flex items-center w-full">
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">4</p>
+                                <div className="flex items-center w-full">
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">4</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -47,13 +47,13 @@ export default function Review() {
                                             </clipPath>
                                         </defs>
                                     </svg>
-                                    <p class="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
-                                        <span class="h-full w-[25%] rounded-[30px] bg-indigo-500 flex"></span>
+                                    <p className="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
+                                        <span className="h-full w-[25%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">1</p>
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">1</p>
                                 </div>
-                                <div class="flex items-center">
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">3</p>
+                                <div className="flex items-center">
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">3</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -67,13 +67,13 @@ export default function Review() {
                                             </clipPath>
                                         </defs>
                                     </svg>
-                                    <p class="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
-                                        <span class="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
+                                    <p className="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
+                                        <span className="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
                                 </div>
-                                <div class="flex items-center">
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">2</p>
+                                <div className="flex items-center">
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">2</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -87,13 +87,13 @@ export default function Review() {
                                             </clipPath>
                                         </defs>
                                     </svg>
-                                    <p class="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
-                                        <span class="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
+                                    <p className="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
+                                        <span className="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
                                 </div>
-                                <div class="flex items-center">
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">1</p>
+                                <div className="flex items-center">
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">1</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -107,22 +107,22 @@ export default function Review() {
                                             </clipPath>
                                         </defs>
                                     </svg>
-                                    <p class="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
-                                        <span class="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
+                                    <p className="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
+                                        <span className="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
+                                    <p className="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
                                 </div>
                             </div>
                         </div>
-                        <div class="col-span-8 max-xl:mt-6 xl:col-span-8 xl:pl-8 w-full min-h-[230px]">
+                        <div className="col-span-8 max-xl:mt-6 xl:col-span-8 xl:pl-8 w-full min-h-[230px]">
                             <div
-                                class="grid grid-cols-8 h-full px-8 max-lg:py-8 rounded-3xl bg-gray-100 w-full max-xl:max-w-3xl max-xl:mx-auto">
-                                <div class="col-span-4 md:col-span-4 flex items-center">
-                                    <div class="flex flex-col sm:flex-row items-center sm:justify-center w-full">
+                                className="grid grid-cols-8 h-full px-8 max-lg:py-8 rounded-3xl bg-gray-100 w-full max-xl:max-w-3xl max-xl:mx-auto">
+                                <div className="col-span-4 md:col-span-4 flex items-center">
+                                    <div className="flex flex-col sm:flex-row items-center sm:justify-center w-full">
                                         <div
-                                            class="sm:px-4 sm:border-r border-gray-200 flex items-center justify-center flex-col">
-                                            <h2 class="font-manrope font-bold text-5xl text-foreground text-center mb-4">4.8</h2>
-                                            <div class="flex items-center gap-3 mb-4">
+                                            className="sm:px-4 sm:border-r border-gray-200 flex items-center justify-center flex-col">
+                                            <h2 className="font-manrope font-bold text-5xl text-foreground text-center mb-4">4.8</h2>
+                                            <div className="flex items-center gap-3 mb-4">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"
                                                     viewBox="0 0 36 36" fill="none">
                                                     <g clip-path="url(#clip0_13624_3137)">
@@ -189,28 +189,28 @@ export default function Review() {
                                                     </defs>
                                                 </svg>
                                             </div>
-                                            <p class="font-normal text-lg leading-8 text-gray-400">4 Ratings</p>
+                                            <p className="font-normal text-lg leading-8 text-gray-400">4 Ratings</p>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-span-12 md:col-span-4 max-lg:mt-8 md:pl-8">
-                                    <div class="flex items-center flex-col justify-center w-full h-full ">
+                                <div className="col-span-12 md:col-span-4 max-lg:mt-8 md:pl-8">
+                                    <div className="flex items-center flex-col justify-center w-full h-full ">
                                         <button
-                                            class="rounded-full px-6 py-4 bg-primary text-primary-foreground font-semibold text-lg whitespace-nowrap mb-6 w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-primary/90 hover:shadow-primary/40">Write
+                                            className="rounded-full px-6 py-4 bg-primary text-primary-foreground font-semibold text-lg whitespace-nowrap mb-6 w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-primary/90 hover:shadow-primary/40">Write
                                             A Review</button>
                                         <button
-                                            class="rounded-full px-6 py-4 bg-card font-semibold text-lg text-primary whitespace-nowrap w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-muted hover:shadow-muted">See
+                                            className="rounded-full px-6 py-4 bg-card font-semibold text-lg text-primary whitespace-nowrap w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-muted hover:shadow-muted">See
                                             All Reviews</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="pb-8 border-b border-gray-200 max-xl:max-w-3xl max-xl:mx-auto">
-                        <h4 class="font-manrope font-semibold text-3xl leading-10 text-foreground mb-6">Most helpful positive
+                    <div className="pb-8 border-b border-gray-200 max-xl:max-w-3xl max-xl:mx-auto">
+                        <h4 className="font-manrope font-semibold text-3xl leading-10 text-foreground mb-6">Most helpful positive
                             review</h4>
-                        <div class="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
-                            <div class="flex items-center gap-3">
+                        <div className="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
+                            <div className="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"
                                     fill="none">
                                     <g clip-path="url(#clip0_13624_2974)">
@@ -277,19 +277,19 @@ export default function Review() {
                                     </defs>
                                 </svg>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <h6 class="font-semibold text-lg leading-8 text-foreground">@Side Hustle Addict</h6>
-                                <p class="font-medium text-base leading-7 text-gray-400">2018</p>
+                            <div className="flex items-center gap-3">
+                                <h6 className="font-semibold text-lg leading-8 text-foreground">@Side Hustle Addict</h6>
+                                <p className="font-medium text-base leading-7 text-gray-400">2018</p>
                             </div>
                         </div>
 
-                        <p class="font-normal text-lg leading-8 text-gray-500 ">
+                        <p className="font-normal text-lg leading-8 text-gray-500 ">
                             Dr. Phan is an excellent chiropractor.  He takes his time to treat his patients. 
                             He has a lot of attention to details when working with his patients. I highly recommend 
                             anyone with an auto accident to come give him a shot.
                         </p>
-                        <div class="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
-                            <div class="flex items-center gap-3">
+                        <div className="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
+                            <div className="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"
                                     fill="none">
                                     <g clip-path="url(#clip0_13624_2974)">
@@ -356,20 +356,20 @@ export default function Review() {
                                     </defs>
                                 </svg>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <h6 class="font-semibold text-lg leading-8 text-foreground">@Joe Pineda</h6>
-                                <p class="font-medium text-base leading-7 text-gray-400">2015</p>
+                            <div className="flex items-center gap-3">
+                                <h6 className="font-semibold text-lg leading-8 text-foreground">@Joe Pineda</h6>
+                                <p className="font-medium text-base leading-7 text-gray-400">2015</p>
                             </div>
                         </div>
 
-                        <p class="font-normal text-lg leading-8 text-gray-500 ">
+                        <p className="font-normal text-lg leading-8 text-gray-500 ">
                             Dr, Phan and his team are wonderful! His staff of professionals are friendly, helpful
                             and care about our well being. Dr. Phan gave wonderful advice and listened to our needs. 
                             I would highly recommend his facility for anyone that had a car accident or just needs chiropractic care.
                         </p>
 
-                        <div class="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
-                            <div class="flex items-center gap-3">
+                        <div className="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
+                            <div className="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"
                                     fill="none">
                                     <g clip-path="url(#clip0_13624_2974)">
@@ -436,18 +436,18 @@ export default function Review() {
                                     </defs>
                                 </svg>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <h6 class="font-semibold text-lg leading-8 text-foreground">@Kitty Tran</h6>
-                                <p class="font-medium text-base leading-7 text-gray-400">2022</p>
+                            <div className="flex items-center gap-3">
+                                <h6 className="font-semibold text-lg leading-8 text-foreground">@Kitty Tran</h6>
+                                <p className="font-medium text-base leading-7 text-gray-400">2022</p>
                             </div>
                         </div>
-                        <p class="font-normal text-lg leading-8 text-gray-500 ">
+                        <p className="font-normal text-lg leading-8 text-gray-500 ">
                             Dr, Phan is a good chiropractor.
                         </p>
-                        <p class="font-normal text-lg leading-8 text-gray-500 ">
+                        <p className="font-normal text-lg leading-8 text-gray-500 ">
                         </p>
-                        <div class="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
-                            <div class="flex items-center gap-3">
+                        <div className="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
+                            <div className="flex items-center gap-3">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30"
                                     fill="none">
                                     <g clip-path="url(#clip0_13624_2974)">
@@ -514,9 +514,9 @@ export default function Review() {
                                     </defs>
                                 </svg>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <h6 class="font-semibold text-lg leading-8 text-foreground">@Zulyn Monge</h6>
-                                <p class="font-medium text-base leading-7 text-gray-400">2017</p>
+                            <div className="flex items-center gap-3">
+                                <h6 className="font-semibold text-lg leading-8 text-foreground">@Zulyn Monge</h6>
+                                <p className="font-medium text-base leading-7 text-gray-400">2017</p>
                             </div>
                         </div>
 

@@ -43,14 +43,13 @@ const About = () => {
 
                     <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
-
-                            className="inline-block rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-indigo-500 transition"
+                            className="inline-block rounded-md bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-md hover:bg-primary/90 transition"
                         >
                             Book an Appointment
                         </button>
                         <a
                             href="/about"
-                            className="text-sm font-semibold text-black underline underline-offset-4 hover:text-indigo-300"
+                            className="text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary/80"
                         >
                             Learn more →
                         </a>
