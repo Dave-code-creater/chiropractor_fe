@@ -43,7 +43,7 @@ export default function Hero() {
                 <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
                     <button
                         onClick={handleBookAppointment}
-                        className="inline-block rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-indigo-500 transition"
+                        className="inline-block rounded-md bg-primary text-primary-foreground px-6 py-3 text-sm font-semibold shadow-md hover:bg-primary/90 transition"
                     >
                         Book an Appointment
                     </button>

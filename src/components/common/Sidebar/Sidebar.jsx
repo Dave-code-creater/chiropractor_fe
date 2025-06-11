@@ -41,7 +41,7 @@ function Sidebar({ sidebarPosition = "left" }) {
 
             {/* Mobile Sidebar */}
             {mobileOpen && (
-                <div className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0" : "left-0"} z-50 w-64 bg-sidebar shadow-lg`}>
+                <div className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0" : "left-0"} z-50 w-64 bg-background shadow-lg`}>
                     <div className="flex items-center justify-between p-4 border-b">
                         <h2 className="text-lg font-semibold text-sidebar-foreground">DR. DIEU PHAN D.C.</h2>
                         <button onClick={() => setMobileOpen(false)}>
@@ -54,13 +54,13 @@ function Sidebar({ sidebarPosition = "left" }) {
 
             {/* Desktop Sidebar */}
             <div
-                className={`hidden md:flex flex-col h-screen border-r relative transition-all duration-300 bg-sidebar
+                className={`hidden md:flex flex-col h-screen border-r relative transition-all duration-300 bg-background
     ${isCollapsed ? "w-12" : "w-64"}
     ${sidebarPosition === "right" ? "border-l" : "border-r"}`}
             >
                 {/* Collapse/Expand Button */}
                 <button
-                    className={`absolute top-1/2 transform -translate-y-1/2 z-50 p-2 bg-sidebar border rounded-full shadow-md hover:bg-sidebar-accent
+                    className={`absolute top-1/2 transform -translate-y-1/2 z-50 p-2 bg-background border rounded-full shadow-md hover:bg-accent
       ${sidebarPosition === "right" ? "left-[-14px]" : "right-[-14px]"}`}
                     onClick={() => setIsCollapsed((prev) => !prev)}
                 >

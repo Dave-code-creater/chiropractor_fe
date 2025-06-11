@@ -28,13 +28,13 @@ export default function Services() {
 
             {/* Section header */}
             <div className="mx-auto max-w-2xl text-center mb-12">
-                <h2 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+                <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
                     Choose Your Care
                 </h2>
-                <p className="mt-4 text-lg text-gray-600">
-                    At <span className="font-semibold text-indigo-600">Dr. Dieu Phan D.C.</span>, your health and satisfaction come first. Our services are tailored to meet your unique needs.
+                <p className="mt-4 text-lg text-muted-foreground">
+                    At <span className="font-semibold text-primary">Dr. Dieu Phan D.C.</span>, your health and satisfaction come first. Our services are tailored to meet your unique needs.
                 </p>
-                <p className="mt-3 text-base text-gray-500">
+                <p className="mt-3 text-base text-muted-foreground">
                     Whether you're recovering, maintaining, or optimizing — we're here to guide you every step of the way.
                 </p>
             </div>
@@ -45,16 +45,16 @@ export default function Services() {
                     <div
                         key={tier.id}
                         className={classNames(
-                            'rounded-2xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-lg transition duration-300 ease-in-out',
-                            tier.featured && 'ring-2 ring-indigo-500'
+                            'rounded-2xl border border-border bg-card p-8 shadow-sm hover:shadow-lg transition duration-300 ease-in-out',
+                            tier.featured && 'ring-2 ring-primary'
                         )}
                     >
-                        <h3 className={classNames('text-lg font-semibold', tier.featured ? 'text-indigo-600' : 'text-gray-900')}>
+                        <h3 className={classNames('text-lg font-semibold', tier.featured ? 'text-primary' : 'text-foreground')}>
                             {tier.name}
                         </h3>
-                        <p className="mt-4 text-sm text-gray-600">{tier.description}</p>
+                        <p className="mt-4 text-sm text-muted-foreground">{tier.description}</p>
 
-                        <ul className="mt-6 space-y-2 text-sm text-gray-700">
+                        <ul className="mt-6 space-y-2 text-sm text-foreground">
                             {tier.features.map((feature) => (
                                 <li key={feature} className="flex items-start gap-x-2">
                                     <CheckIcon className="h-5 w-5 text-indigo-500 mt-0.5" aria-hidden="true" />
@@ -65,7 +65,7 @@ export default function Services() {
 
                         <button
                             onClick={() => handleBookAppointment(tier.id)}
-                            className="mt-6 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+                            className="mt-6 inline-block rounded-md bg-primary text-primary-foreground px-4 py-2 text-sm font-semibold hover:bg-primary/90"
                         >
                             Get started today
                         </button>

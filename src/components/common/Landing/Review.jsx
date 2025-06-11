@@ -5,7 +5,7 @@ export default function Review() {
         <section class="py-24 relative">
             <div class="w-full max-w-7xl px-4 md:px-5 lg:px-6 mx-auto">
                 <div class="">
-                    <h2 class="font-manrope font-bold text-3xl sm:text-4xl leading-10 text-black mb-8 text-center">
+                    <h2 class="font-manrope font-bold text-3xl sm:text-4xl leading-10 text-foreground mb-8 text-center">
                         Customer reviews &
                         rating</h2>
                     <div class="grid grid-cols-12 mb-11">
@@ -13,7 +13,7 @@ export default function Review() {
                         <div class="col-span-12 xl:col-span-4 flex items-center">
                             <div class="box flex flex-col gap-y-4 w-full max-xl:max-w-3xl mx-auto">
                                 <div class="flex items-center w-full">
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">5</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">5</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -30,10 +30,10 @@ export default function Review() {
                                     <p class="h-2 w-full sm:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
                                         <span class="h-full w-[75%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">3</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">3</p>
                                 </div>
                                 <div class="flex items-center w-full">
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">4</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">4</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -50,10 +50,10 @@ export default function Review() {
                                     <p class="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
                                         <span class="h-full w-[25%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">1</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">1</p>
                                 </div>
                                 <div class="flex items-center">
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">3</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">3</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -70,10 +70,10 @@ export default function Review() {
                                     <p class="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
                                         <span class="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">0</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
                                 </div>
                                 <div class="flex items-center">
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">2</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">2</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -90,10 +90,10 @@ export default function Review() {
                                     <p class="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
                                         <span class="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">0</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
                                 </div>
                                 <div class="flex items-center">
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">1</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">1</p>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none"
                                         xmlns="http://www.w3.org/2000/svg">
                                         <g clip-path="url(#clip0_12042_8589)">
@@ -110,7 +110,7 @@ export default function Review() {
                                     <p class="h-2 w-full xl:min-w-[278px] rounded-[30px] bg-gray-200 ml-5 mr-3">
                                         <span class="h-full w-[0%] rounded-[30px] bg-indigo-500 flex"></span>
                                     </p>
-                                    <p class="font-medium text-lg py-[1px] text-black mr-[2px]">0</p>
+                                    <p class="font-medium text-lg py-[1px] text-foreground mr-[2px]">0</p>
                                 </div>
                             </div>
                         </div>
@@ -121,7 +121,7 @@ export default function Review() {
                                     <div class="flex flex-col sm:flex-row items-center sm:justify-center w-full">
                                         <div
                                             class="sm:px-4 sm:border-r border-gray-200 flex items-center justify-center flex-col">
-                                            <h2 class="font-manrope font-bold text-5xl text-black text-center mb-4">4.8</h2>
+                                            <h2 class="font-manrope font-bold text-5xl text-foreground text-center mb-4">4.8</h2>
                                             <div class="flex items-center gap-3 mb-4">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36"
                                                     viewBox="0 0 36 36" fill="none">
@@ -196,10 +196,10 @@ export default function Review() {
                                 <div class="col-span-12 md:col-span-4 max-lg:mt-8 md:pl-8">
                                     <div class="flex items-center flex-col justify-center w-full h-full ">
                                         <button
-                                            class="rounded-full px-6 py-4 bg-indigo-600 font-semibold text-lg text-white whitespace-nowrap mb-6 w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">Write
+                                            class="rounded-full px-6 py-4 bg-primary text-primary-foreground font-semibold text-lg whitespace-nowrap mb-6 w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-primary/90 hover:shadow-primary/40">Write
                                             A Review</button>
                                         <button
-                                            class="rounded-full px-6 py-4 bg-white font-semibold text-lg text-indigo-600 whitespace-nowrap w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-100 hover:shadow-indigo-200">See
+                                            class="rounded-full px-6 py-4 bg-card font-semibold text-lg text-primary whitespace-nowrap w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-muted hover:shadow-muted">See
                                             All Reviews</button>
                                     </div>
                                 </div>
@@ -207,7 +207,7 @@ export default function Review() {
                         </div>
                     </div>
                     <div class="pb-8 border-b border-gray-200 max-xl:max-w-3xl max-xl:mx-auto">
-                        <h4 class="font-manrope font-semibold text-3xl leading-10 text-black mb-6">Most helpful positive
+                        <h4 class="font-manrope font-semibold text-3xl leading-10 text-foreground mb-6">Most helpful positive
                             review</h4>
                         <div class="flex sm:items-center flex-col sm:flex-row justify-between  mb-4">
                             <div class="flex items-center gap-3">
@@ -278,7 +278,7 @@ export default function Review() {
                                 </svg>
                             </div>
                             <div class="flex items-center gap-3">
-                                <h6 class="font-semibold text-lg leading-8 text-black">@Side Hustle Addict</h6>
+                                <h6 class="font-semibold text-lg leading-8 text-foreground">@Side Hustle Addict</h6>
                                 <p class="font-medium text-base leading-7 text-gray-400">2018</p>
                             </div>
                         </div>
@@ -357,7 +357,7 @@ export default function Review() {
                                 </svg>
                             </div>
                             <div class="flex items-center gap-3">
-                                <h6 class="font-semibold text-lg leading-8 text-black">@Joe Pineda</h6>
+                                <h6 class="font-semibold text-lg leading-8 text-foreground">@Joe Pineda</h6>
                                 <p class="font-medium text-base leading-7 text-gray-400">2015</p>
                             </div>
                         </div>
@@ -437,7 +437,7 @@ export default function Review() {
                                 </svg>
                             </div>
                             <div class="flex items-center gap-3">
-                                <h6 class="font-semibold text-lg leading-8 text-black">@Kitty Tran</h6>
+                                <h6 class="font-semibold text-lg leading-8 text-foreground">@Kitty Tran</h6>
                                 <p class="font-medium text-base leading-7 text-gray-400">2022</p>
                             </div>
                         </div>
@@ -515,7 +515,7 @@ export default function Review() {
                                 </svg>
                             </div>
                             <div class="flex items-center gap-3">
-                                <h6 class="font-semibold text-lg leading-8 text-black">@Zulyn Monge</h6>
+                                <h6 class="font-semibold text-lg leading-8 text-foreground">@Zulyn Monge</h6>
                                 <p class="font-medium text-base leading-7 text-gray-400">2017</p>
                             </div>
                         </div>
