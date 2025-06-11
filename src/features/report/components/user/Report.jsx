@@ -24,7 +24,7 @@ export default function Report() {
     const [painMap, setPainMap] = useState({})
 
     const currentSection = PATIENT_INFO[currentSectionIndex]
-    const baseClasses = "border rounded-md p-4 space-y-4 mb-4 bg-white shadow-sm"
+    const baseClasses = "border rounded-md p-4 space-y-4 mb-4 bg-card shadow-sm"
 
     const renderQuestion = (question) => {
         switch (question.type) {

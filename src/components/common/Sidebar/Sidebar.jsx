@@ -35,17 +35,17 @@ function Sidebar({ sidebarPosition = "left" }) {
             {/* Mobile toggle button */}
             <div className="md:hidden p-4">
                 <button onClick={() => setMobileOpen(true)}>
-                    <Bars3Icon className="h-6 text-gray-700" />
+                    <Bars3Icon className="h-6 text-sidebar-foreground" />
                 </button>
             </div>
 
             {/* Mobile Sidebar */}
             {mobileOpen && (
-                <div className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0" : "left-0"} z-50 w-64 bg-white shadow-lg`}>
+                <div className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0" : "left-0"} z-50 w-64 bg-sidebar shadow-lg`}>
                     <div className="flex items-center justify-between p-4 border-b">
-                        <h2 className="text-lg font-semibold">DR. DIEU PHAN D.C.</h2>
+                        <h2 className="text-lg font-semibold text-sidebar-foreground">DR. DIEU PHAN D.C.</h2>
                         <button onClick={() => setMobileOpen(false)}>
-                            <XMarkIcon className="h-6 w-6 text-gray-700" />
+                            <XMarkIcon className="h-6 w-6 text-sidebar-foreground" />
                         </button>
                     </div>
                     <div className="p-4 overflow-auto">{renderNav({ isCollapsed: false })}</div>
@@ -54,17 +54,17 @@ function Sidebar({ sidebarPosition = "left" }) {
 
             {/* Desktop Sidebar */}
             <div
-                className={`hidden md:flex flex-col h-screen border-r relative transition-all duration-300 bg-white 
-    ${isCollapsed ? "w-12" : "w-64"} 
+                className={`hidden md:flex flex-col h-screen border-r relative transition-all duration-300 bg-sidebar
+    ${isCollapsed ? "w-12" : "w-64"}
     ${sidebarPosition === "right" ? "border-l" : "border-r"}`}
             >
                 {/* Collapse/Expand Button */}
                 <button
-                    className={`absolute top-1/2 transform -translate-y-1/2 z-50 p-2 bg-white border rounded-full shadow-md hover:bg-gray-100
+                    className={`absolute top-1/2 transform -translate-y-1/2 z-50 p-2 bg-sidebar border rounded-full shadow-md hover:bg-sidebar-accent
       ${sidebarPosition === "right" ? "left-[-14px]" : "right-[-14px]"}`}
                     onClick={() => setIsCollapsed((prev) => !prev)}
                 >
-                    <span className="text-lg font-bold text-gray-600">
+                    <span className="text-lg font-bold text-sidebar-foreground">
                         {/* Toggle direction based on side + collapse state */}
                         {sidebarPosition === "right"
                             ? isCollapsed
@@ -90,7 +90,7 @@ function Sidebar({ sidebarPosition = "left" }) {
                     <div key={id}>
                         <button
                             onClick={() => toggleDropdown(id)}
-                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium hover:bg-blue-gray-50 transition-all"
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium hover:bg-sidebar-accent transition-all"
                         >
                             <span>{!isCollapsed && label}</span>
                             {!isCollapsed && (
@@ -106,12 +106,12 @@ function Sidebar({ sidebarPosition = "left" }) {
                             )}
                         </button>
                         {dropdowns[id] && !isCollapsed && (
-                            <div className="ml-6 mt-1 flex flex-col gap-1 text-sm text-gray-600">
+                            <div className="ml-6 mt-1 flex flex-col gap-1 text-sm text-sidebar-foreground">
                                 {items.map((item, index) => (
                                     <button
                                         key={index}
                                         onClick={() => item.path && handleNavigation(item.path)}
-                                        className="px-2 py-1 hover:text-indigo-600 text-left transition-colors"
+                                        className="px-2 py-1 hover:text-sidebar-primary text-left transition-colors"
                                     >
                                         {item.name}
                                     </button>
@@ -121,18 +121,18 @@ function Sidebar({ sidebarPosition = "left" }) {
                     </div>
                 ))}
 
-                <hr className="my-2 border-blue-gray-100" />
+                <hr className="my-2 border-sidebar-border" />
 
-                <button onClick={() => handleNavigation('services/inbox')} className="px-3 py-2 text-left hover:text-indigo-600">
+                <button onClick={() => handleNavigation('services/inbox')} className="px-3 py-2 text-left hover:text-sidebar-primary">
                     Inbox
                 </button>
-                <button onClick={() => handleNavigation('services/profile')} className="px-3 py-2 text-left hover:text-indigo-600">
+                <button onClick={() => handleNavigation('services/profile')} className="px-3 py-2 text-left hover:text-sidebar-primary">
                     Profile
                 </button>
-                <button onClick={() => handleNavigation('services/settings')} className="px-3 py-2 text-left hover:text-indigo-600">
+                <button onClick={() => handleNavigation('services/settings')} className="px-3 py-2 text-left hover:text-sidebar-primary">
                     Settings
                 </button>
-                <button onClick={handleLogout} className="px-3 py-2 text-left hover:text-indigo-600">
+                <button onClick={handleLogout} className="px-3 py-2 text-left hover:text-sidebar-primary">
                     {!isCollapsed && 'Log Out'}
                 </button>
             </nav>

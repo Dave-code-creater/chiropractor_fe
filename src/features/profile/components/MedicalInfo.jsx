@@ -38,15 +38,15 @@ function MedicalInfo() {
 
     return (
         <div className="w-full space-y-8">
-            <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-xl p-8 border border-gray-200">
+            <div className="max-w-4xl mx-auto bg-card shadow-sm rounded-xl p-8 border border-border">
                 <div className="mb-6">
-                    <h2 className="text-xl font-semibold text-gray-900">Update Your Medical Information</h2>
-                    <p className="text-sm text-gray-500 mt-1">Edit your medical profile for emergencies and care coordination.</p>
+                    <h2 className="text-xl font-semibold text-foreground">Update Your Medical Information</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Edit your medical profile for emergencies and care coordination.</p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid gap-6 md:grid-cols-2">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Blood Type</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Blood Type</label>
                             <Select value={bloodType} onValueChange={setBloodType}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Select" />
@@ -68,7 +68,7 @@ function MedicalInfo() {
                         <FormField label="Primary Physician" value={physicianName} onChange={setPhysicianName} />
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Physician Phone</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Physician Phone</label>
                             <div className="flex gap-2">
                                 <Select value={physicianPhoneCode} onValueChange={setPhysicianPhoneCode}>
                                     <SelectTrigger className="w-[120px]">
@@ -95,7 +95,7 @@ function MedicalInfo() {
 
                     <Button
                         type="submit"
-                        className="w-full text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
+                        className="w-full text-primary-foreground px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2"
                     >
                         Save Changes
                     </Button>
@@ -108,7 +108,7 @@ function MedicalInfo() {
 function FormField({ label, value, onChange, readOnly = false, type = "text", placeholder = "" }) {
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">{label}</label>
             <input
                 type={type}
                 className="w-full border rounded-md px-3 py-2 text-sm"

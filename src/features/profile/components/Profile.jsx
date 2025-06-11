@@ -82,7 +82,7 @@ export default function Profile() {
 
             {/* Main Content */}
             {tab && (
-                <div className="flex-1 flex flex-col bg-white border-l md:border-t-0 border-t">
+                <div className="flex-1 flex flex-col bg-card border-l md:border-t-0 border-t">
                     <div className="flex items-center p-4 border-b  gap-3">
                         {isMobile && (
                             <Button variant="ghost" size="icon" onClick={() => setTab(null)}>

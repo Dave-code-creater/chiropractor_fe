@@ -37,10 +37,10 @@ export default function PersonalInfo() {
 
     return (
         <div className="w-full space-y-8">
-            <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-xl p-8 border border-gray-200">
+            <div className="max-w-4xl mx-auto bg-card shadow-sm rounded-xl p-8 border border-border">
                 <div className="mb-6">
-                    <h2 className="text-xl font-semibold text-gray-900">Manage your information</h2>
-                    <p className="text-sm text-gray-500 mt-1">Edit your general information</p>
+                    <h2 className="text-xl font-semibold text-foreground">Manage your information</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Edit your general information</p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid gap-6 md:grid-cols-2">
@@ -51,7 +51,7 @@ export default function PersonalInfo() {
 
                         {/* Gender Select */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Gender</label>
                             <Select value={gender} onValueChange={setGender}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select..." />
@@ -66,7 +66,7 @@ export default function PersonalInfo() {
 
                         {/* Race Select */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Race</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Race</label>
                             <Select value={race} onValueChange={setRace}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select..." />
@@ -81,7 +81,7 @@ export default function PersonalInfo() {
 
                         {/* Marital Status Select */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Marital Status</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Marital Status</label>
                             <Select value={maritalStatus} onValueChange={setMaritalStatus}>
                                 <SelectTrigger className="w-full">
                                     <SelectValue placeholder="Select..." />
@@ -96,7 +96,7 @@ export default function PersonalInfo() {
                     </div>
                     <Button
                         type="submit"
-                        className="w-full  text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2  focus:ring-offset-2"
+                        className="w-full text-primary-foreground px-4 py-2 rounded-md focus:outline-none focus:ring-2  focus:ring-offset-2"
                         onClick={handleSubmit}
                     >
                         Save Changes
@@ -110,7 +110,7 @@ export default function PersonalInfo() {
 function FormField({ label, value, onChange, readOnly = false, type = "text", placeholder = "" }) {
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">{label}</label>
             <input
                 type={type}
                 className="w-full border rounded-md px-3 py-2 text-sm"

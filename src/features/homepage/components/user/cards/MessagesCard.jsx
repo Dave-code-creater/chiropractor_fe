@@ -35,15 +35,15 @@ export default function MessagesCard() {
                         messages.map(({ from, date, text }) => (
                             <div key={date + from} className="hover:bg-muted rounded p-2 transition">
                                 <div className="flex justify-between items-center">
-                                    <p className="text-sm font-medium text-gray-900">{from}</p>
-                                    <span className="text-xs text-gray-400">{date}</span>
+                                    <p className="text-sm font-medium text-foreground">{from}</p>
+                                    <span className="text-xs text-muted-foreground">{date}</span>
                                 </div>
-                                <p className="text-sm text-gray-700 mt-1">{text}</p>
+                                <p className="text-sm text-muted-foreground mt-1">{text}</p>
                             </div>
                         ))
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full text-sm text-muted-foreground text-center py-6">
-                            <Inbox className="w-6 h-6 mb-2 text-gray-400" />
+                            <Inbox className="w-6 h-6 mb-2 text-muted-foreground" />
                             You have no messages at the moment.
                         </div>
                     )}

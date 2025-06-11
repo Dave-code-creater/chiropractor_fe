@@ -39,10 +39,10 @@ function ContactInfo() {
 
     return (
         <div className="w-full space-y-8">
-            <div className="max-w-4xl mx-auto bg-white shadow-sm rounded-xl p-8 border border-gray-200">
+            <div className="max-w-4xl mx-auto bg-card shadow-sm rounded-xl p-8 border border-border">
                 <div className="mb-6">
-                    <h2 className="text-xl font-semibold text-gray-900">Update Contact Information</h2>
-                    <p className="text-sm text-gray-500 mt-1">Edit your address, phone number and emergency contact</p>
+                    <h2 className="text-xl font-semibold text-foreground">Update Contact Information</h2>
+                    <p className="text-sm text-muted-foreground mt-1">Edit your address, phone number and emergency contact</p>
                 </div>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid gap-6 md:grid-cols-2">
@@ -51,7 +51,7 @@ function ContactInfo() {
                         <FormField label="State" value={state} onChange={setState} />
                         <FormField label="Zip Code" value={zipCode} onChange={setZipCode} type="number" placeholder="12345" />
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                            <label className="block text-sm font-medium text-foreground mb-1">Phone Number</label>
                             <div className="flex gap-2">
                                 <Select value={areaCode} onValueChange={setAreaCode}>
                                     <SelectTrigger className="w-[120px]">
@@ -74,7 +74,7 @@ function ContactInfo() {
                         <div className="md:col-span-2">
                             <TooltipProvider>
                                 <div className="flex items-center gap-1 mb-1">
-                                    <label className="block text-sm font-medium text-gray-700">Emergency Contact</label>
+                                    <label className="block text-sm font-medium text-foreground">Emergency Contact</label>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
                                             <Info className="h-4 w-4 text-muted-foreground cursor-pointer" />
@@ -89,7 +89,7 @@ function ContactInfo() {
                                 <FormField label="Name" value={emergencyName} onChange={setEmergencyName} />
                                 <FormField label="Relationship" value={emergencyRelation} onChange={setEmergencyRelation} />
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+                                    <label className="block text-sm font-medium text-foreground mb-1">Phone Number</label>
                                     <div className="flex flex-col sm:flex-row gap-2">
                                         <Select value={emergencyPhoneCode} onValueChange={setEmergencyPhoneCode}>
                                             <SelectTrigger className="sm:w-[120px] w-full">
@@ -114,7 +114,7 @@ function ContactInfo() {
                     </div>
                     <Button
                         type="submit"
-                        className="w-full  text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2  focus:ring-offset-2"
+                        className="w-full text-primary-foreground px-4 py-2 rounded-md focus:outline-none focus:ring-2  focus:ring-offset-2"
                         onClick={handleSubmit}
                     >
                         Save Changes
@@ -128,7 +128,7 @@ function ContactInfo() {
 function FormField({ label, value, onChange, readOnly = false, type = "text", placeholder = "" }) {
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+            <label className="block text-sm font-medium text-foreground mb-1">{label}</label>
             <input
                 type={type}
                 className="w-full border rounded-md px-3 py-2 text-sm"
