@@ -19,9 +19,9 @@ import Inbox from '../features/chat/components/Chat';
 import Profile from '../features/profile/components/Profile';
 import Report from '../features/report/components/user/Report';
 import AdminDashboard from '../features/homepage/components/admin/AdminDashboard';
-
+import PrivacyPolicy from '../pages/PrivacyPolicy';
 import ProtectRoute from './ProtectRoute';
-
+import TermOfService from '../pages/TermOfService';
 export default function AppRoutes() {
     return (
         <Routes>
@@ -34,8 +34,8 @@ export default function AppRoutes() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
-                <Route path="/privacy-policy" element={<div>Privacy Policy</div>} />
-                <Route path="/terms-of-service" element={<div>Terms of Service</div>} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermOfService />} />
                 <Route path="/reset-password" element={<div>Reset Password</div>} />
             </Route>
 
@@ -52,7 +52,7 @@ export default function AppRoutes() {
                     <Route path="services/appointments" element={<Appointments />} />
                     <Route path="services/doctor-notes" element={<div>Doctor Notes</div>} />
                     <Route path="services/initial-report" element={<Report />} />
-                    <Route path="services/report" element={<div>Reporting</div>} />
+
                 </Route>
             </Route>
 

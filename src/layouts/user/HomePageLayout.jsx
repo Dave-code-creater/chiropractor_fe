@@ -1,36 +1,42 @@
-// src/layouts/HomePageLayout.jsx
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../../components/common/Sidebar/Sidebar";
 import Footer from "../Footer";
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/components/ui/sonner";
 
 export default function HomePageLayout() {
+  const [sidebarPosition, setSidebarPosition] = useState("left");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("sidebar-position") || "left";
+    setSidebarPosition(stored);
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      const updated = localStorage.getItem("sidebar-position") || "left";
+      setSidebarPosition(updated);
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  const showSidebar = sidebarPosition !== "hidden";
+
   return (
     <div className="flex flex-col min-h-screen">
+      <div className={`flex flex-col flex-1 ${sidebarPosition === "right" ? "md:flex-row-reverse" : "md:flex-row"}`}>
+        {showSidebar && (
+          <aside className="transition-all duration-300">
+            <Sidebar sidebarPosition={sidebarPosition} />
+          </aside>
+        )}
 
-      {/* Mobile-first: sidebar on top, row layout kicks in at md */}
-      <div className="flex flex-col md:flex-row flex-1">
-
-        {/* Sidebar full-width on mobile, fixed-width on desktop */}
-        <aside className="bg-gray-50">
-          <div className="block md:hidden">
-            {/* Render full sidebar at the top for small screens */}
-            <Sidebar mobileAlwaysVisible />
-          </div>
-          <div className="hidden md:block">
-            <Sidebar />
-          </div>
-        </aside>
-
-        {/* Main content */}
-        <main className="flex-1 overflow-auto bg-gray-50">
-          <Outlet />
+        <main className="flex-1 min-w-0 overflow-auto bg-gray-50 main-content">          <Outlet />
           <Toaster richColors />
         </main>
       </div>
 
-      {/* Footer always at the bottom */}
       <footer>
         <Footer />
       </footer>

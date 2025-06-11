@@ -1,12 +1,11 @@
-import React from "react";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
-import { Info } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
+import React from "react"
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card"
+import { Info } from "lucide-react"
+import { Label } from "@/components/ui/label"
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Checkbox } from "@/components/ui/checkbox"
 
-// Helper render legend
 export function FormatLegend({ question }) {
     return (
         <legend className="text-sm font-medium text-muted-foreground px-2 flex items-center gap-2">
@@ -22,19 +21,18 @@ export function FormatLegend({ question }) {
                 </HoverCard>
             )}
         </legend>
-    );
+    )
 }
 
-// Group
 export function RenderQuesFuncs({ question, formData, setFormData, commonFieldsetClasses }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 {question.fields?.map((field) => {
-                    const value = formData[field.id] || "";
+                    const value = formData[field.id] || ""
                     return (
-                        <div key={field.id}>
+                        <div key={field.id} className="min-h-[100px]">
                             <div className="flex items-center gap-1">
                                 <Label htmlFor={field.id}>{field.label}</Label>
                                 {field.extra_info && (
@@ -42,9 +40,7 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                         <HoverCardTrigger asChild>
                                             <Info size={14} className="text-muted-foreground cursor-pointer" />
                                         </HoverCardTrigger>
-                                        <HoverCardContent className="w-72 text-sm">
-                                            {field.extra_info}
-                                        </HoverCardContent>
+                                        <HoverCardContent className="w-72 text-sm">{field.extra_info}</HoverCardContent>
                                     </HoverCard>
                                 )}
                             </div>
@@ -54,7 +50,7 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                     onValueChange={(val) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            [field.id]: val,
+                                            [field.id]: val
                                         }))
                                     }
                                 >
@@ -77,20 +73,19 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                     onChange={(e) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            [field.id]: e.target.value,
+                                            [field.id]: e.target.value
                                         }))
                                     }
                                 />
                             )}
                         </div>
-                    );
+                    )
                 })}
             </div>
         </fieldset>
-    );
+    )
 }
 
-// Textarea
 export function RenderTextAreaQues({ question, formData, setFormData, commonFieldsetClasses }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
@@ -99,81 +94,74 @@ export function RenderTextAreaQues({ question, formData, setFormData, commonFiel
                 <Label htmlFor={question.id}>{question.label}</Label>
                 <textarea
                     id={question.id}
-                    className="w-full border rounded px-3 py-2"
+                    className="w-full border rounded px-3 py-2 resize-y max-h-[300px] overflow-auto"
                     rows={4}
                     value={formData[question.id] || ""}
                     onChange={(e) =>
                         setFormData((prev) => ({
                             ...prev,
-                            [question.id]: e.target.value,
+                            [question.id]: e.target.value
                         }))
                     }
                 />
             </div>
         </fieldset>
-    );
+    )
 }
 
-// Radio
 export function RenderRadioQues({ question, formData, setFormData, commonFieldsetClasses }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
-            <div>
-                <Label>{question.label}</Label>
-                <Select
-                    value={formData[question.id] || ""}
-                    onValueChange={(val) =>
-                        setFormData((prev) => ({
-                            ...prev,
-                            [question.id]: val,
-                        }))
-                    }
-                >
-                    <SelectTrigger>
-                        <SelectValue placeholder={`Select ${question.label}`} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {question.options.map((opt) => (
-                            <SelectItem key={opt} value={opt}>
-                                {opt}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            </div>
+            <Select
+                value={formData[question.id] || ""}
+                onValueChange={(val) =>
+                    setFormData((prev) => ({
+                        ...prev,
+                        [question.id]: val
+                    }))
+                }
+            >
+                <SelectTrigger>
+                    <SelectValue placeholder={`Select ${question.label}`} />
+                </SelectTrigger>
+                <SelectContent>
+                    {question.options.map((opt) => (
+                        <SelectItem key={opt} value={opt}>
+                            {opt}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
         </fieldset>
-    );
+    )
 }
 
-// Checkbox
 export function RenderCheckboxQues({ question, formData, setFormData, commonFieldsetClasses }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
             <div className="grid grid-cols-2 md:grid-cols-4 gap-y-2 gap-x-4">
                 {question.options.map((opt) => (
-                    <div key={opt} className="flex items-center text-lg">
+                    <div key={opt} className="flex items-center text-sm">
                         <Checkbox
                             id={`${question.id}-${opt}`}
                             checked={formData[question.id]?.includes(opt)}
                             onCheckedChange={(checked) => {
                                 setFormData((prev) => {
-                                    const currentValues = prev[question.id] || [];
+                                    const currentValues = prev[question.id] || []
                                     if (checked) {
                                         return {
                                             ...prev,
-                                            [question.id]: [...currentValues, opt],
-                                        };
+                                            [question.id]: [...currentValues, opt]
+                                        }
                                     } else {
                                         return {
                                             ...prev,
-                                            [question.id]: currentValues.filter(
-                                                (v) => v !== opt
-                                            ),
-                                        };
+                                            [question.id]: currentValues.filter((v) => v !== opt)
+                                        }
                                     }
-                                });
+                                })
                             }}
                         />
                         <Label htmlFor={`${question.id}-${opt}`} className="ml-2">
@@ -183,10 +171,9 @@ export function RenderCheckboxQues({ question, formData, setFormData, commonFiel
                 ))}
             </div>
         </fieldset>
-    );
+    )
 }
 
-// Other (default input)
 export function RenderOtherQues({ question, formData, setFormData, commonFieldsetClasses }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
@@ -200,11 +187,11 @@ export function RenderOtherQues({ question, formData, setFormData, commonFieldse
                     onChange={(e) =>
                         setFormData((prev) => ({
                             ...prev,
-                            [question.id]: e.target.value,
+                            [question.id]: e.target.value
                         }))
                     }
                 />
             </div>
         </fieldset>
-    );
+    )
 }

@@ -5,15 +5,15 @@ const PATIENT_INFO = [
         questions: [
             {
                 id: "patientName",
-                label: "Patient Name",
+                label: "Basic Patient Information",
                 type: "group",
                 fields: [
                     { id: "firstName", label: "First", type: "text", placeholder: "John" },
                     { id: "middleName", label: "Middle", type: "text", placeholder: "A." },
-                    { id: "lastName", label: "Last", type: "text", placeholder: "Doe" }
+                    { id: "lastName", label: "Last", type: "text", placeholder: "Doe" },
+                    { id: "ssn", label: "SSN", type: "text", placeholder: "123-45-6789" }
                 ]
             },
-            { id: "ssn", label: "SSN", type: "text", placeholder: "123-45-6789" },
             {
                 id: "dobGender",
                 label: "Date of Birth, Age & Gender",
