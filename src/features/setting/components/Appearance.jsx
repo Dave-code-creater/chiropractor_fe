@@ -5,9 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function Appearance() {
-    const [theme, setTheme] = useState("light");
+    const { theme, setTheme } = useTheme();
     const [fontSize, setFontSize] = useState("medium");
     const [colorScheme, setColorScheme] = useState("indigo");
     const [sidebarPosition, setSidebarPosition] = useState("left");

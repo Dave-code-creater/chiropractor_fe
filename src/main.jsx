@@ -5,16 +5,18 @@ import './index.css'
 import App from './App.jsx'
 import { store, persistor } from './store/store'
 import { Provider } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react';
+import { PersistGate } from 'redux-persist/integration/react'
+import { ThemeProvider } from './context/ThemeContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-
-        </PersistGate>
-        <App />
+        <ThemeProvider>
+          <PersistGate loading={null} persistor={persistor}>
+            <App />
+          </PersistGate>
+        </ThemeProvider>
       </Provider>
     </BrowserRouter>
   </StrictMode>,
