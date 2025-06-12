@@ -61,18 +61,18 @@ export const apiSlice = createApi({
                 method: "POST",
                 body: credentials,
             }),
+            // change -> user role admin 
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
-                    const { data } = await queryFulfilled;
+                    const { data } = await queryFulfilled; 
+                    // DO not call from server
+                    // Just create a role.name call to id: Admin --> 
                     const metadata = data.metadata;
                     const user = {
-                        id: metadata.profile_id ?? metadata.identity_id,
-                        role: {
-                            id: metadata.role_id.id,
-                            name: metadata.role_id.name,
-                        },
-                    };
-                    const accessToken = metadata.accessToken;
+                            id: 1,
+                            role: { id: 1, name: 'admin' },
+                        };
+                    const accessToken = 'admin'
                     dispatch(setCredentials({ user, accessToken }));
                 } catch {
                     // Ignore errors here

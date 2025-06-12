@@ -107,11 +107,11 @@ import {
 
 export const schema = z.object({
   id: z.number(),
-  header: z.string(),
+  Patient: z.string(),
   type: z.string(),
   status: z.string(),
-  target: z.string(),
-  limit: z.string(),
+  Date: z.string(),
+  Times: z.string(),
   reviewer: z.string(),
 })
 
@@ -139,7 +139,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
   {
     id: "drag",
     header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original.id} />,
+    cell: ({ row }) => (<DragHandle id={row.original.id} />),
   },
   {
     id: "select",
@@ -168,18 +168,23 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "header",
-    header: "Header",
-    cell: ({ row }) => {
-      return <TableCellViewer item={row.original} />
-    },
+    accessorKey: "Patient",
+    header: "Patient",
+    cell: ({ row }) => (
+      <div className="w-12">
+        
+          {row.original.Patient}
+        
+      </div>
+    ),
     enableHiding: false,
   },
+  
   {
     accessorKey: "type",
-    header: "Section Type",
+    header: "Type Document",
     cell: ({ row }) => (
-      <div className="w-32">
+      <div className="w-24">
         <Badge variant="outline" className="px-1.5 text-muted-foreground">
           {row.original.type}
         </Badge>
@@ -192,7 +197,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     cell: ({ row }) => (
       <Badge
         variant="outline"
-        className="flex gap-1 px-1.5 text-muted-foreground [&_svg]:size-3"
+        className="px-1.5 text-muted-foreground"
       >
         {row.original.status === "Done" ? (
           <CheckCircle2Icon className="text-green-500 dark:text-green-400" />
@@ -201,58 +206,20 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         )}
         {row.original.status}
       </Badge>
-    ),
-  },
-  {
-    accessorKey: "target",
-    header: () => <div className="w-full text-right">Target</div>,
-    cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
-          })
-        }}
+    )
+  },{
+    accessorKey: "Date",
+    header: "Date",
+    cell: ({row}) => (
+      <div
+        className="flex gap-1 px-1"
       >
-        <Label htmlFor={`${row.original.id}-target`} className="sr-only">
-          Target
-        </Label>
-        <Input
-          className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background"
-          defaultValue={row.original.target}
-          id={`${row.original.id}-target`}
-        />
-      </form>
-    ),
+        {row.original.Date}
+      </div>
+    )
+
   },
-  {
-    accessorKey: "limit",
-    header: () => <div className="w-full text-right">Limit</div>,
-    cell: ({ row }) => (
-      <form
-        onSubmit={(e) => {
-          e.preventDefault()
-          toast.promise(new Promise((resolve) => setTimeout(resolve, 1000)), {
-            loading: `Saving ${row.original.header}`,
-            success: "Done",
-            error: "Error",
-          })
-        }}
-      >
-        <Label htmlFor={`${row.original.id}-limit`} className="sr-only">
-          Limit
-        </Label>
-        <Input
-          className="h-8 w-16 border-transparent bg-transparent text-right shadow-none hover:bg-input/30 focus-visible:border focus-visible:bg-background"
-          defaultValue={row.original.limit}
-          id={`${row.original.id}-limit`}
-        />
-      </form>
-    ),
-  },
+  
   {
     accessorKey: "reviewer",
     header: "Reviewer",
@@ -270,7 +237,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
           </Label>
           <Select>
             <SelectTrigger
-              className="h-8 w-40"
+              className="h-8 w-30"
               id={`${row.original.id}-reviewer`}
             >
               <SelectValue placeholder="Assign reviewer" />
@@ -285,6 +252,18 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
         </>
       )
     },
+  },
+  {
+    accessorKey: "Times",
+    header: "Times",
+    cell: ({ row }) => (
+      <div className="w-12">
+        
+          {row.original.Times}
+        
+      </div>
+    ),
+    enableHiding: false,
   },
   {
     id: "actions",
