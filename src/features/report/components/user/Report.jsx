@@ -4,19 +4,19 @@ import { FolderIcon, PlusIcon } from "lucide-react"
 import InitialReportForm from "./InitialReportForm"
 
 export default function Report() {
-    const [reports, setReports] = useState([{ id: 0 }])
+    const [reports, setReports] = useState([{ id: 0, name: "" }])
     const [selectedIndex, setSelectedIndex] = useState(null)
 
     const addReport = () => {
         setReports((prev) => {
-            const newReport = { id: prev.length }
+            const newReport = { id: prev.length, name: "" }
             return [...prev, newReport]
         })
         setSelectedIndex(reports.length)
     }
 
     const handleSubmit = (index, data) => {
-        setReports((prev) => prev.map((r, i) => (i === index ? { ...r, data } : r)))
+        setReports((prev) => prev.map((r, i) => (i === index ? { ...r, ...data } : r)))
         setSelectedIndex(null)
     }
 
@@ -28,7 +28,7 @@ export default function Report() {
         return (
             <InitialReportForm
                 onSubmit={(data) => handleSubmit(selectedIndex, data)}
-                initialData={reports[selectedIndex].data || {}}
+                initialData={reports[selectedIndex]}
                 onBack={handleBack}
             />
         )
@@ -47,7 +47,7 @@ export default function Report() {
                             <FolderIcon className="h-12 w-12 text-gray-500 group-hover:text-gray-700" />
                         </div>
                         <div className="mt-2 text-center">
-                            <span className="text-sm font-medium text-gray-900">Accident {idx + 1}</span>
+                            <span className="text-sm font-medium text-gray-900">{rep.name || `Accident ${idx + 1}`}</span>
                         </div>
                     </div>
                 ))}

@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft } from "lucide-react";
 
 import {
     RenderQuesFuncs,
@@ -17,6 +19,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   const [formData, setFormData] = useState(initialData.formData || {});
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [painMap, setPainMap] = useState(initialData.painMap || {});
+  const [reportName, setReportName] = useState(initialData.name || "");
   const [formErrors, setFormErrors] = useState({});
 
   const currentSection = PATIENT_INFO[currentSectionIndex];
@@ -113,18 +116,24 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
       onSubmit={(e) => {
         e.preventDefault();
         if (validate()) {
-          onSubmit({formData, painMap});
+          onSubmit({ formData, painMap, name: reportName });
         }
       }}
       className="flex flex-col md:flex-row flex-1 h-full overflow-hidden mb-8"
     >
-      {onBack && (
-        <div className="mb-4 md:hidden">
-          <Button variant="outline" size="sm" onClick={onBack}>
-            Back to reports
+      <div className="flex items-center gap-2 mb-4 md:hidden">
+        {onBack && (
+          <Button variant="ghost" size="icon" onClick={onBack}>
+            <ArrowLeft className="h-5 w-5" />
           </Button>
-        </div>
-      )}
+        )}
+        <Input
+          placeholder="Report name"
+          value={reportName}
+          onChange={(e) => setReportName(e.target.value)}
+          className="h-8"
+        />
+      </div>
       <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full">
         <h2 className="text-lg font-semibold mb-4">Initial Reports</h2>
         <Accordion type="single" collapsible className="space-y-2" value={currentSection.title}>
@@ -138,12 +147,22 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
       <div className="flex-1 p-4 md:p-6 overflow-y-auto h-full">
         <Card>
           <CardHeader className="flex justify-between items-center">
-            <CardTitle>{currentSection.title}</CardTitle>
-            {onBack && (
-              <Button variant="outline" size="sm" onClick={onBack}>
-                Back
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              {onBack && (
+                <Button variant="ghost" size="icon" onClick={onBack} className="hidden md:inline-flex">
+                  <ArrowLeft className="h-5 w-5" />
+                </Button>
+              )}
+              <CardTitle>{currentSection.title}</CardTitle>
+            </div>
+            <div className="w-48">
+              <Input
+                placeholder="Report name"
+                value={reportName}
+                onChange={(e) => setReportName(e.target.value)}
+                className="h-8"
+              />
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             {Object.values(formErrors).length > 0 && (
