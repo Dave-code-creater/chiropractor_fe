@@ -5,6 +5,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Button } from "@/components/ui/button"
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+import { Calendar } from "@/components/ui/calendar"
 import { renderCalAge } from "./renderUtilsFunc"
 
 export function FormatLegend({ question }) {
@@ -31,6 +34,15 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
             <FormatLegend question={question} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 {question.fields?.map((field) => {
+                    if (
+                        (field.id === "mentalWorkHours" && formData.mentalWork === "None") ||
+                        (field.id === "physicalWorkHours" && formData.physicalWork === "None") ||
+                        (field.id === "exerciseHours" && formData.exercise === "None") ||
+                        (["packsPerDay","smokingYears","beerPerWeek","liquorPerWeek","winePerWeek","alcoholYears"].includes(field.id) && formData.smokingStatus === "None") ||
+                        (["workTimes","workHoursPerDay","workDaysPerWeek","jobDescription"].includes(field.id) && (formData.currentlyWorking === "None" || formData.currentlyWorking === "NO"))
+                    ) {
+                        return null;
+                    }
                     const value = formData[field.id] || ""
                     return (
                         <div key={field.id} className="min-h-[100px]">
@@ -66,32 +78,49 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                         ))}
                                     </SelectContent>
                                 </Select>
+                            ) : field.type === "date" ? (
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button variant="outline" className="w-full justify-start">
+                                            {value ? value : `Select ${field.label}`}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0" align="start">
+                                        <Calendar
+                                            mode="single"
+                                            selected={value ? new Date(value) : undefined}
+                                            onSelect={(date) => {
+                                                let val = ""
+                                                let extra = {}
+                                                if (date) {
+                                                    const y = date.getFullYear()
+                                                    const m = String(date.getMonth() + 1).padStart(2, "0")
+                                                    const d = String(date.getDate()).padStart(2, "0")
+                                                    val = `${y}/${m}/${d}`
+                                                    if (field.id === "dob") {
+                                                        extra.age = renderCalAge(y)
+                                                    }
+                                                }
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    [field.id]: val,
+                                                    ...extra
+                                                }))
+                                            }}
+                                        />
+                                    </PopoverContent>
+                                </Popover>
                             ) : (
                                 <Input
                                     id={field.id}
-                                    type={field.type === "number" ? "number" : field.type === "date" ? "date" : field.type === "tel" ? "tel" : "text"}
+                                    type={field.type === "number" ? "number" : field.type === "tel" ? "tel" : "text"}
                                     value={value}
-                                    onChange={(e) => {
-                                        let val = e.target.value
-                                        let extra = {}
-                                        if (field.type === "date" && val) {
-                                            const d = new Date(val)
-                                            if (!isNaN(d)) {
-                                                const y = d.getFullYear()
-                                                const m = String(d.getMonth() + 1).padStart(2, "0")
-                                                const day = String(d.getDate()).padStart(2, "0")
-                                                val = `${y}/${m}/${day}`
-                                                if (field.id === "dob") {
-                                                    extra.age = renderCalAge(y)
-                                                }
-                                            }
-                                        }
+                                    onChange={(e) =>
                                         setFormData((prev) => ({
                                             ...prev,
-                                            [field.id]: val,
-                                            ...extra
+                                            [field.id]: e.target.value
                                         }))
-                                    }}
+                                    }
                                 />
                             )}
                         </div>

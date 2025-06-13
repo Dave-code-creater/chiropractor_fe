@@ -460,28 +460,28 @@ const PATIENT_INFO = [
                         id: "mentalWork",
                         label: "Mental work level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["None", "Heavy", "Moderate", "Light"]
                     },
                     { id: "mentalWorkHours", label: "Mental work hours/day", type: "text", placeholder: "8" },
                     {
                         id: "physicalWork",
                         label: "Physical work level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["None", "Heavy", "Moderate", "Light"]
                     },
                     { id: "physicalWorkHours", label: "Physical work hours/day", type: "text", placeholder: "4" },
                     {
                         id: "exercise",
                         label: "Exercise level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["None", "Heavy", "Moderate", "Light"]
                     },
                     { id: "exerciseHours", label: "Exercise hours/day", type: "text", placeholder: "1" },
                     {
                         id: "smokingStatus",
                         label: "Smoking status",
                         type: "radio",
-                        options: ["Current", "Previous"]
+                        options: ["None", "Current", "Previous"]
                     },
                     { id: "packsPerDay", label: "Packs per day", type: "text", placeholder: "0" },
                     { id: "smokingYears", label: "Years smoking", type: "text", placeholder: "0" },
@@ -500,7 +500,7 @@ const PATIENT_INFO = [
                         id: "currentlyWorking",
                         label: "Are you currently working?",
                         type: "radio",
-                        options: ["YES", "NO"]
+                        options: ["None", "YES", "NO"]
                     },
                     {
                         id: "workTimes",
