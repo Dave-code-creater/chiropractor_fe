@@ -72,7 +72,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
         q.fields.forEach((f) => {
           if (formData[f.id] !== undefined) data[f.id] = formData[f.id];
         });
-      } else if (q.type === "painChart") {
+      } else if (q.type === "image-map") {
         data.painEvaluations = painEvaluations;
       } else if (formData[q.id] !== undefined) {
         data[q.id] = formData[q.id];
@@ -159,7 +159,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
             commonFieldsetClasses={baseClasses}
           />
         );
-      case "painChart":
+      case "image-map":
         return (
           <fieldset key={question.id} className={baseClasses}>
             <legend className="text-sm font-medium text-muted-foreground px-2">{question.label}</legend>
@@ -192,29 +192,9 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
                       return list;
                     })
                   }
-                  onRemove={
-                    painEvaluations.length > 1
-                      ? () =>
-                          setPainEvaluations((prev) =>
-                            prev.filter((_, i) => i !== idx)
-                          )
-                      : null
-                  }
                 />
               </div>
             ))}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() =>
-                setPainEvaluations((prev) => [
-                  ...prev,
-                  { painMap: {}, formData: {} },
-                ])
-              }
-            >
-              Add Evaluation
-            </Button>
           </fieldset>
         );
       default:

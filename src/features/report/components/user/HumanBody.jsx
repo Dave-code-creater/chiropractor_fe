@@ -28,28 +28,24 @@ import {
     HoverCardContent,
 } from "@/components/ui/hover-card";
 
-const painFields = {
-    left: [
-        { id: "headache", label: "Headaches" },
-        { id: "upperBack", label: "Upper Back" },
-        { id: "arms", label: "Arms" },
-        { id: "lowerBack", label: "Lower Back" },
-        { id: "feet", label: "Feet" },
-        { id: "hips", label: "Hips" },
-        { id: "knees", label: "Knees" },
-        { id: "ankles", label: "Ankles" },
-    ],
-    right: [
-        { id: "neck", label: "Neck" },
-        { id: "shoulders", label: "Shoulders" },
-        { id: "midBack", label: "Mid Back" },
-        { id: "legs", label: "Legs" },
-        { id: "toes", label: "Toes" },
-        { id: "wrists", label: "Wrists" },
-        { id: "elbows", label: "Elbows" },
-        { id: "shoulderBlades", label: "Shoulder Blades" },
-    ],
-};
+const painFields = [
+    { id: "headache", label: "Headaches" },
+    { id: "neck", label: "Neck" },
+    { id: "shoulders", label: "Shoulders" },
+    { id: "upperBack", label: "Upper Back" },
+    { id: "midBack", label: "Mid Back" },
+    { id: "lowerBack", label: "Lower Back" },
+    { id: "shoulderBlades", label: "Shoulder Blades" },
+    { id: "arms", label: "Arms" },
+    { id: "wrists", label: "Wrists" },
+    { id: "elbows", label: "Elbows" },
+    { id: "hips", label: "Hips" },
+    { id: "legs", label: "Legs" },
+    { id: "knees", label: "Knees" },
+    { id: "ankles", label: "Ankles" },
+    { id: "feet", label: "Feet" },
+    { id: "toes", label: "Toes" },
+];
 import { RenderQuesFuncs,
   RenderTextAreaQues,
   RenderRadioQues,
@@ -61,7 +57,6 @@ export default function PainChartSection({
     setPainMap,
     formData,
     setFormData,
-    onRemove,
 }) {
     const objectHuman = {
         id: "3",
@@ -129,6 +124,31 @@ export default function PainChartSection({
     const [model, setModel] = useState("male");
     const [openFieldId, setopenFieldId] = useState(null);
 
+    const partMap = {
+        head: "headache",
+        leftShoulder: "shoulders",
+        rightShoulder: "shoulders",
+        chest: "upperBack",
+        stomach: "lowerBack",
+        leftArm: "arms",
+        rightArm: "arms",
+        leftHand: "wrists",
+        rightHand: "wrists",
+        leftLeg: "legs",
+        rightLeg: "legs",
+        leftFoot: "feet",
+        rightFoot: "feet",
+    };
+
+    const handleBodyClick = (part) => {
+        const field = partMap[part];
+        if (field) setopenFieldId(field);
+    };
+
+    const partsInput = Object.fromEntries(
+        Object.entries(partMap).map(([part, field]) => [part, { selected: !!painMap[field] }])
+    );
+
     const handleSliderChange = (id, value) => {
         setPainMap((prev) => ({
             ...prev,
@@ -155,19 +175,8 @@ export default function PainChartSection({
 
     return (
         <div className="relative flex justify-center items-start gap-4 w-full">
-            {onRemove && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={onRemove}
-                    className="absolute right-0 top-0 text-red-600"
-                >
-                    Remove
-                </Button>
-            )}
-            {/* Left Panel */}
             <div className="flex flex-col gap-6 mt-20">
-                {painFields.left.map((field) => (
+                {painFields.map((field) => (
                     <div key={field.id} className="text-center">
                         <Label className="font-semibold text-sm">{field.label}</Label>
                         <Dialog open={openFieldId === field.id} onOpenChange={(isOpen) => {
@@ -238,78 +247,16 @@ export default function PainChartSection({
             {/* Body Model */}
             <div className="scale-90">
                 <Suspense fallback={<div>Loading...</div>}>
-                    <BodyComponent bodyModel={model} />
+                    <BodyComponent
+                        bodyModel={model}
+                        onClick={handleBodyClick}
+                        partsInput={partsInput}
+                    />
                 </Suspense>
                 <div className="flex justify-center gap-2 mt-2 text-md font-semibold">
                     <button onClick={() => setModel("male")}>Male</button>
                     <button onClick={() => setModel("female")}>Female</button>
                 </div>
-            </div>
-            {/* Right Panel */}
-            <div className="flex flex-col gap-6 mt-20">
-                {painFields.right.map((field) => (
-                    <div key={field.id} className="text-center">
-                        <Label className="font-semibold text-sm">{field.label}</Label>
-                        <Dialog open={openFieldId === field.id} onOpenChange={(isOpen) => {
-                            if (!isOpen) setopenFieldId(null);
-                        }}>
-                            <DialogTrigger asChild>
-                                <Button
-                                    id={field.id}
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setopenFieldId(field.id)}
-                                >
-                                    {typeof painMap[field.id] === "number"
-                                        ? painMap[field.id]
-                                        : "0"}{" "}
-                                    / 10
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-2xl">
-                                <DialogHeader>
-                                    <DialogTitle>Details your {field.label}</DialogTitle>
-                                    <DialogDescription asChild>
-                                        <div className="flex-1 p-6 overflow-y-auto">
-                                            <Card>
-                                                <CardContent className="space-y-8">
-                                                    <section key={objectHuman.id}>
-                                                        <h3 className="text-xl font-semibold mb-4">
-                                                            Describe details of your {field.label}
-                                                        </h3>
-                                                        <div key={field.id} className="text-center mb-6">
-                                                            <Label className="font-semibold text-sm">{field.label}</Label>
-                                                            <div className="relative w-32 mx-auto">
-                                                                <Slider
-                                                                    min={0}
-                                                                    max={10}
-                                                                    step={1}
-                                                                    value={[painMap[field.id] || 0]}
-                                                                    onValueChange={(val) => handleSliderChange(field.id, val)}
-                                                                />
-                                                                <div className="absolute inset-x-0 bottom-0 text-center text-xs">
-                                                                    {painMap[field.id] || 0} / 10
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex flex-col gap-4">
-                                                            {objectHuman.questions.map((question) => newrenderQuestion(question))}
-                                                        </div>
-                                                    </section>
-                                                </CardContent>
-                                            </Card>
-                                        </div>
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="flex justify-end mt-4">
-                                    <Button variant="outline" onClick={closeDialog}>
-                                        Close
-                                    </Button>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
-                    </div>
-                ))}
             </div>
         </div>
     );
