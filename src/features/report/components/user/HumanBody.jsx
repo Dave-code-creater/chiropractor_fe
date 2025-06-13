@@ -53,6 +53,7 @@ import { RenderQuesFuncs,
   RenderOtherQues }from "../../../../utils/renderQuesFuncs.jsx";
 
 export default function PainChartSection({
+    gender,
     painMap,
     setPainMap,
     formData,
@@ -177,7 +178,7 @@ export default function PainChartSection({
             <div className="scale-90">
                 <Suspense fallback={<div>Loading...</div>}>
                     <BodyComponent
-                        bodyModel="male"
+                        bodyModel={gender && gender.toLowerCase().includes("female") ? "female" : "male"}
                         onClick={handleBodyClick}
                         partsInput={partsInput}
                     />

@@ -500,7 +500,7 @@ const PATIENT_INFO = [
                         id: "currentlyWorking",
                         label: "Are you currently working?",
                         type: "radio",
-                        options: ["None", "YES", "NO"]
+                        options: ["none", "yes", "no"]
                     },
                     {
                         id: "workTimes",

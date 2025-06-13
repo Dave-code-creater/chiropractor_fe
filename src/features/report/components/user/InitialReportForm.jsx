@@ -24,7 +24,10 @@ import {
 } from "@/services/api";
 
 export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
-  const [formData, setFormData] = useState(initialData.formData || {});
+  const [formData, setFormData] = useState({
+    currentlyWorking: "none",
+    ...(initialData.formData || {}),
+  });
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [painEvaluations, setPainEvaluations] = useState(
     initialData.painEvaluations || [{ painMap: {}, formData: {} }]
@@ -166,6 +169,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
             {painEvaluations.map((ev, idx) => (
               <div key={idx} className="mb-8">
                 <PainChartSection
+                  gender={formData.gender}
                   painMap={ev.painMap}
                   setPainMap={(updater) =>
                     setPainEvaluations((prev) => {
