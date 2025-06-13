@@ -142,6 +142,50 @@ export const apiSlice = createApi({
                 }
             },
         }),
+
+        // REPORT SECTION SUBMISSIONS
+        submitPatientIntake: builder.mutation({
+            query: (data) => ({
+                url: "/reports/section1",
+                method: "POST",
+                body: data,
+            }),
+        }),
+        submitAccidentDetails: builder.mutation({
+            query: (data) => ({
+                url: "/reports/section2",
+                method: "POST",
+                body: data,
+            }),
+        }),
+        submitPainEvaluation: builder.mutation({
+            query: (data) => ({
+                url: "/reports/section3",
+                method: "POST",
+                body: data,
+            }),
+        }),
+        submitSymptomDescription: builder.mutation({
+            query: (data) => ({
+                url: "/reports/section4",
+                method: "POST",
+                body: data,
+            }),
+        }),
+        submitRecoveryImpact: builder.mutation({
+            query: (data) => ({
+                url: "/reports/section5",
+                method: "POST",
+                body: data,
+            }),
+        }),
+        submitHealthHistory: builder.mutation({
+            query: (data) => ({
+                url: "/reports/section6",
+                method: "POST",
+                body: data,
+            }),
+        }),
     }),
 });
 
@@ -151,4 +195,10 @@ export const {
     useRegisterMutation,
     useRefreshTokenMutation,
     useLogoutMutation,
+    useSubmitPatientIntakeMutation,
+    useSubmitAccidentDetailsMutation,
+    useSubmitPainEvaluationMutation,
+    useSubmitSymptomDescriptionMutation,
+    useSubmitRecoveryImpactMutation,
+    useSubmitHealthHistoryMutation,
 } = apiSlice;
