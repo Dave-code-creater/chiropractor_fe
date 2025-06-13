@@ -14,8 +14,38 @@ import {
 } from "@/utils/renderQuesFuncs";
 import PATIENT_INFO from "../../../../constants/initial-reports";
 import PainChartSection from "./HumanBody";
+import {
+  useSubmitPatientIntakeMutation,
+  useSubmitAccidentDetailsMutation,
+  useSubmitPainEvaluationMutation,
+  useSubmitSymptomDescriptionMutation,
+  useSubmitRecoveryImpactMutation,
+  useSubmitHealthHistoryMutation,
+} from "@/services/api";
+
+const collectFieldIds = (questions) => {
+  const ids = [];
+  questions.forEach((q) => {
+    if (q.type === "group") {
+      q.fields.forEach((f) => ids.push(f.id))
+    } else if (q.type !== "image-map") {
+      ids.push(q.id)
+    }
+  })
+  return ids
+}
+
+const sectionFieldIds = PATIENT_INFO.map((section) =>
+  collectFieldIds(section.questions)
+)
 
 export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
+  const [submitPatientIntake] = useSubmitPatientIntakeMutation();
+  const [submitAccidentDetails] = useSubmitAccidentDetailsMutation();
+  const [submitPainEvaluation] = useSubmitPainEvaluationMutation();
+  const [submitSymptomDescription] = useSubmitSymptomDescriptionMutation();
+  const [submitRecoveryImpact] = useSubmitRecoveryImpactMutation();
+  const [submitHealthHistory] = useSubmitHealthHistoryMutation();
   const [formData, setFormData] = useState({
     currentlyWorking: "none",
     drinkStatus: "none",
@@ -56,12 +86,33 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   };
 
 
-  const handleSectionSubmit = () => {
+  const submitters = [
+    submitPatientIntake,
+    submitAccidentDetails,
+    submitPainEvaluation,
+    submitSymptomDescription,
+    submitRecoveryImpact,
+    submitHealthHistory,
+  ];
+
+  const handleSectionSubmit = async () => {
     if (!validate()) return;
-    if (currentSectionIndex < PATIENT_INFO.length - 1) {
-      setCurrentSectionIndex((i) => i + 1);
-    } else {
-      onSubmit({ formData, painEvaluations, name: reportName });
+    const fields = sectionFieldIds[currentSectionIndex];
+    const subset = {};
+    fields.forEach((f) => {
+      if (formData[f] !== undefined) subset[f] = formData[f];
+    });
+    try {
+      if (currentSection.id === "3") {
+        await submitters[currentSectionIndex]({ painEvaluations, name: reportName });
+      } else {
+        await submitters[currentSectionIndex]({ formData: subset, name: reportName });
+      }
+      if (currentSectionIndex === PATIENT_INFO.length - 1) {
+        onSubmit({ formData, painEvaluations, name: reportName });
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -170,13 +221,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   };
 
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleSectionSubmit();
-      }}
-      className="relative flex flex-col md:flex-row flex-1 h-full overflow-hidden mb-8"
-    >
+    <div className="relative flex flex-col md:flex-row flex-1 h-full overflow-hidden mb-8">
       {onBack && (
         <Button
           variant="ghost"
@@ -198,8 +243,14 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
         </Accordion>
       </div>
       <div className="flex-1 p-4 md:p-6 overflow-y-auto h-full">
-        <Card>
-          <CardHeader>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSectionSubmit();
+          }}
+        >
+          <Card>
+            <CardHeader>
             {editingName ? (
               <Input
                 autoFocus
@@ -220,34 +271,44 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
               </CardTitle>
             )}
             <p className="text-sm text-muted-foreground mt-1">{currentSection.title}</p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {Object.values(formErrors).length > 0 && (
-              <div className="text-red-500 text-sm space-y-1">
-                {Object.entries(formErrors).map(([k,v]) => (
-                  <div key={k}>{v}</div>
-                ))}
-              </div>
-            )}
-            {currentSection.questions.map((q) => renderQuestion(q))}
-            <div className="flex justify-between pt-4">
-              {currentSectionIndex > 0 && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setCurrentSectionIndex((i) => i - 1)}
-                >
-                  Previous
-                </Button>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {Object.values(formErrors).length > 0 && (
+                <div className="text-red-500 text-sm space-y-1">
+                  {Object.entries(formErrors).map(([k, v]) => (
+                    <div key={k}>{v}</div>
+                  ))}
+                </div>
               )}
-              <Button type="submit">
-                {currentSectionIndex < PATIENT_INFO.length - 1 ? "Next" : "Submit"}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+              {currentSection.questions.map((q) => renderQuestion(q))}
+              <div className="flex justify-between pt-4">
+                {currentSectionIndex > 0 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setCurrentSectionIndex((i) => i - 1)}
+                  >
+                    Previous
+                  </Button>
+                )}
+                <div className="space-x-2">
+                  {currentSectionIndex < PATIENT_INFO.length - 1 && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => setCurrentSectionIndex((i) => i + 1)}
+                    >
+                      Next
+                    </Button>
+                  )}
+                  <Button type="submit">Save Section</Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </form>
       </div>
-    </form>
+    </div>
   );
 }
 
