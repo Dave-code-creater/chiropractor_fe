@@ -3,21 +3,21 @@ import { useSelector, useDispatch } from "react-redux";
 import { useRegisterMutation } from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import { renderPhoneNumber, renderGmailExprs, renderPwRegister } from "../../../utils/renderUtilsFunc";
-import { setEmailError, clearEmailError, setPasswordError, clearPasswordError, setConfirmpassword, clearConfirmPwError, } from "../../../utils/formerrorSlice";
+import { setEmailError, clearEmailError, setPasswordError, clearPasswordError, setConfirmPasswordError, clearConfirmPasswordError } from "../../../state/forms/registerFormSlice";
 
 export default function Register() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { user, isAuthenticated } = useSelector((state) => state.auth);
+    const { user, isAuthenticated } = useSelector((state) => state.data.auth);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const errorEmail = useSelector(state => state.formError.email)
-    const pwError = useSelector(state => state.formError.password)
-    const confirmpwError = useSelector(state => state.formError.confirmPassword)
+    const errorEmail = useSelector(state => state.forms.registerForm.errors.email)
+    const pwError = useSelector(state => state.forms.registerForm.errors.password)
+    const confirmpwError = useSelector(state => state.forms.registerForm.errors.confirmPassword)
 
     // RTK Query mutation hook
     const [registerMutation, { isLoading, error: registerError }] = useRegisterMutation();
@@ -25,7 +25,7 @@ export default function Register() {
     useEffect(() => {
         if (isAuthenticated) {
             // After successful registration, navigate to the appropriate dashboard
-            if (user.role.name === "admin") {
+            if (user.role === "admin") {
                 navigate(`/admin/${user.id}`);
             } else {
                 navigate(`/dashboard/${user.id}`);
@@ -53,9 +53,9 @@ export default function Register() {
 
     const handleConfirmPwBlur = () => {
         if (confirmPassword !== password) {
-            dispatch(setConfirmpassword('Passwords do not match'));
+            dispatch(setConfirmPasswordError('Passwords do not match'));
         } else {
-            dispatch(clearConfirmPwError());
+            dispatch(clearConfirmPasswordError());
         }
     }
     const handlePhoneBlur = () => {

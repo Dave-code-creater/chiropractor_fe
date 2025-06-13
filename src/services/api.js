@@ -1,12 +1,13 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { setCredentials, logOut } from "../features/auth/authSlice";
+import { setCredentials, logOut } from "../state/data/authSlice";
 
 // Base fetchBaseQuery configured to attach the access token and send HttpOnly refresh cookie
 const baseQuery = fetchBaseQuery({
-    baseUrl: "http://localhost:3000/v1/api/2025",
+    // Replace baseUrl with your API endpoint
+    baseUrl: "https://api.example.com",
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-        const token = getState().auth.accessToken;
+        const token = getState().data?.auth?.accessToken;
         if (token) {
             headers.set("Authorization", `Bearer ${token}`);
         }
@@ -27,17 +28,15 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
         );
 
         if (refreshResult.data) {
-            const metadata = refreshResult.data.metadata;
+            const { token, refreshToken } = refreshResult.data.metadata;
+            const decoded = JSON.parse(atob(token.split(".")[1]));
             const newUser = {
-                id: metadata.profile_id ?? metadata.identity_id,
-                role: {
-                    id: metadata.role_id.id,
-                    name: metadata.role_id.name,
-                },
+                id: decoded.sub,
+                email: decoded.email,
+                role: decoded.role,
             };
-            const newAccessToken = metadata.accessToken;
             // Store new credentials
-            api.dispatch(setCredentials({ user: newUser, accessToken: newAccessToken }));
+            api.dispatch(setCredentials({ user: newUser, accessToken: token, refreshToken }));
             // Retry original request
             result = await baseQuery(args, api, extraOptions);
         } else {
@@ -64,16 +63,14 @@ export const apiSlice = createApi({
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
-                    const metadata = data.metadata;
+                    const { token, refreshToken } = data.metadata;
+                    const decoded = JSON.parse(atob(token.split(".")[1]));
                     const user = {
-                        id: metadata.profile_id ?? metadata.identity_id,
-                        role: {
-                            id: metadata.role_id.id,
-                            name: metadata.role_id.name,
-                        },
+                        id: decoded.sub,
+                        email: decoded.email,
+                        role: decoded.role,
                     };
-                    const accessToken = metadata.accessToken;
-                    dispatch(setCredentials({ user, accessToken }));
+                    dispatch(setCredentials({ user, accessToken: token, refreshToken }));
                 } catch {
                     // Ignore errors here
                 }
@@ -90,16 +87,14 @@ export const apiSlice = createApi({
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
-                    const metadata = data.metadata;
+                    const { token, refreshToken } = data.metadata;
+                    const decoded = JSON.parse(atob(token.split(".")[1]));
                     const user = {
-                        id: metadata.profile_id ?? metadata.identity_id,
-                        role: {
-                            id: metadata.role.id,
-                            name: metadata.role.name,
-                        },
+                        id: decoded.sub,
+                        email: decoded.email,
+                        role: decoded.role,
                     };
-                    const accessToken = metadata.accessToken;
-                    dispatch(setCredentials({ user, accessToken }));
+                    dispatch(setCredentials({ user, accessToken: token, refreshToken }));
                 } catch {
                     // Ignore errors
                 }
@@ -115,16 +110,14 @@ export const apiSlice = createApi({
             async onQueryStarted(arg, { dispatch, queryFulfilled }) {
                 try {
                     const { data } = await queryFulfilled;
-                    const metadata = data.metadata;
+                    const { token, refreshToken } = data.metadata;
+                    const decoded = JSON.parse(atob(token.split(".")[1]));
                     const user = {
-                        id: metadata.profile_id ?? metadata.identity_id,
-                        role: {
-                            id: metadata.role_id.id,
-                            name: metadata.role_id.name,
-                        },
+                        id: decoded.sub,
+                        email: decoded.email,
+                        role: decoded.role,
                     };
-                    const accessToken = metadata.accessToken;
-                    dispatch(setCredentials({ user, accessToken }));
+                    dispatch(setCredentials({ user, accessToken: token, refreshToken }));
                 } catch {
                     dispatch(logOut());
                 }
