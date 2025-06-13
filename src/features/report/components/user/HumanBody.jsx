@@ -56,7 +56,13 @@ import { RenderQuesFuncs,
   RenderCheckboxQues,
   RenderOtherQues }from "../../../../utils/renderQuesFuncs.jsx";
 
-export default function PainChartSection({ painMap, setPainMap }) {
+export default function PainChartSection({
+    painMap,
+    setPainMap,
+    formData,
+    setFormData,
+    onRemove,
+}) {
     const objectHuman = {
         id: "3",
         title: "Pain & Symptom Evaluation",
@@ -121,7 +127,6 @@ export default function PainChartSection({ painMap, setPainMap }) {
     };
 
     const [model, setModel] = useState("male");
-    const [formData, setFormData] = useState({});
     const [openFieldId, setopenFieldId] = useState(null);
 
     const handleSliderChange = (id, value) => {
@@ -149,7 +154,17 @@ export default function PainChartSection({ painMap, setPainMap }) {
     };
 
     return (
-        <div className="flex justify-center items-start gap-4 w-full">
+        <div className="relative flex justify-center items-start gap-4 w-full">
+            {onRemove && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={onRemove}
+                    className="absolute right-0 top-0 text-red-600"
+                >
+                    Remove
+                </Button>
+            )}
             {/* Left Panel */}
             <div className="flex flex-col gap-6 mt-20">
                 {painFields.left.map((field) => (

@@ -27,7 +27,9 @@ import {
 export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
   const [formData, setFormData] = useState(initialData.formData || {});
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [painMap, setPainMap] = useState(initialData.painMap || {});
+  const [painEvaluations, setPainEvaluations] = useState(
+    initialData.painEvaluations || [{ painMap: {}, formData: {} }]
+  );
   const [reportName, setReportName] = useState(initialData.name || "");
   const [formErrors, setFormErrors] = useState({});
 
@@ -71,7 +73,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
           if (formData[f.id] !== undefined) data[f.id] = formData[f.id];
         });
       } else if (q.type === "painChart") {
-        data.painMap = painMap;
+        data.painEvaluations = painEvaluations;
       } else if (formData[q.id] !== undefined) {
         data[q.id] = formData[q.id];
       }
@@ -98,7 +100,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
       if (currentSectionIndex < PATIENT_INFO.length - 1) {
         setCurrentSectionIndex((i) => i + 1);
       } else {
-        onSubmit({ formData, painMap, name: reportName });
+        onSubmit({ formData, painEvaluations, name: reportName });
       }
     } catch (err) {
       console.error(err);
@@ -161,7 +163,58 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
         return (
           <fieldset key={question.id} className={baseClasses}>
             <legend className="text-sm font-medium text-muted-foreground px-2">{question.label}</legend>
-            <PainChartSection painMap={painMap} setPainMap={setPainMap} />
+            {painEvaluations.map((ev, idx) => (
+              <div key={idx} className="mb-8">
+                <PainChartSection
+                  painMap={ev.painMap}
+                  setPainMap={(updater) =>
+                    setPainEvaluations((prev) => {
+                      const list = [...prev];
+                      const current = list[idx];
+                      const newMap =
+                        typeof updater === "function"
+                          ? updater(current.painMap || {})
+                          : updater;
+                      list[idx] = { ...current, painMap: newMap };
+                      return list;
+                    })
+                  }
+                  formData={ev.formData}
+                  setFormData={(updater) =>
+                    setPainEvaluations((prev) => {
+                      const list = [...prev];
+                      const current = list[idx];
+                      const newData =
+                        typeof updater === "function"
+                          ? updater(current.formData || {})
+                          : updater;
+                      list[idx] = { ...current, formData: newData };
+                      return list;
+                    })
+                  }
+                  onRemove={
+                    painEvaluations.length > 1
+                      ? () =>
+                          setPainEvaluations((prev) =>
+                            prev.filter((_, i) => i !== idx)
+                          )
+                      : null
+                  }
+                />
+              </div>
+            ))}
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                setPainEvaluations((prev) => [
+                  ...prev,
+                  { painMap: {}, formData: {} },
+                ])
+              }
+            >
+              Add Evaluation
+            </Button>
           </fieldset>
         );
       default:

@@ -13,7 +13,12 @@ import { useDeleteReportMutation } from "@/services/api"
 
 export default function Report() {
     const [reports, setReports] = useState([
-        { id: Date.now(), name: "", createdAt: new Date().toISOString() },
+        {
+            id: Date.now(),
+            name: "",
+            createdAt: new Date().toISOString(),
+            painEvaluations: [{ painMap: {}, formData: {} }],
+        },
     ])
     const [selectedId, setSelectedId] = useState(null)
     const [sortOption, setSortOption] = useState("date")
@@ -24,6 +29,7 @@ export default function Report() {
             id: Date.now(),
             name: "",
             createdAt: new Date().toISOString(),
+            painEvaluations: [{ painMap: {}, formData: {} }],
         }
         setReports((prev) => [...prev, newReport])
         setSelectedId(newReport.id)
