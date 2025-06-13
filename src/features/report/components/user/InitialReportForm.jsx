@@ -13,10 +13,10 @@ import {
 import PATIENT_INFO from "../../../../constants/initial-reports";
 import PainChartSection from "./HumanBody";
 
-export default function InitialReportForm({onSubmit}) {
-  const [formData, setFormData] = useState({});
+export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
+  const [formData, setFormData] = useState(initialData.formData || {});
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const [painMap, setPainMap] = useState({});
+  const [painMap, setPainMap] = useState(initialData.painMap || {});
   const [formErrors, setFormErrors] = useState({});
 
   const currentSection = PATIENT_INFO[currentSectionIndex];
@@ -118,6 +118,13 @@ export default function InitialReportForm({onSubmit}) {
       }}
       className="flex flex-col md:flex-row flex-1 h-full overflow-hidden mb-8"
     >
+      {onBack && (
+        <div className="mb-4 md:hidden">
+          <Button variant="outline" size="sm" onClick={onBack}>
+            Back to reports
+          </Button>
+        </div>
+      )}
       <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full">
         <h2 className="text-lg font-semibold mb-4">Initial Reports</h2>
         <Accordion type="single" collapsible className="space-y-2" value={currentSection.title}>
@@ -130,8 +137,13 @@ export default function InitialReportForm({onSubmit}) {
       </div>
       <div className="flex-1 p-4 md:p-6 overflow-y-auto h-full">
         <Card>
-          <CardHeader>
+          <CardHeader className="flex justify-between items-center">
             <CardTitle>{currentSection.title}</CardTitle>
+            {onBack && (
+              <Button variant="outline" size="sm" onClick={onBack}>
+                Back
+              </Button>
+            )}
           </CardHeader>
           <CardContent className="space-y-6">
             {Object.values(formErrors).length > 0 && (
@@ -155,3 +167,4 @@ export default function InitialReportForm({onSubmit}) {
     </form>
   );
 }
+
