@@ -14,14 +14,6 @@ import {
 } from "@/utils/renderQuesFuncs";
 import PATIENT_INFO from "../../../../constants/initial-reports";
 import PainChartSection from "./HumanBody";
-import {
-  useSubmitPatientIntakeMutation,
-  useSubmitAccidentDetailsMutation,
-  useSubmitPainEvaluationMutation,
-  useSubmitSymptomDescriptionMutation,
-  useSubmitRecoveryImpactMutation,
-  useSubmitHealthHistoryMutation,
-} from "@/services/api";
 
 export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
   const [formData, setFormData] = useState({
@@ -37,12 +29,6 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   const [editingName, setEditingName] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
-  const [submitSection1] = useSubmitPatientIntakeMutation();
-  const [submitSection2] = useSubmitAccidentDetailsMutation();
-  const [submitSection3] = useSubmitPainEvaluationMutation();
-  const [submitSection4] = useSubmitSymptomDescriptionMutation();
-  const [submitSection5] = useSubmitRecoveryImpactMutation();
-  const [submitSection6] = useSubmitHealthHistoryMutation();
 
   const currentSection = PATIENT_INFO[currentSectionIndex];
   const baseClasses = "border rounded-md p-4 space-y-4 mb-4 bg-white shadow-sm";
@@ -69,45 +55,13 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
     return Object.keys(errs).length === 0;
   };
 
-  const collectSectionData = () => {
-    const data = {};
-    currentSection.questions.forEach((q) => {
-      if (q.type === "group") {
-        q.fields.forEach((f) => {
-          if (formData[f.id] !== undefined) data[f.id] = formData[f.id];
-        });
-      } else if (q.type === "image-map") {
-        data.painEvaluations = painEvaluations;
-      } else if (formData[q.id] !== undefined) {
-        data[q.id] = formData[q.id];
-      }
-    });
-    data.name = reportName;
-    return data;
-  };
 
-  const submitters = [
-    submitSection1,
-    submitSection2,
-    submitSection3,
-    submitSection4,
-    submitSection5,
-    submitSection6,
-  ];
-
-  const handleSectionSubmit = async () => {
+  const handleSectionSubmit = () => {
     if (!validate()) return;
-    const data = collectSectionData();
-    const submit = submitters[currentSectionIndex];
-    try {
-      await submit(data).unwrap();
-      if (currentSectionIndex < PATIENT_INFO.length - 1) {
-        setCurrentSectionIndex((i) => i + 1);
-      } else {
-        onSubmit({ formData, painEvaluations, name: reportName });
-      }
-    } catch (err) {
-      console.error(err);
+    if (currentSectionIndex < PATIENT_INFO.length - 1) {
+      setCurrentSectionIndex((i) => i + 1);
+    } else {
+      onSubmit({ formData, painEvaluations, name: reportName });
     }
   };
 
@@ -276,7 +230,16 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
               </div>
             )}
             {currentSection.questions.map((q) => renderQuestion(q))}
-            <div className="flex justify-end pt-4">
+            <div className="flex justify-between pt-4">
+              {currentSectionIndex > 0 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setCurrentSectionIndex((i) => i - 1)}
+                >
+                  Previous
+                </Button>
+              )}
               <Button type="submit">
                 {currentSectionIndex < PATIENT_INFO.length - 1 ? "Next" : "Submit"}
               </Button>
