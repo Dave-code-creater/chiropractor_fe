@@ -221,17 +221,23 @@ export default function PainChartSection({
                                                         </h3>
                                                         <div key={field.id} className="text-center mb-6">
                                                             <Label className="font-semibold text-sm">{field.label}</Label>
-                                                            <div className="w-32 mx-auto space-y-1 mt-2">
-                                                                <Slider
-                                                                    min={1}
-                                                                    max={10}
-                                                                    step={1}
-                                                                    value={[painMap[field.id] || 1]}
-                                                                    onValueChange={(val) => handleSliderChange(field.id, val)}
-                                                                />
+                                                            <div className="w-40 mx-auto space-y-1 mt-2">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-xs w-4 text-left">1</span>
+                                                                    <Slider
+                                                                        min={1}
+                                                                        max={10}
+                                                                        step={1}
+                                                                        value={[painMap[field.id] || 1]}
+                                                                        onValueChange={(val) => handleSliderChange(field.id, val)}
+                                                                        className="flex-1"
+                                                                    />
+                                                                    <span className="text-xs w-4 text-right">10</span>
+                                                                </div>
                                                                 <div className="text-xs flex justify-between px-2">
-                                                                    <span>1 - least hurt</span>
-                                                                    <span>10 - most hurt</span>
+                                                                    <span>Minimal pain</span>
+                                                                    <span>mid</span>
+                                                                    <span>Max pain</span>
                                                                 </div>
                                                                 <div className="text-center text-xs">
                                                                     {painMap[field.id] || 1} / 10
