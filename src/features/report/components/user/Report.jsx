@@ -1,11 +1,13 @@
 import React, { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { FolderIcon, PlusIcon } from "lucide-react"
+import { FolderIcon, PlusIcon, X } from "lucide-react"
 import InitialReportForm from "./InitialReportForm"
+import { useDeleteReportMutation } from "@/services/api"
 
 export default function Report() {
     const [reports, setReports] = useState([{ id: 0, name: "" }])
     const [selectedIndex, setSelectedIndex] = useState(null)
+    const [deleteReport] = useDeleteReportMutation()
 
     const addReport = () => {
         setReports((prev) => {
@@ -13,6 +15,16 @@ export default function Report() {
             return [...prev, newReport]
         })
         setSelectedIndex(reports.length)
+    }
+
+    const handleDelete = async (id, e) => {
+        e.stopPropagation()
+        try {
+            await deleteReport(id).unwrap()
+        } catch (err) {
+            console.error(err)
+        }
+        setReports((prev) => prev.filter((r) => r.id !== id))
     }
 
     const handleSubmit = (index, data) => {
@@ -43,6 +55,12 @@ export default function Report() {
                         className="group relative rounded-md border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-gray-300 cursor-pointer"
                         onClick={() => setSelectedIndex(idx)}
                     >
+                        <button
+                            onClick={(e) => handleDelete(rep.id, e)}
+                            className="absolute left-2 top-2 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
                         <div className="flex h-20 items-center justify-center">
                             <FolderIcon className="h-12 w-12 text-gray-500 group-hover:text-gray-700" />
                         </div>

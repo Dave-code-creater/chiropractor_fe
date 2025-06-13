@@ -186,6 +186,13 @@ export const apiSlice = createApi({
                 body: data,
             }),
         }),
+
+        deleteReport: builder.mutation({
+            query: (id) => ({
+                url: `/reports/${id}`,
+                method: "DELETE",
+            }),
+        }),
     }),
 });
 
@@ -201,4 +208,5 @@ export const {
     useSubmitSymptomDescriptionMutation,
     useSubmitRecoveryImpactMutation,
     useSubmitHealthHistoryMutation,
+    useDeleteReportMutation,
 } = apiSlice;
