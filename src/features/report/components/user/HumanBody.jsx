@@ -221,7 +221,7 @@ export default function PainChartSection({
                                                         </h3>
                                                         <div key={field.id} className="text-center mb-6">
                                                             <Label className="font-semibold text-sm">{field.label}</Label>
-                                                            <div className="relative w-32 mx-auto">
+                                                            <div className="w-32 mx-auto space-y-1 mt-2">
                                                                 <Slider
                                                                     min={0}
                                                                     max={10}
@@ -229,7 +229,7 @@ export default function PainChartSection({
                                                                     value={[painMap[field.id] || 0]}
                                                                     onValueChange={(val) => handleSliderChange(field.id, val)}
                                                                 />
-                                                                <div className="absolute inset-x-0 bottom-0 text-center text-xs">
+                                                                <div className="text-center text-xs">
                                                                     {painMap[field.id] || 0} / 10
                                                                 </div>
                                                             </div>
