@@ -121,7 +121,6 @@ export default function PainChartSection({
         ]
     };
 
-    const [model, setModel] = useState("male");
     const [openFieldId, setopenFieldId] = useState(null);
 
     const partMap = {
@@ -178,15 +177,11 @@ export default function PainChartSection({
             <div className="scale-90">
                 <Suspense fallback={<div>Loading...</div>}>
                     <BodyComponent
-                        bodyModel={model}
+                        bodyModel="male"
                         onClick={handleBodyClick}
                         partsInput={partsInput}
                     />
                 </Suspense>
-                <div className="flex justify-center gap-2 mt-2 text-md font-semibold">
-                    <button onClick={() => setModel("male")}>Male</button>
-                    <button onClick={() => setModel("female")}>Female</button>
-                </div>
             </div>
             <div className="flex flex-wrap justify-center gap-4 mt-6">
                 {painFields.map((field) => (
@@ -223,7 +218,7 @@ export default function PainChartSection({
                                                             <Label className="font-semibold text-sm">{field.label}</Label>
                                                             <div className="w-40 mx-auto space-y-1 mt-2">
                                                                 <div className="flex items-center gap-2">
-                                                                    <span className="text-xs w-4 text-left">1</span>
+                                                                    <span className="text-xs w-6 text-left">1</span>
                                                                     <Slider
                                                                         min={1}
                                                                         max={10}
@@ -232,12 +227,12 @@ export default function PainChartSection({
                                                                         onValueChange={(val) => handleSliderChange(field.id, val)}
                                                                         className="flex-1"
                                                                     />
-                                                                    <span className="text-xs w-4 text-right">10</span>
+                                                                    <span className="text-xs w-6 text-right">10</span>
                                                                 </div>
-                                                                <div className="text-xs flex justify-between px-2">
-                                                                    <span>Minimal pain</span>
-                                                                    <span>mid</span>
-                                                                    <span>Max pain</span>
+                                                                <div className="text-xs flex justify-between px-4">
+                                                                    <span>Minimal</span>
+                                                                    <span className="flex-1 text-center"> </span>
+                                                                    <span>Max</span>
                                                                 </div>
                                                                 <div className="text-center text-xs">
                                                                     {painMap[field.id] || 1} / 10
