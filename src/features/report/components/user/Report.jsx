@@ -7,7 +7,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { FolderIcon, PlusIcon, X } from "lucide-react"
+import {
+  FolderIcon,
+  HomeIcon,
+  FilesIcon,
+  ImagesIcon,
+  MusicIcon,
+  VideoIcon,
+  DownloadIcon,
+  PlusIcon,
+  X,
+} from "lucide-react"
 import InitialReportForm from "./InitialReportForm"
 import { useDeleteReportMutation } from "@/services/api"
 
@@ -77,46 +87,92 @@ export default function Report() {
     }
 
     return (
-        <div className="p-4 md:p-6">
-            <div className="mb-4 flex justify-end">
-                <Select value={sortOption} onValueChange={setSortOption}>
-                    <SelectTrigger className="w-40">
-                        <SelectValue placeholder="Sort" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="date">Newest</SelectItem>
-                        <SelectItem value="name">Alphabetical</SelectItem>
-                    </SelectContent>
-                </Select>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {sortedReports.map((rep, idx) => (
-                    <div
-                        key={rep.id}
-                        className="group relative rounded-md border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-gray-300 cursor-pointer"
-                        onClick={() => setSelectedId(rep.id)}
-                    >
-                        <button
-                            onClick={(e) => handleDelete(rep.id, e)}
-                            className="absolute left-2 top-2 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
-                        >
-                            <X className="h-4 w-4" />
-                        </button>
-                        <div className="flex h-20 items-center justify-center">
-                            <FolderIcon className="h-12 w-12 text-gray-500 group-hover:text-gray-700" />
-                        </div>
-                        <div className="mt-2 text-center">
-                            <span className="text-sm font-medium text-gray-900">{rep.name || `Report ${idx + 1}`}</span>
-                        </div>
+        <div className="flex h-screen w-full">
+            <div className="hidden h-full w-64 shrink-0 border-r bg-gray-100 dark:border-gray-800 dark:bg-gray-900 lg:block">
+                <div className="flex h-full flex-col gap-4 p-4">
+                    <div className="flex items-center gap-2 font-semibold">
+                        <FolderIcon className="h-6 w-6" />
+                        <span>File Explorer</span>
                     </div>
-                ))}
-                <button
-                    onClick={addReport}
-                    className="flex flex-col items-center justify-center rounded-md border border-dashed border-gray-300 p-4 hover:border-gray-400"
-                >
-                    <PlusIcon className="h-8 w-8 text-gray-500" />
-                    <span className="mt-2 text-sm">Add Report</span>
-                </button>
+                    <nav className="flex-1 space-y-2 overflow-auto">
+                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
+                            <HomeIcon className="h-4 w-4" />
+                            Home
+                        </div>
+                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
+                            <FilesIcon className="h-4 w-4" />
+                            Documents
+                        </div>
+                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
+                            <ImagesIcon className="h-4 w-4" />
+                            Images
+                        </div>
+                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
+                            <MusicIcon className="h-4 w-4" />
+                            Music
+                        </div>
+                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
+                            <VideoIcon className="h-4 w-4" />
+                            Videos
+                        </div>
+                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
+                            <DownloadIcon className="h-4 w-4" />
+                            Downloads
+                        </div>
+                    </nav>
+                </div>
+            </div>
+            <div className="flex flex-1 flex-col">
+                <div className="flex h-14 items-center justify-between border-b bg-gray-100 px-6 dark:border-gray-800 dark:bg-gray-900">
+                    <div className="flex items-center gap-4">
+                        <Select value={sortOption} onValueChange={setSortOption}>
+                            <SelectTrigger className="w-40">
+                                <SelectValue placeholder="Sort" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="date">Newest</SelectItem>
+                                <SelectItem value="name">Alphabetical</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Button variant="outline" size="sm" onClick={addReport}>
+                            <PlusIcon className="h-4 w-4 mr-2" />
+                            Create
+                        </Button>
+                    </div>
+                </div>
+                <div className="flex-1 overflow-auto p-4 md:p-6">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                        {sortedReports.map((rep, idx) => (
+                            <div
+                                key={rep.id}
+                                className="group relative rounded-md border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-gray-300 cursor-pointer"
+                                onClick={() => setSelectedId(rep.id)}
+                            >
+                                <button
+                                    onClick={(e) => handleDelete(rep.id, e)}
+                                    className="absolute left-2 top-2 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                                <div className="flex h-20 w-full items-center justify-center">
+                                    <FolderIcon className="h-12 w-12 text-gray-500 group-hover:text-gray-700" />
+                                </div>
+                                <div className="mt-4 text-center">
+                                    <h3 className="text-sm font-medium text-gray-900">{rep.name || `Report ${idx + 1}`}</h3>
+                                </div>
+                            </div>
+                        ))}
+                        <button
+                            onClick={addReport}
+                            className="flex flex-col items-center justify-center rounded-md border border-dashed border-gray-300 p-4 hover:border-gray-400"
+                        >
+                            <PlusIcon className="h-8 w-8 text-gray-500" />
+                            <span className="mt-2 text-sm">Add Report</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     )

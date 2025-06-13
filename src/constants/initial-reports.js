@@ -160,14 +160,14 @@ const PATIENT_INFO = [
                     {
                         id: "accidentDate",
                         label: "Date of Accident / Beginning of Illness",
-                        type: "text",
-                        placeholder: "08/15/2025",
-                        extra_info: "Use MM/DD/YYYY format."
+                        type: "date",
+                        placeholder: "2025/08/15",
+                        extra_info: "Use YYYY/MM/DD format."
                     },
                     {
                         id: "accidentTime",
                         label: "Time",
-                        type: "text",
+                        type: "time",
                         placeholder: "14:30",
                         extra_info: "Include exact or approximate time of the event."
                     },

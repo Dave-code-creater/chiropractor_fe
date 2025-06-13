@@ -8,7 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
-import { renderCalAge } from "./renderUtilsFunc"
+import { renderCalAge, renderDate } from "./renderUtilsFunc"
 
 export function FormatLegend({ question }) {
     return (
@@ -82,9 +82,30 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                             ) : field.type === "date" ? (
                                 <Popover>
                                     <PopoverTrigger asChild>
-                                        <Button variant="outline" className="w-full justify-start">
-                                            {value ? value : `Select ${field.label}`}
-                                        </Button>
+                                        <Input
+                                            id={field.id}
+                                            placeholder="YYYY/MM/DD"
+                                            value={value}
+                                            onChange={(e) =>
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    [field.id]: e.target.value
+                                                }))
+                                            }
+                                            onBlur={(e) => {
+                                                const formatted = renderDate(e.target.value)
+                                                let extra = {}
+                                                if (formatted && field.id === "dob") {
+                                                    extra.age = renderCalAge(formatted.slice(0, 4))
+                                                }
+                                                setFormData((prev) => ({
+                                                    ...prev,
+                                                    [field.id]: formatted,
+                                                    ...extra
+                                                }))
+                                            }}
+                                            className="cursor-pointer"
+                                        />
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
                                         <Calendar

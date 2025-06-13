@@ -109,7 +109,23 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
         await submitters[currentSectionIndex]({ formData: subset, name: reportName });
       }
       if (currentSectionIndex === PATIENT_INFO.length - 1) {
-        onSubmit({ formData, painEvaluations, name: reportName });
+        const sectionData = PATIENT_INFO.map((_, idx) => {
+          const ids = sectionFieldIds[idx]
+          const obj = {}
+          ids.forEach((id) => {
+            if (formData[id] !== undefined) obj[id] = formData[id]
+          })
+          return obj
+        })
+        onSubmit({
+          patientIntake: sectionData[0],
+          accidentDetails: sectionData[1],
+          painEvaluations,
+          symptomDescription: sectionData[3],
+          recoveryImpact: sectionData[4],
+          healthHistory: sectionData[5],
+          name: reportName,
+        })
       }
     } catch (err) {
       console.error(err);
