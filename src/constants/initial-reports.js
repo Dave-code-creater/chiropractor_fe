@@ -147,16 +147,6 @@ const PATIENT_INFO = [
         title: "Accident & Insurance Details",
         questions: [
             {
-                id: "mainComplaints",
-                label: "What are your main problems (complaints / pains)?",
-                type: "textarea"
-            },
-            {
-                id: "previousHealthcare",
-                label: "What other health care have you received for this problem(s)?",
-                type: "textarea"
-            },
-            {
                 id: "accidentDetails",
                 label: "Accident or Illness Details",
                 type: "group",
@@ -338,6 +328,16 @@ const PATIENT_INFO = [
                 type: "textarea",
                 extra_info:
                     "Include when your symptoms began, how they have changed, and any previous treatments."
+            },
+            {
+                id: "mainComplaints",
+                label: "What are your main problems (complaints / pains)?",
+                type: "textarea"
+            },
+            {
+                id: "previousHealthcare",
+                label: "What other health care have you received for this problem(s)?",
+                type: "textarea"
             }
         ]
     },

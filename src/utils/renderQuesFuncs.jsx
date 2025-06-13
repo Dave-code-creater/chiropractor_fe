@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import { renderCalAge } from "./renderUtilsFunc"
 
 export function FormatLegend({ question }) {
     return (
@@ -72,6 +73,7 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                     value={value}
                                     onChange={(e) => {
                                         let val = e.target.value
+                                        let extra = {}
                                         if (field.type === "date" && val) {
                                             const d = new Date(val)
                                             if (!isNaN(d)) {
@@ -79,11 +81,15 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                                 const m = String(d.getMonth() + 1).padStart(2, "0")
                                                 const day = String(d.getDate()).padStart(2, "0")
                                                 val = `${y}/${m}/${day}`
+                                                if (field.id === "dob") {
+                                                    extra.age = renderCalAge(y)
+                                                }
                                             }
                                         }
                                         setFormData((prev) => ({
                                             ...prev,
-                                            [field.id]: val
+                                            [field.id]: val,
+                                            ...extra
                                         }))
                                     }}
                                 />
