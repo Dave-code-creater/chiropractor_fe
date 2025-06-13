@@ -3,6 +3,7 @@ import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/acco
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 
 import {
@@ -143,20 +144,20 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
       </div>
       <div className="flex-1 p-4 md:p-6 overflow-y-auto h-full">
         <Card>
-          <CardHeader className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <CardTitle>{currentSection.title}</CardTitle>
-            </div>
-            <div className="w-48">
+          <CardHeader>
+            <CardTitle>{currentSection.title}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <Label htmlFor="report-name">Report name</Label>
               <Input
+                id="report-name"
                 placeholder="Report name"
                 value={reportName}
                 onChange={(e) => setReportName(e.target.value)}
-                className="h-8"
+                className="mt-1"
               />
             </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
             {Object.values(formErrors).length > 0 && (
               <div className="text-red-500 text-sm space-y-1">
                 {Object.entries(formErrors).map(([k,v]) => (
