@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
     Dialog,
@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { BodyComponent } from "reactjs-human-body";
+const BodyComponent = lazy(() => import("reactjs-human-body").then(m => ({ default: m.BodyComponent || m.default })))
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -186,17 +186,17 @@ export default function PainChartSection({ painMap, setPainMap }) {
                                                         </h3>
                                                         <div key={field.id} className="text-center mb-6">
                                                             <Label className="font-semibold text-sm">{field.label}</Label>
-                                                            <Slider
-                                                                min={0}
-                                                                max={10}
-                                                                step={1}
-                                                                value={[painMap[field.id] || 0]}
-                                                                onValueChange={(val) => handleSliderChange(field.id, val)}
-                                                                className="w-32 mx-auto"
-                                                            />
-                                                            <div className="text-xs flex justify-between px-2">
-                                                                <span>0</span>
-                                                                <span>10</span>
+                                                            <div className="relative w-32 mx-auto">
+                                                                <Slider
+                                                                    min={0}
+                                                                    max={10}
+                                                                    step={1}
+                                                                    value={[painMap[field.id] || 0]}
+                                                                    onValueChange={(val) => handleSliderChange(field.id, val)}
+                                                                />
+                                                                <div className="absolute inset-x-0 bottom-0 text-center text-xs">
+                                                                    {painMap[field.id] || 0} / 10
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div className="flex flex-col gap-4">
@@ -222,7 +222,9 @@ export default function PainChartSection({ painMap, setPainMap }) {
             </div>
             {/* Body Model */}
             <div className="scale-90">
-                <BodyComponent bodyModel={model} />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <BodyComponent bodyModel={model} />
+                </Suspense>
                 <div className="flex justify-center gap-2 mt-2 text-md font-semibold">
                     <button onClick={() => setModel("male")}>Male</button>
                     <button onClick={() => setModel("female")}>Female</button>
@@ -262,17 +264,17 @@ export default function PainChartSection({ painMap, setPainMap }) {
                                                         </h3>
                                                         <div key={field.id} className="text-center mb-6">
                                                             <Label className="font-semibold text-sm">{field.label}</Label>
-                                                            <Slider
-                                                                min={0}
-                                                                max={10}
-                                                                step={1}
-                                                                value={[painMap[field.id] || 0]}
-                                                                onValueChange={(val) => handleSliderChange(field.id, val)}
-                                                                className="w-32 mx-auto"
-                                                            />
-                                                            <div className="text-xs flex justify-between px-2">
-                                                                <span>0</span>
-                                                                <span>10</span>
+                                                            <div className="relative w-32 mx-auto">
+                                                                <Slider
+                                                                    min={0}
+                                                                    max={10}
+                                                                    step={1}
+                                                                    value={[painMap[field.id] || 0]}
+                                                                    onValueChange={(val) => handleSliderChange(field.id, val)}
+                                                                />
+                                                                <div className="absolute inset-x-0 bottom-0 text-center text-xs">
+                                                                    {painMap[field.id] || 0} / 10
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div className="flex flex-col gap-4">

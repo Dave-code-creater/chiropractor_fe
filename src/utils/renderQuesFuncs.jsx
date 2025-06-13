@@ -68,14 +68,24 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                             ) : (
                                 <Input
                                     id={field.id}
-                                    type={field.type === "number" ? "number" : "text"}
+                                    type={field.type === "number" ? "number" : field.type === "date" ? "date" : field.type === "tel" ? "tel" : "text"}
                                     value={value}
-                                    onChange={(e) =>
+                                    onChange={(e) => {
+                                        let val = e.target.value
+                                        if (field.type === "date" && val) {
+                                            const d = new Date(val)
+                                            if (!isNaN(d)) {
+                                                const y = d.getFullYear()
+                                                const m = String(d.getMonth() + 1).padStart(2, "0")
+                                                const day = String(d.getDate()).padStart(2, "0")
+                                                val = `${y}/${m}/${day}`
+                                            }
+                                        }
                                         setFormData((prev) => ({
                                             ...prev,
-                                            [field.id]: e.target.value
+                                            [field.id]: val
                                         }))
-                                    }
+                                    }}
                                 />
                             )}
                         </div>
