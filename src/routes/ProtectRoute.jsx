@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 export default function ProtectRoute({ allowedRoles }) {
     const navigate = useNavigate();
     const location = useLocation();
-    const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-    const user = useSelector(state => state.auth.user);
+    const isAuthenticated = useSelector(state => state.data.auth.isAuthenticated);
+    const user = useSelector(state => state.data.auth.user);
 
     const from = location.state?.from?.pathname || `/dashboard/${user?.id || ''}`;
     console.log("user role:", user?.role);
@@ -20,8 +20,8 @@ export default function ProtectRoute({ allowedRoles }) {
         return <Navigate to="/login" replace state={{ from: location }} />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user?.role?.name)) {
-        console.warn(`Unauthorized access attempt by user with role: ${user?.role?.name}`);
+    if (allowedRoles && !allowedRoles.includes(user?.role)) {
+        console.warn(`Unauthorized access attempt by user with role: ${user?.role}`);
         return <Navigate to="/unauthorized" replace />;
     }
 

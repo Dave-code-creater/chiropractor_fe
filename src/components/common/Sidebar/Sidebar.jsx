@@ -11,7 +11,7 @@ function Sidebar({ sidebarPosition = "left" }) {
     const [mobileOpen, setMobileOpen] = useState(false);
 
     const navigate = useNavigate();
-    const user = useSelector((state) => state.auth.user);
+    const user = useSelector((state) => state.data.auth.user);
     const [logoutApi] = useLogoutMutation();
 
     const handleLogout = () => {

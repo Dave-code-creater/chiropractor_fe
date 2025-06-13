@@ -3,17 +3,17 @@ import { useSelector, useDispatch} from "react-redux";
 import { useLoginMutation } from "../../../services/api";
 import { useNavigate } from "react-router-dom";
 import { renderGmailExprs, renderPassword} from "../../../utils/renderUtilsFunc";
-import { setEmailError, clearEmailError, setPasswordError, clearPasswordError } from "../../../utils/formerrorSlice";
+import { setEmailError, clearEmailError, setPasswordError, clearPasswordError } from "../../../state/forms/loginFormSlice";
 
 export default function Login() {
     const navigate = useNavigate();
-    const { user, isAuthenticated } = useSelector((state) => state.auth);
+    const { user, isAuthenticated } = useSelector((state) => state.data.auth);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loginMutation, { isLoading, error: loginError }] = useLoginMutation();
     const dispatch = useDispatch();
-    const errorEmail = useSelector(state => state.formError.email)
-    const pwError = useSelector (state => state.formError.password )
+    const errorEmail = useSelector(state => state.forms.loginForm.errors.email)
+    const pwError = useSelector (state => state.forms.loginForm.errors.password )
 
     const handleEmailBlur = () => {
         try {
@@ -36,7 +36,7 @@ export default function Login() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            if (user.role.name === "admin") {
+            if (user.role === "admin") {
                 navigate(`/admin/${user.id}`);
             } else {
                 navigate(`/dashboard/${user.id}`);

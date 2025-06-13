@@ -8,8 +8,8 @@ function classNames(...classes) {
 
 export default function Services() {
     const navigate = useNavigate()
-    const user = useSelector((state) => state.auth.user);
-    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const user = useSelector((state) => state.data.auth.user);
+    const isAuthenticated = useSelector((state) => state.data.auth.isAuthenticated);
 
 
     const handleBookAppointment = (serviceId) => {
