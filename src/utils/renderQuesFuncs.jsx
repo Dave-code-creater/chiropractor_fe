@@ -5,6 +5,8 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+import PainChartSection from "../features/report/components/user/HumanBody"
+
 
 export function FormatLegend({ question }) {
     return (
@@ -25,12 +27,61 @@ export function FormatLegend({ question }) {
 }
 
 export function RenderQuesFuncs({ question, formData, setFormData, commonFieldsetClasses }) {
+    const userGender = formData["gender"]?.toLowerCase?.()
+
+    // 🧼 Gender logic: skip if female-only section and user is male
+    if (
+        (question.id === "femaleOnly" || question.id === "femaleOnlyDetails") &&
+        userGender === "male"
+    ) {
+        return null
+    }
+
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                 {question.fields?.map((field) => {
                     const value = formData[field.id] || ""
+
+                    // 💡 Conditional field visibility
+
+                    // Smoking conditionals
+                    if (
+                        ["packsPerDay", "smokingYears"].includes(field.id) &&
+                        (formData["smokingStatus"] === "None" || formData["smokingStatus"] === "Never" || !formData["smokingStatus"])
+                    ) return null
+
+                    // Alcohol conditionals
+                    if (
+                        ["beerPerWeek", "liquorPerWeek", "winePerWeek", "alcoholYears"].includes(field.id) &&
+                        (!formData["beerPerWeek"] && !formData["liquorPerWeek"] && !formData["winePerWeek"])
+                    ) return null
+
+                    // Exercise conditionals
+                    if (
+                        field.id === "exerciseHours" &&
+                        (formData["exercise"] === "None" || !formData["exercise"])
+                    ) return null
+
+                    // Mental work conditionals
+                    if (
+                        field.id === "mentalWorkHours" &&
+                        (formData["mentalWork"] === "None" || !formData["mentalWork"])
+                    ) return null
+
+                    // Physical work conditionals
+                    if (
+                        field.id === "physicalWorkHours" &&
+                        (formData["physicalWork"] === "None" || !formData["physicalWork"])
+                    ) return null
+
+                    // Occupational status conditionals
+                    if (
+                        ["workTimes", "workHoursPerDay", "workDaysPerWeek", "jobDescription"].includes(field.id) &&
+                        (formData["currentlyWorking"] === "No" || !formData["currentlyWorking"])
+                    ) return null
+
                     return (
                         <div key={field.id} className="min-h-[100px]">
                             <div className="flex items-center gap-1">
@@ -40,7 +91,9 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                         <HoverCardTrigger asChild>
                                             <Info size={14} className="text-muted-foreground cursor-pointer" />
                                         </HoverCardTrigger>
-                                        <HoverCardContent className="w-72 text-sm">{field.extra_info}</HoverCardContent>
+                                        <HoverCardContent className="w-72 text-sm">
+                                            {field.extra_info}
+                                        </HoverCardContent>
                                     </HoverCard>
                                 )}
                             </div>
@@ -174,6 +227,17 @@ export function RenderCheckboxQues({ question, formData, setFormData, commonFiel
     )
 }
 
+export function PainChar({ question, painMap, setPainMap }) {
+    return (
+        <fieldset key={question.id} className="border rounded-md p-4 space-y-4 mb-4 bg-card shadow-sm">
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+                {question.label}
+            </legend>
+            <PainChartSection painMap={painMap} setPainMap={setPainMap} />
+        </fieldset>
+    )
+}
+
 export function RenderOtherQues({ question, formData, setFormData, commonFieldsetClasses }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
@@ -193,5 +257,40 @@ export function RenderOtherQues({ question, formData, setFormData, commonFieldse
                 />
             </div>
         </fieldset>
+    )
+}
+
+export function renderQuestionByType({ question, formData, setFormData, commonFieldsetClasses, painMap, setPainMap }) {
+    const typeMap = {
+        group: RenderQuesFuncs,
+        textarea: RenderTextAreaQues,
+        radio: RenderRadioQues,
+        checkbox: RenderCheckboxQues,
+        other: RenderOtherQues,
+        painChart: PainChar
+    }
+
+    if (question.type === "painChart") {
+        return (
+            <fieldset key={question.id} className={commonFieldsetClasses}>
+                <legend className="text-sm font-medium text-muted-foreground px-2">
+                    {question.label}
+                </legend>
+                <PainChartSection painMap={painMap} setPainMap={setPainMap} />
+            </fieldset>
+        )
+    }
+
+    const Component = typeMap[question.type]
+    if (!Component) return null
+
+    return (
+        <Component
+            key={question.id}
+            question={question}
+            formData={formData}
+            setFormData={setFormData}
+            commonFieldsetClasses={commonFieldsetClasses}
+        />
     )
 }

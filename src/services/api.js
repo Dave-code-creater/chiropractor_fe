@@ -6,7 +6,7 @@ const baseQuery = fetchBaseQuery({
     baseUrl: "http://localhost:3000/v1/api/2025",
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
-        const token = getState().auth.accessToken;
+        const token = getState().data.auth.accessToken;
         if (token) {
             headers.set("Authorization", `Bearer ${token}`);
         }
@@ -50,112 +50,8 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 };
 
 export const apiSlice = createApi({
-    reducerPath: "api",
     baseQuery: baseQueryWithReauth,
+    reducerPath: "api",
     tagTypes: ["User"],
-    endpoints: (builder) => ({
-        // LOGIN
-        login: builder.mutation({
-            query: (credentials) => ({
-                url: "/login",
-                method: "POST",
-                body: credentials,
-            }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    const metadata = data.metadata;
-                    const user = {
-                        id: metadata.profile_id ?? metadata.identity_id,
-                        role: {
-                            id: metadata.role_id.id,
-                            name: metadata.role_id.name,
-                        },
-                    };
-                    const accessToken = metadata.accessToken;
-                    dispatch(setCredentials({ user, accessToken }));
-                } catch {
-                    // Ignore errors here
-                }
-            },
-        }),
-
-        // REGISTER
-        register: builder.mutation({
-            query: (userData) => ({
-                url: "/signup",
-                method: "POST",
-                body: userData,
-            }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    const metadata = data.metadata;
-                    const user = {
-                        id: metadata.profile_id ?? metadata.identity_id,
-                        role: {
-                            id: metadata.role.id,
-                            name: metadata.role.name,
-                        },
-                    };
-                    const accessToken = metadata.accessToken;
-                    dispatch(setCredentials({ user, accessToken }));
-                } catch {
-                    // Ignore errors
-                }
-            },
-        }),
-
-        // MANUAL REFRESH (optional)
-        refreshToken: builder.mutation({
-            query: () => ({
-                url: "/refresh",
-                method: "POST",
-            }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                try {
-                    const { data } = await queryFulfilled;
-                    const metadata = data.metadata;
-                    const user = {
-                        id: metadata.profile_id ?? metadata.identity_id,
-                        role: {
-                            id: metadata.role_id.id,
-                            name: metadata.role_id.name,
-                        },
-                    };
-                    const accessToken = metadata.accessToken;
-                    dispatch(setCredentials({ user, accessToken }));
-                } catch {
-                    dispatch(logOut());
-                }
-            },
-        }),
-
-        // LOGOUT
-        logout: builder.mutation({
-            query: (userId) => ({
-                url: "/logout",
-                method: "POST",
-                headers: {
-                    "x-client-id": userId.toString(),
-                },
-                credentials: "include",
-            }),
-            async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-                try {
-                    await queryFulfilled;
-                } finally {
-                    dispatch(logOut());
-                }
-            },
-        }),
-    }),
+    endpoints: () => ({}), 
 });
-
-// Export hooks for usage in functional components
-export const {
-    useLoginMutation,
-    useRegisterMutation,
-    useRefreshTokenMutation,
-    useLogoutMutation,
-} = apiSlice;

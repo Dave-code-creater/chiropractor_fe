@@ -1,32 +1,53 @@
+// src/app/store.ts
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { persistReducer, persistStore } from "redux-persist";
+import {
+  persistReducer,
+  persistStore,
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
-import formErrorReducer from '../utils/formerrorSlice'
+
 import authReducer from "../features/auth/authSlice";
+import formErrorReducer from "../utils/formerrorSlice";
 import { apiSlice } from "../services/api";
 
-const persistConfig = {
-  key: "root",
+// 1) Combine all your “local” slices under `data`
+const dataReducer = combineReducers({
+  auth: authReducer,
+  formError: formErrorReducer,
+  // later you can add users, posts, settings, etc.
+});
+
+// 2) Persist only the `auth` slice inside `data`
+const dataPersistConfig = {
+  key: "data",
   storage,
   whitelist: ["auth"],
 };
 
+const persistedDataReducer = persistReducer(dataPersistConfig, dataReducer);
+
+// 3) Build your root reducer with RTK Query at the top
 const rootReducer = combineReducers({
-  auth: authReducer,
+  data: persistedDataReducer,
   [apiSlice.reducerPath]: apiSlice.reducer,
-  formError: formErrorReducer,
-  
 });
 
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
 export const store = configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
+  reducer: rootReducer,
+  middleware: gDM =>
+    gDM({
+      thunk: true,
+      serializableCheck: {
+        // avoid errors from redux-persist actions
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
     }).concat(apiSlice.middleware),
-  
 });
 
 export const persistor = persistStore(store);

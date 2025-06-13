@@ -147,16 +147,6 @@ const PATIENT_INFO = [
         title: "Accident & Insurance Details",
         questions: [
             {
-                id: "mainComplaints",
-                label: "What are your main problems (complaints / pains)?",
-                type: "textarea"
-            },
-            {
-                id: "previousHealthcare",
-                label: "What other health care have you received for this problem(s)?",
-                type: "textarea"
-            },
-            {
                 id: "accidentDetails",
                 label: "Accident or Illness Details",
                 type: "group",
@@ -321,10 +311,10 @@ const PATIENT_INFO = [
             {
                 id: "painChart",
                 label: "Where do you feel pain?",
-                type: "image-map",
+                type: "painChart",
                 extra_info:
                     "Click on the parts of the body that hurt. You can select multiple areas by clicking them one by one."
-            }
+            },
         ]
     },
     {
@@ -338,6 +328,16 @@ const PATIENT_INFO = [
                 type: "textarea",
                 extra_info:
                     "Include when your symptoms began, how they have changed, and any previous treatments."
+            },
+            {
+                id: "mainComplaints",
+                label: "What are your main problems (complaints / pains)?",
+                type: "textarea"
+            },
+            {
+                id: "previousHealthcare",
+                label: "What other health care have you received for this problem(s)?",
+                type: "textarea"
             }
         ]
     },
@@ -390,14 +390,7 @@ const PATIENT_INFO = [
                         id: "medicalConditionDetails",
                         label: "Describe your past medical condition(s)",
                         type: "textarea"
-                    }
-                ]
-            },
-            {
-                id: "pastSurgicalHistory",
-                label: "Past Surgical History",
-                type: "group",
-                fields: [
+                    },
                     {
                         id: "hasSurgicalHistory",
                         label: "Do you have any past surgical history?",
@@ -460,28 +453,28 @@ const PATIENT_INFO = [
                         id: "mentalWork",
                         label: "Mental work level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["Heavy", "Moderate", "Light", "None"]
                     },
                     { id: "mentalWorkHours", label: "Mental work hours/day", type: "text", placeholder: "8" },
                     {
                         id: "physicalWork",
                         label: "Physical work level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["Heavy", "Moderate", "Light", "None"]
                     },
                     { id: "physicalWorkHours", label: "Physical work hours/day", type: "text", placeholder: "4" },
                     {
                         id: "exercise",
                         label: "Exercise level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["Heavy", "Moderate", "Light", "None"],
                     },
                     { id: "exerciseHours", label: "Exercise hours/day", type: "text", placeholder: "1" },
                     {
                         id: "smokingStatus",
                         label: "Smoking status",
                         type: "radio",
-                        options: ["Current", "Previous"]
+                        options: ["Current", "Previous", "Never"]
                     },
                     { id: "packsPerDay", label: "Packs per day", type: "text", placeholder: "0" },
                     { id: "smokingYears", label: "Years smoking", type: "text", placeholder: "0" },
@@ -500,11 +493,11 @@ const PATIENT_INFO = [
                         id: "currentlyWorking",
                         label: "Are you currently working?",
                         type: "radio",
-                        options: ["YES", "NO"]
+                        options: ["Yes", "No"]
                     },
                     {
                         id: "workTimes",
-                        label: "Work Times",
+                        label: "Work Type",
                         type: "radio",
                         options: ["Full Time", "Part Time"]
                     },

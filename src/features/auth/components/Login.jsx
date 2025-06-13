@@ -1,25 +1,25 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch} from "react-redux";
-import { useLoginMutation } from "../../../services/api";
+import { useSelector, useDispatch } from "react-redux";
+import { useLoginMutation } from "../authAPI";
 import { useNavigate } from "react-router-dom";
-import { renderGmailExprs, renderPassword} from "../../../utils/renderUtilsFunc";
+import { renderGmailExprs, renderPassword } from "../../../utils/renderUtilsFunc";
 import { setEmailError, clearEmailError, setPasswordError, clearPasswordError } from "../../../utils/formerrorSlice";
 
 export default function Login() {
     const navigate = useNavigate();
-    const { user, isAuthenticated } = useSelector((state) => state.auth);
+    const { user, isAuthenticated } = useSelector((state) => state.data.auth);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loginMutation, { isLoading, error: loginError }] = useLoginMutation();
     const dispatch = useDispatch();
-    const errorEmail = useSelector(state => state.formError.email)
-    const pwError = useSelector (state => state.formError.password )
+    const errorEmail = useSelector(state => state.data.formError.email)
+    const pwError = useSelector(state => state.data.formError.password)
 
     const handleEmailBlur = () => {
         try {
             const good = renderGmailExprs(email);
             dispatch(clearEmailError(good));
-        } catch(err){
+        } catch (err) {
             dispatch(setEmailError(err.message));
         }
     }
@@ -51,7 +51,7 @@ export default function Login() {
         try {
             await loginMutation({ email, password }).unwrap();
         } catch {
-            // any error will be displayed below
+
         }
     };
 
@@ -77,7 +77,7 @@ export default function Login() {
                             autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            onBlur = {handleEmailBlur}
+                            onBlur={handleEmailBlur}
                             placeholder="you@example.com"
                             className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
                         />
@@ -96,7 +96,7 @@ export default function Login() {
                             autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            onBlur = {handlePwBlur}
+                            onBlur={handlePwBlur}
                             className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
                         />
                         {pwError && <p className="text-red-500">{pwError}</p>}

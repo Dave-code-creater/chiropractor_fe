@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { useLogoutMutation } from '../../../services/api';
+import { useLogoutMutation } from '../../../features/auth/authAPI';
 import sidebar from '../../../constants/sidebar';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 
