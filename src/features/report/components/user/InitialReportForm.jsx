@@ -3,7 +3,6 @@ import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/acco
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ArrowLeft } from "lucide-react";
 
 import {
@@ -31,6 +30,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
     initialData.painEvaluations || [{ painMap: {}, formData: {} }]
   );
   const [reportName, setReportName] = useState(initialData.name || "");
+  const [editingName, setEditingName] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
   const [submitSection1] = useSubmitPatientIntakeMutation();
@@ -253,19 +253,28 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
       <div className="flex-1 p-4 md:p-6 overflow-y-auto h-full">
         <Card>
           <CardHeader>
-            <CardTitle>{currentSection.title}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div>
-              <Label htmlFor="report-name">Report name</Label>
+            {editingName ? (
               <Input
-                id="report-name"
-                placeholder="Report name"
+                autoFocus
                 value={reportName}
                 onChange={(e) => setReportName(e.target.value)}
+                onBlur={() => setEditingName(false)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    setEditingName(false);
+                  }
+                }}
                 className="mt-1"
               />
-            </div>
+            ) : (
+              <CardTitle onClick={() => setEditingName(true)} className="cursor-pointer">
+                {reportName || "Untitled Report"}
+              </CardTitle>
+            )}
+            <p className="text-sm text-muted-foreground mt-1">{currentSection.title}</p>
+          </CardHeader>
+          <CardContent className="space-y-6">
             {Object.values(formErrors).length > 0 && (
               <div className="text-red-500 text-sm space-y-1">
                 {Object.entries(formErrors).map(([k,v]) => (
