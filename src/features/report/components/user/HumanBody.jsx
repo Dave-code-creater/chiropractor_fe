@@ -223,14 +223,18 @@ export default function PainChartSection({
                                                             <Label className="font-semibold text-sm">{field.label}</Label>
                                                             <div className="w-32 mx-auto space-y-1 mt-2">
                                                                 <Slider
-                                                                    min={0}
+                                                                    min={1}
                                                                     max={10}
                                                                     step={1}
-                                                                    value={[painMap[field.id] || 0]}
+                                                                    value={[painMap[field.id] || 1]}
                                                                     onValueChange={(val) => handleSliderChange(field.id, val)}
                                                                 />
+                                                                <div className="text-xs flex justify-between px-2">
+                                                                    <span>1 - least hurt</span>
+                                                                    <span>10 - most hurt</span>
+                                                                </div>
                                                                 <div className="text-center text-xs">
-                                                                    {painMap[field.id] || 0} / 10
+                                                                    {painMap[field.id] || 1} / 10
                                                                 </div>
                                                             </div>
                                                         </div>
