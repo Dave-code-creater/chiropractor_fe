@@ -26,6 +26,7 @@ import {
 export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
   const [formData, setFormData] = useState({
     currentlyWorking: "none",
+    drinkStatus: "none",
     ...(initialData.formData || {}),
   });
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
@@ -111,6 +112,14 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   };
 
   const renderQuestion = (question) => {
+    if (
+      question.id === "femaleOnly" ||
+      question.id === "femaleOnlyDetails"
+    ) {
+      if (!formData.gender || formData.gender.toLowerCase() !== "female") {
+        return null;
+      }
+    }
     switch (question.type) {
       case "group":
         return (

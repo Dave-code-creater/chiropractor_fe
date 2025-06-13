@@ -485,6 +485,12 @@ const PATIENT_INFO = [
                     },
                     { id: "packsPerDay", label: "Packs per day", type: "text", placeholder: "0" },
                     { id: "smokingYears", label: "Years smoking", type: "text", placeholder: "0" },
+                    {
+                        id: "drinkStatus",
+                        label: "Do you drink alcohol?",
+                        type: "radio",
+                        options: ["none", "yes", "no"],
+                    },
                     { id: "beerPerWeek", label: "Beer per week", type: "text", placeholder: "3" },
                     { id: "liquorPerWeek", label: "Liquor per week", type: "text", placeholder: "1" },
                     { id: "winePerWeek", label: "Wine per week", type: "text", placeholder: "0" },
