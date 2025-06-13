@@ -174,29 +174,40 @@ export default function PainChartSection({
     };
 
     return (
-        <div className="relative flex justify-center items-start gap-4 w-full">
-            <div className="flex flex-col gap-6 mt-20">
+        <div className="w-full flex flex-col items-center">
+            <div className="scale-90">
+                <Suspense fallback={<div>Loading...</div>}>
+                    <BodyComponent
+                        bodyModel={model}
+                        onClick={handleBodyClick}
+                        partsInput={partsInput}
+                    />
+                </Suspense>
+                <div className="flex justify-center gap-2 mt-2 text-md font-semibold">
+                    <button onClick={() => setModel("male")}>Male</button>
+                    <button onClick={() => setModel("female")}>Female</button>
+                </div>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 mt-6">
                 {painFields.map((field) => (
                     <div key={field.id} className="text-center">
                         <Label className="font-semibold text-sm">{field.label}</Label>
-                        <Dialog open={openFieldId === field.id} onOpenChange={(isOpen) => {
-                            if (!isOpen) setopenFieldId(null);
-                        }} >
-                            <DialogTrigger asChild >
+                        <Dialog
+                            open={openFieldId === field.id}
+                            onOpenChange={(isOpen) => {
+                                if (!isOpen) setopenFieldId(null);
+                            }}
+                        >
+                            <DialogTrigger asChild>
                                 <Button
                                     id={field.id}
                                     size="sm"
                                     variant="outline"
                                     onClick={() => setopenFieldId(field.id)}
                                 >
-                                    {typeof painMap[field.id] === "number"
-                                        ? painMap[field.id]
-                                        : "0"}{" "}
-                                    / 10
-
+                                    {typeof painMap[field.id] === "number" ? painMap[field.id] : "0"} / 10
                                 </Button>
                             </DialogTrigger>
-
                             <DialogContent className="max-w-2xl w-full bg-white rounded-lg shadow-lg">
                                 <DialogHeader>
                                     <DialogTitle>Details your {field.label}</DialogTitle>
@@ -237,26 +248,10 @@ export default function PainChartSection({
                                         Close
                                     </Button>
                                 </div>
-
                             </DialogContent>
-
                         </Dialog>
                     </div>
                 ))}
-            </div>
-            {/* Body Model */}
-            <div className="scale-90">
-                <Suspense fallback={<div>Loading...</div>}>
-                    <BodyComponent
-                        bodyModel={model}
-                        onClick={handleBodyClick}
-                        partsInput={partsInput}
-                    />
-                </Suspense>
-                <div className="flex justify-center gap-2 mt-2 text-md font-semibold">
-                    <button onClick={() => setModel("male")}>Male</button>
-                    <button onClick={() => setModel("female")}>Female</button>
-                </div>
             </div>
         </div>
     );
