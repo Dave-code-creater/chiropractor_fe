@@ -147,16 +147,6 @@ const PATIENT_INFO = [
         title: "Accident & Insurance Details",
         questions: [
             {
-                id: "mainComplaints",
-                label: "What are your main problems (complaints / pains)?",
-                type: "textarea"
-            },
-            {
-                id: "previousHealthcare",
-                label: "What other health care have you received for this problem(s)?",
-                type: "textarea"
-            },
-            {
                 id: "accidentDetails",
                 label: "Accident or Illness Details",
                 type: "group",
@@ -170,14 +160,14 @@ const PATIENT_INFO = [
                     {
                         id: "accidentDate",
                         label: "Date of Accident / Beginning of Illness",
-                        type: "text",
-                        placeholder: "08/15/2025",
-                        extra_info: "Use MM/DD/YYYY format."
+                        type: "date",
+                        placeholder: "2025/08/15",
+                        extra_info: "Use YYYY/MM/DD format."
                     },
                     {
                         id: "accidentTime",
                         label: "Time",
-                        type: "text",
+                        type: "time",
                         placeholder: "14:30",
                         extra_info: "Include exact or approximate time of the event."
                     },
@@ -338,6 +328,16 @@ const PATIENT_INFO = [
                 type: "textarea",
                 extra_info:
                     "Include when your symptoms began, how they have changed, and any previous treatments."
+            },
+            {
+                id: "mainComplaints",
+                label: "What are your main problems (complaints / pains)?",
+                type: "textarea"
+            },
+            {
+                id: "previousHealthcare",
+                label: "What other health care have you received for this problem(s)?",
+                type: "textarea"
             }
         ]
     },
@@ -460,31 +460,37 @@ const PATIENT_INFO = [
                         id: "mentalWork",
                         label: "Mental work level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["None", "Heavy", "Moderate", "Light"]
                     },
                     { id: "mentalWorkHours", label: "Mental work hours/day", type: "text", placeholder: "8" },
                     {
                         id: "physicalWork",
                         label: "Physical work level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["None", "Heavy", "Moderate", "Light"]
                     },
                     { id: "physicalWorkHours", label: "Physical work hours/day", type: "text", placeholder: "4" },
                     {
                         id: "exercise",
                         label: "Exercise level",
                         type: "radio",
-                        options: ["Heavy", "Moderate", "Light"]
+                        options: ["None", "Heavy", "Moderate", "Light"]
                     },
                     { id: "exerciseHours", label: "Exercise hours/day", type: "text", placeholder: "1" },
                     {
                         id: "smokingStatus",
                         label: "Smoking status",
                         type: "radio",
-                        options: ["Current", "Previous"]
+                        options: ["None", "Current", "Previous"]
                     },
                     { id: "packsPerDay", label: "Packs per day", type: "text", placeholder: "0" },
                     { id: "smokingYears", label: "Years smoking", type: "text", placeholder: "0" },
+                    {
+                        id: "drinkStatus",
+                        label: "Do you drink alcohol?",
+                        type: "radio",
+                        options: ["none", "yes", "no"],
+                    },
                     { id: "beerPerWeek", label: "Beer per week", type: "text", placeholder: "3" },
                     { id: "liquorPerWeek", label: "Liquor per week", type: "text", placeholder: "1" },
                     { id: "winePerWeek", label: "Wine per week", type: "text", placeholder: "0" },
@@ -500,7 +506,7 @@ const PATIENT_INFO = [
                         id: "currentlyWorking",
                         label: "Are you currently working?",
                         type: "radio",
-                        options: ["YES", "NO"]
+                        options: ["none", "yes", "no"]
                     },
                     {
                         id: "workTimes",
