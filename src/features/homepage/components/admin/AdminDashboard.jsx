@@ -1,18 +1,26 @@
-import data from "@/app/dashboard/data.json"
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
 import { DataTable } from "@/components/data-table"
-import { SectionCards } from "@/components/section-cards"
-import { Calendar } from "@/components/ui/calendar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import React from "react"
 import { useState, useEffect } from "react"
-import { Users, FileText, MessageSquare, Smile } from "lucide-react"
+import { Users, FileText } from "lucide-react"
 import ChatPage from "../../../chat/components/Chat"
 
 import ScheduleGrid from "./ScheduleGrid"
+import { useListAppointmentsQuery } from "@/services/appointmentApi"
 
 export default function AdminDashboard() {
     const [currentHour, setCurrentHour] = useState("");
+    const { data, isLoading } = useListAppointmentsQuery();
+    const appointments = data?.metadata ?? data ?? [];
+    const rows = appointments.map((a) => ({
+        id: a.id,
+        Patient: a.patientName || a.patient || a.patientId || "Patient",
+        type: a.type || a.appointmentType || "Appointment",
+        status: a.status || "",
+        Date: a.date,
+        Times: a.time || a.times,
+        reviewer: a.doctorName || a.doctor,
+    }));
 
     useEffect(() => {
         const updateHour = () => {
@@ -63,7 +71,13 @@ export default function AdminDashboard() {
                         <CardTitle>Upcoming Appointments</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <DataTable data={data} />
+                        {isLoading ? (
+                            <p>Loading...</p>
+                        ) : rows.length > 0 ? (
+                            <DataTable data={rows} />
+                        ) : (
+                            <p className="text-sm text-muted-foreground">No appointment exist.</p>
+                        )}
                     </CardContent>
                 </Card>
             </div>
