@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useLoginMutation } from "../../../services/api";
+import { useLoginMutation } from "../../../services/authApi";
 import { useNavigate } from "react-router-dom";
 import { renderGmailExprs, renderPassword } from "../../../utils/renderUtilsFunc";
 import { setEmailError, clearEmailError, setPasswordError, clearPasswordError } from "../../../state/forms/loginFormSlice";

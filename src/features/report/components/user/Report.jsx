@@ -19,7 +19,7 @@ import {
     X,
 } from "lucide-react"
 import InitialReportForm from "./InitialReportForm"
-import { useDeleteReportMutation } from "@/services/api"
+import { useDeleteReportMutation } from "@/services/reportApi"
 
 export default function Report() {
     const [reports, setReports] = useState([

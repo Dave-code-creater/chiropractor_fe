@@ -14,7 +14,8 @@ import loadingReducer from "../state/ui/loadingSlice";
 import uiErrorsReducer from "../state/ui/errorsSlice";
 import notificationsReducer from "../state/ui/notificationsSlice";
 import modalsReducer from "../state/ui/modalsSlice";
-import { apiSlice } from "../services/api";
+import { authApi } from "../services/authApi";
+import { reportApi } from "../services/reportApi";
 
 const persistConfig = {
   key: "root",
@@ -40,7 +41,8 @@ const rootReducer = combineReducers({
     notifications: notificationsReducer,
     modals: modalsReducer,
   }),
-  [apiSlice.reducerPath]: apiSlice.reducer,
+  [authApi.reducerPath]: authApi.reducer,
+  [reportApi.reducerPath]: reportApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -50,7 +52,7 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(apiSlice.middleware),
+    }).concat(authApi.middleware, reportApi.middleware),
   
 });
 
