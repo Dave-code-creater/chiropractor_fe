@@ -1,22 +1,22 @@
 import React, { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select"
 import {
-  FolderIcon,
-  HomeIcon,
-  FilesIcon,
-  ImagesIcon,
-  MusicIcon,
-  VideoIcon,
-  DownloadIcon,
-  PlusIcon,
-  X,
+    FolderIcon,
+    HomeIcon,
+    FilesIcon,
+    ImagesIcon,
+    MusicIcon,
+    VideoIcon,
+    DownloadIcon,
+    PlusIcon,
+    X,
 } from "lucide-react"
 import InitialReportForm from "./InitialReportForm"
 import { useDeleteReportMutation } from "@/services/api"
@@ -56,6 +56,7 @@ export default function Report() {
     }
 
     const handleSubmit = (id, data) => {
+        console.log("Submitting report:", id, data)
         setReports((prev) => prev.map((r) => (r.id === id ? { ...r, ...data } : r)))
         setSelectedId(null)
     }
@@ -88,40 +89,7 @@ export default function Report() {
 
     return (
         <div className="flex h-screen w-full">
-            <div className="hidden h-full w-64 shrink-0 border-r bg-gray-100 dark:border-gray-800 dark:bg-gray-900 lg:block">
-                <div className="flex h-full flex-col gap-4 p-4">
-                    <div className="flex items-center gap-2 font-semibold">
-                        <FolderIcon className="h-6 w-6" />
-                        <span>File Explorer</span>
-                    </div>
-                    <nav className="flex-1 space-y-2 overflow-auto">
-                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
-                            <HomeIcon className="h-4 w-4" />
-                            Home
-                        </div>
-                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
-                            <FilesIcon className="h-4 w-4" />
-                            Documents
-                        </div>
-                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
-                            <ImagesIcon className="h-4 w-4" />
-                            Images
-                        </div>
-                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
-                            <MusicIcon className="h-4 w-4" />
-                            Music
-                        </div>
-                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
-                            <VideoIcon className="h-4 w-4" />
-                            Videos
-                        </div>
-                        <div className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-gray-800">
-                            <DownloadIcon className="h-4 w-4" />
-                            Downloads
-                        </div>
-                    </nav>
-                </div>
-            </div>
+            
             <div className="flex flex-1 flex-col">
                 <div className="flex h-14 items-center justify-between border-b bg-gray-100 px-6 dark:border-gray-800 dark:bg-gray-900">
                     <div className="flex items-center gap-4">

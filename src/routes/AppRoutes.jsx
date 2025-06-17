@@ -40,7 +40,7 @@ export default function AppRoutes() {
             </Route>
 
             {/* User Dashboard */}
-            <Route path="/dashboard/:id" element={<ProtectRoute allowedRoles={['user']} />}>
+            <Route path="/dashboard/:id" element={<ProtectRoute allowedRoles={['patient']} />}>
                 <Route element={<HomePageLayout />}>
                     <Route index element={<HomePage />} />
                     <Route path="services/profile" element={<Profile />} />

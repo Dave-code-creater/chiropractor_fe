@@ -11,18 +11,18 @@ function Sidebar({ sidebarPosition = "left" }) {
     const [mobileOpen, setMobileOpen] = useState(false);
 
     const navigate = useNavigate();
-    const user = useSelector((state) => state.data.auth.user);
+    const userID = useSelector((state) => state.data.auth.userID);
     const [logoutApi] = useLogoutMutation();
 
     const handleLogout = () => {
-        logoutApi(user.id)
+        logoutApi(userID)
             .unwrap()
             .then(() => navigate('/'))
             .catch(() => navigate('/'));
     };
 
     const handleNavigation = (path) => {
-        navigate(`/dashboard/${user?.id}/${path}`);
+        navigate(`/dashboard/${userID}/${path}`);
         setMobileOpen(false);
     };
 

@@ -6,11 +6,11 @@ import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
 
 import {
-    RenderQuesFuncs,
-    RenderTextAreaQues,
-    RenderRadioQues,
-    RenderCheckboxQues,
-    RenderOtherQues,
+  RenderQuesFuncs,
+  RenderTextAreaQues,
+  RenderRadioQues,
+  RenderCheckboxQues,
+  RenderOtherQues,
 } from "@/utils/renderQuesFuncs";
 import PATIENT_INFO from "../../../../constants/initial-reports";
 import PainChartSection from "./HumanBody";
@@ -267,26 +267,26 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
         >
           <Card>
             <CardHeader>
-            {editingName ? (
-              <Input
-                autoFocus
-                value={reportName}
-                onChange={(e) => setReportName(e.target.value)}
-                onBlur={() => setEditingName(false)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    setEditingName(false);
-                  }
-                }}
-                className="mt-1"
-              />
-            ) : (
-              <CardTitle onClick={() => setEditingName(true)} className="cursor-pointer">
-                {reportName || "Untitled Report"}
-              </CardTitle>
-            )}
-            <p className="text-sm text-muted-foreground mt-1">{currentSection.title}</p>
+              {editingName ? (
+                <Input
+                  autoFocus
+                  value={reportName}
+                  onChange={(e) => setReportName(e.target.value)}
+                  onBlur={() => setEditingName(false)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      setEditingName(false);
+                    }
+                  }}
+                  className="mt-1"
+                />
+              ) : (
+                <CardTitle onClick={() => setEditingName(true)} className="cursor-pointer">
+                  {reportName || "Untitled Report"}
+                </CardTitle>
+              )}
+              <p className="text-sm text-muted-foreground mt-1">{currentSection.title}</p>
             </CardHeader>
             <CardContent className="space-y-6">
               {Object.values(formErrors).length > 0 && (
@@ -308,16 +308,21 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
                   </Button>
                 )}
                 <div className="space-x-2">
+                  {/* show Next if not at last */}
                   {currentSectionIndex < PATIENT_INFO.length - 1 && (
                     <Button
                       type="button"
                       variant="secondary"
-                      onClick={() => setCurrentSectionIndex((i) => i + 1)}
+                      onClick={() => setCurrentSectionIndex(i => i + 1)}
                     >
                       Next
                     </Button>
                   )}
-                  <Button type="submit">Save Section</Button>
+
+                  {/* show Save on the last section */}
+                  {currentSectionIndex === PATIENT_INFO.length - 1 && (
+                    <Button type="submit">Save Section</Button>
+                  )}
                 </div>
               </div>
             </CardContent>

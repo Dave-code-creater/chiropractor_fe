@@ -38,9 +38,9 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                         (field.id === "mentalWorkHours" && formData.mentalWork === "None") ||
                         (field.id === "physicalWorkHours" && formData.physicalWork === "None") ||
                         (field.id === "exerciseHours" && formData.exercise === "None") ||
-                        (["packsPerDay","smokingYears"].includes(field.id) && formData.smokingStatus === "None") ||
-                        (["beerPerWeek","liquorPerWeek","winePerWeek","alcoholYears"].includes(field.id) && (formData.drinkStatus === "none" || formData.drinkStatus === "no")) ||
-                        (["workTimes","workHoursPerDay","workDaysPerWeek","jobDescription"].includes(field.id) && (formData.currentlyWorking === "none" || formData.currentlyWorking === "no"))
+                        (["packsPerDay", "smokingYears"].includes(field.id) && formData.smokingStatus === "None") ||
+                        (["beerPerWeek", "liquorPerWeek", "winePerWeek", "alcoholYears"].includes(field.id) && (formData.drinkStatus === "none" || formData.drinkStatus === "no")) ||
+                        (["workTimes", "workHoursPerDay", "workDaysPerWeek", "jobDescription"].includes(field.id) && (formData.currentlyWorking === "none" || formData.currentlyWorking === "no"))
                     ) {
                         return null;
                     }

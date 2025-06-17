@@ -9,7 +9,7 @@ const PATIENT_INFO = [
                 type: "group",
                 fields: [
                     { id: "firstName", label: "First", type: "text", placeholder: "John" },
-                    { id: "middleName", label: "Middle", type: "text", placeholder: "A." },
+                    { id: "middleName", label: "Middle (Optional)", type: "text", placeholder: "A." },
                     { id: "lastName", label: "Last", type: "text", placeholder: "Doe" },
                     { id: "ssn", label: "SSN", type: "text", placeholder: "123-45-6789" }
                 ]
@@ -20,10 +20,30 @@ const PATIENT_INFO = [
                 type: "group",
                 fields: [
                     {
-                        id: "dob",
-                        label: "Date of Birth",
-                        type: "date",
-                        extra_info: "Select your birth date"
+                        id: "daysOfBirth",
+                        label: "Days of Birth",
+                        type: "radio",
+                        options: Array.from({ length: 31 }, (_, i) => (i + 1).toString()),
+                        placeholder: "1",
+                        extra_info: "Enter the day of the month you were born (1-31)."
+                    },
+                    {
+                        id: "monthOfBirth",
+                        label: "Month of Birth",
+                        type: "radio",
+                        options: [
+                            "January", "February", "March", "April", "May", "June",
+                            "July", "August", "September", "October", "November", "December"
+                        ],
+                        placeholder: "January",
+                        extra_info: "Enter the month you were born (e.g., January, February, etc.)."
+                    },
+                    {
+                        id: "yearOfBirth",
+                        label: "Year of Birth",
+                        type: "text",
+                        placeholder: "1990",
+                        extra_info: "Enter the year you were born (e.g., 1990)."
                     },
                     {
                         id: "age",
