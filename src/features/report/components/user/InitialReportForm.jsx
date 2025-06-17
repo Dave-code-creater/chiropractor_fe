@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,7 @@ import {
   useSubmitSymptomDescriptionMutation,
   useSubmitRecoveryImpactMutation,
   useSubmitHealthHistoryMutation,
+  useGetInitialReportQuery,
 } from "@/services/reportApi";
 
 const collectFieldIds = (questions) => {
@@ -46,6 +47,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   const [submitSymptomDescription] = useSubmitSymptomDescriptionMutation();
   const [submitRecoveryImpact] = useSubmitRecoveryImpactMutation();
   const [submitHealthHistory] = useSubmitHealthHistoryMutation();
+  const { data: fetchedData } = useGetInitialReportQuery();
   const [formData, setFormData] = useState({
     currentlyWorking: "none",
     drinkStatus: "none",
@@ -58,6 +60,25 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   const [reportName, setReportName] = useState(initialData.name || "");
   const [editingName, setEditingName] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+
+  useEffect(() => {
+    if (fetchedData) {
+      setFormData((prev) => ({
+        ...prev,
+        ...(fetchedData.patientIntake || {}),
+        ...(fetchedData.accidentDetails || {}),
+        ...(fetchedData.symptomDescription || {}),
+        ...(fetchedData.recoveryImpact || {}),
+        ...(fetchedData.healthHistory || {}),
+      }));
+      if (fetchedData.painEvaluations) {
+        setPainEvaluations(fetchedData.painEvaluations);
+      }
+      if (fetchedData.name) {
+        setReportName(fetchedData.name);
+      }
+    }
+  }, [fetchedData]);
 
 
   const currentSection = PATIENT_INFO[currentSectionIndex];

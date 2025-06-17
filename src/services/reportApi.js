@@ -5,6 +5,44 @@ export const reportApi = createApi({
   reducerPath: "reportApi",
   baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
+    getInitialReport: builder.query({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const urls = [
+          "users/profile",
+          "users/accdient-insurance",
+          "users/pain-evaluation",
+          "users/detailed-description",
+          "users/recovery-work-impact",
+          "users/health-history",
+        ];
+        try {
+          const responses = await Promise.all(urls.map((url) => fetchWithBQ({ url })));
+          for (const res of responses) {
+            if (res.error) throw res.error;
+          }
+          const [
+            patientIntake,
+            accidentDetails,
+            painEvaluations,
+            symptomDescription,
+            recoveryImpact,
+            healthHistory,
+          ] = responses.map((r) => r.data?.metadata ?? r.data);
+          return {
+            data: {
+              patientIntake,
+              accidentDetails,
+              painEvaluations,
+              symptomDescription,
+              recoveryImpact,
+              healthHistory,
+            },
+          };
+        } catch (error) {
+          return { error };
+        }
+      },
+    }),
     submitPatientIntake: builder.mutation({
       query: (data) => ({
         url: "/users/profile",
@@ -64,4 +102,5 @@ export const {
   useSubmitRecoveryImpactMutation,
   useSubmitHealthHistoryMutation,
   useDeleteReportMutation,
+  useGetInitialReportQuery,
 } = reportApi;
