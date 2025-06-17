@@ -8,8 +8,8 @@ function classNames(...classes) {
 
 export default function Services() {
     const navigate = useNavigate()
-    const user = useSelector((state) => state.auth.user);
-    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const user = useSelector((state) => state.data.auth.user);
+    const isAuthenticated = useSelector((state) => state.data.auth.isAuthenticated);
 
 
     const handleBookAppointment = (serviceId) => {
@@ -20,7 +20,7 @@ export default function Services() {
         }
     }
     return (
-        <section className="relative isolate bg-gradient-to-br from-white via-gray-50 to-indigo-50 px-6 pb-20 pt-16 sm:pb-24 sm:pt-20 lg:px-8">
+        <section className="relative isolate px-6 pb-20 pt-16 sm:pb-24 sm:pt-20 lg:px-8">
             {/* Soft radial background blob */}
             <div aria-hidden="true" className="absolute inset-0 -z-10 overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] aspect-[3/1] bg-indigo-100 opacity-30 rounded-full blur-3xl" />
