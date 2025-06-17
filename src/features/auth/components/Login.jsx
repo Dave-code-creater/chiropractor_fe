@@ -28,7 +28,7 @@ export default function Login() {
 
     const handlePwBlur = () => {
         try {
-            good = renderPassword(password)
+            const good = renderPassword(password)
             dispatch(clearPasswordError(good))
         } catch (err) {
             dispatch(setPasswordError(err.message))

@@ -28,7 +28,7 @@ export function FormatLegend({ question }) {
     )
 }
 
-export function RenderQuesFuncs({ question, formData, setFormData, commonFieldsetClasses }) {
+export function RenderQuesFuncs({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
@@ -145,6 +145,9 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                     }
                                 />
                             )}
+                            {errors[field.id] && (
+                                <p className="text-red-500 text-sm mt-1">{errors[field.id]}</p>
+                            )}
                         </div>
                     )
                 })}
@@ -153,7 +156,7 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
     )
 }
 
-export function RenderTextAreaQues({ question, formData, setFormData, commonFieldsetClasses }) {
+export function RenderTextAreaQues({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
@@ -171,12 +174,15 @@ export function RenderTextAreaQues({ question, formData, setFormData, commonFiel
                         }))
                     }
                 />
+                {errors[question.id] && (
+                    <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
+                )}
             </div>
         </fieldset>
     )
 }
 
-export function RenderRadioQues({ question, formData, setFormData, commonFieldsetClasses }) {
+export function RenderRadioQues({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
@@ -200,11 +206,14 @@ export function RenderRadioQues({ question, formData, setFormData, commonFieldse
                     ))}
                 </SelectContent>
             </Select>
+            {errors[question.id] && (
+                <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
+            )}
         </fieldset>
     )
 }
 
-export function RenderCheckboxQues({ question, formData, setFormData, commonFieldsetClasses }) {
+export function RenderCheckboxQues({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
@@ -237,11 +246,14 @@ export function RenderCheckboxQues({ question, formData, setFormData, commonFiel
                     </div>
                 ))}
             </div>
+            {errors[question.id] && (
+                <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
+            )}
         </fieldset>
     )
 }
 
-export function RenderOtherQues({ question, formData, setFormData, commonFieldsetClasses }) {
+export function RenderOtherQues({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
@@ -258,6 +270,9 @@ export function RenderOtherQues({ question, formData, setFormData, commonFieldse
                         }))
                     }
                 />
+                {errors[question.id] && (
+                    <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
+                )}
             </div>
         </fieldset>
     )
