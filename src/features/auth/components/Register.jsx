@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useRegisterMutation } from "../../../services/api";
+import { useRegisterMutation } from "../../../services/authApi";
 import { useNavigate } from "react-router-dom";
 import { renderPhoneNumber, renderGmailExprs, renderPwRegister } from "../../../utils/renderUtilsFunc";
 import { setEmailError, clearEmailError, setPasswordError, clearPasswordError, setConfirmPasswordError, clearConfirmPasswordError } from "../../../state/forms/registerFormSlice";
