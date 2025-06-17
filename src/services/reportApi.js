@@ -43,6 +43,9 @@ export const reportApi = createApi({
         }
       },
     }),
+    getHealthConditions: builder.query({
+      query: () => ({ url: "health-conditions" }),
+    }),
     submitPatientIntake: builder.mutation({
       query: (data) => ({
         url: "/users/profile",
@@ -103,4 +106,5 @@ export const {
   useSubmitHealthHistoryMutation,
   useDeleteReportMutation,
   useGetInitialReportQuery,
+  useGetHealthConditionsQuery,
 } = reportApi;
