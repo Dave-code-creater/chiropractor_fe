@@ -1,146 +1,148 @@
-import React, { useState } from "react"
-import {
-    Accordion,
-    AccordionItem,
-    AccordionTrigger
-} from "@/components/ui/accordion"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import React, { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
-
 import {
-    RenderQuesFuncs,
-    RenderTextAreaQues,
-    RenderRadioQues,
-    RenderCheckboxQues,
-    RenderOtherQues
-} from "@/utils/renderQuesFuncs"
-
-import PATIENT_INFO from "../../../../constants/initial-reports"
-import PainChartSection from "./HumanBody"
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
+    FolderIcon,
+    HomeIcon,
+    FilesIcon,
+    ImagesIcon,
+    MusicIcon,
+    VideoIcon,
+    DownloadIcon,
+    PlusIcon,
+    X,
+} from "lucide-react"
+import InitialReportForm from "./InitialReportForm"
+import { useDeleteReportMutation } from "@/services/api"
 
 export default function Report() {
-    const [formData, setFormData] = useState({})
-    const [currentSectionIndex, setCurrentSectionIndex] = useState(0)
-    const [painMap, setPainMap] = useState({})
+    const [reports, setReports] = useState([
+        {
+            id: Date.now(),
+            name: "",
+            createdAt: new Date().toISOString(),
+            painEvaluations: [{ painMap: {}, formData: {} }],
+        },
+    ])
+    const [selectedId, setSelectedId] = useState(null)
+    const [sortOption, setSortOption] = useState("date")
+    const [deleteReport] = useDeleteReportMutation()
 
-    const currentSection = PATIENT_INFO[currentSectionIndex]
-    const baseClasses = "border rounded-md p-4 space-y-4 mb-4 bg-white shadow-sm"
-
-    const renderQuestion = (question) => {
-        switch (question.type) {
-            case "group":
-                return (
-                    <RenderQuesFuncs
-                        key={question.id}
-                        question={question}
-                        formData={formData}
-                        setFormData={setFormData}
-                        commonFieldsetClasses={baseClasses}
-                    />
-                )
-            case "textarea":
-                return (
-                    <RenderTextAreaQues
-                        key={question.id}
-                        question={question}
-                        formData={formData}
-                        setFormData={setFormData}
-                        commonFieldsetClasses={baseClasses}
-                    />
-                )
-            case "radio":
-                return (
-                    <RenderRadioQues
-                        key={question.id}
-                        question={question}
-                        formData={formData}
-                        setFormData={setFormData}
-                        commonFieldsetClasses={baseClasses}
-                    />
-                )
-            case "checkbox":
-                return (
-                    <RenderCheckboxQues
-                        key={question.id}
-                        question={question}
-                        formData={formData}
-                        setFormData={setFormData}
-                        commonFieldsetClasses={baseClasses}
-                    />
-                )
-            case "other":
-                return (
-                    <RenderOtherQues
-                        key={question.id}
-                        question={question}
-                        formData={formData}
-                        setFormData={setFormData}
-                        commonFieldsetClasses={baseClasses}
-                    />
-                )
-            case "painChart":
-                return (
-                    <fieldset key={question.id} className={baseClasses}>
-                        <legend className="text-sm font-medium text-muted-foreground px-2">
-                            {question.label}
-                        </legend>
-                        <PainChartSection painMap={painMap} setPainMap={setPainMap} />
-                    </fieldset>
-                )
-            default:
-                return null
+    const addReport = () => {
+        const newReport = {
+            id: Date.now(),
+            name: "",
+            createdAt: new Date().toISOString(),
+            painEvaluations: [{ painMap: {}, formData: {} }],
         }
+        setReports((prev) => [...prev, newReport])
+        setSelectedId(newReport.id)
+    }
+
+    const handleDelete = async (id, e) => {
+        e.stopPropagation()
+        try {
+            await deleteReport(id).unwrap()
+        } catch (err) {
+            console.error(err)
+        }
+        setReports((prev) => prev.filter((r) => r.id !== id))
+    }
+
+    const handleSubmit = (id, data) => {
+        console.log("Submitting report:", id, data)
+        setReports((prev) => prev.map((r) => (r.id === id ? { ...r, ...data } : r)))
+        setSelectedId(null)
+    }
+
+    const handleBack = () => {
+        setSelectedId(null)
+    }
+
+    const sortedReports = useMemo(() => {
+        const list = [...reports]
+        if (sortOption === "name") {
+            list.sort((a, b) => (a.name || "").localeCompare(b.name || ""))
+        } else {
+            list.sort(
+                (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+            )
+        }
+        return list
+    }, [reports, sortOption])
+
+    if (selectedId !== null) {
+        return (
+            <InitialReportForm
+                onSubmit={(data) => handleSubmit(selectedId, data)}
+                initialData={reports.find((r) => r.id === selectedId)}
+                onBack={handleBack}
+            />
+        )
     }
 
     return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault()
-                console.log(formData)
-            }}
-            className="flex flex-col md:flex-row flex-1 h-full overflow-hidden"
-        >
-            {/* Sidebar: visible only on md+ screens */}
-            <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full">
-                <h2 className="text-lg font-semibold mb-4">Initial Reports</h2>
-                <Accordion
-                    type="single"
-                    collapsible
-                    className="space-y-2"
-                    value={currentSection.title}
-                >
-                    {PATIENT_INFO.map((section, idx) => (
-                        <AccordionItem
-                            key={section.id}
-                            value={section.title}
-                            onClick={() => setCurrentSectionIndex(idx)}
+        <div className="flex h-screen w-full">
+            
+            <div className="flex flex-1 flex-col">
+                <div className="flex h-14 items-center justify-between border-b bg-gray-100 px-6 dark:border-gray-800 dark:bg-gray-900">
+                    <div className="flex items-center gap-4">
+                        <Select value={sortOption} onValueChange={setSortOption}>
+                            <SelectTrigger className="w-40">
+                                <SelectValue placeholder="Sort" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="date">Newest</SelectItem>
+                                <SelectItem value="name">Alphabetical</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Button variant="outline" size="sm" onClick={addReport}>
+                            <PlusIcon className="h-4 w-4 mr-2" />
+                            Create
+                        </Button>
+                    </div>
+                </div>
+                <div className="flex-1 overflow-auto p-4 md:p-6">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                        {sortedReports.map((rep, idx) => (
+                            <div
+                                key={rep.id}
+                                className="group relative rounded-md border border-gray-200 bg-white p-4 shadow-sm transition-all hover:border-gray-300 cursor-pointer"
+                                onClick={() => setSelectedId(rep.id)}
+                            >
+                                <button
+                                    onClick={(e) => handleDelete(rep.id, e)}
+                                    className="absolute left-2 top-2 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
+                                >
+                                    <X className="h-4 w-4" />
+                                </button>
+                                <div className="flex h-20 w-full items-center justify-center">
+                                    <FolderIcon className="h-12 w-12 text-gray-500 group-hover:text-gray-700" />
+                                </div>
+                                <div className="mt-4 text-center">
+                                    <h3 className="text-sm font-medium text-gray-900">{rep.name || `Report ${idx + 1}`}</h3>
+                                </div>
+                            </div>
+                        ))}
+                        <button
+                            onClick={addReport}
+                            className="flex flex-col items-center justify-center rounded-md border border-dashed border-gray-300 p-4 hover:border-gray-400"
                         >
-                            <AccordionTrigger>{section.title}</AccordionTrigger>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                            <PlusIcon className="h-8 w-8 text-gray-500" />
+                            <span className="mt-2 text-sm">Add Report</span>
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            {/* Main form content */}
-            <div className="flex-1 p-4 md:p-6 overflow-y-auto h-full">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>{currentSection.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        {currentSection.questions.map((q) => renderQuestion(q))}
-                        <div className="flex justify-end pt-4">
-                            {currentSectionIndex < PATIENT_INFO.length - 1 ? (
-                                <Button onClick={() => setCurrentSectionIndex((i) => i + 1)}>
-                                    Next
-                                </Button>
-                            ) : (
-                                <Button type="submit">Submit</Button>
-                            )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-        </form>
+        </div>
     )
 }
+

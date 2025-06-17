@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, lazy, Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
     Dialog,
@@ -8,7 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { BodyComponent } from "reactjs-human-body";
+const BodyComponent = lazy(() => import("reactjs-human-body").then(m => ({ default: m.BodyComponent || m.default })))
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -28,35 +28,37 @@ import {
     HoverCardContent,
 } from "@/components/ui/hover-card";
 
-const painFields = {
-    left: [
-        { id: "headache", label: "Headaches" },
-        { id: "upperBack", label: "Upper Back" },
-        { id: "arms", label: "Arms" },
-        { id: "lowerBack", label: "Lower Back" },
-        { id: "feet", label: "Feet" },
-        { id: "hips", label: "Hips" },
-        { id: "knees", label: "Knees" },
-        { id: "ankles", label: "Ankles" },
-    ],
-    right: [
-        { id: "neck", label: "Neck" },
-        { id: "shoulders", label: "Shoulders" },
-        { id: "midBack", label: "Mid Back" },
-        { id: "legs", label: "Legs" },
-        { id: "toes", label: "Toes" },
-        { id: "wrists", label: "Wrists" },
-        { id: "elbows", label: "Elbows" },
-        { id: "shoulderBlades", label: "Shoulder Blades" },
-    ],
-};
+const painFields = [
+    { id: "headache", label: "Headaches" },
+    { id: "neck", label: "Neck" },
+    { id: "shoulders", label: "Shoulders" },
+    { id: "upperBack", label: "Upper Back" },
+    { id: "midBack", label: "Mid Back" },
+    { id: "lowerBack", label: "Lower Back" },
+    { id: "shoulderBlades", label: "Shoulder Blades" },
+    { id: "arms", label: "Arms" },
+    { id: "wrists", label: "Wrists" },
+    { id: "elbows", label: "Elbows" },
+    { id: "hips", label: "Hips" },
+    { id: "legs", label: "Legs" },
+    { id: "knees", label: "Knees" },
+    { id: "ankles", label: "Ankles" },
+    { id: "feet", label: "Feet" },
+    { id: "toes", label: "Toes" },
+];
 import { RenderQuesFuncs,
   RenderTextAreaQues,
   RenderRadioQues,
   RenderCheckboxQues,
   RenderOtherQues }from "../../../../utils/renderQuesFuncs.jsx";
 
-export default function PainChartSection({ painMap, setPainMap }) {
+export default function PainChartSection({
+    gender,
+    painMap,
+    setPainMap,
+    formData,
+    setFormData,
+}) {
     const objectHuman = {
         id: "3",
         title: "Pain & Symptom Evaluation",
@@ -120,9 +122,32 @@ export default function PainChartSection({ painMap, setPainMap }) {
         ]
     };
 
-    const [model, setModel] = useState("male");
-    const [formData, setFormData] = useState({});
     const [openFieldId, setopenFieldId] = useState(null);
+
+    const partMap = {
+        head: "headache",
+        leftShoulder: "shoulders",
+        rightShoulder: "shoulders",
+        chest: "upperBack",
+        stomach: "lowerBack",
+        leftArm: "arms",
+        rightArm: "arms",
+        leftHand: "wrists",
+        rightHand: "wrists",
+        leftLeg: "legs",
+        rightLeg: "legs",
+        leftFoot: "feet",
+        rightFoot: "feet",
+    };
+
+    const handleBodyClick = (part) => {
+        const field = partMap[part];
+        if (field) setopenFieldId(field);
+    };
+
+    const partsInput = Object.fromEntries(
+        Object.entries(partMap).map(([part, field]) => [part, { selected: !!painMap[field] }])
+    );
 
     const handleSliderChange = (id, value) => {
         setPainMap((prev) => ({
@@ -149,30 +174,36 @@ export default function PainChartSection({ painMap, setPainMap }) {
     };
 
     return (
-        <div className="flex justify-center items-start gap-4 w-full">
-            {/* Left Panel */}
-            <div className="flex flex-col gap-6 mt-20">
-                {painFields.left.map((field) => (
+        <div className="w-full flex flex-col items-center">
+            <div className="scale-90">
+                <Suspense fallback={<div>Loading...</div>}>
+                    <BodyComponent
+                        bodyModel={gender && gender.toLowerCase().includes("female") ? "female" : "male"}
+                        onClick={handleBodyClick}
+                        partsInput={partsInput}
+                    />
+                </Suspense>
+            </div>
+            <div className="flex flex-wrap justify-center gap-4 mt-6">
+                {painFields.map((field) => (
                     <div key={field.id} className="text-center">
                         <Label className="font-semibold text-sm">{field.label}</Label>
-                        <Dialog open={openFieldId === field.id} onOpenChange={(isOpen) => {
-                            if (!isOpen) setopenFieldId(null);
-                        }} >
-                            <DialogTrigger asChild >
+                        <Dialog
+                            open={openFieldId === field.id}
+                            onOpenChange={(isOpen) => {
+                                if (!isOpen) setopenFieldId(null);
+                            }}
+                        >
+                            <DialogTrigger asChild>
                                 <Button
                                     id={field.id}
                                     size="sm"
                                     variant="outline"
                                     onClick={() => setopenFieldId(field.id)}
                                 >
-                                    {typeof painMap[field.id] === "number"
-                                        ? painMap[field.id]
-                                        : "0"}{" "}
-                                    / 10
-
+                                    {typeof painMap[field.id] === "number" ? painMap[field.id] : "0"} / 10
                                 </Button>
                             </DialogTrigger>
-
                             <DialogContent className="max-w-2xl w-full bg-white rounded-lg shadow-lg">
                                 <DialogHeader>
                                     <DialogTitle>Details your {field.label}</DialogTitle>
@@ -186,93 +217,27 @@ export default function PainChartSection({ painMap, setPainMap }) {
                                                         </h3>
                                                         <div key={field.id} className="text-center mb-6">
                                                             <Label className="font-semibold text-sm">{field.label}</Label>
-                                                            <Slider
-                                                                min={0}
-                                                                max={10}
-                                                                step={1}
-                                                                value={[painMap[field.id] || 0]}
-                                                                onValueChange={(val) => handleSliderChange(field.id, val)}
-                                                                className="w-32 mx-auto"
-                                                            />
-                                                            <div className="text-xs flex justify-between px-2">
-                                                                <span>0</span>
-                                                                <span>10</span>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex flex-col gap-4">
-                                                            {objectHuman.questions.map((question) => newrenderQuestion(question))}
-                                                        </div>
-                                                    </section>
-                                                </CardContent>
-                                            </Card>
-                                        </div>
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="flex justify-end mt-4">
-                                    <Button variant="outline" onClick={closeDialog}>
-                                        Close
-                                    </Button>
-                                </div>
-
-                            </DialogContent>
-
-                        </Dialog>
-                    </div>
-                ))}
-            </div>
-            {/* Body Model */}
-            <div className="scale-90">
-                <BodyComponent bodyModel={model} />
-                <div className="flex justify-center gap-2 mt-2 text-md font-semibold">
-                    <button onClick={() => setModel("male")}>Male</button>
-                    <button onClick={() => setModel("female")}>Female</button>
-                </div>
-            </div>
-            {/* Right Panel */}
-            <div className="flex flex-col gap-6 mt-20">
-                {painFields.right.map((field) => (
-                    <div key={field.id} className="text-center">
-                        <Label className="font-semibold text-sm">{field.label}</Label>
-                        <Dialog open={openFieldId === field.id} onOpenChange={(isOpen) => {
-                            if (!isOpen) setopenFieldId(null);
-                        }}>
-                            <DialogTrigger asChild>
-                                <Button
-                                    id={field.id}
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => setopenFieldId(field.id)}
-                                >
-                                    {typeof painMap[field.id] === "number"
-                                        ? painMap[field.id]
-                                        : "0"}{" "}
-                                    / 10
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-2xl">
-                                <DialogHeader>
-                                    <DialogTitle>Details your {field.label}</DialogTitle>
-                                    <DialogDescription asChild>
-                                        <div className="flex-1 p-6 overflow-y-auto">
-                                            <Card>
-                                                <CardContent className="space-y-8">
-                                                    <section key={objectHuman.id}>
-                                                        <h3 className="text-xl font-semibold mb-4">
-                                                            Describe details of your {field.label}
-                                                        </h3>
-                                                        <div key={field.id} className="text-center mb-6">
-                                                            <Label className="font-semibold text-sm">{field.label}</Label>
-                                                            <Slider
-                                                                min={0}
-                                                                max={10}
-                                                                step={1}
-                                                                value={[painMap[field.id] || 0]}
-                                                                onValueChange={(val) => handleSliderChange(field.id, val)}
-                                                                className="w-32 mx-auto"
-                                                            />
-                                                            <div className="text-xs flex justify-between px-2">
-                                                                <span>0</span>
-                                                                <span>10</span>
+                                                            <div className="w-40 mx-auto space-y-1 mt-2">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="text-xs w-6 text-left">1</span>
+                                                                    <Slider
+                                                                        min={1}
+                                                                        max={10}
+                                                                        step={1}
+                                                                        value={[painMap[field.id] || 1]}
+                                                                        onValueChange={(val) => handleSliderChange(field.id, val)}
+                                                                        className="flex-1"
+                                                                    />
+                                                                    <span className="text-xs w-6 text-right">10</span>
+                                                                </div>
+                                                                <div className="text-xs flex justify-between px-4">
+                                                                    <span>Minimal</span>
+                                                                    <span className="flex-1 text-center"> </span>
+                                                                    <span>Max</span>
+                                                                </div>
+                                                                <div className="text-center text-xs">
+                                                                    {painMap[field.id] || 1} / 10
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div className="flex flex-col gap-4">
