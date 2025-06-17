@@ -7,7 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import React from "react"
 import { useState, useEffect } from "react"
 import { Users, FileText, MessageSquare, Smile } from "lucide-react"
+
 import ScheduleGrid from "./ScheduleGrid"
+
 export default function AdminDashboard() {
     const [currentHour, setCurrentHour] = useState("");
 
@@ -31,7 +33,7 @@ export default function AdminDashboard() {
                         <CardTitle>Statistic</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 text-center">
                             <div className="space-y-1">
                                 <Users className="mx-auto text-cyan-500" />
                                 <p className="text-lg font-semibold">212</p>
@@ -41,16 +43,6 @@ export default function AdminDashboard() {
                                 <FileText className="mx-auto text-blue-500" />
                                 <p className="text-lg font-semibold">114</p>
                                 <p className="text-sm text-muted-foreground">Reports</p>
-                            </div>
-                            <div className="space-y-1">
-                                <MessageSquare className="mx-auto text-purple-500" />
-                                <p className="text-lg font-semibold">182</p>
-                                <p className="text-sm text-muted-foreground">Consultations</p>
-                            </div>
-                            <div className="space-y-1">
-                                <Smile className="mx-auto text-pink-500" />
-                                <p className="text-lg font-semibold">127</p>
-                                <p className="text-sm text-muted-foreground">Experience</p>
                             </div>
                         </div>
                     </CardContent>
@@ -74,26 +66,8 @@ export default function AdminDashboard() {
                     </CardContent>
                 </Card>
             </div>
-
-            {/* Right Sidebar */}
             <div className="space-y-4">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Calendar</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Calendar mode="single" selected={new Date()} className="rounded-md border" />
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Activity</CardTitle>
-                    </CardHeader>
-                    <CardContent className="text-center text-4xl font-bold text-green-600">
-                        80%
-                    </CardContent>
-                </Card>
+                
 
                 <Card>
                     <CardHeader>
@@ -104,6 +78,19 @@ export default function AdminDashboard() {
                         <p>Betty Jackson made an appointment <span className="text-muted-foreground">(15.09.21 @ 10:00)</span></p>
                     </CardContent>
                 </Card>
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Message</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex justify-center text-center text-4xl font-bold text-green-600 ">
+                            <div className="w-full max-w-[700px] max-h-[725px] overflow-y-auto ">
+                                <ChatPage className=" max-h-[800px]"/>
+                            </div>
+                    </CardContent>
+                </Card>
+            
+                
             </div>
         </div>
     )

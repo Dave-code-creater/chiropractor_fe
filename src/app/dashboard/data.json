@@ -1,614 +1,893 @@
 [
   {
-    "id": 1,
-    "header": "Cover page",
-    "type": "Cover page",
-    "status": "In Process",
-    "target": "18",
-    "limit": "5",
-    "reviewer": "Eddie Lake"
-  },
-  {
     "id": 2,
-    "header": "Table of contents",
-    "type": "Table of contents",
+    "Patient": "Quang",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "29",
-    "limit": "24",
-    "reviewer": "Eddie Lake"
+    "Date": "03/26/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 3,
-    "header": "Executive summary",
-    "type": "Narrative",
-    "status": "Done",
-    "target": "10",
-    "limit": "13",
-    "reviewer": "Eddie Lake"
+    "Patient": "An",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "03/14/2025",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 4,
-    "header": "Technical approach",
-    "type": "Narrative",
+    "Patient": "Nhat",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "27",
-    "limit": "23",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "08/14/2023",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 5,
-    "header": "Design",
-    "type": "Narrative",
+    "Patient": "Lan",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "2",
-    "limit": "16",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "01/11/2024",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 6,
-    "header": "Capabilities",
-    "type": "Narrative",
-    "status": "In Process",
-    "target": "20",
-    "limit": "8",
-    "reviewer": "Jamik Tashpulatov"
+    "Patient": "Lan",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "06/02/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 7,
-    "header": "Integration with existing systems",
-    "type": "Narrative",
+    "Patient": "Dat",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "19",
-    "limit": "21",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "12/24/2022",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 8,
-    "header": "Innovation and Advantages",
-    "type": "Narrative",
+    "Patient": "Linh",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "25",
-    "limit": "26",
-    "reviewer": "Assign reviewer"
+    "Date": "11/09/2024",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 9,
-    "header": "Overview of EMR's Innovative Solutions",
-    "type": "Technical content",
-    "status": "Done",
-    "target": "7",
-    "limit": "23",
-    "reviewer": "Assign reviewer"
+    "Patient": "Nhat",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "04/19/2024",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 10,
-    "header": "Advanced Algorithms and Machine Learning",
-    "type": "Narrative",
+    "Patient": "Anh",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "30",
-    "limit": "28",
-    "reviewer": "Assign reviewer"
+    "Date": "05/13/2022",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 11,
-    "header": "Adaptive Communication Protocols",
-    "type": "Narrative",
-    "status": "Done",
-    "target": "9",
-    "limit": "31",
-    "reviewer": "Assign reviewer"
+    "Patient": "Nhat",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "04/19/2023",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 12,
-    "header": "Advantages Over Current Technologies",
-    "type": "Narrative",
+    "Patient": "Phan",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "12",
-    "limit": "0",
-    "reviewer": "Assign reviewer"
+    "Date": "02/24/2025",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 13,
-    "header": "Past Performance",
-    "type": "Narrative",
-    "status": "Done",
-    "target": "22",
-    "limit": "33",
-    "reviewer": "Assign reviewer"
+    "Patient": "Nhat",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "09/06/2022",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 14,
-    "header": "Customer Feedback and Satisfaction Levels",
-    "type": "Narrative",
+    "Patient": "Phuong",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "15",
-    "limit": "34",
-    "reviewer": "Assign reviewer"
+    "Date": "12/25/2024",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 15,
-    "header": "Implementation Challenges and Solutions",
-    "type": "Narrative",
-    "status": "Done",
-    "target": "3",
-    "limit": "35",
-    "reviewer": "Assign reviewer"
+    "Patient": "Dieu",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "10/13/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 16,
-    "header": "Security Measures and Data Protection Policies",
-    "type": "Narrative",
-    "status": "In Process",
-    "target": "6",
-    "limit": "36",
-    "reviewer": "Assign reviewer"
+    "Patient": "Thao",
+    "type": "Daily Notes",
+    "status": "Done",
+    "Date": "05/11/2024",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 17,
-    "header": "Scalability and Future Proofing",
-    "type": "Narrative",
-    "status": "Done",
-    "target": "4",
-    "limit": "37",
-    "reviewer": "Assign reviewer"
+    "Patient": "Dung",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "12/17/2022",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 18,
-    "header": "Cost-Benefit Analysis",
-    "type": "Plain language",
+    "Patient": "Jack",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "14",
-    "limit": "38",
-    "reviewer": "Assign reviewer"
+    "Date": "01/27/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 19,
-    "header": "User Training and Onboarding Experience",
-    "type": "Narrative",
-    "status": "Done",
-    "target": "17",
-    "limit": "39",
-    "reviewer": "Assign reviewer"
+    "Patient": "Binh",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "05/29/2023",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 20,
-    "header": "Future Development Roadmap",
-    "type": "Narrative",
+    "Patient": "Linh",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "11",
-    "limit": "40",
-    "reviewer": "Assign reviewer"
+    "Date": "11/02/2022",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 21,
-    "header": "System Architecture Overview",
-    "type": "Technical content",
+    "Patient": "Thao",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "24",
-    "limit": "18",
-    "reviewer": "Maya Johnson"
+    "Date": "08/06/2022",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 22,
-    "header": "Risk Management Plan",
-    "type": "Narrative",
+    "Patient": "Jack",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "15",
-    "limit": "22",
-    "reviewer": "Carlos Rodriguez"
+    "Date": "01/14/2024",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 23,
-    "header": "Compliance Documentation",
-    "type": "Legal",
+    "Patient": "Lan",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "31",
-    "limit": "27",
-    "reviewer": "Sarah Chen"
+    "Date": "07/19/2022",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 24,
-    "header": "API Documentation",
-    "type": "Technical content",
+    "Patient": "Jack",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "8",
-    "limit": "12",
-    "reviewer": "Raj Patel"
+    "Date": "02/23/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 25,
-    "header": "User Interface Mockups",
-    "type": "Visual",
+    "Patient": "Phuong",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "19",
-    "limit": "25",
-    "reviewer": "Leila Ahmadi"
+    "Date": "12/13/2024",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 26,
-    "header": "Database Schema",
-    "type": "Technical content",
+    "Patient": "Binh",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "22",
-    "limit": "20",
-    "reviewer": "Thomas Wilson"
+    "Date": "06/27/2024",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 27,
-    "header": "Testing Methodology",
-    "type": "Technical content",
+    "Patient": "Huy",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "17",
-    "limit": "14",
-    "reviewer": "Assign reviewer"
+    "Date": "06/25/2022",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 28,
-    "header": "Deployment Strategy",
-    "type": "Narrative",
+    "Patient": "Jack",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "26",
-    "limit": "30",
-    "reviewer": "Eddie Lake"
+    "Date": "07/17/2024",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 29,
-    "header": "Budget Breakdown",
-    "type": "Financial",
+    "Patient": "Khanh",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "13",
-    "limit": "16",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "11/01/2022",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 30,
-    "header": "Market Analysis",
-    "type": "Research",
+    "Patient": "Nhat",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "29",
-    "limit": "32",
-    "reviewer": "Sophia Martinez"
+    "Date": "10/19/2022",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 31,
-    "header": "Competitor Comparison",
-    "type": "Research",
+    "Patient": "Huy",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "21",
-    "limit": "19",
-    "reviewer": "Assign reviewer"
+    "Date": "06/21/2023",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 32,
-    "header": "Maintenance Plan",
-    "type": "Technical content",
+    "Patient": "Trinh",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "16",
-    "limit": "23",
-    "reviewer": "Alex Thompson"
+    "Date": "02/11/2022",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 33,
-    "header": "User Personas",
-    "type": "Research",
+    "Patient": "Phuong",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "27",
-    "limit": "24",
-    "reviewer": "Nina Patel"
+    "Date": "12/18/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 34,
-    "header": "Accessibility Compliance",
-    "type": "Legal",
+    "Patient": "Khanh",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "18",
-    "limit": "21",
-    "reviewer": "Assign reviewer"
+    "Date": "01/13/2022",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 35,
-    "header": "Performance Metrics",
-    "type": "Technical content",
+    "Patient": "Thao",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "23",
-    "limit": "26",
-    "reviewer": "David Kim"
+    "Date": "01/03/2023",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 36,
-    "header": "Disaster Recovery Plan",
-    "type": "Technical content",
+    "Patient": "Jack",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "14",
-    "limit": "17",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "01/28/2023",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 37,
-    "header": "Third-party Integrations",
-    "type": "Technical content",
+    "Patient": "Binh",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "25",
-    "limit": "28",
-    "reviewer": "Eddie Lake"
+    "Date": "01/05/2022",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 38,
-    "header": "User Feedback Summary",
-    "type": "Research",
+    "Patient": "Tuan",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "20",
-    "limit": "15",
-    "reviewer": "Assign reviewer"
+    "Date": "05/06/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 39,
-    "header": "Localization Strategy",
-    "type": "Narrative",
+    "Patient": "Khanh",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "12",
-    "limit": "19",
-    "reviewer": "Maria Garcia"
+    "Date": "12/02/2024",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 40,
-    "header": "Mobile Compatibility",
-    "type": "Technical content",
+    "Patient": "Khanh",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "28",
-    "limit": "31",
-    "reviewer": "James Wilson"
+    "Date": "07/06/2023",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 41,
-    "header": "Data Migration Plan",
-    "type": "Technical content",
+    "Patient": "Nhat",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "19",
-    "limit": "22",
-    "reviewer": "Assign reviewer"
+    "Date": "11/09/2022",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 42,
-    "header": "Quality Assurance Protocols",
-    "type": "Technical content",
+    "Patient": "Phan",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "30",
-    "limit": "33",
-    "reviewer": "Priya Singh"
+    "Date": "04/09/2025",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 43,
-    "header": "Stakeholder Analysis",
-    "type": "Research",
+    "Patient": "Dung",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "11",
-    "limit": "14",
-    "reviewer": "Eddie Lake"
+    "Date": "05/28/2025",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 44,
-    "header": "Environmental Impact Assessment",
-    "type": "Research",
+    "Patient": "Dung",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "24",
-    "limit": "27",
-    "reviewer": "Assign reviewer"
+    "Date": "05/12/2025",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 45,
-    "header": "Intellectual Property Rights",
-    "type": "Legal",
+    "Patient": "Jack",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "17",
-    "limit": "20",
-    "reviewer": "Sarah Johnson"
+    "Date": "12/02/2022",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 46,
-    "header": "Customer Support Framework",
-    "type": "Narrative",
+    "Patient": "Lan",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "22",
-    "limit": "25",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "02/22/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 47,
-    "header": "Version Control Strategy",
-    "type": "Technical content",
+    "Patient": "Tuan",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "15",
-    "limit": "18",
-    "reviewer": "Assign reviewer"
+    "Date": "12/29/2022",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 48,
-    "header": "Continuous Integration Pipeline",
-    "type": "Technical content",
+    "Patient": "Linh",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "26",
-    "limit": "29",
-    "reviewer": "Michael Chen"
+    "Date": "01/11/2025",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 49,
-    "header": "Regulatory Compliance",
-    "type": "Legal",
+    "Patient": "Phuong",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "13",
-    "limit": "16",
-    "reviewer": "Assign reviewer"
+    "Date": "07/19/2023",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 50,
-    "header": "User Authentication System",
-    "type": "Technical content",
+    "Patient": "Thao",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "28",
-    "limit": "31",
-    "reviewer": "Eddie Lake"
+    "Date": "10/21/2022",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 51,
-    "header": "Data Analytics Framework",
-    "type": "Technical content",
+    "Patient": "Dung",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "21",
-    "limit": "24",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "02/18/2025",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 52,
-    "header": "Cloud Infrastructure",
-    "type": "Technical content",
+    "Patient": "Tuan",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "16",
-    "limit": "19",
-    "reviewer": "Assign reviewer"
+    "Date": "01/22/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 53,
-    "header": "Network Security Measures",
-    "type": "Technical content",
+    "Patient": "Thao",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "29",
-    "limit": "32",
-    "reviewer": "Lisa Wong"
+    "Date": "09/14/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 54,
-    "header": "Project Timeline",
-    "type": "Planning",
+    "Patient": "Linh",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "14",
-    "limit": "17",
-    "reviewer": "Eddie Lake"
+    "Date": "01/09/2025",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 55,
-    "header": "Resource Allocation",
-    "type": "Planning",
+    "Patient": "Trinh",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "27",
-    "limit": "30",
-    "reviewer": "Assign reviewer"
+    "Date": "04/25/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 56,
-    "header": "Team Structure and Roles",
-    "type": "Planning",
+    "Patient": "Huy",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "20",
-    "limit": "23",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "09/28/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 57,
-    "header": "Communication Protocols",
-    "type": "Planning",
+    "Patient": "Hoa",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "15",
-    "limit": "18",
-    "reviewer": "Assign reviewer"
+    "Date": "07/27/2022",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 58,
-    "header": "Success Metrics",
-    "type": "Planning",
+    "Patient": "Nhat",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "30",
-    "limit": "33",
-    "reviewer": "Eddie Lake"
+    "Date": "06/01/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 59,
-    "header": "Internationalization Support",
-    "type": "Technical content",
+    "Patient": "Anh",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "23",
-    "limit": "26",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "08/17/2024",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 60,
-    "header": "Backup and Recovery Procedures",
-    "type": "Technical content",
+    "Patient": "Dung",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "18",
-    "limit": "21",
-    "reviewer": "Assign reviewer"
+    "Date": "03/08/2023",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 61,
-    "header": "Monitoring and Alerting System",
-    "type": "Technical content",
+    "Patient": "Lan",
+    "type": "Daily Notes",
     "status": "In Process",
-    "target": "25",
-    "limit": "28",
-    "reviewer": "Daniel Park"
+    "Date": "01/31/2022",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 62,
-    "header": "Code Review Guidelines",
-    "type": "Technical content",
+    "Patient": "Lan",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "12",
-    "limit": "15",
-    "reviewer": "Eddie Lake"
+    "Date": "05/25/2022",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 63,
-    "header": "Documentation Standards",
-    "type": "Technical content",
+    "Patient": "Phuong",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "27",
-    "limit": "30",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "01/16/2023",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 64,
-    "header": "Release Management Process",
-    "type": "Planning",
+    "Patient": "Phuong",
+    "type": "Initial Report",
     "status": "Done",
-    "target": "22",
-    "limit": "25",
-    "reviewer": "Assign reviewer"
+    "Date": "04/30/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 65,
-    "header": "Feature Prioritization Matrix",
-    "type": "Planning",
+    "Patient": "Jack",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "19",
-    "limit": "22",
-    "reviewer": "Emma Davis"
+    "Date": "01/01/2025",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 66,
-    "header": "Technical Debt Assessment",
-    "type": "Technical content",
+    "Patient": "Khanh",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "24",
-    "limit": "27",
-    "reviewer": "Eddie Lake"
+    "Date": "07/09/2024",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 67,
-    "header": "Capacity Planning",
-    "type": "Planning",
+    "Patient": "Anh",
+    "type": "Initial Report",
     "status": "In Process",
-    "target": "21",
-    "limit": "24",
-    "reviewer": "Jamik Tashpulatov"
+    "Date": "06/29/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   },
   {
     "id": 68,
-    "header": "Service Level Agreements",
-    "type": "Legal",
+    "Patient": "Dung",
+    "type": "Daily Notes",
     "status": "Done",
-    "target": "26",
-    "limit": "29",
-    "reviewer": "Assign reviewer"
+    "Date": "08/06/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 69,
+    "Patient": "Huy",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "10/16/2022",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 70,
+    "Patient": "Phuong",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "08/03/2023",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 71,
+    "Patient": "Minh",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "05/27/2025",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 72,
+    "Patient": "Khanh",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "02/15/2024",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 73,
+    "Patient": "Quang",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "02/15/2023",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 74,
+    "Patient": "Jack",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "08/04/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 75,
+    "Patient": "Linh",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "12/25/2023",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 76,
+    "Patient": "An",
+    "type": "Daily Notes",
+    "status": "Done",
+    "Date": "07/04/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 77,
+    "Patient": "Dat",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "12/19/2024",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 78,
+    "Patient": "Anh",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "05/31/2022",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 79,
+    "Patient": "Phuong",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "03/25/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 80,
+    "Patient": "Lan",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "11/17/2023",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 81,
+    "Patient": "Quang",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "04/11/2023",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 82,
+    "Patient": "Phan",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "01/04/2024",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 83,
+    "Patient": "Anh",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "10/08/2024",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 84,
+    "Patient": "Thao",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "04/02/2025",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 85,
+    "Patient": "Nhat",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "01/08/2025",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 86,
+    "Patient": "An",
+    "type": "Daily Notes",
+    "status": "Done",
+    "Date": "02/20/2024",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 87,
+    "Patient": "Trinh",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "05/29/2025",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 88,
+    "Patient": "Phuong",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "09/08/2024",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 89,
+    "Patient": "Khanh",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "12/06/2022",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 90,
+    "Patient": "Phan",
+    "type": "Daily Notes",
+    "status": "Done",
+    "Date": "11/25/2023",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 91,
+    "Patient": "Jack",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "07/01/2023",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 92,
+    "Patient": "Khanh",
+    "type": "Daily Notes",
+    "status": "Done",
+    "Date": "10/16/2022",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 93,
+    "Patient": "Binh",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "01/04/2022",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 94,
+    "Patient": "Quang",
+    "type": "Initial Report",
+    "status": "Done",
+    "Date": "07/22/2024",
+    "Times": "1",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 95,
+    "Patient": "Binh",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "11/06/2022",
+    "Times": "2",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 96,
+    "Patient": "Dat",
+    "type": "Daily Notes",
+    "status": "Done",
+    "Date": "04/16/2024",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 97,
+    "Patient": "Anh",
+    "type": "Daily Notes",
+    "status": "In Process",
+    "Date": "02/26/2023",
+    "Times": "3",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 98,
+    "Patient": "Trinh",
+    "type": "Daily Notes",
+    "status": "Done",
+    "Date": "05/29/2022",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 99,
+    "Patient": "Lan",
+    "type": "Initial Report",
+    "status": "In Process",
+    "Date": "06/29/2022",
+    "Times": "5",
+    "reviewer": "Dr Dieu Phan"
+  },
+  {
+    "id": 100,
+    "Patient": "Lan",
+    "type": "Daily Notes",
+    "status": "Done",
+    "Date": "02/16/2023",
+    "Times": "4",
+    "reviewer": "Dr Dieu Phan"
   }
 ]
