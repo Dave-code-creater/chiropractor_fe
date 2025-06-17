@@ -5,7 +5,7 @@ import { useSelector } from "react-redux"
 
 export default function Hero() {
     const navigate = useNavigate()
-    const user = useSelector((state) => state.data.auth.user);
+    const user = useSelector((state) => state.data.auth.userID);
     const isAuthenticated = useSelector((state) => state.data.auth.isAuthenticated);
 
     const handleBookAppointment = () => {

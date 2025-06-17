@@ -38,13 +38,12 @@ export default function Login() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            if (role === "admin") {
-                navigate(`/admin/${userID}`);
-            } else {
-                navigate(`/dashboard/${userID}`);
-            }
+            // send doctors to /admin/:id, everyone else to /dashboard/:id
+            const homePath =
+                role === "doctor" ? `/admin/${userID}` : `/dashboard/${userID}`;
+            navigate(homePath, { replace: true });
         }
-    }, [isAuthenticated, navigate, userID]);
+    }, [isAuthenticated, navigate, userID, role]);
 
     const handleLogin = async (e) => {
         e.preventDefault();

@@ -57,7 +57,7 @@ export default function AppRoutes() {
             </Route>
 
             {/* Admin Portal */}
-            <Route path="/admin/:id" element={<ProtectRoute allowedRoles={['admin']} />}>
+            <Route path="/admin/:id" element={<ProtectRoute allowedRoles={['doctor']} />}>
                 <Route element={<AdminLayout />}>
                     <Route index element={<AdminDashboard />} />
                     <Route path="manage-users" element={<div>Manage Users</div>} />

@@ -46,13 +46,6 @@ const PATIENT_INFO = [
                         extra_info: "Enter the year you were born (e.g., 1990)."
                     },
                     {
-                        id: "age",
-                        label: "Age",
-                        type: "number",
-                        calculated: true,
-                        extra_info: "Age will be automatically calculated from the date of birth."
-                    },
-                    {
                         id: "gender",
                         label: "Gender",
                         type: "radio",

@@ -8,12 +8,12 @@ function classNames(...classes) {
 
 export default function Services() {
     const navigate = useNavigate()
-    const user = useSelector((state) => state.data.auth.user);
+    const user = useSelector((state) => state.data.auth.userID);
     const isAuthenticated = useSelector((state) => state.data.auth.isAuthenticated);
 
 
     const handleBookAppointment = (serviceId) => {
-        if (user && user.id) {
+        if (user && isAuthenticated) {
             navigate(`/services/${user.id}/appointments/${serviceId}`)
         } else {
             navigate('/login')

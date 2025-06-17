@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import React from "react"
 import { useState, useEffect } from "react"
 import { Users, FileText, MessageSquare, Smile } from "lucide-react"
+import ChatPage from "../../../chat/components/Chat"
 
 import ScheduleGrid from "./ScheduleGrid"
 
@@ -67,7 +68,7 @@ export default function AdminDashboard() {
                 </Card>
             </div>
             <div className="space-y-4">
-                
+
 
                 <Card>
                     <CardHeader>
@@ -84,13 +85,13 @@ export default function AdminDashboard() {
                         <CardTitle>Message</CardTitle>
                     </CardHeader>
                     <CardContent className="flex justify-center text-center text-4xl font-bold text-green-600 ">
-                            <div className="w-full max-w-[700px] max-h-[725px] overflow-y-auto ">
-                                <ChatPage className=" max-h-[800px]"/>
-                            </div>
+                        <div className="w-full max-w-[700px] max-h-[725px] overflow-y-auto ">
+                            <ChatPage className=" max-h-[800px]" />
+                        </div>
                     </CardContent>
                 </Card>
-            
-                
+
+
             </div>
         </div>
     )

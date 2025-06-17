@@ -87,7 +87,6 @@ export function renderGmailExprs(getEmail) {
     // HTML5-style email regex;
 
     const html5EmailRe = /^[A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
-    console.log(getEmail)
     if (!getEmail)
         throw new Error('Do not let email empty');
 
