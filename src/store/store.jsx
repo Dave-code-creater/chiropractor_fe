@@ -16,6 +16,13 @@ import notificationsReducer from "../state/ui/notificationsSlice";
 import modalsReducer from "../state/ui/modalsSlice";
 import { authApi } from "../services/authApi";
 import { reportApi } from "../services/reportApi";
+import { blogApi } from "../services/blogApi";
+import { appointmentApi } from "../services/appointmentApi";
+import { chatApi } from "../services/chatApi";
+
+import blogReducer from "../features/blog/blogSlice";
+import appointmentsReducer from "../features/appointments/AppointmentsSlice";
+import chatReducer from "../features/chat/chatSlice";
 
 const persistConfig = {
   key: "root",
@@ -29,6 +36,9 @@ const rootReducer = combineReducers({
     entities: entitiesReducer,
     settings: settingsReducer,
     uiState: uiStateReducer,
+    blog: blogReducer,
+    appointments: appointmentsReducer,
+    chat: chatReducer,
   }),
   forms: combineReducers({
     loginForm: loginFormReducer,
@@ -43,6 +53,9 @@ const rootReducer = combineReducers({
   }),
   [authApi.reducerPath]: authApi.reducer,
   [reportApi.reducerPath]: reportApi.reducer,
+  [blogApi.reducerPath]: blogApi.reducer,
+  [appointmentApi.reducerPath]: appointmentApi.reducer,
+  [chatApi.reducerPath]: chatApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -52,7 +65,13 @@ export const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat(authApi.middleware, reportApi.middleware),
+    }).concat(
+      authApi.middleware,
+      reportApi.middleware,
+      blogApi.middleware,
+      appointmentApi.middleware,
+      chatApi.middleware
+    ),
   
 });
 
