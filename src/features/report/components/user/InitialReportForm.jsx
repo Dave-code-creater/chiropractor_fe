@@ -21,7 +21,7 @@ import {
   useSubmitSymptomDescriptionMutation,
   useSubmitRecoveryImpactMutation,
   useSubmitHealthHistoryMutation,
-} from "@/services/api";
+} from "@/services/reportApi";
 
 const collectFieldIds = (questions) => {
   const ids = [];
