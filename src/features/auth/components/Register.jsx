@@ -8,7 +8,7 @@ import { setEmailError, clearEmailError, setPasswordError, clearPasswordError, s
 export default function Register() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const { user, isAuthenticated } = useSelector((state) => state.data.auth);
+    const { userID, role, isAuthenticated } = useSelector((state) => state.data.auth);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [phone, setPhone] = useState("");
@@ -25,13 +25,10 @@ export default function Register() {
     useEffect(() => {
         if (isAuthenticated) {
             // After successful registration, navigate to the appropriate dashboard
-            if (user.role === "admin") {
-                navigate(`/admin/${user.id}`);
-            } else {
-                navigate(`/dashboard/${user.id}`);
-            }
+            const path = role === "admin" ? `/admin/${userID}` : `/dashboard/${userID}`;
+            navigate(path);
         }
-    }, [isAuthenticated, navigate, user]);
+    }, [isAuthenticated, navigate, role, userID]);
 
     const handleEmailBlur = () => {
         try {
