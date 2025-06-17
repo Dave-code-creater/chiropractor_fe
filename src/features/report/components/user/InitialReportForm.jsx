@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -21,7 +21,8 @@ import {
   useSubmitSymptomDescriptionMutation,
   useSubmitRecoveryImpactMutation,
   useSubmitHealthHistoryMutation,
-} from "@/services/api";
+  useGetInitialReportQuery,
+} from "@/services/reportApi";
 
 const collectFieldIds = (questions) => {
   const ids = [];
@@ -39,13 +40,14 @@ const sectionFieldIds = PATIENT_INFO.map((section) =>
   collectFieldIds(section.questions)
 )
 
-export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
+export default function InitialReportForm({ onSubmit, initialData = {}, onBack, requiredFields = [] }) {
   const [submitPatientIntake] = useSubmitPatientIntakeMutation();
   const [submitAccidentDetails] = useSubmitAccidentDetailsMutation();
   const [submitPainEvaluation] = useSubmitPainEvaluationMutation();
   const [submitSymptomDescription] = useSubmitSymptomDescriptionMutation();
   const [submitRecoveryImpact] = useSubmitRecoveryImpactMutation();
   const [submitHealthHistory] = useSubmitHealthHistoryMutation();
+  const { data: fetchedData } = useGetInitialReportQuery();
   const [formData, setFormData] = useState({
     currentlyWorking: "none",
     drinkStatus: "none",
@@ -59,12 +61,36 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   const [editingName, setEditingName] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
+  useEffect(() => {
+    if (fetchedData) {
+      setFormData((prev) => ({
+        ...prev,
+        ...(fetchedData.patientIntake || {}),
+        ...(fetchedData.accidentDetails || {}),
+        ...(fetchedData.symptomDescription || {}),
+        ...(fetchedData.recoveryImpact || {}),
+        ...(fetchedData.healthHistory || {}),
+      }));
+      if (fetchedData.painEvaluations) {
+        setPainEvaluations(fetchedData.painEvaluations);
+      }
+      if (fetchedData.name) {
+        setReportName(fetchedData.name);
+      }
+    }
+  }, [fetchedData]);
+
 
   const currentSection = PATIENT_INFO[currentSectionIndex];
   const baseClasses = "border rounded-md p-4 space-y-4 mb-4 bg-white shadow-sm";
 
   const validate = () => {
     const errs = {};
+    requiredFields.forEach((f) => {
+      if (!formData[f] || String(formData[f]).trim() === "") {
+        errs[f] = "This field is required";
+      }
+    });
     if (formData.ssn && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn)) {
       errs.ssn = "Invalid SSN format";
     }
@@ -150,6 +176,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
             formData={formData}
             setFormData={setFormData}
             commonFieldsetClasses={baseClasses}
+            errors={formErrors}
           />
         );
       case "textarea":
@@ -160,6 +187,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
             formData={formData}
             setFormData={setFormData}
             commonFieldsetClasses={baseClasses}
+            errors={formErrors}
           />
         );
       case "radio":
@@ -170,6 +198,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
             formData={formData}
             setFormData={setFormData}
             commonFieldsetClasses={baseClasses}
+            errors={formErrors}
           />
         );
       case "checkbox":
@@ -180,6 +209,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
             formData={formData}
             setFormData={setFormData}
             commonFieldsetClasses={baseClasses}
+            errors={formErrors}
           />
         );
       case "other":
@@ -190,6 +220,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
             formData={formData}
             setFormData={setFormData}
             commonFieldsetClasses={baseClasses}
+            errors={formErrors}
           />
         );
       case "image-map":

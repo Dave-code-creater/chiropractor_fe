@@ -19,9 +19,11 @@ import {
     X,
 } from "lucide-react"
 import InitialReportForm from "./InitialReportForm"
-import { useDeleteReportMutation } from "@/services/api"
+import { useDeleteReportMutation } from "@/services/reportApi"
 
 export default function Report() {
+    const REQUIRED_FIELDS = ["firstName", "lastName", "dob"]
+
     const [reports, setReports] = useState([
         {
             id: Date.now(),
@@ -83,6 +85,7 @@ export default function Report() {
                 onSubmit={(data) => handleSubmit(selectedId, data)}
                 initialData={reports.find((r) => r.id === selectedId)}
                 onBack={handleBack}
+                requiredFields={REQUIRED_FIELDS}
             />
         )
     }

@@ -1,6 +1,6 @@
 import { jwtDecode } from "jwt-decode";
 import { store } from "../store/store";
-import { apiSlice } from "../services/api";
+import { authApi } from "../services/authApi";
 
 /**
  * True when the JWT will expire within `buffer` seconds.
@@ -23,6 +23,6 @@ export const willExpireSoon = (token, buffer = 60) => {
 export const autoRefreshTokenIfNeeded = async () => {
     const { accessToken } = store.getState().data.auth;
     if (accessToken && willExpireSoon(accessToken)) {
-        await store.dispatch(apiSlice.endpoints.refreshToken.initiate()).unwrap();
+        await store.dispatch(authApi.endpoints.refreshToken.initiate()).unwrap();
     }
 };

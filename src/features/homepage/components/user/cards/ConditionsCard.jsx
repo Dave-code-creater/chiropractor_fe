@@ -2,32 +2,11 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertTriangle } from "lucide-react";
-
-const conditions = [
-    // {
-    //     name: "Sinusitis",
-    //     severityLabel: "Moderate",
-    //     severityClass: "bg-yellow-100 text-yellow-700",
-    //     description: "Inflammation causing congestion and discomfort.",
-    //     primary: "Dr Steven Kalish"
-    // },
-    // {
-    //     name: "Hypertension",
-    //     severityLabel: "Severe",
-    //     severityClass: "bg-red-100 text-red-700",
-    //     description: "High blood pressure requiring monitoring.",
-    //     primary: "Dr Amanda Chu"
-    // },
-    // {
-    //     name: "Vitamin D Deficiency",
-    //     severityLabel: "Mild",
-    //     severityClass: "bg-blue-100 text-blue-700",
-    //     description: "Low vitamin D levels, affects bones and immunity.",
-    //     primary: "Dr Steven Kalish"
-    // }
-];
+import { useGetHealthConditionsQuery } from "@/services/reportApi";
 
 export default function ConditionsCard() {
+    const { data, isLoading } = useGetHealthConditionsQuery();
+    const conditions = data?.metadata ?? data ?? [];
     return (
         <Card className="w-full h-full">
             <CardHeader>
@@ -38,7 +17,9 @@ export default function ConditionsCard() {
             </CardHeader>
             <ScrollArea className="max-h-[300px] h-full">
                 <CardContent className="space-y-4 h-full">
-                    {conditions.length > 0 ? (
+                    {isLoading ? (
+                        <p>Loading...</p>
+                    ) : conditions.length > 0 ? (
                         conditions.map(({ name, severityLabel, severityClass, description, primary }) => (
                             <div key={name} className="space-y-1">
                                 <div className="flex justify-between items-center">
