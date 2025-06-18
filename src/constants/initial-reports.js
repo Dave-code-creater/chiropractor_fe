@@ -544,7 +544,7 @@ const PATIENT_INFO = [
                 ]
             }
         ]
-    }
+    },
 ];
 
 export default PATIENT_INFO;

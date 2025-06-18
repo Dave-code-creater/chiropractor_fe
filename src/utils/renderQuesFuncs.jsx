@@ -69,7 +69,43 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                         ))}
                                     </SelectContent>
                                 </Select>
-                            ) : (
+                            ) : field.type = 'checkbox' ? ( <div className="space-y-2">
+                {field.options?.map((opt) => (
+                  <div key={opt.value} className="flex items-center">
+                    <Checkbox
+                      id={`${question.id}-${opt.value}`}
+                      checked={Array.isArray(formData[field.id] && formData[field.id]).includes(opt.value)}
+                      onCheckedChange={(checked) => {
+                        setFormData((prev) => {
+                          const currentValues = prev[field.id] || [];
+                          if (checked) {
+                            // thêm opt nếu chưa có
+                            return {
+                              ...prev,
+                              [field.id]: [...currentValues, opt.value],
+                            };
+                          } else {
+                            // bỏ opt nếu đang có
+                            return {
+                              ...prev,
+                              [field.id]: currentValues.filter(
+                                (v) => v !== opt.value
+                              ),
+                            };
+                          }
+                        });
+                      }}
+                    />
+                    <Label
+                      htmlFor={`${question.id}-${opt}`}
+                      className="ml-2"
+                    >
+                      {opt}
+                    </Label>
+                  </div>
+                ))}
+              </div>
+            ) : (
                                 <Input
                                     id={field.id}
                                     type={field.type === "number" ? "number" : "text"}

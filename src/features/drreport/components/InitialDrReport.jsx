@@ -30,19 +30,20 @@ import {
 } from "@/components/ui/hover-card";
 import { Calendar } from "@/components/ui/calendar";
 
-import PATIENT_INFO from "../../../../constants/initial-reports";
-import PainChartSection from "./HumanBody";
-import CervicalSpine from "../../../drreport/components/CervicalSpineDiagram";
+import PATIENT_INFO_DR from "../../../constants/initial-reportsDR";
 
-export default function Profile() {
+
+import PainChartSection from "../../report/components/user/HumanBody";
+import CervicalSpine from "./CervicalSpineDiagram";
+
+export default function ProfileUser() {
     const [formData, setFormData] = useState({});
     const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
     const [painMap, setPainMap] = useState({});
-    
-
-    const currentSection = PATIENT_INFO[currentSectionIndex];
-    const filteredSections = PATIENT_INFO.filter((sec) =>
+    const [cervicalDiagram, setCervicalDiagram] = useState(null)
+    const currentSection = PATIENT_INFO_DR[currentSectionIndex];
+    const filteredSections = PATIENT_INFO_DR.filter((sec) =>
         sec.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -92,6 +93,55 @@ export default function Profile() {
                                                 ))}
                                             </SelectContent>
                                         </Select>
+                                    </div>
+                                );
+                            }
+                            // Checkbox fields
+                            if (field.type === "checkbox") {
+                                return (
+                                    <div key={field.id} className="mt-4 space-y-1">
+                                    <Label>{field.label}</Label>
+                                    {field.options.map((opt) => {
+                                        // Nếu opt là object {value,label}, thì dùng opt.value/opt.label
+                                        // Giả sử opt đã là chuỗi
+                                        const valueKey = typeof opt === "string" ? opt : opt.value;
+                                        const labelText = typeof opt === "string" ? opt : opt.label;
+                                        
+                                        const checked =
+                                        Array.isArray(value) && value.includes(valueKey);
+                                        const sanitizedId = `${question.id}-${valueKey}`.replace(
+                                        /[^a-zA-Z0-9-_]/g,
+                                        "-"
+                                        );
+
+                                        return (
+                                        <div key={valueKey} className="flex items-center">
+                                            <Checkbox
+                                            id={sanitizedId}
+                                            checked={checked}
+                                            onCheckedChange={(checked) => {
+                                                setFormData((prev) => {
+                                                const current = prev[field.id] || [];
+                                                if (checked) {
+                                                    return {
+                                                    ...prev,
+                                                    [field.id]: [...current, valueKey],
+                                                    };
+                                                } else {
+                                                    return {
+                                                    ...prev,
+                                                    [field.id]: current.filter((v) => v !== valueKey),
+                                                    };
+                                                }
+                                                });
+                                            }}
+                                            />
+                                            <Label htmlFor={sanitizedId} className="ml-2">
+                                            {valueKey} - {labelText}
+                                            </Label>
+                                        </div>
+                                        );
+                                    })}
                                     </div>
                                 );
                             }
@@ -221,7 +271,31 @@ export default function Profile() {
                 </fieldset>
             );
         }
-        
+        // Cervical Diagram
+        if (question.id === "cervicalDiagram") {
+            return (
+                <fieldset key={question.id} className={commonFieldsetClasses}>
+                    <legend className="text-sm font-medium text-muted-foreground px-2 flex items-center gap-2">
+                        {question.label}
+                        {question.extra_info && (
+                            <HoverCard>
+                                <HoverCardTrigger asChild>
+                                    <Info size={16} className="text-muted-foreground cursor-pointer" />
+                                </HoverCardTrigger>
+                                <HoverCardContent className="w-80 text-sm">
+                                    {question.extra_info}
+                                </HoverCardContent>
+                            </HoverCard>
+                        )}
+                    </legend>
+                    <CervicalSpine onBoneClick={setCervicalDiagram} />
+                    {cervicalDiagram && (
+                        <div style={{ marginTop: 16 }}>You selected: {cervicalDiagram}</div>
+                    )}
+                </fieldset>
+            );
+        }
+
         // Radio outside group
         if (question.type === "radio") {
             return (
@@ -317,7 +391,7 @@ export default function Profile() {
                     <Accordion type="single" collapsible className="w-full space-y-2" value={currentSection.title}>
                         {filteredSections.map((section) => (
                             <AccordionItem key={section.id} value={section.title}>
-                                <AccordionTrigger onClick={() => setCurrentSectionIndex(PATIENT_INFO.findIndex(s => s.id === section.id))}>
+                                <AccordionTrigger onClick={() => setCurrentSectionIndex(PATIENT_INFO_DR.findIndex(s => s.id === section.id))}>
                                     {section.title}
                                 </AccordionTrigger>
                             </AccordionItem>
@@ -331,8 +405,8 @@ export default function Profile() {
                         </CardHeader>
                         <CardContent className="space-y-8">
                             {currentSection.questions.map((q) => renderQuestion(q))}
-                            <div className="pt-6 flex justify-end">
-                                {currentSectionIndex < PATIENT_INFO.length - 1 ? (
+                            <div className="pt-6 flex jcustify-end">
+                                {currentSectionIndex < PATIENT_INFO_DR.length - 1 ? (
                                     <Button type="button" onClick={() => setCurrentSectionIndex((i) => i + 1)}>
                                         Next
                                     </Button>

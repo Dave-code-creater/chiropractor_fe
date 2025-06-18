@@ -19,7 +19,7 @@ import Inbox from '../features/chat/components/Chat';
 import Profile from '../features/profile/components/Profile';
 import Report from '../features/report/components/user/Report';
 import AdminDashboard from '../features/homepage/components/admin/Homepage';
-
+import ProfileUser from '../features/drreport/components/InitialDrReport';
 import ProtectRoute from './ProtectRoute';
 
 export default function AppRoutes() {
@@ -62,6 +62,7 @@ export default function AppRoutes() {
                     <Route index element={<AdminDashboard />} />
                     <Route path="manage-users" element={<div>Manage Users</div>} />
                     <Route path="analytics" element={<div>Analytics</div>} />
+                    <Route path="doctor-report" element={<ProfileUser/>} />
                     {/* Add more admin routes here */}
                 </Route>
             </Route>

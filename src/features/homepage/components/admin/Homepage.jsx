@@ -135,8 +135,19 @@ export default function AdminDashboard() {
                     </CardContent>
                 </Card>
             </div>
+
             <div className="space-y-4">
-                
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Dr Report</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <button className="border-2xl">
+                            Initial Report
+                            
+                        </button>
+                    </CardContent>
+                </Card>
 
                 <Card>
                     <CardHeader>
