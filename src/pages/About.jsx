@@ -50,7 +50,7 @@ const About = () => {
                         </button>
                         <a
                             href="/about"
-                            className="text-sm font-semibold text-white underline underline-offset-4 hover:text-indigo-300"
+                            className="text-sm font-semibold text-black underline underline-offset-4 hover:text-indigo-300"
                         >
                             Learn more →
                         </a>

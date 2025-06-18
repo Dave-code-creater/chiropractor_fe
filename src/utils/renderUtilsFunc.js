@@ -2,9 +2,12 @@
 
 export function renderDate(getDate) {
     if (!getDate) return ''
-    //    / or -
-    return String(getDate).replace(/\D/g, '')
-
+    const digits = String(getDate).replace(/\D/g, '')
+    if (digits.length !== 8) return String(getDate)
+    const y = digits.slice(0, 4)
+    const m = digits.slice(4, 6)
+    const d = digits.slice(6, 8)
+    return `${y}/${m}/${d}`
 }
 
 
@@ -84,7 +87,6 @@ export function renderGmailExprs(getEmail) {
     // HTML5-style email regex;
 
     const html5EmailRe = /^[A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
-    console.log(getEmail)
     if (!getEmail)
         throw new Error('Do not let email empty');
 

@@ -1,32 +1,34 @@
 import { useState, useEffect } from "react";
-import { useSelector, useDispatch} from "react-redux";
-import { useLoginMutation } from "../../../services/api";
+import { useSelector, useDispatch } from "react-redux";
+import { useLoginMutation } from "../../../services/authApi";
 import { useNavigate } from "react-router-dom";
-import { renderGmailExprs, renderPassword} from "../../../utils/renderUtilsFunc";
-import { setEmailError, clearEmailError, setPasswordError, clearPasswordError } from "../../../utils/formerrorSlice";
+import { renderGmailExprs, renderPassword } from "../../../utils/renderUtilsFunc";
+import { setEmailError, clearEmailError, setPasswordError, clearPasswordError } from "../../../state/forms/loginFormSlice";
 
 export default function Login() {
     const navigate = useNavigate();
-    const { user, isAuthenticated } = useSelector((state) => state.auth);
+    const userID = useSelector(state => state.data.auth.userID);
+    const isAuthenticated = useSelector(state => state.data.auth.isAuthenticated);
+    const role = useSelector(state => state.data.auth.role);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loginMutation, { isLoading, error: loginError }] = useLoginMutation();
     const dispatch = useDispatch();
-    const errorEmail = useSelector(state => state.formError.email)
-    const pwError = useSelector (state => state.formError.password )
+    const errorEmail = useSelector(state => state.forms.loginForm.errors.email)
+    const pwError = useSelector(state => state.forms.loginForm.errors.password)
 
     const handleEmailBlur = () => {
         try {
             const good = renderGmailExprs(email);
             dispatch(clearEmailError(good));
-        } catch(err){
+        } catch (err) {
             dispatch(setEmailError(err.message));
         }
     }
 
     const handlePwBlur = () => {
         try {
-            good = renderPassword(password)
+            const good = renderPassword(password)
             dispatch(clearPasswordError(good))
         } catch (err) {
             dispatch(setPasswordError(err.message))
@@ -36,13 +38,12 @@ export default function Login() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            if (user.role.name === "admin") {
-                navigate(`/admin/${user.id}`);
-            } else {
-                navigate(`/dashboard/${user.id}`);
-            }
+            // send doctors to /admin/:id, everyone else to /dashboard/:id
+            const homePath =
+                role === "doctor" ? `/admin/${userID}` : `/dashboard/${userID}`;
+            navigate(homePath, { replace: true });
         }
-    }, [isAuthenticated, navigate, user]);
+    }, [isAuthenticated, navigate, userID, role]);
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -77,7 +78,7 @@ export default function Login() {
                             autoComplete="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            onBlur = {handleEmailBlur}
+                            onBlur={handleEmailBlur}
                             placeholder="you@example.com"
                             className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
                         />
@@ -96,7 +97,7 @@ export default function Login() {
                             autoComplete="current-password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            onBlur = {handlePwBlur}
+                            onBlur={handlePwBlur}
                             className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
                         />
                         {pwError && <p className="text-red-500">{pwError}</p>}

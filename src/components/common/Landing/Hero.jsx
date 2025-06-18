@@ -5,12 +5,12 @@ import { useSelector } from "react-redux"
 
 export default function Hero() {
     const navigate = useNavigate()
-    const user = useSelector((state) => state.auth.user);
-    const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+    const user = useSelector((state) => state.data.auth.userID);
+    const isAuthenticated = useSelector((state) => state.data.auth.isAuthenticated);
 
     const handleBookAppointment = () => {
         if (isAuthenticated && user?.id) {
-            navigate(`/services/${user.id}/appointments`);
+            navigate(`dashboard/${user.id}/services/appointments/`);
         } else {
             navigate('/login');
         }

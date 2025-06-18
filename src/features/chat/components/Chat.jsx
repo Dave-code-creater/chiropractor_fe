@@ -7,19 +7,30 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Send, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-// Mock user list
-const users = [
-    { id: 1, name: "Dr. Sarah Lee", role: "Doctor", avatar: "https://i.pravatar.cc/150?img=1" },
-    { id: 2, name: "Marcus Cain", role: "Staff", avatar: "https://i.pravatar.cc/150?img=2" },
-];
+import {
+    useGetConversationsQuery,
+    useGetMessagesQuery,
+    useSendMessageMutation,
+} from "@/services/chatApi";
+import { useSelector } from "react-redux";
 
 export default function ChatPage() {
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [messages, setMessages] = useState([
-        { id: 1, sender: "self", text: "Hi Doctor!" },
-        { id: 2, sender: "other", text: "Hello, how can I help?" },
-    ]);
+    const userId = useSelector((state) => state.data.auth.userID);
+    const [selectedConvo, setSelectedConvo] = useState(null);
+    const { data: convoData, isLoading: convLoading } = useGetConversationsQuery();
+    const conversations = convoData?.metadata ?? convoData ?? [];
+    const {
+        data: msgData,
+        isLoading: msgLoading,
+        refetch,
+    } = useGetMessagesQuery(selectedConvo?._id, { skip: !selectedConvo });
+    const [sendMessage] = useSendMessageMutation();
+    const [messages, setMessages] = useState([]);
+    useEffect(() => {
+        if (msgData) {
+            setMessages(msgData.metadata ?? msgData ?? []);
+        }
+    }, [msgData]);
     const [newMessage, setNewMessage] = useState("");
     const [isMobile, setIsMobile] = useState(false);
 
@@ -29,24 +40,25 @@ export default function ChatPage() {
             const mobile = window.innerWidth < 768;
             setIsMobile(mobile);
 
-            // Auto-select first user on large screens
-            if (!mobile && !selectedUser && users.length > 0) {
-                setSelectedUser(users[0]);
+            if (!mobile && !selectedConvo && conversations.length > 0) {
+                setSelectedConvo(conversations[0]);
             }
         };
 
         handleResize(); // Initial check
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    }, [selectedUser]);
+    }, [selectedConvo, conversations]);
 
-    const handleSend = () => {
-        if (!newMessage.trim()) return;
-        setMessages((prev) => [
-            ...prev,
-            { id: prev.length + 1, sender: "self", text: newMessage },
-        ]);
-        setNewMessage("");
+    const handleSend = async () => {
+        if (!newMessage.trim() || !selectedConvo) return;
+        try {
+            await sendMessage({ conversationId: selectedConvo._id, text: newMessage }).unwrap();
+            setNewMessage("");
+            refetch();
+        } catch (err) {
+            /* ignore */
+        }
     };
 
     return (
@@ -55,7 +67,7 @@ export default function ChatPage() {
             <div
                 className={cn(
                     "w-full md:w-1/3 max-w-sm border-r flex flex-col",
-                    selectedUser && isMobile && "hidden"
+                    selectedConvo && isMobile && "hidden"
                 )}
             >
                 <div className="p-4 border-b">
@@ -63,60 +75,71 @@ export default function ChatPage() {
                 </div>
                 <ScrollArea className="flex-1">
                     <ul>
-                        {users.map((user) => (
-                            <li
-                                key={user.id}
-                                onClick={() => setSelectedUser(user)}
-                                className={cn(
-                                    "px-4 py-3 flex items-center gap-3 cursor-pointer p-4 border-b hover:bg-accent",
-                                    selectedUser?.id === user.id && "bg-accent"
-                                )}
-                            >
-                                <Avatar className="h-8 w-8">
-                                    <AvatarImage src={user.avatar} />
-                                    <AvatarFallback>{user.name[0]}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex flex-col">
-                                    <span className="font-medium text-sm">{user.name}</span>
-                                    <span className="text-xs text-muted-foreground">{user.role}</span>
-                                </div>
-                            </li>
-                        ))}
+                        {convLoading ? (
+                            <li className="p-4 text-sm">Loading...</li>
+                        ) : conversations.map((convo) => {
+                              const other = convo.participants?.find((p) => p !== userId) || convo._id;
+                              return (
+                                  <li
+                                      key={convo._id || convo.id}
+                                      onClick={() => setSelectedConvo(convo)}
+                                      className={cn(
+                                          "px-4 py-3 flex items-center gap-3 cursor-pointer border-b hover:bg-accent",
+                                          selectedConvo?._id === (convo._id || convo.id) && "bg-accent"
+                                      )}
+                                  >
+                                      <Avatar className="h-8 w-8">
+                                          <AvatarFallback>{String(other).charAt(0)}</AvatarFallback>
+                                      </Avatar>
+                                      <div className="flex flex-col">
+                                          <span className="font-medium text-sm">{other}</span>
+                                      </div>
+                                  </li>
+                              );
+                          })}
                     </ul>
                 </ScrollArea>
             </div>
 
             {/* Chat Window */}
-            {(selectedUser || !isMobile) && (
+            {(selectedConvo || !isMobile) && (
                 <div className="flex-1 flex flex-col w-full md:w-2/3">
                     {/* Header */}
-                    {selectedUser && (
+                    {selectedConvo && (
                         <div className="px-4 py-3 border-b bg-background flex items-center gap-3">
                             {isMobile && (
                                 <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => setSelectedUser(null)}
+                                    onClick={() => setSelectedConvo(null)}
                                 >
                                     <ArrowLeft className="h-5 w-5" />
                                 </Button>
                             )}
                             <Avatar className="h-9 w-9">
-                                <AvatarImage src={selectedUser.avatar} />
-                                <AvatarFallback>{selectedUser.name[0]}</AvatarFallback>
+                                <AvatarFallback>
+                                    {String(
+                                        selectedConvo.participants?.find((p) => p !== userId) ||
+                                            selectedConvo._id
+                                    ).charAt(0)}
+                                </AvatarFallback>
                             </Avatar>
                             <div>
-                                <h2 className="text-base font-semibold">{selectedUser.name}</h2>
-                                <p className="text-sm text-muted-foreground">{selectedUser.role}</p>
+                                <h2 className="text-base font-semibold">
+                                    {selectedConvo.participants?.find((p) => p !== userId) ||
+                                        selectedConvo._id}
+                                </h2>
                             </div>
                         </div>
                     )}
 
                     {/* Messages */}
-                    {selectedUser && (
+                    {selectedConvo && (
                         <>
                             <ScrollArea className="flex-1 p-4 space-y-2 bg-background">
-                                {messages.map((msg) => (
+                                {msgLoading ? (
+                                    <p>Loading...</p>
+                                ) : messages.map((msg) => (
                                     <div
                                         key={msg.id}
                                         className={`flex ${msg.sender === "self" ? "justify-end" : "justify-start"}`}
