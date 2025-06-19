@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useLogoutMutation } from '../../../services/authApi';
 import sidebar from '../../../constants/sidebar';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
@@ -41,9 +41,15 @@ function Sidebar({ sidebarPosition = "left" }) {
 
             {/* Mobile Sidebar */}
             {mobileOpen && (
-                <div className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0" : "left-0"} z-50 w-64 bg-white shadow-lg`}>
+                <div
+                    className={`fixed inset-y-0 ${sidebarPosition === "right" ? "right-0" : "left-0"
+                        } z-50 w-64 bg-white shadow-lg`}
+                >
                     <div className="flex items-center justify-between p-4 border-b">
-                        <h2 className="text-lg font-semibold">DR. DIEU PHAN D.C.</h2>
+                        {/* Linked header */}
+                        <Link to="/" className="text-lg font-semibold hover:underline">
+                            DR. DIEU PHAN D.C.
+                        </Link>
                         <button onClick={() => setMobileOpen(false)}>
                             <XMarkIcon className="h-6 w-6 text-gray-700" />
                         </button>
@@ -54,18 +60,16 @@ function Sidebar({ sidebarPosition = "left" }) {
 
             {/* Desktop Sidebar */}
             <div
-                className={`hidden md:flex flex-col h-screen border-r relative transition-all duration-300 bg-white 
-    ${isCollapsed ? "w-12" : "w-64"} 
-    ${sidebarPosition === "right" ? "border-l" : "border-r"}`}
+                className={`hidden md:flex flex-col h-screen relative transition-all duration-300 bg-white ${isCollapsed ? "w-12" : "w-64"
+                    } ${sidebarPosition === "right" ? "border-l" : "border-r"}`}
             >
                 {/* Collapse/Expand Button */}
                 <button
-                    className={`absolute top-1/2 transform -translate-y-1/2 z-50 p-2 bg-white border rounded-full shadow-md hover:bg-gray-100
-      ${sidebarPosition === "right" ? "left-[-14px]" : "right-[-14px]"}`}
+                    className={`absolute top-1/2 transform -translate-y-1/2 z-50 p-2 bg-white border rounded-full shadow-md hover:bg-gray-100 ${sidebarPosition === "right" ? "left-[-14px]" : "right-[-14px]"
+                        }`}
                     onClick={() => setIsCollapsed((prev) => !prev)}
                 >
                     <span className="text-lg font-bold text-gray-600">
-                        {/* Toggle direction based on side + collapse state */}
                         {sidebarPosition === "right"
                             ? isCollapsed
                                 ? "←"
@@ -75,6 +79,18 @@ function Sidebar({ sidebarPosition = "left" }) {
                                 : "←"}
                     </span>
                 </button>
+
+                {/* Linked header (only when expanded) */}
+                {!isCollapsed && (
+                    <div className="p-4 border-b">
+                        <Link
+                            to={`/dashboard/${userID}`}
+                            className="text-lg font-semibold hover:underline"
+                        >
+                            DR. DIEU PHAN D.C.
+                        </Link>
+                    </div>
+                )}
 
                 <div className="h-full w-full p-4 overflow-auto">
                     {!isCollapsed && renderNav({ isCollapsed })}
@@ -95,7 +111,8 @@ function Sidebar({ sidebarPosition = "left" }) {
                             <span>{!isCollapsed && label}</span>
                             {!isCollapsed && (
                                 <svg
-                                    className={`w-4 h-4 transform transition-transform ${dropdowns[id] ? 'rotate-180' : 'rotate-0'}`}
+                                    className={`w-4 h-4 transform transition-transform ${dropdowns[id] ? 'rotate-180' : 'rotate-0'
+                                        }`}
                                     fill="none"
                                     stroke="currentColor"
                                     strokeWidth="2"
@@ -123,16 +140,28 @@ function Sidebar({ sidebarPosition = "left" }) {
 
                 <hr className="my-2 border-blue-gray-100" />
 
-                <button onClick={() => handleNavigation('services/inbox')} className="px-3 py-2 text-left hover:text-indigo-600">
+                <button
+                    onClick={() => handleNavigation('services/inbox')}
+                    className="px-3 py-2 text-left hover:text-indigo-600"
+                >
                     Inbox
                 </button>
-                <button onClick={() => handleNavigation('services/profile')} className="px-3 py-2 text-left hover:text-indigo-600">
+                <button
+                    onClick={() => handleNavigation('services/profile')}
+                    className="px-3 py-2 text-left hover:text-indigo-600"
+                >
                     Profile
                 </button>
-                <button onClick={() => handleNavigation('services/settings')} className="px-3 py-2 text-left hover:text-indigo-600">
+                <button
+                    onClick={() => handleNavigation('services/settings')}
+                    className="px-3 py-2 text-left hover:text-indigo-600"
+                >
                     Settings
                 </button>
-                <button onClick={handleLogout} className="px-3 py-2 text-left hover:text-indigo-600">
+                <button
+                    onClick={handleLogout}
+                    className="px-3 py-2 text-left hover:text-indigo-600"
+                >
                     {!isCollapsed && 'Log Out'}
                 </button>
             </nav>

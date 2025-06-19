@@ -80,9 +80,11 @@ const PATIENT_INFO = [
                 label: "Home Address",
                 type: "group",
                 fields: [
-                    { id: "street", label: "Street", type: "text", placeholder: "123 Main St" },
-                    { id: "city", label: "City", type: "text", placeholder: "Toronto" },
-                    { id: "state", label: "State", type: "text", placeholder: "ON" },
+                    { id: "street", label: "Street", type: "text", placeholder: "123 Main St", required: true },
+                    { id: "city", label: "City", type: "text", placeholder: "Toronto", required: true },
+                    { id: "state", label: "State", type: "text", placeholder: "ON", required: true },
+                    { id: "zip", label: "Zip", type: "text", placeholder: "M4B 1B3", required: true },
+                    { id: "homePhone", label: "Home Phone", type: "tel", placeholder: "(123) 456-7890", extra_info: "Include area code", required: true },
                     { id: "zip", label: "Zip", type: "text", placeholder: "M4B 1B3" },
                     {
                         id: "homePhone",

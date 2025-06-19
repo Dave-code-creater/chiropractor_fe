@@ -33,7 +33,7 @@ import { Calendar } from "@/components/ui/calendar";
 import PATIENT_INFO_DR from "../../../constants/initial-reportsDR";
 
 
-import PainChartSection from "../../report/components/user/HumanBody";
+import PainChartSection from "../../report/user/components/HumanBody";
 import CervicalSpine from "./CervicalSpineDiagram";
 
 export default function ProfileUser() {

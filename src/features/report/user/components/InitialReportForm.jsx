@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from "react";
+// src/features/report/user/components/InitialReportForm.jsx
+// ────────────────────────────────────────────────────────────────────────────
+import React, { useState, useEffect, useMemo } from "react";
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +14,7 @@ import {
   RenderCheckboxQues,
   RenderOtherQues,
 } from "@/utils/renderQuesFuncs";
-import PATIENT_INFO from "../../../../constants/initial-reports";
+import PATIENT_INFO from "@/constants/initial-reports";
 import PainChartSection from "./HumanBody";
 import {
   useSubmitPatientIntakeMutation,
@@ -24,23 +26,39 @@ import {
   useGetInitialReportQuery,
 } from "@/services/reportApi";
 
-const collectFieldIds = (questions) => {
-  const ids = [];
-  questions.forEach((q) => {
-    if (q.type === "group") {
-      q.fields.forEach((f) => ids.push(f.id))
-    } else if (q.type !== "image-map") {
-      ids.push(q.id)
-    }
-  })
-  return ids
-}
+export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
+  // 1️⃣ collect every field‐ID with required:true
+  const requiredFieldIds = useMemo(
+    () =>
+      PATIENT_INFO.flatMap((section) =>
+        section.questions.flatMap((q) => {
+          if (q.type === "group") {
+            return q.fields.filter((f) => f.required).map((f) => f.id);
+          }
+          return q.required ? [q.id] : [];
+        })
+      ),
+    []
+  );
 
-const sectionFieldIds = PATIENT_INFO.map((section) =>
-  collectFieldIds(section.questions)
-)
+  // 2️⃣ build a lookup from ID → label for nice messages
+  const fieldLabelMap = useMemo(() => {
+    const map = {};
+    PATIENT_INFO.forEach((section) =>
+      section.questions.forEach((q) => {
+        if (q.type === "group") {
+          q.fields.forEach((f) => {
+            map[f.id] = f.label;
+          });
+        } else {
+          map[q.id] = q.label;
+        }
+      })
+    );
+    return map;
+  }, []);
 
-export default function InitialReportForm({ onSubmit, initialData = {}, onBack, requiredFields = [] }) {
+  // RTK hooks…
   const [submitPatientIntake] = useSubmitPatientIntakeMutation();
   const [submitAccidentDetails] = useSubmitAccidentDetailsMutation();
   const [submitPainEvaluation] = useSubmitPainEvaluationMutation();
@@ -48,6 +66,8 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
   const [submitRecoveryImpact] = useSubmitRecoveryImpactMutation();
   const [submitHealthHistory] = useSubmitHealthHistoryMutation();
   const { data: fetchedData } = useGetInitialReportQuery();
+
+  // local state…
   const [formData, setFormData] = useState({
     currentlyWorking: "none",
     drinkStatus: "none",
@@ -61,6 +81,7 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
   const [editingName, setEditingName] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
+  // hydrate from API
   useEffect(() => {
     if (fetchedData) {
       setFormData((prev) => ({
@@ -71,46 +92,62 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
         ...(fetchedData.recoveryImpact || {}),
         ...(fetchedData.healthHistory || {}),
       }));
-      if (fetchedData.painEvaluations) {
-        setPainEvaluations(fetchedData.painEvaluations);
-      }
-      if (fetchedData.name) {
-        setReportName(fetchedData.name);
-      }
+      if (fetchedData.painEvaluations) setPainEvaluations(fetchedData.painEvaluations);
+      if (fetchedData.name) setReportName(fetchedData.name);
     }
   }, [fetchedData]);
-
 
   const currentSection = PATIENT_INFO[currentSectionIndex];
   const baseClasses = "border rounded-md p-4 space-y-4 mb-4 bg-white shadow-sm";
 
+  // 3️⃣ validate using label‐aware messages
   const validate = () => {
     const errs = {};
-    requiredFields.forEach((f) => {
-      if (!formData[f] || String(formData[f]).trim() === "") {
-        errs[f] = "This field is required";
+    requiredFieldIds.forEach((id) => {
+      if (!formData[id] || String(formData[id]).trim() === "") {
+        // use our map to say "First is required" instead of generic
+        errs[id] = `${fieldLabelMap[id]} is required`;
       }
     });
+
+    // SSN format
     if (formData.ssn && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn)) {
       errs.ssn = "Invalid SSN format";
     }
-    const phoneFields = Object.keys(formData).filter((k) => k.toLowerCase().includes("phone"));
-    phoneFields.forEach((field) => {
-      if (formData[field] && !/^(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}$/.test(formData[field])) {
-        errs[field] = "Invalid phone number";
+    // phone
+    Object.keys(formData)
+      .filter((k) => k.toLowerCase().includes("phone"))
+      .forEach((field) => {
+        if (
+          formData[field] &&
+          !/^(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}$/.test(formData[field])
+        ) {
+          errs[field] = "Invalid phone number";
+        }
+      });
+    // date parsing
+    ["dob", "accidentDate"].forEach((field) => {
+      if (formData[field] && isNaN(new Date(formData[field]))) {
+        errs[field] = "Invalid date";
       }
     });
-    const dateFields = ["dob", "accidentDate"];
-    dateFields.forEach((field) => {
-      if (formData[field]) {
-        const d = new Date(formData[field]);
-        if (isNaN(d)) errs[field] = "Invalid date";
-      }
-    });
+
     setFormErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
+  // collect IDs per section for partial submits
+  const sectionFieldIds = useMemo(
+    () =>
+      PATIENT_INFO.map((section) =>
+        section.questions.reduce((acc, q) => {
+          if (q.type === "group") acc.push(...q.fields.map((f) => f.id));
+          else acc.push(q.id);
+          return acc;
+        }, [])
+      ),
+    []
+  );
 
   const submitters = [
     submitPatientIntake,
@@ -123,35 +160,42 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
 
   const handleSectionSubmit = async () => {
     if (!validate()) return;
+
+    // grab only this section's fields
     const fields = sectionFieldIds[currentSectionIndex];
     const subset = {};
     fields.forEach((f) => {
       if (formData[f] !== undefined) subset[f] = formData[f];
     });
+
     try {
       if (currentSection.id === "3") {
         await submitters[currentSectionIndex]({ painEvaluations, name: reportName });
       } else {
         await submitters[currentSectionIndex]({ formData: subset, name: reportName });
       }
-      if (currentSectionIndex === PATIENT_INFO.length - 1) {
-        const sectionData = PATIENT_INFO.map((_, idx) => {
-          const ids = sectionFieldIds[idx]
-          const obj = {}
+
+      // last section: fire onSubmit
+      const isLast = currentSectionIndex === PATIENT_INFO.length - 1;
+      if (isLast) {
+        const allSections = sectionFieldIds.map((ids) => {
+          const obj = {};
           ids.forEach((id) => {
-            if (formData[id] !== undefined) obj[id] = formData[id]
-          })
-          return obj
-        })
+            if (formData[id] !== undefined) obj[id] = formData[id];
+          });
+          return obj;
+        });
         onSubmit({
-          patientIntake: sectionData[0],
-          accidentDetails: sectionData[1],
+          patientIntake: allSections[0],
+          accidentDetails: allSections[1],
           painEvaluations,
-          symptomDescription: sectionData[3],
-          recoveryImpact: sectionData[4],
-          healthHistory: sectionData[5],
+          symptomDescription: allSections[3],
+          recoveryImpact: allSections[4],
+          healthHistory: allSections[5],
           name: reportName,
-        })
+        });
+      } else {
+        setCurrentSectionIndex((i) => i + 1);
       }
     } catch (err) {
       console.error(err);
@@ -159,13 +203,12 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
   };
 
   const renderQuestion = (question) => {
+    // female-only skip logic
     if (
-      question.id === "femaleOnly" ||
-      question.id === "femaleOnlyDetails"
+      (question.id === "femaleOnly" || question.id === "femaleOnlyDetails") &&
+      formData.gender?.toLowerCase() !== "female"
     ) {
-      if (!formData.gender || formData.gender.toLowerCase() !== "female") {
-        return null;
-      }
+      return null;
     }
     switch (question.type) {
       case "group":
@@ -226,7 +269,9 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
       case "image-map":
         return (
           <fieldset key={question.id} className={baseClasses}>
-            <legend className="text-sm font-medium text-muted-foreground px-2">{question.label}</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              {question.label}
+            </legend>
             {painEvaluations.map((ev, idx) => (
               <div key={idx} className="mb-8">
                 <PainChartSection
@@ -235,12 +280,12 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
                   setPainMap={(updater) =>
                     setPainEvaluations((prev) => {
                       const list = [...prev];
-                      const current = list[idx];
+                      const curr = list[idx];
                       const newMap =
                         typeof updater === "function"
-                          ? updater(current.painMap || {})
+                          ? updater(curr.painMap || {})
                           : updater;
-                      list[idx] = { ...current, painMap: newMap };
+                      list[idx] = { ...curr, painMap: newMap };
                       return list;
                     })
                   }
@@ -248,12 +293,12 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
                   setFormData={(updater) =>
                     setPainEvaluations((prev) => {
                       const list = [...prev];
-                      const current = list[idx];
+                      const curr = list[idx];
                       const newData =
                         typeof updater === "function"
-                          ? updater(current.formData || {})
+                          ? updater(curr.formData || {})
                           : updater;
-                      list[idx] = { ...current, formData: newData };
+                      list[idx] = { ...curr, formData: newData };
                       return list;
                     })
                   }
@@ -279,16 +324,21 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
           <ArrowLeft className="h-5 w-5" />
         </Button>
       )}
+      {/* Sidebar Accordion */}
       <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full pt-16 px-8">
         <h2 className="text-lg font-semibold mb-4">Initial Reports</h2>
         <Accordion type="single" collapsible className="space-y-2" value={currentSection.title}>
-          {PATIENT_INFO.map((section, idx) => (
-            <AccordionItem key={section.id} value={section.title} onClick={() => setCurrentSectionIndex(idx)}>
-              <AccordionTrigger>{section.title}</AccordionTrigger>
+          {PATIENT_INFO.map((section) => (
+            <AccordionItem key={section.id} value={section.title}>
+              <AccordionTrigger className="text-sm font-medium">
+                {section.title}
+              </AccordionTrigger>
             </AccordionItem>
           ))}
         </Accordion>
       </div>
+
+      {/* Main Form */}
       <div className="flex-1 p-4 md:p-6 overflow-y-auto h-full">
         <form
           onSubmit={(e) => {
@@ -319,38 +369,36 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
               )}
               <p className="text-sm text-muted-foreground mt-1">{currentSection.title}</p>
             </CardHeader>
+
             <CardContent className="space-y-6">
-              {Object.values(formErrors).length > 0 && (
-                <div className="text-red-500 text-sm space-y-1">
-                  {Object.entries(formErrors).map(([k, v]) => (
-                    <div key={k}>{v}</div>
-                  ))}
+              {/* ▶️ Top‐of‐form summary of missing fields */}
+              {Object.keys(formErrors).length > 0 && (
+                <div className="text-red-500 text-sm mb-4">
+                  <p>Please fill out these required fields:</p>
+                  <ul className="list-disc list-inside ml-4">
+                    {Object.keys(formErrors).map((id) => (
+                      <li key={id}>{formErrors[id]}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
+
+              {/* Render the section’s questions */}
               {currentSection.questions.map((q) => renderQuestion(q))}
+
+              {/* Navigation buttons */}
               <div className="flex justify-between pt-4">
                 {currentSectionIndex > 0 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setCurrentSectionIndex((i) => i - 1)}
-                  >
+                  <Button type="button" variant="outline" onClick={() => setCurrentSectionIndex((i) => i - 1)}>
                     Previous
                   </Button>
                 )}
                 <div className="space-x-2">
-                  {/* show Next if not at last */}
                   {currentSectionIndex < PATIENT_INFO.length - 1 && (
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      onClick={() => setCurrentSectionIndex(i => i + 1)}
-                    >
+                    <Button type="button" variant="secondary" onClick={() => setCurrentSectionIndex((i) => i + 1)}>
                       Next
                     </Button>
                   )}
-
-                  {/* show Save on the last section */}
                   {currentSectionIndex === PATIENT_INFO.length - 1 && (
                     <Button type="submit">Save Section</Button>
                   )}
@@ -363,4 +411,3 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
     </div>
   );
 }
-

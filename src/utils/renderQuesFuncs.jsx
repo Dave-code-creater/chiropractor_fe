@@ -1,19 +1,27 @@
-import React from "react"
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card"
-import { Info } from "lucide-react"
-import { Label } from "@/components/ui/label"
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Button } from "@/components/ui/button"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
-import { Calendar } from "@/components/ui/calendar"
-import { renderCalAge, renderDate } from "./renderUtilsFunc"
+// src/utils/renderQuesFuncs.jsx
+// ────────────────────────────────────────────────────────────────────────────
+import React from "react";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import { Info } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectTrigger,
+    SelectValue,
+    SelectContent,
+    SelectItem,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { renderCalAge, renderDate } from "./renderUtilsFunc";
 
 export function FormatLegend({ question }) {
     return (
         <legend className="text-sm font-medium text-muted-foreground px-2 flex items-center gap-2">
             {question.label}
+            {question.required && <span className="ml-1 text-red-500">*</span>}
             {question.extra_info && (
                 <HoverCard>
                     <HoverCardTrigger asChild>
@@ -25,48 +33,51 @@ export function FormatLegend({ question }) {
                 </HoverCard>
             )}
         </legend>
-    )
+    );
 }
 
-export function RenderQuesFuncs({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
+export function RenderQuesFuncs({
+    question,
+    formData,
+    setFormData,
+    commonFieldsetClasses,
+    errors = {},
+}) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
-                {question.fields?.map((field) => {
-                    if (
-                        (field.id === "mentalWorkHours" && formData.mentalWork === "None") ||
-                        (field.id === "physicalWorkHours" && formData.physicalWork === "None") ||
-                        (field.id === "exerciseHours" && formData.exercise === "None") ||
-                        (["packsPerDay", "smokingYears"].includes(field.id) && formData.smokingStatus === "None") ||
-                        (["beerPerWeek", "liquorPerWeek", "winePerWeek", "alcoholYears"].includes(field.id) && (formData.drinkStatus === "none" || formData.drinkStatus === "no")) ||
-                        (["workTimes", "workHoursPerDay", "workDaysPerWeek", "jobDescription"].includes(field.id) && (formData.currentlyWorking === "none" || formData.currentlyWorking === "no"))
-                    ) {
-                        return null;
-                    }
-                    const value = formData[field.id] || ""
+                {question.fields.map((field) => {
+                    // any skip‐logic here…
+                    const isReq = !!field.required;
+                    const value = formData[field.id] || "";
+
                     return (
                         <div key={field.id} className="min-h-[100px]">
                             <div className="flex items-center gap-1">
-                                <Label htmlFor={field.id}>{field.label}</Label>
+                                <Label htmlFor={field.id}>
+                                    {field.label}
+                                    {isReq && <span className="ml-1 text-red-500">*</span>}
+                                </Label>
                                 {field.extra_info && (
                                     <HoverCard>
                                         <HoverCardTrigger asChild>
                                             <Info size={14} className="text-muted-foreground cursor-pointer" />
                                         </HoverCardTrigger>
-                                        <HoverCardContent className="w-72 text-sm">{field.extra_info}</HoverCardContent>
+                                        <HoverCardContent className="w-72 text-sm">
+                                            {field.extra_info}
+                                        </HoverCardContent>
                                     </HoverCard>
                                 )}
                             </div>
+
                             {field.type === "radio" ? (
                                 <Select
                                     value={value}
                                     onValueChange={(val) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            [field.id]: val
-                                        }))
+                                        setFormData((p) => ({ ...p, [field.id]: val }))
                                     }
+                                    required={isReq}
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder={`Select ${field.label}`} />
@@ -87,24 +98,18 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                             placeholder="YYYY/MM/DD"
                                             value={value}
                                             onChange={(e) =>
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    [field.id]: e.target.value
-                                                }))
+                                                setFormData((p) => ({ ...p, [field.id]: e.target.value }))
                                             }
                                             onBlur={(e) => {
-                                                const formatted = renderDate(e.target.value)
-                                                let extra = {}
-                                                if (formatted && field.id === "dob") {
-                                                    extra.age = renderCalAge(formatted.slice(0, 4))
+                                                const f = renderDate(e.target.value);
+                                                let extra = {};
+                                                if (f && field.id === "dob") {
+                                                    extra.age = renderCalAge(f.slice(0, 4));
                                                 }
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    [field.id]: formatted,
-                                                    ...extra
-                                                }))
+                                                setFormData((p) => ({ ...p, [field.id]: f, ...extra }));
                                             }}
                                             className="cursor-pointer"
+                                            required={isReq}
                                         />
                                     </PopoverTrigger>
                                     <PopoverContent className="w-auto p-0" align="start">
@@ -112,22 +117,16 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                                             mode="single"
                                             selected={value ? new Date(value) : undefined}
                                             onSelect={(date) => {
-                                                let val = ""
-                                                let extra = {}
+                                                let val = "";
+                                                let extra = {};
                                                 if (date) {
-                                                    const y = date.getFullYear()
-                                                    const m = String(date.getMonth() + 1).padStart(2, "0")
-                                                    const d = String(date.getDate()).padStart(2, "0")
-                                                    val = `${y}/${m}/${d}`
-                                                    if (field.id === "dob") {
-                                                        extra.age = renderCalAge(y)
-                                                    }
+                                                    const y = date.getFullYear();
+                                                    const m = String(date.getMonth() + 1).padStart(2, "0");
+                                                    const d = String(date.getDate()).padStart(2, "0");
+                                                    val = `${y}/${m}/${d}`;
+                                                    if (field.id === "dob") extra.age = renderCalAge(y);
                                                 }
-                                                setFormData((prev) => ({
-                                                    ...prev,
-                                                    [field.id]: val,
-                                                    ...extra
-                                                }))
+                                                setFormData((p) => ({ ...p, [field.id]: val, ...extra }));
                                             }}
                                         />
                                     </PopoverContent>
@@ -135,65 +134,70 @@ export function RenderQuesFuncs({ question, formData, setFormData, commonFieldse
                             ) : (
                                 <Input
                                     id={field.id}
-                                    type={field.type === "number" ? "number" : field.type === "tel" ? "tel" : "text"}
+                                    type={field.type === "tel" ? "tel" : "text"}
+                                    placeholder={field.placeholder}
                                     value={value}
                                     onChange={(e) =>
-                                        setFormData((prev) => ({
-                                            ...prev,
-                                            [field.id]: e.target.value
-                                        }))
+                                        setFormData((p) => ({ ...p, [field.id]: e.target.value }))
                                     }
+                                    required={isReq}
+                                    className={errors[field.id] ? "border-red-500" : ""}
                                 />
                             )}
+
                             {errors[field.id] && (
                                 <p className="text-red-500 text-sm mt-1">{errors[field.id]}</p>
                             )}
                         </div>
-                    )
+                    );
                 })}
             </div>
         </fieldset>
-    )
+    );
 }
 
-export function RenderTextAreaQues({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
+export function RenderTextAreaQues({
+    question,
+    formData,
+    setFormData,
+    commonFieldsetClasses,
+    errors = {},
+}) {
+    const isReq = !!question.required;
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
-            <div>
-                <Label htmlFor={question.id}>{question.label}</Label>
-                <textarea
-                    id={question.id}
-                    className="w-full border rounded px-3 py-2 resize-y max-h-[300px] overflow-auto"
-                    rows={4}
-                    value={formData[question.id] || ""}
-                    onChange={(e) =>
-                        setFormData((prev) => ({
-                            ...prev,
-                            [question.id]: e.target.value
-                        }))
-                    }
-                />
-                {errors[question.id] && (
-                    <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
-                )}
-            </div>
+            <textarea
+                id={question.id}
+                required={isReq}
+                className="w-full border rounded px-3 py-2 resize-y max-h-[300px]"
+                rows={4}
+                value={formData[question.id] || ""}
+                onChange={(e) =>
+                    setFormData((p) => ({ ...p, [question.id]: e.target.value }))
+                }
+            />
+            {errors[question.id] && (
+                <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
+            )}
         </fieldset>
-    )
+    );
 }
 
-export function RenderRadioQues({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
+export function RenderRadioQues({
+    question,
+    formData,
+    setFormData,
+    commonFieldsetClasses,
+    errors = {},
+}) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
             <Select
                 value={formData[question.id] || ""}
-                onValueChange={(val) =>
-                    setFormData((prev) => ({
-                        ...prev,
-                        [question.id]: val
-                    }))
-                }
+                onValueChange={(val) => setFormData((p) => ({ ...p, [question.id]: val }))}
+                required={!!question.required}
             >
                 <SelectTrigger>
                     <SelectValue placeholder={`Select ${question.label}`} />
@@ -210,35 +214,37 @@ export function RenderRadioQues({ question, formData, setFormData, commonFieldse
                 <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
             )}
         </fieldset>
-    )
+    );
 }
 
-export function RenderCheckboxQues({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
+export function RenderCheckboxQues({
+    question,
+    formData,
+    setFormData,
+    commonFieldsetClasses,
+    errors = {},
+}) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-y-2 gap-x-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {question.options.map((opt) => (
                     <div key={opt} className="flex items-center text-sm">
                         <Checkbox
                             id={`${question.id}-${opt}`}
                             checked={formData[question.id]?.includes(opt)}
-                            onCheckedChange={(checked) => {
-                                setFormData((prev) => {
-                                    const currentValues = prev[question.id] || []
-                                    if (checked) {
-                                        return {
-                                            ...prev,
-                                            [question.id]: [...currentValues, opt]
-                                        }
-                                    } else {
-                                        return {
-                                            ...prev,
-                                            [question.id]: currentValues.filter((v) => v !== opt)
-                                        }
-                                    }
+                            onCheckedChange={(checked) =>
+                                setFormData((p) => {
+                                    const curr = p[question.id] || [];
+                                    return {
+                                        ...p,
+                                        [question.id]: checked
+                                            ? [...curr, opt]
+                                            : curr.filter((v) => v !== opt),
+                                    };
                                 })
-                            }}
+                            }
+                            required={!!question.required}
                         />
                         <Label htmlFor={`${question.id}-${opt}`} className="ml-2">
                             {opt}
@@ -250,30 +256,31 @@ export function RenderCheckboxQues({ question, formData, setFormData, commonFiel
                 <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
             )}
         </fieldset>
-    )
+    );
 }
 
-export function RenderOtherQues({ question, formData, setFormData, commonFieldsetClasses, errors = {} }) {
+export function RenderOtherQues({
+    question,
+    formData,
+    setFormData,
+    commonFieldsetClasses,
+    errors = {},
+}) {
     return (
         <fieldset key={question.id} className={commonFieldsetClasses}>
             <FormatLegend question={question} />
-            <div>
-                <Label htmlFor={question.id}>{question.label}</Label>
-                <Input
-                    id={question.id}
-                    type={question.type === "number" ? "number" : "text"}
-                    value={formData[question.id] || ""}
-                    onChange={(e) =>
-                        setFormData((prev) => ({
-                            ...prev,
-                            [question.id]: e.target.value
-                        }))
-                    }
-                />
-                {errors[question.id] && (
-                    <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
-                )}
-            </div>
+            <Input
+                id={question.id}
+                type={question.type === "number" ? "number" : "text"}
+                value={formData[question.id] || ""}
+                onChange={(e) =>
+                    setFormData((p) => ({ ...p, [question.id]: e.target.value }))
+                }
+                required={!!question.required}
+            />
+            {errors[question.id] && (
+                <p className="text-red-500 text-sm mt-1">{errors[question.id]}</p>
+            )}
         </fieldset>
-    )
+    );
 }

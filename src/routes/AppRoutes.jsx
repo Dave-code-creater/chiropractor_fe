@@ -8,8 +8,8 @@ import About from '../pages/About';
 import Contact from '../pages/Contact';
 import FAQ from '../pages/FAQ';
 
-import Login from '../features/auth/components/Login';
-import Register from '../features/auth/components/Register';
+import Login from '../features/auth/Login';
+import Register from '../features/auth/Register';
 
 import HomePage from '../features/homepage/components/user/HomePage';
 import Setting from '../features/setting/components/Setting';
@@ -17,7 +17,7 @@ import Appointments from '../features/appointments/Appointments';
 import Blog from '../features/blog/components/user/Blog';
 import Inbox from '../features/chat/components/Chat';
 import Profile from '../features/profile/components/Profile';
-import Report from '../features/report/components/user/Report';
+import Report from '../features/report/user/Report';
 import AdminDashboard from '../features/homepage/components/admin/Homepage';
 import ProfileUser from '../features/drreport/components/InitialDrReport';
 import ProtectRoute from './ProtectRoute';
