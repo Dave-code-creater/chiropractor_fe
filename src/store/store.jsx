@@ -20,9 +20,7 @@ import { blogApi } from "../services/blogApi";
 import { appointmentApi } from "../services/appointmentApi";
 import { chatApi } from "../services/chatApi";
 
-import blogReducer from "../features/blog/blogSlice";
-import appointmentsReducer from "../features/appointments/AppointmentsSlice";
-import chatReducer from "../features/chat/chatSlice";
+
 
 const persistConfig = {
   key: "root",
@@ -36,9 +34,7 @@ const rootReducer = combineReducers({
     entities: entitiesReducer,
     settings: settingsReducer,
     uiState: uiStateReducer,
-    blog: blogReducer,
-    appointments: appointmentsReducer,
-    chat: chatReducer,
+
   }),
   forms: combineReducers({
     loginForm: loginFormReducer,
@@ -72,7 +68,7 @@ export const store = configureStore({
       appointmentApi.middleware,
       chatApi.middleware
     ),
-  
+
 });
 
 export const persistor = persistStore(store);
