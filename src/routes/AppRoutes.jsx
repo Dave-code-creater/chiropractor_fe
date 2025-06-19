@@ -13,7 +13,7 @@ import Register from '../features/auth/components/Register';
 
 import HomePage from '../features/homepage/components/user/HomePage';
 import Setting from '../features/setting/components/Setting';
-import Appointments from '../features/appointments/components/Appointments';
+import Appointments from '../features/appointments/Appointments';
 import Blog from '../features/blog/components/user/Blog';
 import Inbox from '../features/chat/components/Chat';
 import Profile from '../features/profile/components/Profile';
@@ -22,6 +22,7 @@ import AdminDashboard from '../features/homepage/components/admin/Homepage';
 import ProfileUser from '../features/drreport/components/InitialDrReport';
 import ProtectRoute from './ProtectRoute';
 import TermOfService from '../pages/TermOfService';
+import PrivacyPolicy from '../pages/PrivacyPolicy';
 export default function AppRoutes() {
     return (
         <Routes>
@@ -62,7 +63,7 @@ export default function AppRoutes() {
                     <Route index element={<AdminDashboard />} />
                     <Route path="manage-users" element={<div>Manage Users</div>} />
                     <Route path="analytics" element={<div>Analytics</div>} />
-                    <Route path="doctor-report" element={<ProfileUser/>} />
+                    <Route path="doctor-report" element={<ProfileUser />} />
                     {/* Add more admin routes here */}
                 </Route>
             </Route>
