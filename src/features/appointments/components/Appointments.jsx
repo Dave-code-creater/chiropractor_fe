@@ -48,16 +48,31 @@ function Appointments() {
     };
 
     return (
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-4 w-full">
             {/* main form */}
             <div className="col-span-3">
                 <Card>
-                    <Tabs defaultValue="booking" className="w-full">
+                    <Tabs defaultValue="location" className="w-full">
                         <TabsList>
-                            <TabsTrigger value="booking">Booking</TabsTrigger>
-                            <TabsTrigger value="summary">Summary</TabsTrigger>
+                            <TabsTrigger value="location">Location</TabsTrigger>
+                            <TabsTrigger value="date">Dates</TabsTrigger>
+                            <TabsTrigger value="doctor">Doctor</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="booking">
+
+                        <TabsContent value="location">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Select Location</CardTitle>
+                                <p className="text-sm text-muted-foreground">Choose your preferred clinic location</p>
+                            </CardHeader>
+                            <CardContent className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label htmlFor="location">Location</Label>
+                                    <Input id="location" placeholder="Enter location" />
+                                </div>
+                            </CardContent>
+                        </TabsContent>
+
+                        <TabsContent value="date">
                             <CardHeader>
                                 <CardTitle className="text-lg font-semibold">Book an Appointment</CardTitle>
                                 <p className="text-sm text-muted-foreground">Schedule a session with our expert chiropractors</p>
@@ -119,9 +134,16 @@ function Appointments() {
                             </CardContent>
                         </TabsContent>
 
-                        <TabsContent value="summary">
-                            <CardContent>
-                                {/* Future summary details */}
+                        <TabsContent value="doctor">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Select Doctor</CardTitle>
+                                <p className="text-sm text-muted-foreground">Choose your preferred doctor</p>
+                            </CardHeader>
+                            <CardContent className="space-y-4">
+                                <div className="flex gap-4">
+                                    <Button variant="outline">Dr. Jane</Button>
+                                    <Button variant="outline">Dr. John</Button>
+                                </div>
                             </CardContent>
                         </TabsContent>
                     </Tabs>
