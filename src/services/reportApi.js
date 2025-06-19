@@ -4,6 +4,7 @@ import { baseQueryWithReauth } from "./baseApi";
 export const reportApi = createApi({
   reducerPath: "reportApi",
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["Reports"],
   endpoints: (builder) => ({
     getInitialReport: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
@@ -42,6 +43,7 @@ export const reportApi = createApi({
           return { error };
         }
       },
+      providesTags: ["Reports"],
     }),
     getHealthConditions: builder.query({
       query: () => ({ url: "health-conditions" }),
@@ -52,6 +54,7 @@ export const reportApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Reports"],
     }),
     submitAccidentDetails: builder.mutation({
       query: (data) => ({
@@ -59,6 +62,7 @@ export const reportApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Reports"],
     }),
     submitPainEvaluation: builder.mutation({
       query: (data) => ({
@@ -66,6 +70,7 @@ export const reportApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Reports"],
     }),
     submitSymptomDescription: builder.mutation({
       query: (data) => ({
@@ -73,6 +78,7 @@ export const reportApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Reports"],
     }),
     submitRecoveryImpact: builder.mutation({
       query: (data) => ({
@@ -80,6 +86,7 @@ export const reportApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Reports"],
     }),
     submitHealthHistory: builder.mutation({
       query: (data) => ({
@@ -87,12 +94,14 @@ export const reportApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Reports"],
     }),
     deleteReport: builder.mutation({
       query: (id) => ({
         url: `/users/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: ["Reports"],
     }),
   }),
 });
