@@ -92,7 +92,7 @@ export default function Report() {
 
     return (
         <div className="flex h-screen w-full">
-            
+        
             <div className="flex flex-1 flex-col">
                 <div className="flex h-14 items-center justify-between border-b bg-gray-100 px-6 dark:border-gray-800 dark:bg-gray-900">
                     <div className="flex items-center gap-4">

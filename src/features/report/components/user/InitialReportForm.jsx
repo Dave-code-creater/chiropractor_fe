@@ -268,18 +268,18 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
   };
 
   return (
-    <div className="relative flex flex-col md:flex-row flex-1 h-full overflow-hidden mb-8">
+    <div className="relative flex flex-col md:flex-row flex-1 h-full overflow-hidden">
       {onBack && (
         <Button
           variant="ghost"
           size="icon"
           onClick={onBack}
-          className="absolute left-2 top-2 md:left-4 md:top-4 z-10"
+          className="absolute md:left-4 md:top-4 z-10"
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
       )}
-      <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full">
+      <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full pt-16 px-8">
         <h2 className="text-lg font-semibold mb-4">Initial Reports</h2>
         <Accordion type="single" collapsible className="space-y-2" value={currentSection.title}>
           {PATIENT_INFO.map((section, idx) => (
