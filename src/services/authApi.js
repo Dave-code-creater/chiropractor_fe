@@ -28,6 +28,7 @@ export const authApi = createApi({
           // ignore
         }
       },
+      invalidatesTags: ["User"],
     }),
     register: builder.mutation({
       query: (userData) => ({
@@ -50,6 +51,7 @@ export const authApi = createApi({
           // ignore
         }
       },
+      invalidatesTags: ["User"],
     }),
     refreshToken: builder.mutation({
       query: () => ({
@@ -71,6 +73,7 @@ export const authApi = createApi({
           dispatch(logOut());
         }
       },
+      invalidatesTags: ["User"],
     }),
     logout: builder.mutation({
       query: (userId) => ({
@@ -88,6 +91,7 @@ export const authApi = createApi({
           dispatch(logOut());
         }
       },
+      invalidatesTags: ["User"],
     }),
   }),
 });

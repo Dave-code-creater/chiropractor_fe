@@ -4,12 +4,15 @@ import { baseQueryWithReauth } from "./baseApi";
 export const blogApi = createApi({
   reducerPath: "blogApi",
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["Posts"],
   endpoints: (builder) => ({
     fetchPosts: builder.query({
       query: () => ({ url: "posts" }),
+      providesTags: ["Posts"],
     }),
     getPost: builder.query({
       query: (id) => ({ url: `posts/${id}` }),
+      providesTags: (_res, _err, id) => [{ type: "Posts", id }],
     }),
     createPost: builder.mutation({
       query: (data) => ({
@@ -17,6 +20,7 @@ export const blogApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Posts"],
     }),
     updatePost: builder.mutation({
       query: ({ id, ...data }) => ({
@@ -24,12 +28,14 @@ export const blogApi = createApi({
         method: "PUT",
         body: data,
       }),
+      invalidatesTags: (_res, _err, { id }) => [{ type: "Posts", id }],
     }),
     deletePost: builder.mutation({
       query: (id) => ({
         url: `posts/${id}`,
         method: "DELETE",
       }),
+      invalidatesTags: (_res, _err, id) => [{ type: "Posts", id }],
     }),
   }),
 });

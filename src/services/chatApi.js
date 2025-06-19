@@ -4,9 +4,11 @@ import { baseQueryWithReauth } from "./baseApi";
 export const chatApi = createApi({
   reducerPath: "chatApi",
   baseQuery: baseQueryWithReauth,
+  tagTypes: ["Conversations", "Messages"],
   endpoints: (builder) => ({
     getConversations: builder.query({
       query: () => ({ url: "conversations" }),
+      providesTags: ["Conversations"],
     }),
     createConversation: builder.mutation({
       query: (data) => ({
@@ -14,9 +16,13 @@ export const chatApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: ["Conversations"],
     }),
     getMessages: builder.query({
       query: (cId) => ({ url: `conversations/${cId}/messages` }),
+      providesTags: (_res, _err, cId) => [
+        { type: "Messages", id: cId },
+      ],
     }),
     sendMessage: builder.mutation({
       query: ({ conversationId, ...data }) => ({
@@ -24,6 +30,9 @@ export const chatApi = createApi({
         method: "POST",
         body: data,
       }),
+      invalidatesTags: (_res, _err, { conversationId }) => [
+        { type: "Messages", id: conversationId },
+      ],
     }),
   }),
 });
