@@ -1,135 +1,124 @@
-// src/features/appointments/components/DoctorSelector.jsx
+// src/features/appointments/components/Booking.jsx
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronsUpDown, User } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Card, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import LocationSelector from "./Location";
+import DateSelector from "./Date";
+import DoctorSelector from "./Types";
+import BookingSummary from "./BookingSummary";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import {
-    Command,
-    CommandEmpty,
-    CommandGroup,
-    CommandInput,
-    CommandItem,
-    CommandList,
-} from "@/components/ui/command";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-// list of practitioners
-const doctors = [
-    {
-        value: "dr-emily-smith",
-        name: "Dr. Emily Smith",
-        service: "Chiropractor",
-    },
-    {
-        value: "dr-robert-jones",
-        name: "Dr. Robert Jones",
-        service: "Physical Therapist",
-    },
-    {
-        value: "dr-maria-garcia",
-        name: "Dr. Maria Garcia",
-        service: "Sports Medicine Specialist",
-    },
-    // …add more as needed
-];
+export default function Booking() {
+    const [activeTab, setActiveTab] = useState("location");
+    const [bookingData, setBookingData] = useState({
+        location: "",      // clinic location
+        date: undefined, // JS Date
+        time: "",        // e.g. "14:00"
+        doctor: "",      // provider key
+    });
 
-export default function DoctorSelector({ bookingData, updateBookingData }) {
-    const [open, setOpen] = useState(false);
-    const selectedKey = bookingData.doctor;
-    const selectedDoc = doctors.find((d) => d.value === selectedKey);
+    const updateBookingData = (data) =>
+        setBookingData((prev) => ({ ...prev, ...data }));
 
-    const handleSelect = (value) => {
-        updateBookingData({ doctor: value });
-        setOpen(false);
+    const handleNext = () => {
+        if (activeTab === "location") setActiveTab("date");
+        else if (activeTab === "date") setActiveTab("types");
+        else if (activeTab === "types") setActiveTab("summary");
+    };
+
+    const handleBack = () => {
+        if (activeTab === "date") setActiveTab("location");
+        else if (activeTab === "types") setActiveTab("date");
+        else if (activeTab === "summary") setActiveTab("types");
+    };
+
+    const isNextDisabled = () => {
+        if (activeTab === "location") return !bookingData.location;
+        if (activeTab === "date") return !bookingData.date || !bookingData.time;
+        if (activeTab === "types") return !bookingData.doctor;
+        return false;
     };
 
     return (
-        <div className="space-y-6">
-            {/* header */}
-            <div>
-                <h2 className="text-xl font-semibold mb-1">Select Your Provider</h2>
-                <p className="text-muted-foreground">
-                    Choose the practitioner you’d like to book with.
-                </p>
-            </div>
-
-            {/* dropdown */}
-            <div className="space-y-2">
-                <Label htmlFor="provider">Provider</Label>
-                <Popover open={open} onOpenChange={setOpen}>
-                    <PopoverTrigger asChild>
-                        <Button
-                            id="provider"
-                            variant="outline"
-                            role="combobox"
-                            aria-expanded={open}
-                            className="w-full justify-between"
+        <div className="grid md:grid-cols-3 gap-6">
+            {/* === Left: Form Steps === */}
+            <div className="md:col-span-2">
+                <Card>
+                    <CardContent className="p-6">
+                        <Tabs
+                            value={activeTab}
+                            onValueChange={setActiveTab}
+                            className="w-full"
                         >
-                            {selectedDoc ? selectedDoc.name : "Select a provider"}
-                            <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
-                        </Button>
-                    </PopoverTrigger>
+                            <TabsList className="grid grid-cols-4 mb-6">
+                                <TabsTrigger value="location">Location</TabsTrigger>
+                                <TabsTrigger value="date">Dates</TabsTrigger>
+                                <TabsTrigger value="types">Types</TabsTrigger>
+                                <TabsTrigger value="summary" disabled>
+                                    Summary
+                                </TabsTrigger>
+                            </TabsList>
 
-                    <PopoverContent
-                        side="bottom"
-                        align="start"
-                        className="[min-width:var(--radix-popover-trigger-width)] p-0"
-                    >
-                        <Command>
-                            <CommandInput
-                                className="w-full"
-                                placeholder="Search provider..."
-                            />
-                            <CommandList>
-                                <CommandEmpty>No provider found.</CommandEmpty>
-                                <CommandGroup>
-                                    {doctors.map((doc) => (
-                                        <CommandItem
-                                            key={doc.value}
-                                            value={doc.value}
-                                            onSelect={handleSelect}
-                                        >
-                                            <Check
-                                                className={cn(
-                                                    "mr-2 h-4 w-4",
-                                                    selectedKey === doc.value
-                                                        ? "opacity-100"
-                                                        : "opacity-0"
-                                                )}
-                                            />
-                                            {doc.name}
-                                        </CommandItem>
-                                    ))}
-                                </CommandGroup>
-                            </CommandList>
-                        </Command>
-                    </PopoverContent>
-                </Popover>
+                            <TabsContent value="location">
+                                <LocationSelector
+                                    bookingData={bookingData}
+                                    updateBookingData={updateBookingData}
+                                />
+                            </TabsContent>
+
+                            <TabsContent value="date">
+                                <DateSelector
+                                    bookingData={bookingData}
+                                    updateBookingData={updateBookingData}
+                                />
+                            </TabsContent>
+
+                            <TabsContent value="types">
+                                <DoctorSelector
+                                    bookingData={bookingData}
+                                    updateBookingData={updateBookingData}
+                                />
+                            </TabsContent>
+
+                            <TabsContent value="summary">
+                                <BookingSummary bookingData={bookingData} />
+                            </TabsContent>
+
+                            {/* Back / Next / Confirm */}
+                            <div className="flex justify-between mt-6">
+                                {activeTab !== "location" && (
+                                    <Button variant="outline" onClick={handleBack}>
+                                        Back
+                                    </Button>
+                                )}
+                                {activeTab !== "summary" ? (
+                                    <Button
+                                        onClick={handleNext}
+                                        disabled={isNextDisabled()}
+                                        className="ml-auto"
+                                    >
+                                        Next
+                                    </Button>
+                                ) : (
+                                    <Button className="ml-auto">Confirm Appointment</Button>
+                                )}
+                            </div>
+                        </Tabs>
+                    </CardContent>
+                </Card>
             </div>
 
-            {/* selected doctor info */}
-            {selectedDoc && (
-                <div className="space-y-3 pt-4 border-t border-gray-200">
-                    <div className="flex items-center gap-2">
-                        <User className="h-5 w-5 text-muted-foreground" />
-                        <h3 className="font-medium">Provider Details</h3>
-                    </div>
-                    <div className="grid gap-2">
-                        <div>
-                            <div className="text-sm text-muted-foreground">Name</div>
-                            <div>{selectedDoc.name}</div>
-                        </div>
-                        <div>
-                            <div className="text-sm text-muted-foreground">Service</div>
-                            <Badge variant="outline">{selectedDoc.service}</Badge>
-                        </div>
-                    </div>
-                </div>
-            )}
+            {/* === Right: Live Summary === */}
+            <div>
+                <Card>
+                    <CardContent className="p-6 space-y-4">
+                        <h2 className="text-2xl font-bold mb-2">Booking Summary</h2>
+                        <BookingSummary bookingData={bookingData} />
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
