@@ -142,7 +142,12 @@ export default function PainChartSection({
 
     const handleBodyClick = (part) => {
         const field = partMap[part];
-        if (field) setopenFieldId(field);
+        if (!field) return;
+        setPainMap((prev) => {
+            if (prev[field] !== undefined) return prev;
+            return { ...prev, [field]: 1 };
+        });
+        setopenFieldId(field);
     };
 
     const partsInput = Object.fromEntries(
@@ -185,7 +190,9 @@ export default function PainChartSection({
                 </Suspense>
             </div>
             <div className="flex flex-wrap justify-center gap-4 mt-6">
-                {painFields.map((field) => (
+                {painFields
+                    .filter((field) => painMap[field.id] !== undefined)
+                    .map((field) => (
                     <div key={field.id} className="text-center">
                         <Label className="font-semibold text-sm">{field.label}</Label>
                         <Dialog
