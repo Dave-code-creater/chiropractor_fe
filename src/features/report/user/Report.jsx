@@ -1,5 +1,5 @@
 // src/features/report/user/Report.jsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -13,6 +13,7 @@ import {
     PlusIcon,
     X as XIcon,
     Edit3 as EditIcon,
+    Trash2 as TrashIcon,
 } from "lucide-react";
 
 import InitialReportForm from "./components/InitialReportForm";
@@ -28,14 +29,7 @@ import {
 } from "@/services/reportApi";
 
 export default function Report() {
-    const [reports, setReports] = useState([
-        {
-            id: Date.now(),
-            name: "",
-            createdAt: new Date().toISOString(),
-            painEvaluations: [{ painMap: {}, formData: {} }],
-        },
-    ]);
+    const [reports, setReports] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
     const [sortOption, setSortOption] = useState("date");
 
@@ -48,9 +42,11 @@ export default function Report() {
     const [deleteWorkImpact] = useDeleteWorkImpactMutation();
     const [deleteHealthCondition] = useDeleteHealthConditionMutation();
 
+    const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
     const addReport = () => {
         const newReport = {
-            id: Date.now(),
+            id: generateId(),
             name: "",
             createdAt: new Date().toISOString(),
             painEvaluations: [{ painMap: {}, formData: {} }],
@@ -59,9 +55,16 @@ export default function Report() {
         setSelectedId(newReport.id);
     };
 
+    // Automatically start a report if none exist
+    useEffect(() => {
+        if (reports.length === 0) {
+            addReport();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // ↓ updated delete logic
-    const handleDelete = async (id, e) => {
-        e.stopPropagation();
+    const handleDelete = async (id) => {
         try {
             await Promise.all([
                 deletePatientIntake(id).unwrap(),
@@ -103,6 +106,7 @@ export default function Report() {
                 onSubmit={(data) => handleSubmit(selectedId, data)}
                 initialData={reports.find((r) => r.id === selectedId)}
                 onBack={handleBack}
+                onDelete={handleDelete}
             />
         );
     }
@@ -139,7 +143,10 @@ export default function Report() {
                             >
                                 {/* Delete button (hover-only) */}
                                 <button
-                                    onClick={(e) => handleDelete(rep.id, e)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(rep.id);
+                                    }}
                                     className="absolute left-2 top-2 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
                                 >
                                     <XIcon className="h-4 w-4" />
