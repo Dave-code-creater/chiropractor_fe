@@ -11,12 +11,17 @@ import WorkImpactForm from "./forms/WorkImpactForm";
 import HealthConditionForm from "./forms/HealthConditionForm";
 import {
   useSubmitPatientIntakeMutation,
+  useUpdatePatientIntakeMutation,
   useSubmitInsuranceDetailsMutation,
+  useUpdateInsuranceDetailsMutation,
   useSubmitPainDescriptionMutation,
+  useUpdatePainDescriptionMutation,
   useSubmitDetailsDescriptionMutation,
-  useSubmitRecoveryMutation,
+  useUpdateDetailsDescriptionMutation,
   useSubmitWorkImpactMutation,
+  useUpdateWorkImpactMutation,
   useSubmitHealthConditionMutation,
+  useUpdateHealthConditionMutation,
   useGetInitialReportQuery,
 } from "@/services/reportApi";
 
@@ -67,12 +72,17 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   const [editingName, setEditingName] = useState(false);
 
   const [submitPatientIntake] = useSubmitPatientIntakeMutation();
+  const [updatePatientIntake] = useUpdatePatientIntakeMutation();
   const [submitInsuranceDetails] = useSubmitInsuranceDetailsMutation();
+  const [updateInsuranceDetails] = useUpdateInsuranceDetailsMutation();
   const [submitPainDescription] = useSubmitPainDescriptionMutation();
+  const [updatePainDescription] = useUpdatePainDescriptionMutation();
   const [submitDetailsDescription] = useSubmitDetailsDescriptionMutation();
-  const [submitRecovery] = useSubmitRecoveryMutation();
+  const [updateDetailsDescription] = useUpdateDetailsDescriptionMutation();
   const [submitWorkImpact] = useSubmitWorkImpactMutation();
+  const [updateWorkImpact] = useUpdateWorkImpactMutation();
   const [submitHealthCondition] = useSubmitHealthConditionMutation();
+  const [updateHealthCondition] = useUpdateHealthConditionMutation();
   const { data: fetchedData } = useGetInitialReportQuery();
 
   useEffect(() => {
@@ -94,22 +104,43 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
     submitInsuranceDetails,
     submitPainDescription,
     submitDetailsDescription,
-    submitRecovery,
     submitWorkImpact,
     submitHealthCondition,
+  ];
+
+  const updaters = [
+    updatePatientIntake,
+    updateInsuranceDetails,
+    updatePainDescription,
+    updateDetailsDescription,
+    updateWorkImpact,
+    updateHealthCondition,
   ];
 
   const handleSectionSubmit = async (data) => {
     const { key } = forms[currentSectionIndex];
     const isLast = currentSectionIndex === forms.length - 1;
 
-    setSectionsData((prev) => ({ ...prev, [key]: data }));
+    setSectionsData((prev) => ({ ...prev, [key]: { ...(prev[key] || {}), ...data } }));
 
     try {
+      const existing = sectionsData[key];
+      const hasId = existing && (existing.id || existing._id);
+
       if (key === "painDescriptions") {
-        await submitters[currentSectionIndex]({ painEvaluations: data, name: reportName });
+        const payload = { painEvaluations: data, name: reportName };
+        if (hasId) {
+          await updaters[currentSectionIndex]({ id: existing.id || existing._id, data: payload });
+        } else {
+          await submitters[currentSectionIndex](payload);
+        }
       } else {
-        await submitters[currentSectionIndex]({ formData: data, name: reportName });
+        const payload = { formData: data, name: reportName };
+        if (hasId) {
+          await updaters[currentSectionIndex]({ id: existing.id || existing._id, data: payload });
+        } else {
+          await submitters[currentSectionIndex](payload);
+        }
       }
       if (isLast) {
         onSubmit({ ...sectionsData, [key]: data, name: reportName });

@@ -21,13 +21,17 @@ export const reportApi = createApi({
 
         try {
           const results = await Promise.all(
-            urls.map((url) => fetchWithBQ({ url }))
+            urls.map(async (url) => {
+              const res = await fetchWithBQ({ url });
+              if (res.error) {
+                if (res.error.status === 404) return null;
+                throw res.error;
+              }
+              return res.data && res.data.metadata != null
+                ? res.data.metadata
+                : res.data;
+            })
           );
-
-          // bubble up any error
-          for (const res of results) {
-            if (res.error) throw res.error;
-          }
 
           const [
             patientIntake,
@@ -37,9 +41,7 @@ export const reportApi = createApi({
             recovery,
             workImpact,
             healthConditions,
-          ] = results.map((r) =>
-            r.data && r.data.metadata != null ? r.data.metadata : r.data
-          );
+          ] = results;
 
           return {
             data: {
@@ -55,6 +57,81 @@ export const reportApi = createApi({
         } catch (error) {
           return { error };
         }
+      },
+      providesTags: ["Reports"],
+    }),
+
+    getPatientIntake: builder.query({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ({ url: "users/patient-intake" });
+        if (res.error) {
+          if (res.error.status === 404) return { data: null };
+          return { error: res.error };
+        }
+        return {
+          data:
+            res.data && res.data.metadata != null ? res.data.metadata : res.data,
+        };
+      },
+      providesTags: ["Reports"],
+    }),
+
+    getInsuranceDetails: builder.query({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ({ url: "users/insurance-details" });
+        if (res.error) {
+          if (res.error.status === 404) return { data: null };
+          return { error: res.error };
+        }
+        return {
+          data:
+            res.data && res.data.metadata != null ? res.data.metadata : res.data,
+        };
+      },
+      providesTags: ["Reports"],
+    }),
+
+    getPainDescriptions: builder.query({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ({ url: "users/pain-descriptions" });
+        if (res.error) {
+          if (res.error.status === 404) return { data: null };
+          return { error: res.error };
+        }
+        return {
+          data:
+            res.data && res.data.metadata != null ? res.data.metadata : res.data,
+        };
+      },
+      providesTags: ["Reports"],
+    }),
+
+    getDetailsDescriptions: builder.query({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ({ url: "users/details-descriptions" });
+        if (res.error) {
+          if (res.error.status === 404) return { data: null };
+          return { error: res.error };
+        }
+        return {
+          data:
+            res.data && res.data.metadata != null ? res.data.metadata : res.data,
+        };
+      },
+      providesTags: ["Reports"],
+    }),
+
+    getWorkImpact: builder.query({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const res = await fetchWithBQ({ url: "users/work-impact" });
+        if (res.error) {
+          if (res.error.status === 404) return { data: null };
+          return { error: res.error };
+        }
+        return {
+          data:
+            res.data && res.data.metadata != null ? res.data.metadata : res.data,
+        };
       },
       providesTags: ["Reports"],
     }),
@@ -245,6 +322,11 @@ export const reportApi = createApi({
 // Export hooks
 export const {
   useGetInitialReportQuery,
+  useGetPatientIntakeQuery,
+  useGetInsuranceDetailsQuery,
+  useGetPainDescriptionsQuery,
+  useGetDetailsDescriptionsQuery,
+  useGetWorkImpactQuery,
   useGetHealthConditionsQuery,
 
   useSubmitPatientIntakeMutation,
