@@ -92,7 +92,6 @@ export default function DateSelector({ bookingData, updateBookingData }) {
 
                 <PopoverContent
                     side="bottom"
-                    align="center"
                     className="[min-width:var(--radix-popover-trigger-width)] p-0"
                     onCloseAutoFocus={(e) => e.preventDefault()}
                 >

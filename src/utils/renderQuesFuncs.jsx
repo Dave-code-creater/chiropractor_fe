@@ -108,13 +108,16 @@ export function RenderQuesFuncs({
                                                 }
                                                 setFormData((p) => ({ ...p, [field.id]: f, ...extra }));
                                             }}
-                                            className="cursor-pointer"
+                                            className="cursor-pointer w-full"
                                             required={isReq}
                                         />
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
+                                    <PopoverContent className="[min-width:var(--radix-popover-trigger-width)] " >
                                         <Calendar
                                             mode="single"
+                                            className="w-auto "
+                                            initialFocus
+                                            defaultMonth={value ? new Date(value) : undefined}
                                             selected={value ? new Date(value) : undefined}
                                             onSelect={(date) => {
                                                 let val = "";

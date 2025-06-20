@@ -1,5 +1,4 @@
 // src/features/report/user/Report.jsx
-// ────────────────────────────────────────────────────────────────────────────
 import React, { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -17,7 +16,16 @@ import {
 } from "lucide-react";
 
 import InitialReportForm from "./components/InitialReportForm";
-import { useDeleteReportMutation } from "@/services/reportApi";
+// ↓ replace the old hook…
+import {
+    useDeletePatientIntakeMutation,
+    useDeleteInsuranceDetailsMutation,
+    useDeletePainDescriptionMutation,
+    useDeleteDetailsDescriptionMutation,
+    useDeleteRecoveryMutation,
+    useDeleteWorkImpactMutation,
+    useDeleteHealthConditionMutation,
+} from "@/services/reportApi";
 
 export default function Report() {
     const [reports, setReports] = useState([
@@ -30,7 +38,15 @@ export default function Report() {
     ]);
     const [selectedId, setSelectedId] = useState(null);
     const [sortOption, setSortOption] = useState("date");
-    const [deleteReport] = useDeleteReportMutation();
+
+    // ↓ now pull in each section‐delete hook
+    const [deletePatientIntake] = useDeletePatientIntakeMutation();
+    const [deleteInsuranceDetails] = useDeleteInsuranceDetailsMutation();
+    const [deletePainDescription] = useDeletePainDescriptionMutation();
+    const [deleteDetailsDescription] = useDeleteDetailsDescriptionMutation();
+    const [deleteRecovery] = useDeleteRecoveryMutation();
+    const [deleteWorkImpact] = useDeleteWorkImpactMutation();
+    const [deleteHealthCondition] = useDeleteHealthConditionMutation();
 
     const addReport = () => {
         const newReport = {
@@ -43,12 +59,21 @@ export default function Report() {
         setSelectedId(newReport.id);
     };
 
+    // ↓ updated delete logic
     const handleDelete = async (id, e) => {
         e.stopPropagation();
         try {
-            await deleteReport(id).unwrap();
+            await Promise.all([
+                deletePatientIntake(id).unwrap(),
+                deleteInsuranceDetails(id).unwrap(),
+                deletePainDescription(id).unwrap(),
+                deleteDetailsDescription(id).unwrap(),
+                deleteRecovery(id).unwrap(),
+                deleteWorkImpact(id).unwrap(),
+                deleteHealthCondition(id).unwrap(),
+            ]);
         } catch (err) {
-            console.error(err);
+            console.error("Failed to delete report:", err);
         }
         setReports((prev) => prev.filter((r) => r.id !== id));
     };
@@ -60,9 +85,7 @@ export default function Report() {
         setSelectedId(null);
     };
 
-    const handleBack = () => {
-        setSelectedId(null);
-    };
+    const handleBack = () => setSelectedId(null);
 
     const sortedReports = useMemo(() => {
         const list = [...reports];
@@ -122,7 +145,7 @@ export default function Report() {
                                     <XIcon className="h-4 w-4" />
                                 </button>
 
-                                {/* ✏️ Edit button: always visible, larger on mobile, same on desktop */}
+                                {/* ✏️ Edit button */}
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
@@ -130,7 +153,7 @@ export default function Report() {
                                     }}
                                     className="absolute top-4 right-4 text-gray-400 hover:text-blue-600 p-3 md:p-2 focus:outline-none"
                                 >
-                                    <EditIcon className="" />
+                                    <EditIcon />
                                 </button>
 
                                 {/* Folder icon */}

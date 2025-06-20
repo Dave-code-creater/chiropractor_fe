@@ -1,5 +1,4 @@
 // src/features/report/user/components/InitialReportForm.jsx
-// ────────────────────────────────────────────────────────────────────────────
 import React, { useState, useEffect, useMemo } from "react";
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,40 +15,41 @@ import {
 } from "@/utils/renderQuesFuncs";
 import PATIENT_INFO from "@/constants/initial-reports";
 import PainChartSection from "./HumanBody";
+
 import {
   useSubmitPatientIntakeMutation,
-  useSubmitAccidentDetailsMutation,
-  useSubmitPainEvaluationMutation,
-  useSubmitSymptomDescriptionMutation,
-  useSubmitRecoveryImpactMutation,
-  useSubmitHealthHistoryMutation,
+  useSubmitInsuranceDetailsMutation,
+  useSubmitPainDescriptionMutation,
+  useSubmitDetailsDescriptionMutation,
+  useSubmitRecoveryMutation,
+  useSubmitWorkImpactMutation,
+  useSubmitHealthConditionMutation,
   useGetInitialReportQuery,
 } from "@/services/reportApi";
 
 export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
-  // 1️⃣ collect every field‐ID with required:true
+  // 1️⃣ collect required-field IDs
   const requiredFieldIds = useMemo(
     () =>
       PATIENT_INFO.flatMap((section) =>
-        section.questions.flatMap((q) => {
-          if (q.type === "group") {
-            return q.fields.filter((f) => f.required).map((f) => f.id);
-          }
-          return q.required ? [q.id] : [];
-        })
+        section.questions.flatMap((q) =>
+          q.type === "group"
+            ? q.fields.filter((f) => f.required).map((f) => f.id)
+            : q.required
+              ? [q.id]
+              : []
+        )
       ),
     []
   );
 
-  // 2️⃣ build a lookup from ID → label for nice messages
+  // 2️⃣ ID → label map for validation messages
   const fieldLabelMap = useMemo(() => {
     const map = {};
     PATIENT_INFO.forEach((section) =>
       section.questions.forEach((q) => {
         if (q.type === "group") {
-          q.fields.forEach((f) => {
-            map[f.id] = f.label;
-          });
+          q.fields.forEach((f) => (map[f.id] = f.label));
         } else {
           map[q.id] = q.label;
         }
@@ -58,16 +58,17 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
     return map;
   }, []);
 
-  // RTK hooks…
+  // RTK-Query hooks (new endpoints)
   const [submitPatientIntake] = useSubmitPatientIntakeMutation();
-  const [submitAccidentDetails] = useSubmitAccidentDetailsMutation();
-  const [submitPainEvaluation] = useSubmitPainEvaluationMutation();
-  const [submitSymptomDescription] = useSubmitSymptomDescriptionMutation();
-  const [submitRecoveryImpact] = useSubmitRecoveryImpactMutation();
-  const [submitHealthHistory] = useSubmitHealthHistoryMutation();
+  const [submitInsuranceDetails] = useSubmitInsuranceDetailsMutation();
+  const [submitPainDescription] = useSubmitPainDescriptionMutation();
+  const [submitDetailsDescription] = useSubmitDetailsDescriptionMutation();
+  const [submitRecovery] = useSubmitRecoveryMutation();
+  const [submitWorkImpact] = useSubmitWorkImpactMutation();
+  const [submitHealthCondition] = useSubmitHealthConditionMutation();
   const { data: fetchedData } = useGetInitialReportQuery();
 
-  // local state…
+  // local form state
   const [formData, setFormData] = useState({
     currentlyWorking: "none",
     drinkStatus: "none",
@@ -81,40 +82,42 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
   const [editingName, setEditingName] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
-  // hydrate from API
+  // 🔄 hydrate from API keys → local state
   useEffect(() => {
     if (fetchedData) {
       setFormData((prev) => ({
         ...prev,
         ...(fetchedData.patientIntake || {}),
-        ...(fetchedData.accidentDetails || {}),
-        ...(fetchedData.symptomDescription || {}),
-        ...(fetchedData.recoveryImpact || {}),
-        ...(fetchedData.healthHistory || {}),
+        ...(fetchedData.insuranceDetails || {}),
+        // your “detailed-description” endpoint now maps to `detailsDescriptions`
+        ...(fetchedData.detailsDescriptions || {}),
+        ...(fetchedData.recovery || {}),
+        ...(fetchedData.workImpact || {}),
+        ...(fetchedData.healthConditions || {}),
       }));
-      if (fetchedData.painEvaluations) setPainEvaluations(fetchedData.painEvaluations);
-      if (fetchedData.name) setReportName(fetchedData.name);
+      if (fetchedData.painDescriptions) {
+        setPainEvaluations(fetchedData.painDescriptions);
+      }
+      if (fetchedData.name) {
+        setReportName(fetchedData.name);
+      }
     }
   }, [fetchedData]);
 
   const currentSection = PATIENT_INFO[currentSectionIndex];
   const baseClasses = "border rounded-md p-4 space-y-4 mb-4 bg-white shadow-sm";
 
-  // 3️⃣ validate using label‐aware messages
+  // 3️⃣ validation (unchanged)
   const validate = () => {
     const errs = {};
     requiredFieldIds.forEach((id) => {
       if (!formData[id] || String(formData[id]).trim() === "") {
-        // use our map to say "First is required" instead of generic
         errs[id] = `${fieldLabelMap[id]} is required`;
       }
     });
-
-    // SSN format
     if (formData.ssn && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn)) {
       errs.ssn = "Invalid SSN format";
     }
-    // phone
     Object.keys(formData)
       .filter((k) => k.toLowerCase().includes("phone"))
       .forEach((field) => {
@@ -125,18 +128,16 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
           errs[field] = "Invalid phone number";
         }
       });
-    // date parsing
-    ["dob", "accidentDate"].forEach((field) => {
-      if (formData[field] && isNaN(new Date(formData[field]))) {
-        errs[field] = "Invalid date";
+    ["dob", "accidentDate"].forEach((f) => {
+      if (formData[f] && isNaN(new Date(formData[f]))) {
+        errs[f] = "Invalid date";
       }
     });
-
     setFormErrors(errs);
     return Object.keys(errs).length === 0;
   };
 
-  // collect IDs per section for partial submits
+  // map section → field-IDs
   const sectionFieldIds = useMemo(
     () =>
       PATIENT_INFO.map((section) =>
@@ -149,19 +150,19 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
     []
   );
 
+  // 4️⃣ pack your new six/seven submitters here
   const submitters = [
     submitPatientIntake,
-    submitAccidentDetails,
-    submitPainEvaluation,
-    submitSymptomDescription,
-    submitRecoveryImpact,
-    submitHealthHistory,
+    submitInsuranceDetails,
+    submitPainDescription,
+    submitDetailsDescription,
+    submitRecovery,
+    submitWorkImpact,
+    submitHealthCondition,
   ];
 
   const handleSectionSubmit = async () => {
     if (!validate()) return;
-
-    // grab only this section's fields
     const fields = sectionFieldIds[currentSectionIndex];
     const subset = {};
     fields.forEach((f) => {
@@ -169,14 +170,15 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
     });
 
     try {
+      // your “pain‐map” section ID (was "3") still triggers the painEvaluations payload
       if (currentSection.id === "3") {
         await submitters[currentSectionIndex]({ painEvaluations, name: reportName });
       } else {
         await submitters[currentSectionIndex]({ formData: subset, name: reportName });
       }
 
-      // last section: fire onSubmit
-      const isLast = currentSectionIndex === PATIENT_INFO.length - 1;
+      // if it was the last section, send everything up via onSubmit
+      const isLast = currentSectionIndex === submitters.length - 1;
       if (isLast) {
         const allSections = sectionFieldIds.map((ids) => {
           const obj = {};
@@ -187,20 +189,22 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
         });
         onSubmit({
           patientIntake: allSections[0],
-          accidentDetails: allSections[1],
+          insuranceDetails: allSections[1],
           painEvaluations,
-          symptomDescription: allSections[3],
-          recoveryImpact: allSections[4],
-          healthHistory: allSections[5],
+          detailsDescriptions: allSections[3],
+          recovery: allSections[4],
+          workImpact: allSections[5],
+          healthConditions: allSections[6],
           name: reportName,
         });
       } else {
         setCurrentSectionIndex((i) => i + 1);
       }
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
     }
   };
+
 
   const renderQuestion = (question) => {
     // female-only skip logic
