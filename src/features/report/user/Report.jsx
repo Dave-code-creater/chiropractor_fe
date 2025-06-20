@@ -1,5 +1,5 @@
 // src/features/report/user/Report.jsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Select,
@@ -28,14 +28,7 @@ import {
 } from "@/services/reportApi";
 
 export default function Report() {
-    const [reports, setReports] = useState([
-        {
-            id: Date.now(),
-            name: "",
-            createdAt: new Date().toISOString(),
-            painEvaluations: [{ painMap: {}, formData: {} }],
-        },
-    ]);
+    const [reports, setReports] = useState([]);
     const [selectedId, setSelectedId] = useState(null);
     const [sortOption, setSortOption] = useState("date");
 
@@ -58,6 +51,14 @@ export default function Report() {
         setReports((prev) => [...prev, newReport]);
         setSelectedId(newReport.id);
     };
+
+    // Automatically start a report if none exist
+    useEffect(() => {
+        if (reports.length === 0) {
+            addReport();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     // ↓ updated delete logic
     const handleDelete = async (id, e) => {
