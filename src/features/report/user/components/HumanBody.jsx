@@ -198,80 +198,88 @@ export default function PainChartSection({
                     .map((field) => (
                     <div key={field.id} className="text-center">
                         <Label className="font-semibold text-sm">{field.label}</Label>
-                        <Dialog
-                            open={openFieldId === field.id}
-                            onOpenChange={(isOpen) => {
-                                if (!isOpen) setopenFieldId(null);
-                            }}
-                        >
-                            <DialogTrigger asChild>
-                                <Button
-                                    id={field.id}
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                        setPendingLevel(painMap[field.id] || 1);
-                                        setopenFieldId(field.id);
-                                    }}
-                                >
-                                    {typeof painMap[field.id] === "number" ? painMap[field.id] : "0"} / 10
-                                </Button>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-2xl w-full bg-white rounded-lg shadow-lg">
-                                <DialogHeader>
-                                    <DialogTitle>Details your {field.label}</DialogTitle>
-                                    <DialogDescription asChild>
-                                        <div className="flex-1 p-6 overflow-y-auto">
-                                            <Card>
-                                                <CardContent className="space-y-8">
-                                                    <section key={objectHuman.id}>
-                                                        <h3 className="text-xl font-semibold mb-4">
-                                                            Describe details of your {field.label}
-                                                        </h3>
-                                                        <div key={field.id} className="text-center mb-6">
-                                                            <Label className="font-semibold text-sm">{field.label}</Label>
-                                                            <div className="w-40 mx-auto space-y-1 mt-2">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-xs w-6 text-left">1</span>
-                                                                    <Slider
-                                                                        min={1}
-                                                                        max={10}
-                                                                        step={1}
-                                                                        value={[pendingLevel]}
-                                                                        onValueChange={handleSliderChange}
-                                                                        className="flex-1"
-                                                                    />
-                                                                    <span className="text-xs w-6 text-right">10</span>
-                                                                </div>
-                                                                <div className="text-xs flex justify-between px-4">
-                                                                    <span>Minimal</span>
-                                                                    <span className="flex-1 text-center"> </span>
-                                                                    <span>Max</span>
-                                                                </div>
-                                                                <div className="text-center text-xs">
-                                                                    {pendingLevel} / 10
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex flex-col gap-4">
-                                                            {objectHuman.questions.map((question) => newrenderQuestion(question))}
-                                                        </div>
-                                                    </section>
-                                                </CardContent>
-                                            </Card>
-                                        </div>
-                                    </DialogDescription>
-                                </DialogHeader>
-                                <div className="flex justify-end mt-4 gap-2">
-                                    <Button variant="outline" onClick={closeDialog}>
-                                        Cancel
-                                    </Button>
-                                    <Button onClick={saveDialog}>Save</Button>
-                                </div>
-                            </DialogContent>
-                        </Dialog>
+                            <Button
+                                id={field.id}
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                    setPendingLevel(painMap[field.id] || 1);
+                                    setopenFieldId(field.id);
+                                }}
+                            >
+                                {typeof painMap[field.id] === "number" ? painMap[field.id] : "0"} / 10
+                            </Button>
                     </div>
                 ))}
+            <Dialog
+                open={Boolean(openFieldId)}
+                onOpenChange={(isOpen) => {
+                    if (!isOpen) setopenFieldId(null);
+                }}
+            >
+                {openFieldId && (
+                    <DialogContent className="max-w-2xl w-full bg-white rounded-lg shadow-lg">
+                        {(() => {
+                            const field = painFields.find((f) => f.id === openFieldId);
+                            if (!field) return null;
+                            return (
+                                <>
+                                    <DialogHeader>
+                                        <DialogTitle>Details your {field.label}</DialogTitle>
+                                        <DialogDescription asChild>
+                                            <div className="flex-1 p-6 overflow-y-auto">
+                                                <Card>
+                                                    <CardContent className="space-y-8">
+                                                        <section key={objectHuman.id}>
+                                                            <h3 className="text-xl font-semibold mb-4">
+                                                                Describe details of your {field.label}
+                                                            </h3>
+                                                            <div key={field.id} className="text-center mb-6">
+                                                                <Label className="font-semibold text-sm">{field.label}</Label>
+                                                                <div className="w-40 mx-auto space-y-1 mt-2">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-xs w-6 text-left">1</span>
+                                                                        <Slider
+                                                                            min={1}
+                                                                            max={10}
+                                                                            step={1}
+                                                                            value={[pendingLevel]}
+                                                                            onValueChange={handleSliderChange}
+                                                                            className="flex-1"
+                                                                        />
+                                                                        <span className="text-xs w-6 text-right">10</span>
+                                                                    </div>
+                                                                    <div className="text-xs flex justify-between px-4">
+                                                                        <span>Minimal</span>
+                                                                        <span className="flex-1 text-center"> </span>
+                                                                        <span>Max</span>
+                                                                    </div>
+                                                                    <div className="text-center text-xs">
+                                                                        {pendingLevel} / 10
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div className="flex flex-col gap-4">
+                                                                {objectHuman.questions.map((question) => newrenderQuestion(question))}
+                                                            </div>
+                                                        </section>
+                                                    </CardContent>
+                                                </Card>
+                                            </div>
+                                        </DialogDescription>
+                                    </DialogHeader>
+                                    <div className="flex justify-end mt-4 gap-2">
+                                        <Button variant="outline" onClick={closeDialog}>
+                                            Cancel
+                                        </Button>
+                                        <Button onClick={saveDialog}>Save</Button>
+                                    </div>
+                                </>
+                            );
+                        })()}
+                    </DialogContent>
+                )}
+            </Dialog>
             </div>
         </div>
     );
