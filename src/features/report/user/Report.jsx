@@ -13,6 +13,7 @@ import {
     PlusIcon,
     X as XIcon,
     Edit3 as EditIcon,
+    Trash2 as TrashIcon,
 } from "lucide-react";
 
 import InitialReportForm from "./components/InitialReportForm";
@@ -41,9 +42,11 @@ export default function Report() {
     const [deleteWorkImpact] = useDeleteWorkImpactMutation();
     const [deleteHealthCondition] = useDeleteHealthConditionMutation();
 
+    const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
     const addReport = () => {
         const newReport = {
-            id: Date.now(),
+            id: generateId(),
             name: "",
             createdAt: new Date().toISOString(),
             painEvaluations: [{ painMap: {}, formData: {} }],
@@ -61,8 +64,7 @@ export default function Report() {
     }, []);
 
     // ↓ updated delete logic
-    const handleDelete = async (id, e) => {
-        e.stopPropagation();
+    const handleDelete = async (id) => {
         try {
             await Promise.all([
                 deletePatientIntake(id).unwrap(),
@@ -104,6 +106,7 @@ export default function Report() {
                 onSubmit={(data) => handleSubmit(selectedId, data)}
                 initialData={reports.find((r) => r.id === selectedId)}
                 onBack={handleBack}
+                onDelete={handleDelete}
             />
         );
     }
@@ -140,7 +143,10 @@ export default function Report() {
                             >
                                 {/* Delete button (hover-only) */}
                                 <button
-                                    onClick={(e) => handleDelete(rep.id, e)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(rep.id);
+                                    }}
                                     className="absolute left-2 top-2 text-gray-400 hover:text-red-600 opacity-0 group-hover:opacity-100"
                                 >
                                     <XIcon className="h-4 w-4" />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Trash2 as TrashIcon } from "lucide-react";
 
 import PatientIntakeForm from "./forms/PatientIntakeForm";
 import InsuranceDetailsForm from "./forms/InsuranceDetailsForm";
@@ -58,7 +58,7 @@ const forms = [
   },
 ];
 
-export default function InitialReportForm({ onSubmit, initialData = {}, onBack }) {
+export default function InitialReportForm({ onSubmit, initialData = {}, onBack, onDelete }) {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [sectionsData, setSectionsData] = useState({
     patientIntake: initialData.patientIntake || {},
@@ -171,6 +171,16 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
           className="absolute md:left-4 md:top-4 z-10"
         >
           <ArrowLeft className="h-5 w-5" />
+        </Button>
+      )}
+      {onDelete && initialData?.id && (
+        <Button
+          variant="destructive"
+          size="icon"
+          onClick={() => onDelete(initialData.id)}
+          className="absolute md:right-4 md:top-4 z-10"
+        >
+          <TrashIcon className="h-5 w-5" />
         </Button>
       )}
       <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full pt-16 px-8">
