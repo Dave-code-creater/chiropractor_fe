@@ -130,14 +130,20 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack }
       if (key === "painDescriptions") {
         const payload = { painEvaluations: data, name: reportName };
         if (hasId) {
-          await updaters[currentSectionIndex]({ id: existing.id || existing._id, data: payload });
+          await updaters[currentSectionIndex]({
+            id: existing.id || existing._id,
+            data: payload,
+          });
         } else {
           await submitters[currentSectionIndex](payload);
         }
       } else {
-        const payload = { formData: data, name: reportName };
+        const payload = { ...data, name: reportName };
         if (hasId) {
-          await updaters[currentSectionIndex]({ id: existing.id || existing._id, data: payload });
+          await updaters[currentSectionIndex]({
+            id: existing.id || existing._id,
+            data: payload,
+          });
         } else {
           await submitters[currentSectionIndex](payload);
         }
