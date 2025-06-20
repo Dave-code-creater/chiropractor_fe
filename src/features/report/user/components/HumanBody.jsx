@@ -166,6 +166,16 @@ export default function PainChartSection({
         setopenFieldId(null);
     };
 
+    const removeDialog = () => {
+        if (!openFieldId) return;
+        setPainMap((prev) => {
+            const map = { ...prev };
+            delete map[openFieldId];
+            return map;
+        });
+        setopenFieldId(null);
+    };
+
     const newrenderQuestion = (question) => {
         const commonFieldsetClasses = "border rounded-md p-4 space-y-4";
         if (question.type === "group") {
@@ -194,7 +204,7 @@ export default function PainChartSection({
             </div>
             <div className="flex flex-wrap justify-center gap-4 mt-6">
                 {painFields
-                    .filter((field) => painMap[field.id] !== undefined)
+                    .filter((field) => painMap[field.id] !== undefined && painMap[field.id] > 0)
                     .map((field) => (
                     <div key={field.id} className="text-center">
                         <Label className="font-semibold text-sm">{field.label}</Label>
@@ -272,6 +282,11 @@ export default function PainChartSection({
                                         <Button variant="outline" onClick={closeDialog}>
                                             Cancel
                                         </Button>
+                                        {openFieldId && painMap[openFieldId] !== undefined && (
+                                            <Button variant="destructive" onClick={removeDialog}>
+                                                Remove
+                                            </Button>
+                                        )}
                                         <Button onClick={saveDialog}>Save</Button>
                                     </div>
                                 </>
