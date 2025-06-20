@@ -123,6 +123,7 @@ export default function PainChartSection({
     };
 
     const [openFieldId, setopenFieldId] = useState(null);
+    const [pendingLevel, setPendingLevel] = useState(1);
 
     const partMap = {
         head: "headache",
@@ -143,10 +144,7 @@ export default function PainChartSection({
     const handleBodyClick = (part) => {
         const field = partMap[part];
         if (!field) return;
-        setPainMap((prev) => {
-            if (prev[field] !== undefined) return prev;
-            return { ...prev, [field]: 1 };
-        });
+        setPendingLevel(painMap[field] || 1);
         setopenFieldId(field);
     };
 
@@ -154,14 +152,19 @@ export default function PainChartSection({
         Object.entries(partMap).map(([part, field]) => [part, { selected: !!painMap[field] }])
     );
 
-    const handleSliderChange = (id, value) => {
-        setPainMap((prev) => ({
-            ...prev,
-            [id]: value[0],
-        }));
+    const handleSliderChange = (value) => {
+        setPendingLevel(value[0]);
     };
 
     const closeDialog = () => setopenFieldId(null);
+    const saveDialog = () => {
+        if (!openFieldId) return;
+        setPainMap((prev) => ({
+            ...prev,
+            [openFieldId]: pendingLevel,
+        }));
+        setopenFieldId(null);
+    };
 
     const newrenderQuestion = (question) => {
         const commonFieldsetClasses = "border rounded-md p-4 space-y-4";
@@ -206,7 +209,10 @@ export default function PainChartSection({
                                     id={field.id}
                                     size="sm"
                                     variant="outline"
-                                    onClick={() => setopenFieldId(field.id)}
+                                    onClick={() => {
+                                        setPendingLevel(painMap[field.id] || 1);
+                                        setopenFieldId(field.id);
+                                    }}
                                 >
                                     {typeof painMap[field.id] === "number" ? painMap[field.id] : "0"} / 10
                                 </Button>
@@ -231,8 +237,8 @@ export default function PainChartSection({
                                                                         min={1}
                                                                         max={10}
                                                                         step={1}
-                                                                        value={[painMap[field.id] || 1]}
-                                                                        onValueChange={(val) => handleSliderChange(field.id, val)}
+                                                                        value={[pendingLevel]}
+                                                                        onValueChange={handleSliderChange}
                                                                         className="flex-1"
                                                                     />
                                                                     <span className="text-xs w-6 text-right">10</span>
@@ -243,7 +249,7 @@ export default function PainChartSection({
                                                                     <span>Max</span>
                                                                 </div>
                                                                 <div className="text-center text-xs">
-                                                                    {painMap[field.id] || 1} / 10
+                                                                    {pendingLevel} / 10
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -256,10 +262,11 @@ export default function PainChartSection({
                                         </div>
                                     </DialogDescription>
                                 </DialogHeader>
-                                <div className="flex justify-end mt-4">
+                                <div className="flex justify-end mt-4 gap-2">
                                     <Button variant="outline" onClick={closeDialog}>
-                                        Close
+                                        Cancel
                                     </Button>
+                                    <Button onClick={saveDialog}>Save</Button>
                                 </div>
                             </DialogContent>
                         </Dialog>
