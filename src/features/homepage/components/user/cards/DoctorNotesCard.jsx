@@ -37,10 +37,12 @@ const notes = [
 
 export default function DoctorNotesCard() {
     return (
-        <Card className="w-full h-full">
-            <CardHeader>
-                <CardTitle className="text-base font-semibold flex items-center gap-2">
-                    <NotebookPen className="w-4 h-4 text-gray-500" />
+        <Card className="w-full h-full border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm">
+            <CardHeader className="pb-3">
+                <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                        <NotebookPen className="w-4 h-4 text-primary" />
+                    </div>
                     Doctor Notes
                 </CardTitle>
             </CardHeader>
@@ -49,25 +51,27 @@ export default function DoctorNotesCard() {
                 <CardContent className="h-full">
                     {notes.length > 0 ? (
                         notes.map(({ avatar, fallback, author, date, text, extra }, idx) => (
-                            <div key={idx} className="flex items-start gap-4 mb-4">
-                                <Avatar className="h-10 w-10">
+                            <div key={idx} className="flex items-start gap-4 mb-4 p-4 rounded-lg bg-background/50 border border-border/50">
+                                <Avatar className="h-10 w-10 border-2 border-primary/20">
                                     <AvatarImage src={avatar} />
-                                    <AvatarFallback>{fallback}</AvatarFallback>
+                                    <AvatarFallback className="bg-primary/10 text-primary">{fallback}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 space-y-1">
                                     <div className="flex items-center justify-between">
-                                        <p className="text-sm font-medium">{author}</p>
+                                        <p className="text-sm font-medium text-foreground">{author}</p>
                                         <span className="text-xs text-muted-foreground">{date}</span>
                                     </div>
-                                    <p className="text-sm text-gray-700">{text}</p>
+                                    <p className="text-sm text-muted-foreground">{text}</p>
                                     {extra}
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-full text-sm text-muted-foreground text-center py-6">
-                            <NotebookPen className="w-6 h-6 mb-2 text-gray-400" />
-                            No doctor notes available.
+                        <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                            <div className="p-4 rounded-full bg-muted/50 mb-4">
+                                <NotebookPen className="w-8 h-8 text-muted-foreground" />
+                            </div>
+                            <p className="text-sm text-muted-foreground">No doctor notes available.</p>
                         </div>
                     )}
                 </CardContent>

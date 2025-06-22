@@ -2,8 +2,17 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRegisterMutation } from "../../services/authApi";
 import { useNavigate } from "react-router-dom";
-import { renderPhoneNumber, renderGmailExprs, renderPwRegister } from "../../utils/renderUtilsFunc";
-import { setEmailError, clearEmailError, setPasswordError, clearPasswordError, setConfirmPasswordError, clearConfirmPasswordError } from "../../state/forms/registerFormSlice";
+import { renderPhoneNumber, renderGmailExprs, renderPwRegister, validatePhoneNumber } from "../../utils/renderUtilsFunc";
+import { 
+    setPhoneError, 
+    clearPhoneError,
+    setEmailError, 
+    clearEmailError, 
+    setPasswordError, 
+    clearPasswordError, 
+    setConfirmPasswordError, 
+    clearConfirmPasswordError 
+} from "../../state/forms/registerFormSlice";
 
 export default function Register() {
     const navigate = useNavigate();
@@ -15,6 +24,7 @@ export default function Register() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
+    const phoneError = useSelector(state => state.forms.registerForm.errors.phone)
     const errorEmail = useSelector(state => state.forms.registerForm.errors.email)
     const pwError = useSelector(state => state.forms.registerForm.errors.password)
     const confirmpwError = useSelector(state => state.forms.registerForm.errors.confirmPassword)
@@ -29,6 +39,17 @@ export default function Register() {
             navigate(path);
         }
     }, [isAuthenticated, navigate, role, userID]);
+
+    const handlePhoneBlur = () => {
+        try {
+            const validatedPhone = validatePhoneNumber(phone);
+            const formatted = renderPhoneNumber(validatedPhone);
+            setPhone(formatted);
+            dispatch(clearPhoneError());
+        } catch (err) {
+            dispatch(setPhoneError(err.message));
+        }
+    }
 
     const handleEmailBlur = () => {
         try {
@@ -54,10 +75,6 @@ export default function Register() {
         } else {
             dispatch(clearConfirmPasswordError());
         }
-    }
-    const handlePhoneBlur = () => {
-        const formatted = renderPhoneNumber(phone);
-        setPhone(formatted)
     }
 
     const handleRegister = async (e) => {
@@ -89,7 +106,7 @@ export default function Register() {
                         Create your account
                     </h1>
                     <p className="mt-2 text-center text-sm text-gray-400">
-                        Let’s get you all set up so you can start your journey with us.
+                        Let's get you all set up so you can start your journey with us.
                     </p>
 
                     <form noValidate onSubmit={handleRegister} className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -137,6 +154,7 @@ export default function Register() {
                                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 required
                             />
+                            {phoneError && <p style={{ color: 'red' }}>{phoneError}</p>}
                         </div>
 
                         <div>
