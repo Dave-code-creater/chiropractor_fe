@@ -6,17 +6,71 @@ export const reportApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Reports"],
   endpoints: (builder) => ({
+    // Get all reports for the current user
+    getAllReports: builder.query({
+      query: () => ({ url: "reports" }),
+      providesTags: ["Reports"],
+      transformResponse: (response) => {
+        // Transform the response to match the frontend format
+        if (!response || !Array.isArray(response)) return [];
+        
+        return response.map(report => ({
+          id: report.id,
+          name: report.name || `Report ${report.id}`,
+          date: report.created_at ? new Date(report.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+          category: report.template_type || 'consultation',
+          status: report.status || 'draft',
+          templateData: report.template_data || {},
+          createdAt: report.created_at,
+          updatedAt: report.updated_at,
+          completionPercentage: report.completion_percentage || 0,
+          patientId: report.patient_id,
+          assignedTo: report.assigned_to,
+          createdBy: report.created_by
+        }));
+      }
+    }),
+
+    // Create a new report
+    createReport: builder.mutation({
+      query: (reportData) => ({
+        url: "reports",
+        method: "POST",
+        body: reportData,
+      }),
+      invalidatesTags: ["Reports"],
+    }),
+
+    // Update a report
+    updateReport: builder.mutation({
+      query: ({ id, data }) => ({
+        url: `reports/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: ["Reports"],
+    }),
+
+    // Delete a report
+    deleteReport: builder.mutation({
+      query: (id) => ({
+        url: `reports/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Reports"],
+    }),
+
     // Fetch all report parts in parallel
     getInitialReport: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
         const urls = [
-          "users/patient-intake",
-          "users/insurance-details",
-          "users/pain-descriptions",
-          "users/details-descriptions",
-          "users/recovery",
-          "users/work-impact",
-          "users/health-conditions",
+          "reports/patient-intake",
+          "reports/insurance-details",
+          "reports/pain-descriptions",
+          "reports/details-descriptions",
+          "reports/recovery",
+          "reports/work-impact",
+          "reports/health-conditions",
         ];
 
         try {
@@ -63,7 +117,7 @@ export const reportApi = createApi({
 
     getPatientIntake: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "users/patient-intake" });
+        const res = await fetchWithBQ({ url: "reports/patient-intake" });
         if (res.error) {
           if (res.error.status === 404) return { data: null };
           return { error: res.error };
@@ -78,7 +132,7 @@ export const reportApi = createApi({
 
     getInsuranceDetails: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "users/insurance-details" });
+        const res = await fetchWithBQ({ url: "reports/insurance-details" });
         if (res.error) {
           if (res.error.status === 404) return { data: null };
           return { error: res.error };
@@ -93,7 +147,7 @@ export const reportApi = createApi({
 
     getPainDescriptions: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "users/pain-descriptions" });
+        const res = await fetchWithBQ({ url: "reports/pain-descriptions" });
         if (res.error) {
           if (res.error.status === 404) return { data: null };
           return { error: res.error };
@@ -108,7 +162,7 @@ export const reportApi = createApi({
 
     getDetailsDescriptions: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "users/details-descriptions" });
+        const res = await fetchWithBQ({ url: "reports/details-descriptions" });
         if (res.error) {
           if (res.error.status === 404) return { data: null };
           return { error: res.error };
@@ -123,7 +177,7 @@ export const reportApi = createApi({
 
     getWorkImpact: builder.query({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "users/work-impact" });
+        const res = await fetchWithBQ({ url: "reports/work-impact" });
         if (res.error) {
           if (res.error.status === 404) return { data: null };
           return { error: res.error };
@@ -138,14 +192,14 @@ export const reportApi = createApi({
 
     // Simple GET list
     getHealthConditions: builder.query({
-      query: () => ({ url: "users/health-conditions" }),
+      query: () => ({ url: "reports/health-conditions" }),
       providesTags: ["Reports"],
     }),
 
     // ---- Mutations: Patient Intake ----
     submitPatientIntake: builder.mutation({
       query: (body) => ({
-        url: "users/patient-intake",
+        url: "reports/patient-intake",
         method: "POST",
         body,
       }),
@@ -153,7 +207,7 @@ export const reportApi = createApi({
     }),
     updatePatientIntake: builder.mutation({
       query: ({ id, data }) => ({
-        url: `users/patient-intake/${id}`,
+        url: `reports/patient-intake/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -161,7 +215,7 @@ export const reportApi = createApi({
     }),
     deletePatientIntake: builder.mutation({
       query: (id) => ({
-        url: `users/patient-intake/${id}`,
+        url: `reports/patient-intake/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Reports"],
@@ -170,7 +224,7 @@ export const reportApi = createApi({
     // ---- Mutations: Insurance Details ----
     submitInsuranceDetails: builder.mutation({
       query: (body) => ({
-        url: "users/insurance-details",
+        url: "reports/insurance-details",
         method: "POST",
         body,
       }),
@@ -178,7 +232,7 @@ export const reportApi = createApi({
     }),
     updateInsuranceDetails: builder.mutation({
       query: ({ id, data }) => ({
-        url: `users/insurance-details/${id}`,
+        url: `reports/insurance-details/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -186,7 +240,7 @@ export const reportApi = createApi({
     }),
     deleteInsuranceDetails: builder.mutation({
       query: (id) => ({
-        url: `users/insurance-details/${id}`,
+        url: `reports/insurance-details/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Reports"],
@@ -195,7 +249,7 @@ export const reportApi = createApi({
     // ---- Mutations: Pain Descriptions ----
     submitPainDescription: builder.mutation({
       query: (body) => ({
-        url: "users/pain-descriptions",
+        url: "reports/pain-descriptions",
         method: "POST",
         body,
       }),
@@ -203,7 +257,7 @@ export const reportApi = createApi({
     }),
     updatePainDescription: builder.mutation({
       query: ({ id, data }) => ({
-        url: `users/pain-descriptions/${id}`,
+        url: `reports/pain-descriptions/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -211,7 +265,7 @@ export const reportApi = createApi({
     }),
     deletePainDescription: builder.mutation({
       query: (id) => ({
-        url: `users/pain-descriptions/${id}`,
+        url: `reports/pain-descriptions/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Reports"],
@@ -220,7 +274,7 @@ export const reportApi = createApi({
     // ---- Mutations: Details Descriptions ----
     submitDetailsDescription: builder.mutation({
       query: (body) => ({
-        url: "users/details-descriptions",
+        url: "reports/details-descriptions",
         method: "POST",
         body,
       }),
@@ -228,7 +282,7 @@ export const reportApi = createApi({
     }),
     updateDetailsDescription: builder.mutation({
       query: ({ id, data }) => ({
-        url: `users/details-descriptions/${id}`,
+        url: `reports/details-descriptions/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -236,7 +290,7 @@ export const reportApi = createApi({
     }),
     deleteDetailsDescription: builder.mutation({
       query: (id) => ({
-        url: `users/details-descriptions/${id}`,
+        url: `reports/details-descriptions/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Reports"],
@@ -245,7 +299,7 @@ export const reportApi = createApi({
     // ---- Mutations: Recovery ----
     submitRecovery: builder.mutation({
       query: (body) => ({
-        url: "users/recovery",
+        url: "reports/recovery",
         method: "POST",
         body,
       }),
@@ -253,7 +307,7 @@ export const reportApi = createApi({
     }),
     updateRecovery: builder.mutation({
       query: ({ id, data }) => ({
-        url: `users/recovery/${id}`,
+        url: `reports/recovery/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -261,7 +315,7 @@ export const reportApi = createApi({
     }),
     deleteRecovery: builder.mutation({
       query: (id) => ({
-        url: `users/recovery/${id}`,
+        url: `reports/recovery/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Reports"],
@@ -270,7 +324,7 @@ export const reportApi = createApi({
     // ---- Mutations: Work Impact ----
     submitWorkImpact: builder.mutation({
       query: (body) => ({
-        url: "users/work-impact",
+        url: "reports/work-impact",
         method: "POST",
         body,
       }),
@@ -278,7 +332,7 @@ export const reportApi = createApi({
     }),
     updateWorkImpact: builder.mutation({
       query: ({ id, data }) => ({
-        url: `users/work-impact/${id}`,
+        url: `reports/work-impact/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -286,7 +340,7 @@ export const reportApi = createApi({
     }),
     deleteWorkImpact: builder.mutation({
       query: (id) => ({
-        url: `users/work-impact/${id}`,
+        url: `reports/work-impact/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Reports"],
@@ -295,7 +349,7 @@ export const reportApi = createApi({
     // ---- Mutations: Health Conditions ----
     submitHealthCondition: builder.mutation({
       query: (body) => ({
-        url: "users/health-conditions",
+        url: "reports/health-conditions",
         method: "POST",
         body,
       }),
@@ -303,7 +357,7 @@ export const reportApi = createApi({
     }),
     updateHealthCondition: builder.mutation({
       query: ({ id, data }) => ({
-        url: `users/health-conditions/${id}`,
+        url: `reports/health-conditions/${id}`,
         method: "PUT",
         body: data,
       }),
@@ -311,7 +365,7 @@ export const reportApi = createApi({
     }),
     deleteHealthCondition: builder.mutation({
       query: (id) => ({
-        url: `users/health-conditions/${id}`,
+        url: `reports/health-conditions/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Reports"],
@@ -356,4 +410,9 @@ export const {
   useSubmitHealthConditionMutation,
   useUpdateHealthConditionMutation,
   useDeleteHealthConditionMutation,
+
+  useGetAllReportsQuery,
+  useCreateReportMutation,
+  useUpdateReportMutation,
+  useDeleteReportMutation,
 } = reportApi;

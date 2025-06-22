@@ -1,5 +1,3 @@
-
-
 export function renderDate(getDate) {
     if (!getDate) return ''
     const digits = String(getDate).replace(/\D/g, '')
@@ -49,6 +47,41 @@ export function renderSSN(ssnNumber) {
 
 }
 
+// Function for validating phone numbers
+export function validatePhoneNumber(phoneNumber) {
+    if (!phoneNumber) {
+        throw new Error('Phone number is required');
+    }
+    
+    const input = String(phoneNumber).trim();
+    
+    if (/[A-Za-z]/.test(input)) {
+        throw new Error('Phone number cannot contain letters');
+    }
+    
+    const digits = input.replace(/\D/g, '');
+    
+    if (digits.length < 10) {
+        throw new Error('Phone number must be at least 10 digits');
+    }
+    
+    if (digits.length > 11) {
+        throw new Error('Phone number cannot be more than 11 digits');
+    }
+    
+    if (digits.length === 11 && !digits.startsWith('1')) {
+        throw new Error('11-digit phone number must start with 1');
+    }
+    
+    // Validate area code (first 3 digits after country code)
+    const areaCode = digits.length === 11 ? digits.slice(1, 4) : digits.slice(0, 3);
+    if (areaCode.startsWith('0') || areaCode.startsWith('1')) {
+        throw new Error('Invalid area code');
+    }
+    
+    return digits; // Return clean digits for backend
+}
+
 export function renderPhoneNumber(phonenumber) {
     if (!phonenumber) return ''
     const input = String(phonenumber)
@@ -60,18 +93,54 @@ export function renderPhoneNumber(phonenumber) {
 
         const digits = input.replace(/\D/g, '');
         if (digits.length === 10) {
-            const area = digits.slice(0, 3)
-            const prefix = digits.slice(3, 6)
-            const line = digits.slice(6)
-            return `(${area})-${prefix}-${line}`
+            // Return just the digits for backend compatibility
+            // Backend expects format like: 6477787816 or +16477787816
+            return digits;
+        } else if (digits.length === 11 && digits.startsWith('1')) {
+            // Handle 11-digit numbers starting with 1 (North American format)
+            return digits;
         }
+
+        // If not 10 or 11 digits, return original input
+        return input;
 
     } catch (err) {
         console.error('renderPhoneNumber error:', err)
         // Return original input on error
         return phonenumber == null ? '' : String(phonenumber)
     }
+}
 
+// Function for displaying formatted phone numbers (for UI display only)
+export function formatPhoneNumberForDisplay(phonenumber) {
+    if (!phonenumber) return ''
+    const input = String(phonenumber)
+
+    try {
+        if (/[A-Za-z]/.test(input)) {
+            return input; // Return as-is if contains letters
+        }
+
+        const digits = input.replace(/\D/g, '');
+        if (digits.length === 10) {
+            const area = digits.slice(0, 3)
+            const prefix = digits.slice(3, 6)
+            const line = digits.slice(6)
+            return `(${area}) ${prefix}-${line}`
+        } else if (digits.length === 11 && digits.startsWith('1')) {
+            const area = digits.slice(1, 4)
+            const prefix = digits.slice(4, 7)
+            const line = digits.slice(7)
+            return `+1 (${area}) ${prefix}-${line}`
+        }
+
+        // If not standard format, return original
+        return input;
+
+    } catch (err) {
+        console.error('formatPhoneNumberForDisplay error:', err)
+        return phonenumber == null ? '' : String(phonenumber)
+    }
 }
 
 export function renderStringLower(getString) {

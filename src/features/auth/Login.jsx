@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLoginMutation } from "../../services/authApi";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { renderGmailExprs, renderPassword } from "../../utils/renderUtilsFunc";
 import { setEmailError, clearEmailError, setPasswordError, clearPasswordError } from "../../state/forms/loginFormSlice";
 
@@ -38,9 +38,23 @@ export default function Login() {
 
     useEffect(() => {
         if (isAuthenticated) {
-            // send doctors to /admin/:id, everyone else to /dashboard/:id
-            const homePath =
-                role === "doctor" ? `/admin/${userID}` : `/dashboard/${userID}`;
+            // Route users based on their role
+            let homePath;
+            switch (role) {
+                case 'admin':
+                    homePath = '/admin';
+                    break;
+                case 'doctor':
+                    homePath = '/doctor';
+                    break;
+                case 'staff':
+                    homePath = '/staff';
+                    break;
+                case 'patient':
+                default:
+                    homePath = `/dashboard/${userID}`;
+                    break;
+            }
             navigate(homePath, { replace: true });
         }
     }, [isAuthenticated, navigate, userID, role]);
@@ -86,9 +100,19 @@ export default function Login() {
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-900">
-                            Password
-                        </label>
+                        <div className="flex items-center justify-between">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-900">
+                                Password
+                            </label>
+                            <div className="text-sm">
+                                <Link 
+                                    to="/forgot-password" 
+                                    className="font-semibold text-indigo-600 hover:text-indigo-500"
+                                >
+                                    Forgot password?
+                                </Link>
+                            </div>
+                        </div>
                         <input
                             id="password"
                             name="password"
@@ -122,12 +146,12 @@ export default function Login() {
 
                 <p className="mt-10 text-center text-sm text-gray-500">
                     Not a member?{" "}
-                    <a
-                        href="/register"
+                    <Link
+                        to="/register"
                         className="font-semibold text-indigo-600 hover:text-indigo-500"
                     >
                         Register with us
-                    </a>
+                    </Link>
                 </p>
             </div>
         </div>

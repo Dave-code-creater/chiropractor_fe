@@ -10,6 +10,7 @@ const initialState = {
     confirmPassword: "",
   },
   errors: {
+    phone: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -20,6 +21,12 @@ const registerFormSlice = createSlice({
   name: "registerForm",
   initialState,
   reducers: {
+    setPhoneError(state, action) {
+      state.errors.phone = action.payload;
+    },
+    clearPhoneError(state) {
+      state.errors.phone = "";
+    },
     setEmailError(state, action) {
       state.errors.email = action.payload;
     },
@@ -39,6 +46,7 @@ const registerFormSlice = createSlice({
       state.errors.confirmPassword = "";
     },
     clearAllErrors(state) {
+      state.errors.phone = "";
       state.errors.email = "";
       state.errors.password = "";
       state.errors.confirmPassword = "";
@@ -47,6 +55,8 @@ const registerFormSlice = createSlice({
 });
 
 export const {
+  setPhoneError,
+  clearPhoneError,
   setEmailError,
   clearEmailError,
   setPasswordError,
