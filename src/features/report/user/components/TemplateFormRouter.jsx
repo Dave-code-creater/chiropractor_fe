@@ -1,21 +1,24 @@
-import React from 'react';
-import PatientIntakeForm from './forms/PatientIntakeForm';
-import InsuranceDetailsForm from './forms/InsuranceDetailsForm';
-import PainEvaluationForm from './forms/PainEvaluationForm';
-import DetailedDescriptionForm from './forms/DetailedDescriptionForm';
-import WorkImpactForm from './forms/WorkImpactForm';
-import HealthConditionForm from './forms/HealthConditionForm';
-import InitialReportForm from './InitialReportForm';
+import React from "react";
+import PatientIntakeForm from "./forms/PatientIntakeForm";
+import InsuranceDetailsForm from "./forms/InsuranceDetailsForm";
+import PainEvaluationForm from "./forms/PainEvaluationForm";
+import DetailedDescriptionForm from "./forms/DetailedDescriptionForm";
+import WorkImpactForm from "./forms/WorkImpactForm";
+import HealthConditionForm from "./forms/HealthConditionForm";
+import InitialReportForm from "./InitialReportForm";
 
-const TemplateFormRouter = ({ 
-  selectedTemplate, 
-  onSubmit, 
-  onBack, 
-  onDelete, 
-  initialData = {} 
+const TemplateFormRouter = ({
+  selectedTemplate,
+  onSubmit,
+  onBack,
+  onDelete,
+  initialData = {},
 }) => {
   // If it's a blank report or no specific form type, show the full InitialReportForm
-  if (!selectedTemplate?.formType || selectedTemplate.formType === 'InitialReportForm') {
+  if (
+    !selectedTemplate?.formType ||
+    selectedTemplate.formType === "InitialReportForm"
+  ) {
     return (
       <InitialReportForm
         onSubmit={onSubmit}
@@ -37,8 +40,8 @@ const TemplateFormRouter = ({
           id: selectedTemplate.id,
           name: selectedTemplate.name,
           folder: selectedTemplate.folder,
-          formType: selectedTemplate.formType
-        }
+          formType: selectedTemplate.formType,
+        },
       };
       onSubmit(submissionData);
     },
@@ -46,39 +49,41 @@ const TemplateFormRouter = ({
     reportName: initialData.name || selectedTemplate.name,
     setReportName: () => {}, // Individual forms don't need to edit report name
     editingName: false,
-    setEditingName: () => {}
+    setEditingName: () => {},
   };
 
   // Route to the specific form component based on formType
   switch (selectedTemplate.formType) {
-    case 'PatientIntakeForm':
+    case "PatientIntakeForm":
       return <PatientIntakeForm {...commonProps} />;
-      
-    case 'InsuranceDetailsForm':
+
+    case "InsuranceDetailsForm":
       return <InsuranceDetailsForm {...commonProps} />;
-      
-    case 'PainEvaluationForm':
+
+    case "PainEvaluationForm":
       return (
         <PainEvaluationForm
           {...commonProps}
-          painEvaluations={initialData.painEvaluations || [{ painMap: {}, formData: {} }]}
+          painEvaluations={
+            initialData.painEvaluations || [{ painMap: {}, formData: {} }]
+          }
           setPainEvaluations={(evaluations) => {
             // Handle pain evaluations update if needed
-            console.log('Pain evaluations updated:', evaluations);
+    
           }}
           isLast={true}
         />
       );
-      
-    case 'DetailedDescriptionForm':
+
+    case "DetailedDescriptionForm":
       return <DetailedDescriptionForm {...commonProps} />;
-      
-    case 'WorkImpactForm':
+
+    case "WorkImpactForm":
       return <WorkImpactForm {...commonProps} />;
-      
-    case 'HealthConditionForm':
+
+    case "HealthConditionForm":
       return <HealthConditionForm {...commonProps} isLast={true} />;
-      
+
     default:
       // Fallback to full form if formType is not recognized
       return (
@@ -92,4 +97,4 @@ const TemplateFormRouter = ({
   }
 };
 
-export default TemplateFormRouter; 
+export default TemplateFormRouter;

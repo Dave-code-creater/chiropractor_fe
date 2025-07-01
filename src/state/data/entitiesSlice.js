@@ -1,7 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: { email: {}, allIds: [] },
   posts: { byId: {}, allIds: [] },
   comments: { byId: {}, allIds: [] },
 };
@@ -9,7 +8,11 @@ const initialState = {
 const entitiesSlice = createSlice({
   name: "entities",
   initialState,
-  reducers: {},
+  reducers: {
+    // Add any post or comment related reducers here
+  },
 });
+
+export const {} = entitiesSlice.actions;
 
 export default entitiesSlice.reducer;

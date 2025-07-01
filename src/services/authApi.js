@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth } from "./baseApi";
 import { setCredentials, logOut } from "../state/data/authSlice";
+import { setUserProfile, setUserDetails } from "../state/data/userSlice";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -16,44 +17,36 @@ export const authApi = createApi({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const { token, refreshToken, user } = data.metadata;
+          const { token, refreshToken, user } = data;
           
-          // Use server-provided user data from your specific response format
           if (user && token) {
-            dispatch(setCredentials({ 
-              user: {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-                firstName: user.firstName || user.username, // Use username as fallback for firstName
-                lastName: user.lastName || "", // Empty if not provided
-                role: user.role,
-                profileImage: user.profileImage
-              }, 
-              accessToken: token, 
-              refreshToken 
-            }));
-          } else {
-            // Fallback: If server doesn't provide user data, decode JWT
-            console.warn("Server didn't provide user data, falling back to JWT decoding");
-            const decoded = JSON.parse(atob(token.split(".")[1]));
-            const fallbackUser = {
-              id: decoded.sub,
-              email: decoded.email,
-              role: decoded.role,
-              username: decoded.username || decoded.email?.split('@')[0] || "",
-              firstName: decoded.firstName || decoded.username || "",
-              lastName: decoded.lastName || ""
+            dispatch(setCredentials({ user, token, refreshToken }));
+
+            if (user.profile) {
+              dispatch(setUserProfile(user.profile));
+            }
+            
+            const userDetails = {
+              id: user.id,
+              email: user.email,
+              username: user.username,
+              role: user.role,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              phone: user.phone,
+              is_verified: user.is_verified,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             };
-            dispatch(setCredentials({ user: fallbackUser, accessToken: token, refreshToken }));
+            dispatch(setUserDetails(userDetails));
           }
         } catch (error) {
-          console.error("Login error:", error);
+          // Login failed
         }
       },
       invalidatesTags: ["User"],
     }),
-    
+
     register: builder.mutation({
       query: (userData) => ({
         url: "auth/register",
@@ -63,44 +56,36 @@ export const authApi = createApi({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const { token, refreshToken, user } = data.metadata;
+          const { token, refreshToken, user } = data;
           
-          // Use server-provided user data from your specific response format
           if (user && token) {
-            dispatch(setCredentials({ 
-              user: {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-                firstName: user.firstName || user.username, // Use username as fallback for firstName
-                lastName: user.lastName || "", // Empty if not provided
-                role: user.role,
-                profileImage: user.profileImage
-              }, 
-              accessToken: token, 
-              refreshToken 
-            }));
-          } else {
-            // Fallback for backward compatibility
-            console.warn("Server didn't provide user data, falling back to JWT decoding");
-            const decoded = JSON.parse(atob(token.split(".")[1]));
-            const fallbackUser = {
-              id: decoded.sub,
-              email: decoded.email,
-              role: decoded.role,
-              username: decoded.username || decoded.email?.split('@')[0] || "",
-              firstName: decoded.firstName || decoded.username || "",
-              lastName: decoded.lastName || ""
+            dispatch(setCredentials({ user, token, refreshToken }));
+
+            if (user.profile) {
+              dispatch(setUserProfile(user.profile));
+            }
+            
+            const userDetails = {
+              id: user.id,
+              email: user.email,
+              username: user.username,
+              role: user.role,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              phone: user.phone,
+              is_verified: user.is_verified,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             };
-            dispatch(setCredentials({ user: fallbackUser, accessToken: token, refreshToken }));
+            dispatch(setUserDetails(userDetails));
           }
         } catch (error) {
-          console.error("Registration error:", error);
+          // Registration failed
         }
       },
       invalidatesTags: ["User"],
     }),
-    
+
     refreshToken: builder.mutation({
       query: () => ({
         url: "auth/refresh",
@@ -109,54 +94,74 @@ export const authApi = createApi({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const { token, refreshToken, user } = data.metadata;
+          const { token, refreshToken, user } = data;
           
-          // Use server-provided user data from your specific response format
           if (user && token) {
-            dispatch(setCredentials({ 
-              user: {
-                id: user.id,
-                email: user.email,
-                username: user.username,
-                firstName: user.firstName || user.username, // Use username as fallback for firstName
-                lastName: user.lastName || "", // Empty if not provided
-                role: user.role,
-                profileImage: user.profileImage
-              }, 
-              accessToken: token, 
-              refreshToken 
-            }));
-          } else {
-            // Fallback for backward compatibility
-            console.warn("Server didn't provide user data, falling back to JWT decoding");
-            const decoded = JSON.parse(atob(token.split(".")[1]));
-            const fallbackUser = {
-              id: decoded.sub,
-              email: decoded.email,
-              role: decoded.role,
-              username: decoded.username || decoded.email?.split('@')[0] || "",
-              firstName: decoded.firstName || decoded.username || "",
-              lastName: decoded.lastName || ""
+            dispatch(setCredentials({ user, token, refreshToken }));
+
+            if (user.profile) {
+              dispatch(setUserProfile(user.profile));
+            }
+            
+            const userDetails = {
+              id: user.id,
+              email: user.email,
+              username: user.username,
+              role: user.role,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              phone: user.phone,
+              is_verified: user.is_verified,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
             };
-            dispatch(setCredentials({ user: fallbackUser, accessToken: token, refreshToken }));
+            dispatch(setUserDetails(userDetails));
           }
         } catch (error) {
-          console.error("Token refresh error:", error);
           dispatch(logOut());
         }
       },
       invalidatesTags: ["User"],
     }),
-    
+
     // Get current user profile (alternative secure approach)
     getCurrentUser: builder.query({
       query: () => ({
         url: "auth/me",
         method: "GET",
       }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          
+          if (data && data.user) {
+            const { user } = data;
+            
+            if (user.profile) {
+              dispatch(setUserProfile(user.profile));
+            }
+            
+            const userDetails = {
+              id: user.id,
+              email: user.email,
+              username: user.username,
+              role: user.role,
+              first_name: user.first_name,
+              last_name: user.last_name,
+              phone: user.phone,
+              is_verified: user.is_verified,
+              created_at: user.created_at,
+              updated_at: user.updated_at,
+            };
+            dispatch(setUserDetails(userDetails));
+          }
+        } catch (error) {
+          // Failed to get current user
+        }
+      },
       providesTags: ["User"],
     }),
-    
+
     logout: builder.mutation({
       query: (userId) => ({
         url: "auth/logout",
@@ -171,6 +176,8 @@ export const authApi = createApi({
           await queryFulfilled;
         } finally {
           dispatch(logOut());
+          const { clearUserData } = await import('../state/data/userSlice');
+          dispatch(clearUserData());
         }
       },
       invalidatesTags: ["User"],

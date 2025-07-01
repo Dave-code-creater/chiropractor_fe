@@ -9,8 +9,9 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from 'redux-persist';
+} from "redux-persist";
 import authReducer from "../state/data/authSlice";
+import userReducer from "../state/data/userSlice";
 import entitiesReducer from "../state/data/entitiesSlice";
 import settingsReducer from "../state/data/settingsSlice";
 import uiStateReducer from "../state/data/uiStateSlice";
@@ -32,12 +33,14 @@ import { blogApi } from "../services/blogApi";
 import { appointmentApi } from "../services/appointmentApi";
 import { chatApi } from "../services/chatApi";
 import { clinicalNotesApi } from "../services/clinicalNotesApi";
+import { profileApi } from "../services/profileApi";
+import { userApi } from "../services/userApi";
 
 // Enhanced persist config for better performance
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["data"],
+  whitelist: ["auth", "entities", "forms", "ui", "settings", "uiState"],
   version: 1,
   migrate: (state) => {
     return Promise.resolve(state);
@@ -45,16 +48,18 @@ const persistConfig = {
   throttle: 500, // Reduced throttle for better responsiveness
   serialize: true,
   writeFailHandler: (err) => {
-    console.warn('Redux persist write failed:', err);
+    console.warn("Redux persist write failed:", err);
   },
 };
 
 const rootReducer = combineReducers({
-  data: combineReducers({
-    auth: authReducer,
-    entities: entitiesReducer,
-    settings: settingsReducer,
-    uiState: uiStateReducer,
+  auth: authReducer,
+  settings: settingsReducer,
+  uiState: uiStateReducer,
+  entities: combineReducers({
+    user: userReducer,
+    posts: entitiesReducer.posts || { byId: {}, allIds: [] },
+    comments: entitiesReducer.comments || { byId: {}, allIds: [] },
   }),
   forms: combineReducers({
     loginForm: loginFormReducer,
@@ -76,274 +81,52 @@ const rootReducer = combineReducers({
   [appointmentApi.reducerPath]: appointmentApi.reducer,
   [chatApi.reducerPath]: chatApi.reducer,
   [clinicalNotesApi.reducerPath]: clinicalNotesApi.reducer,
+  [profileApi.reducerPath]: profileApi.reducer,
+  [userApi.reducerPath]: userApi.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+// Enhanced store configuration with performance monitoring
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
+  middleware: (getDefaultMiddleware) => {
+    const middleware = getDefaultMiddleware({
       serializableCheck: {
-        // Ignore these action types from Redux Persist
-        ignoredActions: [
-          FLUSH,
-          REHYDRATE,
-          PAUSE,
-          PERSIST,
-          PURGE,
-          REGISTER,
-          // Also ignore RTK Query actions
-          "api/executeQuery/pending",
-          "api/executeQuery/fulfilled", 
-          "api/executeQuery/rejected",
-          "api/executeMutation/pending",
-          "api/executeMutation/fulfilled",
-          "api/executeMutation/rejected",
-          // Auth API specific actions
-          "authApi/executeQuery/pending",
-          "authApi/executeQuery/fulfilled",
-          "authApi/executeQuery/rejected",
-          "authApi/executeMutation/pending", 
-          "authApi/executeMutation/fulfilled",
-          "authApi/executeMutation/rejected",
-        ],
-        // Ignore these field paths in all actions
-        ignoredActionsPaths: [
-          'meta.arg', 
-          'payload.timestamp',
-          'register',
-          'rehydrate'
-        ],
-        // Ignore these paths in the state
-        ignoredPaths: [
-          'items.dates',
-          'register',
-          'rehydrate'
-        ],
-        warnAfter: 64, // Reduced warning threshold for better monitoring
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+        // Performance: Warn about large serialization times
+        warnAfter: 64, // Reduced from 128ms for better monitoring
       },
       immutableCheck: {
-        warnAfter: 64, // Reduced warning threshold
-        // Ignore these paths for immutability checks
-        ignoredPaths: ['register', 'rehydrate'],
+        warnAfter: 64, // Reduced from 128ms for better monitoring
       },
-      // Enhanced timing configuration
-      timing: {
-        enabled: process.env.NODE_ENV === 'development',
-        warnAfter: 32, // Warn after 32ms
-      },
-    })
-    .concat(
+    }).concat(
       authApi.middleware,
       reportApi.middleware,
       blogApi.middleware,
       appointmentApi.middleware,
       chatApi.middleware,
-      clinicalNotesApi.middleware
-    ),
-  devTools: process.env.NODE_ENV !== "production" && {
-    name: "ChiroCare App",
-    trace: true,
-    traceLimit: 25,
-    maxAge: 50,
-    // Serialize state snapshots for better debugging
-    serialize: {
-      options: {
-        undefined: true,
-        function: true,
-      },
-    },
-    // Enhanced action sanitization
-    actionSanitizer: (action) => ({
-      ...action,
-      type: action.type,
-      payload: action.payload && typeof action.payload === 'object' 
-        ? { ...action.payload, timestamp: '[SANITIZED]' }
-        : action.payload
-    }),
-    stateSanitizer: (state) => ({
-      ...state,
-      // Remove large objects from dev tools
-      api: '[API_STATE_SANITIZED]',
-    }),
+      clinicalNotesApi.middleware,
+      profileApi.middleware,
+      userApi.middleware
+    );
+
+
+
+    return middleware;
   },
-  enhancers: (getDefaultEnhancers) =>
-    getDefaultEnhancers({
-      autoBatch: { type: 'tick' },
-    }),
 });
 
-export const persistor = persistStore(store);
-
+// Setup listeners for RTK Query
 setupListeners(store.dispatch);
 
-// Enhanced performance monitoring
-if (process.env.NODE_ENV === 'development') {
-  let lastTime = performance.now();
-  let updateCount = 0;
-  let slowUpdates = [];
-  
-  // Performance monitoring with better analytics
-  const performanceMonitor = () => {
-    const currentTime = performance.now();
-    const timeDiff = currentTime - lastTime;
-    updateCount++;
-    
-    // Track slow updates for analysis
-    if (timeDiff > 32) { // Lowered threshold to 32ms for better monitoring
-      slowUpdates.push({
-        updateNumber: updateCount,
-        duration: timeDiff,
-        timestamp: new Date().toISOString()
-      });
-      
-      console.warn(`⚠️ Slow state update #${updateCount}: ${timeDiff.toFixed(2)}ms`);
-      
-      // Keep only last 10 slow updates
-      if (slowUpdates.length > 10) {
-        slowUpdates = slowUpdates.slice(-10);
-      }
-    }
-    
-    // Log performance summary every 100 updates
-    if (updateCount % 100 === 0) {
-      const avgSlowUpdate = slowUpdates.length > 0 
-        ? slowUpdates.reduce((sum, update) => sum + update.duration, 0) / slowUpdates.length
-        : 0;
-      
-      console.log(`📊 Performance Summary (${updateCount} updates):`, {
-        slowUpdates: slowUpdates.length,
-        averageSlowUpdate: avgSlowUpdate.toFixed(2) + 'ms',
-        lastSlowUpdate: slowUpdates[slowUpdates.length - 1]
-      });
-    }
-    
-    lastTime = currentTime;
-  };
-  
-  // Debounced subscription to reduce overhead
-  let timeoutId;
-  store.subscribe(() => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(performanceMonitor, 5); // Reduced debounce time
-  });
-  
-  // Expose performance utilities globally for debugging
-  window.storePerformance = {
-    getSlowUpdates: () => slowUpdates,
-    resetMetrics: () => {
-      slowUpdates = [];
-      updateCount = 0;
-      lastTime = performance.now();
-    },
-    getCacheStats: () => cacheActions.getCacheStats(),
-    checkSerializability: () => cacheActions.checkSerializability(),
-  };
-}
+// Create persistor
+export const persistor = persistStore(store);
 
-export const cacheActions = {
-  clearAllApiCache: () => {
-    store.dispatch(authApi.util.resetApiState());
-    store.dispatch(reportApi.util.resetApiState());
-    store.dispatch(blogApi.util.resetApiState());
-    store.dispatch(appointmentApi.util.resetApiState());
-    store.dispatch(chatApi.util.resetApiState());
-    store.dispatch(clinicalNotesApi.util.resetApiState());
-  },
-  
-  prefetchCommonData: () => {
-    // Prefetch critical data
-    store.dispatch(authApi.endpoints.validateToken?.initiate?.() || { type: 'NOOP' });
-    // Add other common data prefetching as needed
-  },
-  
-  invalidateTag: (api, tag) => {
-    store.dispatch(api.util.invalidateTags([tag]));
-  },
-  
-  getCacheStats: () => {
-    const state = store.getState();
-    const stats = {};
-    
-    Object.keys(state).forEach(key => {
-      if (key.endsWith('Api')) {
-        const apiState = state[key];
-        if (apiState.queries) {
-          stats[key] = {
-            queries: Object.keys(apiState.queries).length,
-            mutations: Object.keys(apiState.mutations || {}).length,
-          };
-        }
-      }
-    });
-    
-    return stats;
-  },
-  
-  // Enhanced serializability checker
-  checkSerializability: () => {
-    const state = store.getState();
-    const nonSerializable = [];
-    
-    const checkValue = (value, path = '') => {
-      if (typeof value === 'function') {
-        nonSerializable.push(`Function at ${path}`);
-      } else if (value instanceof Date) {
-        nonSerializable.push(`Date at ${path}`);
-      } else if (value instanceof RegExp) {
-        nonSerializable.push(`RegExp at ${path}`);
-      } else if (value && typeof value === 'object') {
-        // Limit depth to prevent infinite recursion
-        if (path.split('.').length < 10) {
-          Object.keys(value).forEach(key => {
-            checkValue(value[key], `${path}.${key}`);
-          });
-        }
-      }
-    };
-    
-    checkValue(state);
-    return nonSerializable;
-  },
-  
-  // New: Optimize state structure
-  optimizeState: () => {
-    const state = store.getState();
-    const recommendations = [];
-    
-    // Check for large objects
-    const checkSize = (obj, path = '') => {
-      if (obj && typeof obj === 'object') {
-        const size = JSON.stringify(obj).length;
-        if (size > 50000) { // 50KB threshold
-          recommendations.push(`Large object (${(size/1000).toFixed(1)}KB) at ${path}`);
-        }
-      }
-    };
-    
-    Object.keys(state).forEach(key => {
-      checkSize(state[key], key);
-    });
-    
-    return recommendations;
-  }
-};
-
-// Prefetch common data after initial load with retry logic
+// Make store globally accessible for token refresh
 if (typeof window !== 'undefined') {
-  const prefetchWithRetry = (retries = 3) => {
-    try {
-      cacheActions.prefetchCommonData();
-    } catch (error) {
-      if (retries > 0) {
-        console.warn('Prefetch failed, retrying...', error);
-        setTimeout(() => prefetchWithRetry(retries - 1), 1000);
-      }
-    }
-  };
-  
-  setTimeout(prefetchWithRetry, 1000); // Reduced initial delay
+  window.__REDUX_STORE__ = store;
 }
 
+// Export for direct access in utilities
 export default store;

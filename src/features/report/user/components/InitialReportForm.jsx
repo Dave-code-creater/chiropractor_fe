@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Accordion, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Trash2 as TrashIcon } from "lucide-react";
 
@@ -58,12 +62,19 @@ const forms = [
   },
 ];
 
-export default function InitialReportForm({ onSubmit, initialData = {}, onBack, onDelete }) {
+export default function InitialReportForm({
+  onSubmit,
+  initialData = {},
+  onBack,
+  onDelete,
+}) {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [sectionsData, setSectionsData] = useState({
     patientIntake: initialData.patientIntake || {},
     insuranceDetails: initialData.insuranceDetails || {},
-    painDescriptions: initialData.painEvaluations || [{ painMap: {}, formData: {} }],
+    painDescriptions: initialData.painEvaluations || [
+      { painMap: {}, formData: {} },
+    ],
     detailsDescriptions: initialData.detailsDescriptions || {},
     workImpact: initialData.workImpact || {},
     healthConditions: initialData.healthConditions || {},
@@ -90,7 +101,9 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
       setSectionsData({
         patientIntake: fetchedData.patientIntake || {},
         insuranceDetails: fetchedData.insuranceDetails || {},
-        painDescriptions: fetchedData.painDescriptions || [{ painMap: {}, formData: {} }],
+        painDescriptions: fetchedData.painDescriptions || [
+          { painMap: {}, formData: {} },
+        ],
         detailsDescriptions: fetchedData.detailsDescriptions || {},
         workImpact: fetchedData.workImpact || {},
         healthConditions: fetchedData.healthConditions || {},
@@ -121,7 +134,10 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
     const { key } = forms[currentSectionIndex];
     const isLast = currentSectionIndex === forms.length - 1;
 
-    setSectionsData((prev) => ({ ...prev, [key]: { ...(prev[key] || {}), ...data } }));
+    setSectionsData((prev) => ({
+      ...prev,
+      [key]: { ...(prev[key] || {}), ...data },
+    }));
 
     try {
       const existing = sectionsData[key];
@@ -185,7 +201,12 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
       )}
       <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full pt-16 px-8">
         <h2 className="text-lg font-semibold mb-4">Initial Reports</h2>
-        <Accordion type="single" collapsible className="space-y-2" value={forms[currentSectionIndex].title}>
+        <Accordion
+          type="single"
+          collapsible
+          className="space-y-2"
+          value={forms[currentSectionIndex].title}
+        >
           {forms.map((section) => (
             <AccordionItem key={section.key} value={section.title}>
               <AccordionTrigger className="text-sm font-medium">
@@ -199,10 +220,16 @@ export default function InitialReportForm({ onSubmit, initialData = {}, onBack, 
         <Component
           initialData={sectionsData[forms[currentSectionIndex].key]}
           onSubmit={handleSectionSubmit}
-          onBack={currentSectionIndex > 0 ? () => setCurrentSectionIndex((i) => i - 1) : null}
+          onBack={
+            currentSectionIndex > 0
+              ? () => setCurrentSectionIndex((i) => i - 1)
+              : null
+          }
           isLast={currentSectionIndex === forms.length - 1}
           painEvaluations={painEvaluations}
-          setPainEvaluations={(val) => setSectionsData((prev) => ({ ...prev, painDescriptions: val }))}
+          setPainEvaluations={(val) =>
+            setSectionsData((prev) => ({ ...prev, painDescriptions: val }))
+          }
           reportName={reportName}
           setReportName={setReportName}
           editingName={editingName}

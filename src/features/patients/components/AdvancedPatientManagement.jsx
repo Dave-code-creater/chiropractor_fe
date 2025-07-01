@@ -1,19 +1,35 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { toast } from 'sonner';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner";
 import {
   User,
   Search,
@@ -43,198 +59,200 @@ import {
   Star,
   Flag,
   Users,
-  BarChart3
-} from 'lucide-react';
-import { format } from 'date-fns';
-import TutorialLauncher from '@/components/tutorial/TutorialLauncher';
+  BarChart3,
+} from "lucide-react";
+import { format } from "date-fns";
+import TutorialLauncher from "@/components/tutorial/TutorialLauncher";
 
 const AdvancedPatientManagement = () => {
   const [patients, setPatients] = useState([]);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterDoctor, setFilterDoctor] = useState('all');
-  const [sortBy, setSortBy] = useState('name');
-  const [viewMode, setViewMode] = useState('grid');
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
+  const [filterDoctor, setFilterDoctor] = useState("all");
+  const [sortBy, setSortBy] = useState("name");
+  const [viewMode, setViewMode] = useState("grid");
   const [isLoading, setIsLoading] = useState(false);
 
   // Sample patient data with comprehensive information
   const [samplePatients] = useState([
     {
-      id: 'PAT-001',
-      firstName: 'John',
-      lastName: 'Smith',
-      email: 'john.smith@email.com',
-      phone: '+1-555-0123',
-      dateOfBirth: '1978-05-15',
+      id: "PAT-001",
+      firstName: "John",
+      lastName: "Smith",
+      email: "john.smith@email.com",
+      phone: "+1-555-0123",
+      dateOfBirth: "1978-05-15",
       age: 45,
-      gender: 'Male',
-      status: 'active',
-      priority: 'high',
-      assignedDoctor: 'Dr. Johnson',
+      gender: "Male",
+      status: "active",
+      priority: "high",
+      assignedDoctor: "Dr. Johnson",
       avatar: null,
       address: {
-        street: '123 Main St',
-        city: 'New York',
-        state: 'NY',
-        zip: '10001'
+        street: "123 Main St",
+        city: "New York",
+        state: "NY",
+        zip: "10001",
       },
       emergencyContact: {
-        name: 'Jane Smith',
-        relationship: 'Spouse',
-        phone: '+1-555-0124'
+        name: "Jane Smith",
+        relationship: "Spouse",
+        phone: "+1-555-0124",
       },
       insurance: {
-        provider: 'Blue Cross Blue Shield',
-        policyNumber: 'BC123456789',
-        groupNumber: 'GRP001',
-        copay: 25
+        provider: "Blue Cross Blue Shield",
+        policyNumber: "BC123456789",
+        groupNumber: "GRP001",
+        copay: 25,
       },
       medicalInfo: {
-        allergies: ['Penicillin', 'Shellfish'],
-        medications: ['Ibuprofen 400mg', 'Vitamin D'],
-        chronicConditions: ['Chronic Lower Back Pain', 'Hypertension'],
+        allergies: ["Penicillin", "Shellfish"],
+        medications: ["Ibuprofen 400mg", "Vitamin D"],
+        chronicConditions: ["Chronic Lower Back Pain", "Hypertension"],
         surgeries: [
-          { procedure: 'Appendectomy', date: '2010-03-15' },
-          { procedure: 'Knee Arthroscopy', date: '2018-08-22' }
+          { procedure: "Appendectomy", date: "2010-03-15" },
+          { procedure: "Knee Arthroscopy", date: "2018-08-22" },
         ],
-        familyHistory: ['Diabetes (Father)', 'Heart Disease (Mother)']
+        familyHistory: ["Diabetes (Father)", "Heart Disease (Mother)"],
       },
       treatmentHistory: [
         {
-          id: 'TRT-001',
-          date: '2025-01-15',
-          type: 'Chiropractic Adjustment',
-          provider: 'Dr. Johnson',
-          notes: 'Significant improvement in mobility',
+          id: "TRT-001",
+          date: "2025-01-15",
+          type: "Chiropractic Adjustment",
+          provider: "Dr. Johnson",
+          notes: "Significant improvement in mobility",
           painLevel: 3,
-          outcome: 'Improved'
+          outcome: "Improved",
         },
         {
-          id: 'TRT-002',
-          date: '2025-01-10',
-          type: 'Physical Therapy',
-          provider: 'Dr. Johnson',
-          notes: 'Patient responding well to treatment',
+          id: "TRT-002",
+          date: "2025-01-10",
+          type: "Physical Therapy",
+          provider: "Dr. Johnson",
+          notes: "Patient responding well to treatment",
           painLevel: 5,
-          outcome: 'Stable'
-        }
+          outcome: "Stable",
+        },
       ],
       vitals: {
-        height: '5\'10"',
-        weight: '180 lbs',
-        bloodPressure: '130/85',
+        height: "5'10\"",
+        weight: "180 lbs",
+        bloodPressure: "130/85",
         heartRate: 72,
-        temperature: '98.6°F',
-        lastUpdated: '2025-01-18'
+        temperature: "98.6°F",
+        lastUpdated: "2025-01-18",
       },
       alerts: [
         {
-          id: 'ALT-001',
-          type: 'medical',
-          priority: 'high',
-          message: 'Penicillin allergy - avoid prescribing',
-          createdDate: '2025-01-01'
+          id: "ALT-001",
+          type: "medical",
+          priority: "high",
+          message: "Penicillin allergy - avoid prescribing",
+          createdDate: "2025-01-01",
         },
         {
-          id: 'ALT-002',
-          type: 'appointment',
-          priority: 'medium',
-          message: 'Due for follow-up appointment',
-          createdDate: '2025-01-18'
-        }
+          id: "ALT-002",
+          type: "appointment",
+          priority: "medium",
+          message: "Due for follow-up appointment",
+          createdDate: "2025-01-18",
+        },
       ],
       statistics: {
         totalVisits: 15,
         missedAppointments: 2,
         averagePainLevel: 4.2,
         treatmentCompliance: 85,
-        lastVisit: '2025-01-15',
-        nextAppointment: '2025-01-22'
+        lastVisit: "2025-01-15",
+        nextAppointment: "2025-01-22",
       },
-      flags: ['High Priority', 'Chronic Pain'],
-      notes: 'Patient is very compliant with treatment plan. Responds well to chiropractic adjustments.',
-      createdDate: '2024-06-15',
-      lastUpdated: '2025-01-18'
+      flags: ["High Priority", "Chronic Pain"],
+      notes:
+        "Patient is very compliant with treatment plan. Responds well to chiropractic adjustments.",
+      createdDate: "2024-06-15",
+      lastUpdated: "2025-01-18",
     },
     {
-      id: 'PAT-002',
-      firstName: 'Sarah',
-      lastName: 'Johnson',
-      email: 'sarah.johnson@email.com',
-      phone: '+1-555-0125',
-      dateOfBirth: '1992-08-22',
+      id: "PAT-002",
+      firstName: "Sarah",
+      lastName: "Johnson",
+      email: "sarah.johnson@email.com",
+      phone: "+1-555-0125",
+      dateOfBirth: "1992-08-22",
       age: 32,
-      gender: 'Female',
-      status: 'active',
-      priority: 'medium',
-      assignedDoctor: 'Dr. Smith',
+      gender: "Female",
+      status: "active",
+      priority: "medium",
+      assignedDoctor: "Dr. Smith",
       avatar: null,
       address: {
-        street: '456 Oak Ave',
-        city: 'Los Angeles',
-        state: 'CA',
-        zip: '90210'
+        street: "456 Oak Ave",
+        city: "Los Angeles",
+        state: "CA",
+        zip: "90210",
       },
       emergencyContact: {
-        name: 'Mike Johnson',
-        relationship: 'Brother',
-        phone: '+1-555-0126'
+        name: "Mike Johnson",
+        relationship: "Brother",
+        phone: "+1-555-0126",
       },
       insurance: {
-        provider: 'Aetna',
-        policyNumber: 'AET987654321',
-        groupNumber: 'GRP002',
-        copay: 30
+        provider: "Aetna",
+        policyNumber: "AET987654321",
+        groupNumber: "GRP002",
+        copay: 30,
       },
       medicalInfo: {
-        allergies: ['Latex'],
-        medications: ['Birth Control', 'Multivitamin'],
-        chronicConditions: ['Migraines', 'Anxiety'],
+        allergies: ["Latex"],
+        medications: ["Birth Control", "Multivitamin"],
+        chronicConditions: ["Migraines", "Anxiety"],
         surgeries: [],
-        familyHistory: ['Migraines (Mother)', 'Anxiety (Sister)']
+        familyHistory: ["Migraines (Mother)", "Anxiety (Sister)"],
       },
       treatmentHistory: [
         {
-          id: 'TRT-003',
-          date: '2025-01-12',
-          type: 'Initial Consultation',
-          provider: 'Dr. Smith',
-          notes: 'Comprehensive evaluation for chronic headaches',
+          id: "TRT-003",
+          date: "2025-01-12",
+          type: "Initial Consultation",
+          provider: "Dr. Smith",
+          notes: "Comprehensive evaluation for chronic headaches",
           painLevel: 7,
-          outcome: 'Assessment Complete'
-        }
+          outcome: "Assessment Complete",
+        },
       ],
       vitals: {
-        height: '5\'6"',
-        weight: '135 lbs',
-        bloodPressure: '115/75',
+        height: "5'6\"",
+        weight: "135 lbs",
+        bloodPressure: "115/75",
         heartRate: 68,
-        temperature: '98.4°F',
-        lastUpdated: '2025-01-12'
+        temperature: "98.4°F",
+        lastUpdated: "2025-01-12",
       },
       alerts: [
         {
-          id: 'ALT-003',
-          type: 'medical',
-          priority: 'medium',
-          message: 'Latex allergy - use non-latex gloves',
-          createdDate: '2025-01-01'
-        }
+          id: "ALT-003",
+          type: "medical",
+          priority: "medium",
+          message: "Latex allergy - use non-latex gloves",
+          createdDate: "2025-01-01",
+        },
       ],
       statistics: {
         totalVisits: 3,
         missedAppointments: 0,
         averagePainLevel: 6.5,
         treatmentCompliance: 95,
-        lastVisit: '2025-01-12',
-        nextAppointment: '2025-01-25'
+        lastVisit: "2025-01-12",
+        nextAppointment: "2025-01-25",
       },
-      flags: ['New Patient', 'Migraine Specialist'],
-      notes: 'New patient with chronic migraines. Very motivated to find relief.',
-      createdDate: '2024-12-15',
-      lastUpdated: '2025-01-12'
-    }
+      flags: ["New Patient", "Migraine Specialist"],
+      notes:
+        "New patient with chronic migraines. Very motivated to find relief.",
+      createdDate: "2024-12-15",
+      lastUpdated: "2025-01-12",
+    },
   ]);
 
   useEffect(() => {
@@ -243,30 +261,36 @@ const AdvancedPatientManagement = () => {
 
   // Filter and search patients
   const filteredPatients = useMemo(() => {
-    return patients.filter(patient => {
-      const matchesSearch = 
-        patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        patient.phone.includes(searchQuery);
+    return patients
+      .filter((patient) => {
+        const matchesSearch =
+          patient.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          patient.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          patient.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          patient.phone.includes(searchQuery);
 
-      const matchesStatus = filterStatus === 'all' || patient.status === filterStatus;
-      const matchesDoctor = filterDoctor === 'all' || patient.assignedDoctor === filterDoctor;
+        const matchesStatus =
+          filterStatus === "all" || patient.status === filterStatus;
+        const matchesDoctor =
+          filterDoctor === "all" || patient.assignedDoctor === filterDoctor;
 
-      return matchesSearch && matchesStatus && matchesDoctor;
-    }).sort((a, b) => {
-      switch (sortBy) {
-        case 'name':
-          return `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`);
-        case 'date':
-          return new Date(b.lastUpdated) - new Date(a.lastUpdated);
-        case 'priority':
-          const priorityOrder = { high: 3, medium: 2, low: 1 };
-          return priorityOrder[b.priority] - priorityOrder[a.priority];
-        default:
-          return 0;
-      }
-    });
+        return matchesSearch && matchesStatus && matchesDoctor;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "name":
+            return `${a.firstName} ${a.lastName}`.localeCompare(
+              `${b.firstName} ${b.lastName}`,
+            );
+          case "date":
+            return new Date(b.lastUpdated) - new Date(a.lastUpdated);
+          case "priority":
+            const priorityOrder = { high: 3, medium: 2, low: 1 };
+            return priorityOrder[b.priority] - priorityOrder[a.priority];
+          default:
+            return 0;
+        }
+      });
   }, [patients, searchQuery, filterStatus, filterDoctor, sortBy]);
 
   const handlePatientSelect = (patient) => {
@@ -274,35 +298,40 @@ const AdvancedPatientManagement = () => {
   };
 
   const handlePatientUpdate = (updatedPatient) => {
-    setPatients(prev => prev.map(p => p.id === updatedPatient.id ? updatedPatient : p));
+    setPatients((prev) =>
+      prev.map((p) => (p.id === updatedPatient.id ? updatedPatient : p)),
+    );
     setSelectedPatient(updatedPatient);
-    toast.success('Patient information updated successfully');
+    toast.success("Patient information updated successfully");
   };
 
   const handleAddAlert = (patientId, alert) => {
     const newAlert = {
       ...alert,
       id: `ALT-${Date.now()}`,
-      createdDate: new Date().toISOString().split('T')[0]
+      createdDate: new Date().toISOString().split("T")[0],
     };
-    
-    setPatients(prev => prev.map(p => 
-      p.id === patientId 
-        ? { ...p, alerts: [...p.alerts, newAlert] }
-        : p
-    ));
-    
+
+    setPatients((prev) =>
+      prev.map((p) =>
+        p.id === patientId ? { ...p, alerts: [...p.alerts, newAlert] } : p,
+      ),
+    );
+
     if (selectedPatient && selectedPatient.id === patientId) {
-      setSelectedPatient(prev => ({ ...prev, alerts: [...prev.alerts, newAlert] }));
+      setSelectedPatient((prev) => ({
+        ...prev,
+        alerts: [...prev.alerts, newAlert],
+      }));
     }
-    
-    toast.success('Alert added successfully');
+
+    toast.success("Alert added successfully");
   };
 
   const PatientCard = ({ patient }) => (
-    <Card 
+    <Card
       className={`cursor-pointer transition-all hover:shadow-md ${
-        selectedPatient?.id === patient.id ? 'ring-2 ring-blue-500' : ''
+        selectedPatient?.id === patient.id ? "ring-2 ring-blue-500" : ""
       }`}
       onClick={() => handlePatientSelect(patient)}
     >
@@ -312,7 +341,8 @@ const AdvancedPatientManagement = () => {
             <Avatar className="h-12 w-12">
               <AvatarImage src={patient.avatar} />
               <AvatarFallback className="bg-blue-100 text-blue-600">
-                {patient.firstName[0]}{patient.lastName[0]}
+                {patient.firstName[0]}
+                {patient.lastName[0]}
               </AvatarFallback>
             </Avatar>
             <div>
@@ -327,15 +357,18 @@ const AdvancedPatientManagement = () => {
             </div>
           </div>
           <div className="flex flex-col items-end space-y-1">
-            <Badge 
-              variant={patient.status === 'active' ? 'default' : 'secondary'}
+            <Badge
+              variant={patient.status === "active" ? "default" : "secondary"}
             >
               {patient.status}
             </Badge>
-            <Badge 
+            <Badge
               variant={
-                patient.priority === 'high' ? 'destructive' :
-                patient.priority === 'medium' ? 'default' : 'secondary'
+                patient.priority === "high"
+                  ? "destructive"
+                  : patient.priority === "medium"
+                    ? "default"
+                    : "secondary"
               }
             >
               {patient.priority}
@@ -361,12 +394,13 @@ const AdvancedPatientManagement = () => {
             <div className="flex items-center space-x-1 mt-2">
               <AlertTriangle className="h-4 w-4 text-yellow-500" />
               <span className="text-sm text-yellow-600">
-                {patient.alerts.length} alert{patient.alerts.length !== 1 ? 's' : ''}
+                {patient.alerts.length} alert
+                {patient.alerts.length !== 1 ? "s" : ""}
               </span>
             </div>
           )}
           <div className="flex flex-wrap gap-1 mt-2">
-            {patient.flags.slice(0, 2).map(flag => (
+            {patient.flags.slice(0, 2).map((flag) => (
               <Badge key={flag} variant="outline" className="text-xs">
                 {flag}
               </Badge>
@@ -378,9 +412,9 @@ const AdvancedPatientManagement = () => {
   );
 
   const PatientListItem = ({ patient }) => (
-    <div 
+    <div
       className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${
-        selectedPatient?.id === patient.id ? 'bg-blue-50 border-blue-200' : ''
+        selectedPatient?.id === patient.id ? "bg-blue-50 border-blue-200" : ""
       }`}
       onClick={() => handlePatientSelect(patient)}
     >
@@ -389,7 +423,8 @@ const AdvancedPatientManagement = () => {
           <Avatar className="h-10 w-10">
             <AvatarImage src={patient.avatar} />
             <AvatarFallback className="bg-blue-100 text-blue-600">
-              {patient.firstName[0]}{patient.lastName[0]}
+              {patient.firstName[0]}
+              {patient.lastName[0]}
             </AvatarFallback>
           </Avatar>
           <div>
@@ -407,13 +442,18 @@ const AdvancedPatientManagement = () => {
           {patient.alerts.length > 0 && (
             <AlertTriangle className="h-4 w-4 text-yellow-500" />
           )}
-          <Badge variant={patient.status === 'active' ? 'default' : 'secondary'}>
+          <Badge
+            variant={patient.status === "active" ? "default" : "secondary"}
+          >
             {patient.status}
           </Badge>
-          <Badge 
+          <Badge
             variant={
-              patient.priority === 'high' ? 'destructive' :
-              patient.priority === 'medium' ? 'default' : 'secondary'
+              patient.priority === "high"
+                ? "destructive"
+                : patient.priority === "medium"
+                  ? "default"
+                  : "secondary"
             }
           >
             {patient.priority}
@@ -424,8 +464,12 @@ const AdvancedPatientManagement = () => {
   );
 
   const PatientDetails = ({ patient }) => {
-    const [activeTab, setActiveTab] = useState('overview');
-    const [newAlert, setNewAlert] = useState({ type: 'medical', priority: 'medium', message: '' });
+    const [activeTab, setActiveTab] = useState("overview");
+    const [newAlert, setNewAlert] = useState({
+      type: "medical",
+      priority: "medium",
+      message: "",
+    });
 
     if (!patient) {
       return (
@@ -448,7 +492,8 @@ const AdvancedPatientManagement = () => {
               <Avatar className="h-16 w-16">
                 <AvatarImage src={patient.avatar} />
                 <AvatarFallback className="bg-blue-100 text-blue-600 text-xl">
-                  {patient.firstName[0]}{patient.lastName[0]}
+                  {patient.firstName[0]}
+                  {patient.lastName[0]}
                 </AvatarFallback>
               </Avatar>
               <div>
@@ -456,7 +501,9 @@ const AdvancedPatientManagement = () => {
                   {patient.firstName} {patient.lastName}
                 </CardTitle>
                 <CardDescription className="flex items-center space-x-4 text-base">
-                  <span>{patient.age} years old • {patient.gender}</span>
+                  <span>
+                    {patient.age} years old • {patient.gender}
+                  </span>
                   <span>Patient ID: {patient.id}</span>
                 </CardDescription>
               </div>
@@ -492,7 +539,9 @@ const AdvancedPatientManagement = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Contact Information</CardTitle>
+                    <CardTitle className="text-lg">
+                      Contact Information
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-center space-x-3">
@@ -506,13 +555,16 @@ const AdvancedPatientManagement = () => {
                     <div className="flex items-center space-x-3">
                       <MapPin className="h-4 w-4 text-gray-500" />
                       <span>
-                        {patient.address.street}, {patient.address.city}, {patient.address.state} {patient.address.zip}
+                        {patient.address.street}, {patient.address.city},{" "}
+                        {patient.address.state} {patient.address.zip}
                       </span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <User className="h-4 w-4 text-gray-500" />
                       <span>
-                        Emergency: {patient.emergencyContact.name} ({patient.emergencyContact.relationship}) - {patient.emergencyContact.phone}
+                        Emergency: {patient.emergencyContact.name} (
+                        {patient.emergencyContact.relationship}) -{" "}
+                        {patient.emergencyContact.phone}
                       </span>
                     </div>
                   </CardContent>
@@ -520,33 +572,48 @@ const AdvancedPatientManagement = () => {
 
                 <Card>
                   <CardHeader>
-                    <CardTitle className="text-lg">Care Team & Status</CardTitle>
+                    <CardTitle className="text-lg">
+                      Care Team & Status
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Assigned Doctor</span>
+                      <span className="text-sm text-gray-600">
+                        Assigned Doctor
+                      </span>
                       <Badge variant="outline">{patient.assignedDoctor}</Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Status</span>
-                      <Badge variant={patient.status === 'active' ? 'default' : 'secondary'}>
+                      <Badge
+                        variant={
+                          patient.status === "active" ? "default" : "secondary"
+                        }
+                      >
                         {patient.status}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-gray-600">Priority</span>
-                      <Badge 
+                      <Badge
                         variant={
-                          patient.priority === 'high' ? 'destructive' :
-                          patient.priority === 'medium' ? 'default' : 'secondary'
+                          patient.priority === "high"
+                            ? "destructive"
+                            : patient.priority === "medium"
+                              ? "default"
+                              : "secondary"
                         }
                       >
                         {patient.priority}
                       </Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Patient Since</span>
-                      <span className="text-sm">{format(new Date(patient.createdDate), 'MMM dd, yyyy')}</span>
+                      <span className="text-sm text-gray-600">
+                        Patient Since
+                      </span>
+                      <span className="text-sm">
+                        {format(new Date(patient.createdDate), "MMM dd, yyyy")}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
@@ -559,19 +626,29 @@ const AdvancedPatientManagement = () => {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">{patient.statistics.totalVisits}</div>
+                      <div className="text-2xl font-bold text-blue-600">
+                        {patient.statistics.totalVisits}
+                      </div>
                       <div className="text-sm text-gray-600">Total Visits</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-600">{patient.statistics.treatmentCompliance}%</div>
+                      <div className="text-2xl font-bold text-green-600">
+                        {patient.statistics.treatmentCompliance}%
+                      </div>
                       <div className="text-sm text-gray-600">Compliance</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-yellow-600">{patient.statistics.averagePainLevel}</div>
-                      <div className="text-sm text-gray-600">Avg Pain Level</div>
+                      <div className="text-2xl font-bold text-yellow-600">
+                        {patient.statistics.averagePainLevel}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Avg Pain Level
+                      </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-red-600">{patient.statistics.missedAppointments}</div>
+                      <div className="text-2xl font-bold text-red-600">
+                        {patient.statistics.missedAppointments}
+                      </div>
                       <div className="text-sm text-gray-600">Missed Appts</div>
                     </div>
                   </div>
@@ -580,12 +657,18 @@ const AdvancedPatientManagement = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Patient Flags & Notes</CardTitle>
+                  <CardTitle className="text-lg">
+                    Patient Flags & Notes
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex flex-wrap gap-2">
-                    {patient.flags.map(flag => (
-                      <Badge key={flag} variant="outline" className="flex items-center">
+                    {patient.flags.map((flag) => (
+                      <Badge
+                        key={flag}
+                        variant="outline"
+                        className="flex items-center"
+                      >
                         <Flag className="h-3 w-3 mr-1" />
                         {flag}
                       </Badge>
@@ -609,8 +692,12 @@ const AdvancedPatientManagement = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {patient.medicalInfo.allergies.map(allergy => (
-                        <Badge key={allergy} variant="destructive" className="mr-2">
+                      {patient.medicalInfo.allergies.map((allergy) => (
+                        <Badge
+                          key={allergy}
+                          variant="destructive"
+                          className="mr-2"
+                        >
                           {allergy}
                         </Badge>
                       ))}
@@ -627,8 +714,11 @@ const AdvancedPatientManagement = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {patient.medicalInfo.medications.map(medication => (
-                        <div key={medication} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                      {patient.medicalInfo.medications.map((medication) => (
+                        <div
+                          key={medication}
+                          className="flex items-center justify-between p-2 bg-gray-50 rounded"
+                        >
                           <span className="text-sm">{medication}</span>
                           <Badge variant="outline">Active</Badge>
                         </div>
@@ -647,8 +737,11 @@ const AdvancedPatientManagement = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-2">
-                    {patient.medicalInfo.chronicConditions.map(condition => (
-                      <div key={condition} className="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                    {patient.medicalInfo.chronicConditions.map((condition) => (
+                      <div
+                        key={condition}
+                        className="flex items-center justify-between p-3 border border-gray-200 rounded-lg"
+                      >
                         <span className="font-medium">{condition}</span>
                         <Badge variant="secondary">Ongoing</Badge>
                       </div>
@@ -664,10 +757,17 @@ const AdvancedPatientManagement = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {patient.medicalInfo.surgeries.map(surgery => (
-                        <div key={surgery.procedure} className="flex items-center justify-between">
-                          <span className="text-sm font-medium">{surgery.procedure}</span>
-                          <span className="text-sm text-gray-500">{surgery.date}</span>
+                      {patient.medicalInfo.surgeries.map((surgery) => (
+                        <div
+                          key={surgery.procedure}
+                          className="flex items-center justify-between"
+                        >
+                          <span className="text-sm font-medium">
+                            {surgery.procedure}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {surgery.date}
+                          </span>
                         </div>
                       ))}
                     </div>
@@ -680,8 +780,11 @@ const AdvancedPatientManagement = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {patient.medicalInfo.familyHistory.map(history => (
-                        <div key={history} className="text-sm p-2 bg-gray-50 rounded">
+                      {patient.medicalInfo.familyHistory.map((history) => (
+                        <div
+                          key={history}
+                          className="text-sm p-2 bg-gray-50 rounded"
+                        >
                           {history}
                         </div>
                       ))}
@@ -696,28 +799,39 @@ const AdvancedPatientManagement = () => {
                 <CardHeader>
                   <CardTitle className="text-lg">Treatment History</CardTitle>
                   <CardDescription>
-                    {patient.treatmentHistory.length} treatment sessions recorded
+                    {patient.treatmentHistory.length} treatment sessions
+                    recorded
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {patient.treatmentHistory.map(treatment => (
-                      <div key={treatment.id} className="border border-gray-200 rounded-lg p-4">
+                    {patient.treatmentHistory.map((treatment) => (
+                      <div
+                        key={treatment.id}
+                        className="border border-gray-200 rounded-lg p-4"
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center space-x-3">
                             <Badge variant="outline">{treatment.type}</Badge>
-                            <span className="text-sm text-gray-600">{treatment.date}</span>
+                            <span className="text-sm text-gray-600">
+                              {treatment.date}
+                            </span>
                           </div>
-                          <Badge 
+                          <Badge
                             variant={
-                              treatment.outcome === 'Improved' ? 'default' :
-                              treatment.outcome === 'Stable' ? 'secondary' : 'outline'
+                              treatment.outcome === "Improved"
+                                ? "default"
+                                : treatment.outcome === "Stable"
+                                  ? "secondary"
+                                  : "outline"
                             }
                           >
                             {treatment.outcome}
                           </Badge>
                         </div>
-                        <p className="text-sm text-gray-700 mb-2">{treatment.notes}</p>
+                        <p className="text-sm text-gray-700 mb-2">
+                          {treatment.notes}
+                        </p>
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
                           <span>Provider: {treatment.provider}</span>
                           <span>Pain Level: {treatment.painLevel}/10</span>
@@ -740,23 +854,35 @@ const AdvancedPatientManagement = () => {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{patient.vitals.height}</div>
+                      <div className="text-2xl font-bold text-blue-600">
+                        {patient.vitals.height}
+                      </div>
                       <div className="text-sm text-gray-600">Height</div>
                     </div>
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-green-600">{patient.vitals.weight}</div>
+                      <div className="text-2xl font-bold text-green-600">
+                        {patient.vitals.weight}
+                      </div>
                       <div className="text-sm text-gray-600">Weight</div>
                     </div>
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-red-600">{patient.vitals.bloodPressure}</div>
-                      <div className="text-sm text-gray-600">Blood Pressure</div>
+                      <div className="text-2xl font-bold text-red-600">
+                        {patient.vitals.bloodPressure}
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Blood Pressure
+                      </div>
                     </div>
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-purple-600">{patient.vitals.heartRate}</div>
+                      <div className="text-2xl font-bold text-purple-600">
+                        {patient.vitals.heartRate}
+                      </div>
                       <div className="text-sm text-gray-600">Heart Rate</div>
                     </div>
                     <div className="text-center p-4 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-yellow-600">{patient.vitals.temperature}</div>
+                      <div className="text-2xl font-bold text-yellow-600">
+                        {patient.vitals.temperature}
+                      </div>
                       <div className="text-sm text-gray-600">Temperature</div>
                     </div>
                   </div>
@@ -769,12 +895,16 @@ const AdvancedPatientManagement = () => {
                 <CardHeader>
                   <CardTitle className="text-lg flex items-center justify-between">
                     Patient Alerts
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       onClick={() => {
                         if (newAlert.message.trim()) {
                           handleAddAlert(patient.id, newAlert);
-                          setNewAlert({ type: 'medical', priority: 'medium', message: '' });
+                          setNewAlert({
+                            type: "medical",
+                            priority: "medium",
+                            message: "",
+                          });
                         }
                       }}
                     >
@@ -785,7 +915,12 @@ const AdvancedPatientManagement = () => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 border border-gray-200 rounded-lg">
-                    <Select value={newAlert.type} onValueChange={(value) => setNewAlert({...newAlert, type: value})}>
+                    <Select
+                      value={newAlert.type}
+                      onValueChange={(value) =>
+                        setNewAlert({ ...newAlert, type: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Alert Type" />
                       </SelectTrigger>
@@ -796,7 +931,12 @@ const AdvancedPatientManagement = () => {
                         <SelectItem value="general">General</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Select value={newAlert.priority} onValueChange={(value) => setNewAlert({...newAlert, priority: value})}>
+                    <Select
+                      value={newAlert.priority}
+                      onValueChange={(value) =>
+                        setNewAlert({ ...newAlert, priority: value })
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Priority" />
                       </SelectTrigger>
@@ -806,27 +946,39 @@ const AdvancedPatientManagement = () => {
                         <SelectItem value="low">Low</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Input 
+                    <Input
                       placeholder="Alert message..."
                       value={newAlert.message}
-                      onChange={(e) => setNewAlert({...newAlert, message: e.target.value})}
+                      onChange={(e) =>
+                        setNewAlert({ ...newAlert, message: e.target.value })
+                      }
                     />
                   </div>
-                  
+
                   <div className="space-y-3">
-                    {patient.alerts.map(alert => (
-                      <Alert key={alert.id} className={
-                        alert.priority === 'high' ? 'border-red-200 bg-red-50' :
-                        alert.priority === 'medium' ? 'border-yellow-200 bg-yellow-50' :
-                        'border-blue-200 bg-blue-50'
-                      }>
+                    {patient.alerts.map((alert) => (
+                      <Alert
+                        key={alert.id}
+                        className={
+                          alert.priority === "high"
+                            ? "border-red-200 bg-red-50"
+                            : alert.priority === "medium"
+                              ? "border-yellow-200 bg-yellow-50"
+                              : "border-blue-200 bg-blue-50"
+                        }
+                      >
                         <AlertTriangle className="h-4 w-4" />
                         <AlertTitle className="flex items-center justify-between">
                           <span className="capitalize">{alert.type} Alert</span>
-                          <Badge variant={
-                            alert.priority === 'high' ? 'destructive' :
-                            alert.priority === 'medium' ? 'default' : 'secondary'
-                          }>
+                          <Badge
+                            variant={
+                              alert.priority === "high"
+                                ? "destructive"
+                                : alert.priority === "medium"
+                                  ? "default"
+                                  : "secondary"
+                            }
+                          >
                             {alert.priority}
                           </Badge>
                         </AlertTitle>
@@ -859,19 +1011,29 @@ const AdvancedPatientManagement = () => {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="font-medium">Treatment Session</span>
-                          <span className="text-sm text-gray-500">Jan 15, 2025</span>
+                          <span className="text-sm text-gray-500">
+                            Jan 15, 2025
+                          </span>
                         </div>
-                        <p className="text-sm text-gray-600">Chiropractic adjustment with Dr. Johnson</p>
+                        <p className="text-sm text-gray-600">
+                          Chiropractic adjustment with Dr. Johnson
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-4">
                       <div className="w-2 h-2 bg-green-600 rounded-full mt-2"></div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <span className="font-medium">Appointment Scheduled</span>
-                          <span className="text-sm text-gray-500">Jan 12, 2025</span>
+                          <span className="font-medium">
+                            Appointment Scheduled
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            Jan 12, 2025
+                          </span>
                         </div>
-                        <p className="text-sm text-gray-600">Follow-up appointment booked</p>
+                        <p className="text-sm text-gray-600">
+                          Follow-up appointment booked
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-4">
@@ -879,9 +1041,13 @@ const AdvancedPatientManagement = () => {
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
                           <span className="font-medium">Alert Added</span>
-                          <span className="text-sm text-gray-500">Jan 10, 2025</span>
+                          <span className="text-sm text-gray-500">
+                            Jan 10, 2025
+                          </span>
                         </div>
-                        <p className="text-sm text-gray-600">Medical alert for penicillin allergy</p>
+                        <p className="text-sm text-gray-600">
+                          Medical alert for penicillin allergy
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -899,8 +1065,12 @@ const AdvancedPatientManagement = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Advanced Patient Management</h2>
-          <p className="text-gray-600">Comprehensive patient care and case management</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Advanced Patient Management
+          </h2>
+          <p className="text-gray-600">
+            Comprehensive patient care and case management
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <TutorialLauncher variant="inline" feature="patients" />
@@ -962,9 +1132,15 @@ const AdvancedPatientManagement = () => {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
+                onClick={() =>
+                  setViewMode(viewMode === "grid" ? "list" : "grid")
+                }
               >
-                {viewMode === 'grid' ? <BarChart3 className="h-4 w-4" /> : <Users className="h-4 w-4" />}
+                {viewMode === "grid" ? (
+                  <BarChart3 className="h-4 w-4" />
+                ) : (
+                  <Users className="h-4 w-4" />
+                )}
               </Button>
             </div>
           </div>
@@ -979,21 +1155,22 @@ const AdvancedPatientManagement = () => {
               <CardTitle className="flex items-center justify-between">
                 Patients
                 <Badge variant="secondary">
-                  {filteredPatients.length} patient{filteredPatients.length !== 1 ? 's' : ''}
+                  {filteredPatients.length} patient
+                  {filteredPatients.length !== 1 ? "s" : ""}
                 </Badge>
               </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <ScrollArea className="h-[800px]">
-                {viewMode === 'grid' ? (
+                {viewMode === "grid" ? (
                   <div className="p-4 space-y-4">
-                    {filteredPatients.map(patient => (
+                    {filteredPatients.map((patient) => (
                       <PatientCard key={patient.id} patient={patient} />
                     ))}
                   </div>
                 ) : (
                   <div>
-                    {filteredPatients.map(patient => (
+                    {filteredPatients.map((patient) => (
                       <PatientListItem key={patient.id} patient={patient} />
                     ))}
                   </div>
@@ -1011,4 +1188,4 @@ const AdvancedPatientManagement = () => {
   );
 };
 
-export default AdvancedPatientManagement; 
+export default AdvancedPatientManagement;

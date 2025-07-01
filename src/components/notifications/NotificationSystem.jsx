@@ -1,12 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { toast } from "sonner";
 import {
   Bell,
   BellRing,
@@ -23,8 +29,8 @@ import {
   FileText,
   Heart,
   Phone,
-  Shield
-} from 'lucide-react';
+  Shield,
+} from "lucide-react";
 
 const NotificationSystem = ({ userId, userRole }) => {
   const [notifications, setNotifications] = useState([]);
@@ -37,89 +43,91 @@ const NotificationSystem = ({ userId, userRole }) => {
     systemAlerts: true,
     marketingEmails: false,
     criticalAlerts: true,
-    weeklyReports: true
+    weeklyReports: true,
   });
 
   // Sample notifications data
   const [sampleNotifications] = useState([
     {
       id: 1,
-      type: 'appointment',
-      title: 'Appointment Reminder',
-      message: 'You have an appointment with Dr. Smith tomorrow at 2:00 PM',
+      type: "appointment",
+      title: "Appointment Reminder",
+      message: "You have an appointment with Dr. Smith tomorrow at 2:00 PM",
       timestamp: new Date(Date.now() - 1000 * 60 * 30),
       read: false,
-      priority: 'high',
+      priority: "high",
       actionRequired: true,
       icon: Calendar,
-      color: 'blue'
+      color: "blue",
     },
     {
       id: 2,
-      type: 'system',
-      title: 'System Maintenance',
-      message: 'Scheduled maintenance will occur tonight from 11 PM - 1 AM',
+      type: "system",
+      title: "System Maintenance",
+      message: "Scheduled maintenance will occur tonight from 11 PM - 1 AM",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
       read: false,
-      priority: 'medium',
+      priority: "medium",
       actionRequired: false,
       icon: Settings,
-      color: 'yellow'
+      color: "yellow",
     },
     {
       id: 3,
-      type: 'clinical',
-      title: 'Lab Results Available',
-      message: 'Your recent lab results are now available in your patient portal',
+      type: "clinical",
+      title: "Lab Results Available",
+      message:
+        "Your recent lab results are now available in your patient portal",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 4),
       read: true,
-      priority: 'high',
+      priority: "high",
       actionRequired: true,
       icon: FileText,
-      color: 'green'
+      color: "green",
     },
     {
       id: 4,
-      type: 'message',
-      title: 'New Message',
-      message: 'Dr. Johnson has sent you a message regarding your treatment plan',
+      type: "message",
+      title: "New Message",
+      message:
+        "Dr. Johnson has sent you a message regarding your treatment plan",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6),
       read: true,
-      priority: 'medium',
+      priority: "medium",
       actionRequired: true,
       icon: MessageSquare,
-      color: 'purple'
+      color: "purple",
     },
     {
       id: 5,
-      type: 'alert',
-      title: 'Payment Due',
-      message: 'Your payment for the last appointment is due in 3 days',
+      type: "alert",
+      title: "Payment Due",
+      message: "Your payment for the last appointment is due in 3 days",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
       read: false,
-      priority: 'high',
+      priority: "high",
       actionRequired: true,
       icon: AlertTriangle,
-      color: 'red'
+      color: "red",
     },
     {
       id: 6,
-      type: 'success',
-      title: 'Appointment Confirmed',
-      message: 'Your appointment for next Tuesday has been confirmed',
+      type: "success",
+      title: "Appointment Confirmed",
+      message: "Your appointment for next Tuesday has been confirmed",
       timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
       read: true,
-      priority: 'low',
+      priority: "low",
       actionRequired: false,
       icon: CheckCircle,
-      color: 'green'
-    }
+      color: "green",
+    },
   ]);
 
   // Initialize notifications
   useEffect(() => {
     setNotifications(sampleNotifications);
-    setUnreadCount(sampleNotifications.filter(n => !n.read).length);
+    setUnreadCount(sampleNotifications.filter((n) => !n.read).length);
   }, [sampleNotifications]);
 
   // Real-time notification simulation
@@ -129,23 +137,25 @@ const NotificationSystem = ({ userId, userRole }) => {
       if (Math.random() > 0.8) {
         const newNotification = {
           id: Date.now(),
-          type: ['appointment', 'system', 'message', 'alert'][Math.floor(Math.random() * 4)],
-          title: 'New Notification',
-          message: 'This is a real-time notification for testing',
+          type: ["appointment", "system", "message", "alert"][
+            Math.floor(Math.random() * 4)
+          ],
+          title: "New Notification",
+          message: "This is a real-time notification for testing",
           timestamp: new Date(),
           read: false,
-          priority: ['low', 'medium', 'high'][Math.floor(Math.random() * 3)],
+          priority: ["low", "medium", "high"][Math.floor(Math.random() * 3)],
           actionRequired: Math.random() > 0.5,
           icon: Bell,
-          color: 'blue'
+          color: "blue",
         };
 
-        setNotifications(prev => [newNotification, ...prev]);
-        setUnreadCount(prev => prev + 1);
-        
+        setNotifications((prev) => [newNotification, ...prev]);
+        setUnreadCount((prev) => prev + 1);
+
         // Show toast notification
-        toast.success('New notification received!', {
-          description: newNotification.message
+        toast.success("New notification received!", {
+          description: newNotification.message,
         });
       }
     }, 30000); // Check every 30 seconds
@@ -154,34 +164,37 @@ const NotificationSystem = ({ userId, userRole }) => {
   }, []);
 
   const markAsRead = useCallback((notificationId) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === notificationId 
+    setNotifications((prev) =>
+      prev.map((notification) =>
+        notification.id === notificationId
           ? { ...notification, read: true }
-          : notification
-      )
+          : notification,
+      ),
     );
-    setUnreadCount(prev => Math.max(0, prev - 1));
+    setUnreadCount((prev) => Math.max(0, prev - 1));
   }, []);
 
   const markAllAsRead = useCallback(() => {
-    setNotifications(prev => 
-      prev.map(notification => ({ ...notification, read: true }))
+    setNotifications((prev) =>
+      prev.map((notification) => ({ ...notification, read: true })),
     );
     setUnreadCount(0);
   }, []);
 
-  const deleteNotification = useCallback((notificationId) => {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
-    const notification = notifications.find(n => n.id === notificationId);
-    if (notification && !notification.read) {
-      setUnreadCount(prev => Math.max(0, prev - 1));
-    }
-  }, [notifications]);
+  const deleteNotification = useCallback(
+    (notificationId) => {
+      setNotifications((prev) => prev.filter((n) => n.id !== notificationId));
+      const notification = notifications.find((n) => n.id === notificationId);
+      if (notification && !notification.read) {
+        setUnreadCount((prev) => Math.max(0, prev - 1));
+      }
+    },
+    [notifications],
+  );
 
   const updateSettings = useCallback((key, value) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-    toast.success('Notification settings updated');
+    setSettings((prev) => ({ ...prev, [key]: value }));
+    toast.success("Notification settings updated");
   }, []);
 
   const formatTimestamp = (timestamp) => {
@@ -191,7 +204,7 @@ const NotificationSystem = ({ userId, userRole }) => {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (minutes < 1) return 'Just now';
+    if (minutes < 1) return "Just now";
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
     return `${days}d ago`;
@@ -199,61 +212,87 @@ const NotificationSystem = ({ userId, userRole }) => {
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'destructive';
-      case 'medium': return 'default';
-      case 'low': return 'secondary';
-      default: return 'default';
+      case "high":
+        return "destructive";
+      case "medium":
+        return "default";
+      case "low":
+        return "secondary";
+      default:
+        return "default";
     }
   };
 
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'appointment': return Calendar;
-      case 'system': return Settings;
-      case 'clinical': return FileText;
-      case 'message': return MessageSquare;
-      case 'alert': return AlertTriangle;
-      case 'success': return CheckCircle;
-      default: return Bell;
+      case "appointment":
+        return Calendar;
+      case "system":
+        return Settings;
+      case "clinical":
+        return FileText;
+      case "message":
+        return MessageSquare;
+      case "alert":
+        return AlertTriangle;
+      case "success":
+        return CheckCircle;
+      default:
+        return Bell;
     }
   };
 
   const NotificationItem = ({ notification }) => {
     const IconComponent = notification.icon || getTypeIcon(notification.type);
-    
+
     return (
-      <div 
+      <div
         className={`p-4 border-l-4 ${
-          notification.read ? 'bg-gray-50 border-gray-200' : 'bg-white border-blue-500'
+          notification.read
+            ? "bg-gray-50 border-gray-200"
+            : "bg-white border-blue-500"
         } hover:bg-gray-50 transition-colors cursor-pointer`}
         onClick={() => !notification.read && markAsRead(notification.id)}
       >
         <div className="flex items-start justify-between">
           <div className="flex items-start space-x-3">
-            <div className={`p-2 rounded-full ${
-              notification.read ? 'bg-gray-200' : 'bg-blue-100'
-            }`}>
-              <IconComponent className={`h-4 w-4 ${
-                notification.read ? 'text-gray-500' : 'text-blue-600'
-              }`} />
+            <div
+              className={`p-2 rounded-full ${
+                notification.read ? "bg-gray-200" : "bg-blue-100"
+              }`}
+            >
+              <IconComponent
+                className={`h-4 w-4 ${
+                  notification.read ? "text-gray-500" : "text-blue-600"
+                }`}
+              />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center space-x-2">
-                <h4 className={`text-sm font-medium ${
-                  notification.read ? 'text-gray-700' : 'text-gray-900'
-                }`}>
+                <h4
+                  className={`text-sm font-medium ${
+                    notification.read ? "text-gray-700" : "text-gray-900"
+                  }`}
+                >
                   {notification.title}
                 </h4>
-                <Badge variant={getPriorityColor(notification.priority)} size="sm">
+                <Badge
+                  variant={getPriorityColor(notification.priority)}
+                  size="sm"
+                >
                   {notification.priority}
                 </Badge>
                 {notification.actionRequired && (
-                  <Badge variant="outline" size="sm">Action Required</Badge>
+                  <Badge variant="outline" size="sm">
+                    Action Required
+                  </Badge>
                 )}
               </div>
-              <p className={`text-sm mt-1 ${
-                notification.read ? 'text-gray-500' : 'text-gray-600'
-              }`}>
+              <p
+                className={`text-sm mt-1 ${
+                  notification.read ? "text-gray-500" : "text-gray-600"
+                }`}
+              >
                 {notification.message}
               </p>
               <div className="flex items-center mt-2 text-xs text-gray-400">
@@ -284,11 +323,11 @@ const NotificationSystem = ({ userId, userRole }) => {
 
   const filteredNotifications = {
     all: notifications,
-    unread: notifications.filter(n => !n.read),
-    appointments: notifications.filter(n => n.type === 'appointment'),
-    system: notifications.filter(n => n.type === 'system'),
-    clinical: notifications.filter(n => n.type === 'clinical'),
-    messages: notifications.filter(n => n.type === 'message')
+    unread: notifications.filter((n) => !n.read),
+    appointments: notifications.filter((n) => n.type === "appointment"),
+    system: notifications.filter((n) => n.type === "system"),
+    clinical: notifications.filter((n) => n.type === "clinical"),
+    messages: notifications.filter((n) => n.type === "message"),
   };
 
   return (
@@ -299,11 +338,11 @@ const NotificationSystem = ({ userId, userRole }) => {
           <div className="relative">
             <BellRing className="h-8 w-8 text-blue-600" />
             {unreadCount > 0 && (
-              <Badge 
-                variant="destructive" 
+              <Badge
+                variant="destructive"
                 className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs"
               >
-                {unreadCount > 99 ? '99+' : unreadCount}
+                {unreadCount > 99 ? "99+" : unreadCount}
               </Badge>
             )}
           </div>
@@ -349,34 +388,42 @@ const NotificationSystem = ({ userId, userRole }) => {
           <TabsTrigger value="messages">Messages</TabsTrigger>
         </TabsList>
 
-        {Object.entries(filteredNotifications).map(([key, notificationList]) => (
-          <TabsContent key={key} value={key}>
-            <Card>
-              <CardHeader>
-                <CardTitle className="capitalize">{key} Notifications</CardTitle>
-                <CardDescription>
-                  {notificationList.length} notification{notificationList.length !== 1 ? 's' : ''}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="p-0">
-                <ScrollArea className="h-[600px]">
-                  {notificationList.length > 0 ? (
-                    <div className="divide-y">
-                      {notificationList.map((notification) => (
-                        <NotificationItem key={notification.id} notification={notification} />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="p-8 text-center text-gray-500">
-                      <Bell className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                      <p>No notifications in this category</p>
-                    </div>
-                  )}
-                </ScrollArea>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
+        {Object.entries(filteredNotifications).map(
+          ([key, notificationList]) => (
+            <TabsContent key={key} value={key}>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="capitalize">
+                    {key} Notifications
+                  </CardTitle>
+                  <CardDescription>
+                    {notificationList.length} notification
+                    {notificationList.length !== 1 ? "s" : ""}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ScrollArea className="h-[600px]">
+                    {notificationList.length > 0 ? (
+                      <div className="divide-y">
+                        {notificationList.map((notification) => (
+                          <NotificationItem
+                            key={notification.id}
+                            notification={notification}
+                          />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-8 text-center text-gray-500">
+                        <Bell className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                        <p>No notifications in this category</p>
+                      </div>
+                    )}
+                  </ScrollArea>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          ),
+        )}
       </Tabs>
 
       {/* Notification Settings */}
@@ -402,7 +449,9 @@ const NotificationSystem = ({ userId, userRole }) => {
                   </div>
                   <Switch
                     checked={settings.emailNotifications}
-                    onCheckedChange={(checked) => updateSettings('emailNotifications', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSettings("emailNotifications", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -412,7 +461,9 @@ const NotificationSystem = ({ userId, userRole }) => {
                   </div>
                   <Switch
                     checked={settings.smsNotifications}
-                    onCheckedChange={(checked) => updateSettings('smsNotifications', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSettings("smsNotifications", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -422,7 +473,9 @@ const NotificationSystem = ({ userId, userRole }) => {
                   </div>
                   <Switch
                     checked={settings.pushNotifications}
-                    onCheckedChange={(checked) => updateSettings('pushNotifications', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSettings("pushNotifications", checked)
+                    }
                   />
                 </div>
               </div>
@@ -438,7 +491,9 @@ const NotificationSystem = ({ userId, userRole }) => {
                   </div>
                   <Switch
                     checked={settings.appointmentReminders}
-                    onCheckedChange={(checked) => updateSettings('appointmentReminders', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSettings("appointmentReminders", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -448,7 +503,9 @@ const NotificationSystem = ({ userId, userRole }) => {
                   </div>
                   <Switch
                     checked={settings.systemAlerts}
-                    onCheckedChange={(checked) => updateSettings('systemAlerts', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSettings("systemAlerts", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -458,7 +515,9 @@ const NotificationSystem = ({ userId, userRole }) => {
                   </div>
                   <Switch
                     checked={settings.criticalAlerts}
-                    onCheckedChange={(checked) => updateSettings('criticalAlerts', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSettings("criticalAlerts", checked)
+                    }
                   />
                 </div>
                 <div className="flex items-center justify-between">
@@ -468,7 +527,9 @@ const NotificationSystem = ({ userId, userRole }) => {
                   </div>
                   <Switch
                     checked={settings.weeklyReports}
-                    onCheckedChange={(checked) => updateSettings('weeklyReports', checked)}
+                    onCheckedChange={(checked) =>
+                      updateSettings("weeklyReports", checked)
+                    }
                   />
                 </div>
               </div>
@@ -479,12 +540,18 @@ const NotificationSystem = ({ userId, userRole }) => {
 
           <div className="flex items-center justify-between">
             <div>
-              <h4 className="font-medium text-gray-900">Marketing Communications</h4>
-              <p className="text-sm text-gray-500">Receive updates about new features and health tips</p>
+              <h4 className="font-medium text-gray-900">
+                Marketing Communications
+              </h4>
+              <p className="text-sm text-gray-500">
+                Receive updates about new features and health tips
+              </p>
             </div>
             <Switch
               checked={settings.marketingEmails}
-              onCheckedChange={(checked) => updateSettings('marketingEmails', checked)}
+              onCheckedChange={(checked) =>
+                updateSettings("marketingEmails", checked)
+              }
             />
           </div>
         </CardContent>
@@ -493,4 +560,4 @@ const NotificationSystem = ({ userId, userRole }) => {
   );
 };
 
-export default NotificationSystem; 
+export default NotificationSystem;

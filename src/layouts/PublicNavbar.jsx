@@ -1,19 +1,20 @@
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import React from "react";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import stethoscopeLogo from "@/assets/images/stethoscope.svg";
 
 const PublicNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
   const navLinks = [
-    { name: 'Home', href: '/' },
-    { name: 'About', href: '/about' },
-    { name: 'Services', href: '/services' },
-    { name: 'Contact', href: '/contact' },
-    { name: 'FAQ', href: '/faq' },
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Services", href: "/services" },
+    { name: "Contact", href: "/contact" },
+    { name: "FAQ", href: "/faq" },
   ];
 
   const isActive = (href) => location.pathname === href;
@@ -24,8 +25,14 @@ const PublicNavbar = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img src="/stethoscope.svg" alt="Dr. Dieu Phan D.C Logo" className="h-8 w-8" />
-            <span className="text-xl font-bold text-primary">Dr. Dieu Phan D.C</span>
+            <img
+              src={stethoscopeLogo}
+              alt="Dr. Dieu Phan D.C Logo"
+              className="h-8 w-8"
+            />
+            <span className="text-xl font-bold text-primary">
+              Dr. Dieu Phan D.C
+            </span>
           </Link>
 
           {/* Desktop Navigation */}
@@ -36,8 +43,8 @@ const PublicNavbar = () => {
                 to={link.href}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
                   isActive(link.href)
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-muted-foreground'
+                    ? "text-primary border-b-2 border-primary"
+                    : "text-muted-foreground"
                 }`}
               >
                 {link.name}
@@ -62,7 +69,11 @@ const PublicNavbar = () => {
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
+            ) : (
+              <Menu className="h-6 w-6" />
+            )}
           </Button>
         </div>
 
@@ -75,7 +86,9 @@ const PublicNavbar = () => {
                   key={link.name}
                   to={link.href}
                   className={`text-sm font-medium transition-colors hover:text-primary ${
-                    isActive(link.href) ? 'text-primary' : 'text-muted-foreground'
+                    isActive(link.href)
+                      ? "text-primary"
+                      : "text-muted-foreground"
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -102,4 +115,4 @@ const PublicNavbar = () => {
   );
 };
 
-export default PublicNavbar; 
+export default PublicNavbar;

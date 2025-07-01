@@ -1,17 +1,41 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Calendar } from '@/components/ui/calendar';
-import { Label } from '@/components/ui/label';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Calendar } from "@/components/ui/calendar";
+import { Label } from "@/components/ui/label";
 import {
   Search,
   Filter,
@@ -30,21 +54,21 @@ import {
   MapPin,
   Phone,
   Mail,
-  Activity
-} from 'lucide-react';
+  Activity,
+} from "lucide-react";
 
-const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
-  const [searchQuery, setSearchQuery] = useState('');
+const GlobalSearch = ({ onResultSelect, userRole = "admin" }) => {
+  const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [searchHistory, setSearchHistory] = useState([]);
   const [savedSearches, setSavedSearches] = useState([]);
   const [activeFilters, setActiveFilters] = useState({
-    type: 'all',
-    dateRange: 'all',
-    status: 'all',
-    priority: 'all',
-    assignedTo: 'all'
+    type: "all",
+    dateRange: "all",
+    status: "all",
+    priority: "all",
+    assignedTo: "all",
   });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -52,201 +76,227 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
   const [sampleData] = useState({
     patients: [
       {
-        id: 'PAT-001',
-        type: 'patient',
-        title: 'John Smith',
-        subtitle: 'john.smith@email.com',
-        description: 'Age: 45, Last visit: 2 days ago',
-        status: 'active',
-        priority: 'normal',
-        tags: ['chronic pain', 'back injury'],
-        lastUpdated: new Date('2025-01-18'),
-        assignedTo: 'Dr. Johnson',
-        phone: '+1-555-0123',
-        location: 'New York, NY'
+        id: "PAT-001",
+        type: "patient",
+        title: "John Smith",
+        subtitle: "john.smith@email.com",
+        description: "Age: 45, Last visit: 2 days ago",
+        status: "active",
+        priority: "normal",
+        tags: ["chronic pain", "back injury"],
+        lastUpdated: new Date("2025-01-18"),
+        assignedTo: "Dr. Johnson",
+        phone: "+1-555-0123",
+        location: "New York, NY",
       },
       {
-        id: 'PAT-002',
-        type: 'patient',
-        title: 'Sarah Johnson',
-        subtitle: 'sarah.johnson@email.com',
-        description: 'Age: 32, Last visit: 1 week ago',
-        status: 'active',
-        priority: 'high',
-        tags: ['migraine', 'follow-up'],
-        lastUpdated: new Date('2025-01-15'),
-        assignedTo: 'Dr. Smith',
-        phone: '+1-555-0124',
-        location: 'Los Angeles, CA'
-      }
+        id: "PAT-002",
+        type: "patient",
+        title: "Sarah Johnson",
+        subtitle: "sarah.johnson@email.com",
+        description: "Age: 32, Last visit: 1 week ago",
+        status: "active",
+        priority: "high",
+        tags: ["migraine", "follow-up"],
+        lastUpdated: new Date("2025-01-15"),
+        assignedTo: "Dr. Smith",
+        phone: "+1-555-0124",
+        location: "Los Angeles, CA",
+      },
     ],
     appointments: [
       {
-        id: 'APT-001',
-        type: 'appointment',
-        title: 'John Smith - Initial Consultation',
-        subtitle: 'Tomorrow, 2:00 PM',
-        description: 'Back pain assessment and treatment planning',
-        status: 'scheduled',
-        priority: 'high',
-        tags: ['initial', 'back pain'],
-        lastUpdated: new Date('2025-01-19'),
-        assignedTo: 'Dr. Johnson',
-        duration: '60 minutes',
-        location: 'Room 102'
+        id: "APT-001",
+        type: "appointment",
+        title: "John Smith - Initial Consultation",
+        subtitle: "Tomorrow, 2:00 PM",
+        description: "Back pain assessment and treatment planning",
+        status: "scheduled",
+        priority: "high",
+        tags: ["initial", "back pain"],
+        lastUpdated: new Date("2025-01-19"),
+        assignedTo: "Dr. Johnson",
+        duration: "60 minutes",
+        location: "Room 102",
       },
       {
-        id: 'APT-002',
-        type: 'appointment',
-        title: 'Sarah Johnson - Follow-up',
-        subtitle: 'Next Monday, 10:00 AM',
-        description: 'Progress check and adjustment',
-        status: 'confirmed',
-        priority: 'normal',
-        tags: ['follow-up', 'adjustment'],
-        lastUpdated: new Date('2025-01-18'),
-        assignedTo: 'Dr. Smith',
-        duration: '30 minutes',
-        location: 'Room 101'
-      }
+        id: "APT-002",
+        type: "appointment",
+        title: "Sarah Johnson - Follow-up",
+        subtitle: "Next Monday, 10:00 AM",
+        description: "Progress check and adjustment",
+        status: "confirmed",
+        priority: "normal",
+        tags: ["follow-up", "adjustment"],
+        lastUpdated: new Date("2025-01-18"),
+        assignedTo: "Dr. Smith",
+        duration: "30 minutes",
+        location: "Room 101",
+      },
     ],
     clinicalNotes: [
       {
-        id: 'NOTE-001',
-        type: 'clinical-note',
-        title: 'Progress Note - John Smith',
-        subtitle: 'Created 3 days ago',
-        description: 'Patient showing significant improvement in lower back mobility',
-        status: 'completed',
-        priority: 'normal',
-        tags: ['progress', 'improvement'],
-        lastUpdated: new Date('2025-01-16'),
-        assignedTo: 'Dr. Johnson',
-        painLevel: '3/10',
-        treatmentType: 'Chiropractic Adjustment'
+        id: "NOTE-001",
+        type: "clinical-note",
+        title: "Progress Note - John Smith",
+        subtitle: "Created 3 days ago",
+        description:
+          "Patient showing significant improvement in lower back mobility",
+        status: "completed",
+        priority: "normal",
+        tags: ["progress", "improvement"],
+        lastUpdated: new Date("2025-01-16"),
+        assignedTo: "Dr. Johnson",
+        painLevel: "3/10",
+        treatmentType: "Chiropractic Adjustment",
       },
       {
-        id: 'NOTE-002',
-        type: 'clinical-note',
-        title: 'Initial Assessment - Sarah Johnson',
-        subtitle: 'Created 1 week ago',
-        description: 'Comprehensive evaluation for chronic headaches',
-        status: 'completed',
-        priority: 'high',
-        tags: ['initial', 'headache'],
-        lastUpdated: new Date('2025-01-12'),
-        assignedTo: 'Dr. Smith',
-        painLevel: '7/10',
-        treatmentType: 'Initial Consultation'
-      }
+        id: "NOTE-002",
+        type: "clinical-note",
+        title: "Initial Assessment - Sarah Johnson",
+        subtitle: "Created 1 week ago",
+        description: "Comprehensive evaluation for chronic headaches",
+        status: "completed",
+        priority: "high",
+        tags: ["initial", "headache"],
+        lastUpdated: new Date("2025-01-12"),
+        assignedTo: "Dr. Smith",
+        painLevel: "7/10",
+        treatmentType: "Initial Consultation",
+      },
     ],
     reports: [
       {
-        id: 'RPT-001',
-        type: 'report',
-        title: 'Monthly Patient Report',
-        subtitle: 'Generated yesterday',
-        description: 'Comprehensive overview of patient outcomes for January',
-        status: 'completed',
-        priority: 'normal',
-        tags: ['monthly', 'outcomes'],
-        lastUpdated: new Date('2025-01-18'),
-        assignedTo: 'System',
-        reportType: 'Analytics',
-        pageCount: 15
-      }
+        id: "RPT-001",
+        type: "report",
+        title: "Monthly Patient Report",
+        subtitle: "Generated yesterday",
+        description: "Comprehensive overview of patient outcomes for January",
+        status: "completed",
+        priority: "normal",
+        tags: ["monthly", "outcomes"],
+        lastUpdated: new Date("2025-01-18"),
+        assignedTo: "System",
+        reportType: "Analytics",
+        pageCount: 15,
+      },
     ],
     messages: [
       {
-        id: 'MSG-001',
-        type: 'message',
-        title: 'Message from John Smith',
-        subtitle: 'Received 2 hours ago',
-        description: 'Question about post-treatment exercises',
-        status: 'unread',
-        priority: 'normal',
-        tags: ['question', 'exercises'],
-        lastUpdated: new Date('2025-01-19'),
-        assignedTo: 'Dr. Johnson',
-        messageType: 'Patient Inquiry'
-      }
-    ]
+        id: "MSG-001",
+        type: "message",
+        title: "Message from John Smith",
+        subtitle: "Received 2 hours ago",
+        description: "Question about post-treatment exercises",
+        status: "unread",
+        priority: "normal",
+        tags: ["question", "exercises"],
+        lastUpdated: new Date("2025-01-19"),
+        assignedTo: "Dr. Johnson",
+        messageType: "Patient Inquiry",
+      },
+    ],
   });
 
   // Combine all data for search
-  const allData = useMemo(() => [
-    ...sampleData.patients,
-    ...sampleData.appointments,
-    ...sampleData.clinicalNotes,
-    ...sampleData.reports,
-    ...sampleData.messages
-  ], [sampleData]);
+  const allData = useMemo(
+    () => [
+      ...sampleData.patients,
+      ...sampleData.appointments,
+      ...sampleData.clinicalNotes,
+      ...sampleData.reports,
+      ...sampleData.messages,
+    ],
+    [sampleData],
+  );
 
   // Search function
-  const performSearch = useCallback((query, filters = activeFilters) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
-
-    setIsSearching(true);
-    
-    // Simulate API delay
-    setTimeout(() => {
-      let results = allData.filter(item => {
-        const matchesQuery = 
-          item.title.toLowerCase().includes(query.toLowerCase()) ||
-          item.subtitle.toLowerCase().includes(query.toLowerCase()) ||
-          item.description.toLowerCase().includes(query.toLowerCase()) ||
-          item.tags.some(tag => tag.toLowerCase().includes(query.toLowerCase()));
-
-        const matchesType = filters.type === 'all' || item.type === filters.type;
-        const matchesStatus = filters.status === 'all' || item.status === filters.status;
-        const matchesPriority = filters.priority === 'all' || item.priority === filters.priority;
-        const matchesAssignedTo = filters.assignedTo === 'all' || item.assignedTo.includes(filters.assignedTo);
-
-        // Date range filter
-        let matchesDateRange = true;
-        if (filters.dateRange !== 'all') {
-          const now = new Date();
-          const itemDate = new Date(item.lastUpdated);
-          switch (filters.dateRange) {
-            case 'today':
-              matchesDateRange = itemDate.toDateString() === now.toDateString();
-              break;
-            case 'week':
-              matchesDateRange = (now - itemDate) <= 7 * 24 * 60 * 60 * 1000;
-              break;
-            case 'month':
-              matchesDateRange = (now - itemDate) <= 30 * 24 * 60 * 60 * 1000;
-              break;
-          }
-        }
-
-        return matchesQuery && matchesType && matchesStatus && matchesPriority && matchesAssignedTo && matchesDateRange;
-      });
-
-      // Sort by relevance and date
-      results.sort((a, b) => {
-        // Prioritize exact title matches
-        const aExactMatch = a.title.toLowerCase().includes(query.toLowerCase());
-        const bExactMatch = b.title.toLowerCase().includes(query.toLowerCase());
-        if (aExactMatch && !bExactMatch) return -1;
-        if (!aExactMatch && bExactMatch) return 1;
-        
-        // Then by date
-        return new Date(b.lastUpdated) - new Date(a.lastUpdated);
-      });
-
-      setSearchResults(results);
-      setIsSearching(false);
-
-      // Add to search history
-      if (query.trim() && !searchHistory.includes(query.trim())) {
-        setSearchHistory(prev => [query.trim(), ...prev.slice(0, 9)]);
+  const performSearch = useCallback(
+    (query, filters = activeFilters) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        return;
       }
-    }, 300);
-  }, [allData, activeFilters]);
+
+      setIsSearching(true);
+
+      // Simulate API delay
+      setTimeout(() => {
+        let results = allData.filter((item) => {
+          const matchesQuery =
+            item.title.toLowerCase().includes(query.toLowerCase()) ||
+            item.subtitle.toLowerCase().includes(query.toLowerCase()) ||
+            item.description.toLowerCase().includes(query.toLowerCase()) ||
+            item.tags.some((tag) =>
+              tag.toLowerCase().includes(query.toLowerCase()),
+            );
+
+          const matchesType =
+            filters.type === "all" || item.type === filters.type;
+          const matchesStatus =
+            filters.status === "all" || item.status === filters.status;
+          const matchesPriority =
+            filters.priority === "all" || item.priority === filters.priority;
+          const matchesAssignedTo =
+            filters.assignedTo === "all" ||
+            item.assignedTo.includes(filters.assignedTo);
+
+          // Date range filter
+          let matchesDateRange = true;
+          if (filters.dateRange !== "all") {
+            const now = new Date();
+            const itemDate = new Date(item.lastUpdated);
+            switch (filters.dateRange) {
+              case "today":
+                matchesDateRange =
+                  itemDate.toDateString() === now.toDateString();
+                break;
+              case "week":
+                matchesDateRange = now - itemDate <= 7 * 24 * 60 * 60 * 1000;
+                break;
+              case "month":
+                matchesDateRange = now - itemDate <= 30 * 24 * 60 * 60 * 1000;
+                break;
+            }
+          }
+
+          return (
+            matchesQuery &&
+            matchesType &&
+            matchesStatus &&
+            matchesPriority &&
+            matchesAssignedTo &&
+            matchesDateRange
+          );
+        });
+
+        // Sort by relevance and date
+        results.sort((a, b) => {
+          // Prioritize exact title matches
+          const aExactMatch = a.title
+            .toLowerCase()
+            .includes(query.toLowerCase());
+          const bExactMatch = b.title
+            .toLowerCase()
+            .includes(query.toLowerCase());
+          if (aExactMatch && !bExactMatch) return -1;
+          if (!aExactMatch && bExactMatch) return 1;
+
+          // Then by date
+          return new Date(b.lastUpdated) - new Date(a.lastUpdated);
+        });
+
+        setSearchResults(results);
+        setIsSearching(false);
+
+        // Add to search history
+        if (query.trim() && !searchHistory.includes(query.trim())) {
+          setSearchHistory((prev) => [query.trim(), ...prev.slice(0, 9)]);
+        }
+      }, 300);
+    },
+    [allData, activeFilters],
+  );
 
   // Handle search input
   useEffect(() => {
@@ -266,11 +316,11 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
 
   const clearAllFilters = () => {
     const clearedFilters = {
-      type: 'all',
-      dateRange: 'all',
-      status: 'all',
-      priority: 'all',
-      assignedTo: 'all'
+      type: "all",
+      dateRange: "all",
+      status: "all",
+      priority: "all",
+      assignedTo: "all",
     };
     setActiveFilters(clearedFilters);
     performSearch(searchQuery, clearedFilters);
@@ -283,9 +333,9 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
         query: searchQuery,
         filters: activeFilters,
         resultsCount: searchResults.length,
-        timestamp: new Date()
+        timestamp: new Date(),
       };
-      setSavedSearches(prev => [searchToSave, ...prev.slice(0, 9)]);
+      setSavedSearches((prev) => [searchToSave, ...prev.slice(0, 9)]);
     }
   };
 
@@ -297,39 +347,58 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
 
   const getTypeIcon = (type) => {
     switch (type) {
-      case 'patient': return User;
-      case 'appointment': return CalendarIcon;
-      case 'clinical-note': return FileText;
-      case 'report': return Activity;
-      case 'message': return MessageSquare;
-      default: return FileText;
+      case "patient":
+        return User;
+      case "appointment":
+        return CalendarIcon;
+      case "clinical-note":
+        return FileText;
+      case "report":
+        return Activity;
+      case "message":
+        return MessageSquare;
+      default:
+        return FileText;
     }
   };
 
   const getStatusColor = (status) => {
     switch (status) {
-      case 'active': case 'scheduled': case 'completed': return 'default';
-      case 'confirmed': return 'secondary';
-      case 'unread': case 'pending': return 'destructive';
-      case 'cancelled': return 'outline';
-      default: return 'default';
+      case "active":
+      case "scheduled":
+      case "completed":
+        return "default";
+      case "confirmed":
+        return "secondary";
+      case "unread":
+      case "pending":
+        return "destructive";
+      case "cancelled":
+        return "outline";
+      default:
+        return "default";
     }
   };
 
   const getPriorityColor = (priority) => {
     switch (priority) {
-      case 'high': return 'destructive';
-      case 'medium': return 'default';
-      case 'normal': case 'low': return 'secondary';
-      default: return 'secondary';
+      case "high":
+        return "destructive";
+      case "medium":
+        return "default";
+      case "normal":
+      case "low":
+        return "secondary";
+      default:
+        return "secondary";
     }
   };
 
   const SearchResultItem = ({ result, onClick }) => {
     const IconComponent = getTypeIcon(result.type);
-    
+
     return (
-      <div 
+      <div
         className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
         onClick={() => onClick(result)}
       >
@@ -371,8 +440,13 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
                 )}
               </div>
               <div className="flex items-center space-x-1">
-                {result.tags.slice(0, 2).map(tag => (
-                  <Badge key={tag} variant="outline" size="sm" className="text-xs">
+                {result.tags.slice(0, 2).map((tag) => (
+                  <Badge
+                    key={tag}
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                  >
                     {tag}
                   </Badge>
                 ))}
@@ -384,7 +458,9 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
     );
   };
 
-  const activeFilterCount = Object.values(activeFilters).filter(value => value !== 'all').length;
+  const activeFilterCount = Object.values(activeFilters).filter(
+    (value) => value !== "all",
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -403,7 +479,7 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
               variant="ghost"
               size="sm"
               className="absolute right-2 top-1/2 transform -translate-y-1/2 h-6 w-6 p-0"
-              onClick={() => setSearchQuery('')}
+              onClick={() => setSearchQuery("")}
             >
               <X className="h-4 w-4" />
             </Button>
@@ -445,7 +521,10 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
               <div>
                 <Label className="text-sm font-medium">Type</Label>
-                <Select value={activeFilters.type} onValueChange={(value) => handleFilterChange('type', value)}>
+                <Select
+                  value={activeFilters.type}
+                  onValueChange={(value) => handleFilterChange("type", value)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -453,7 +532,9 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
                     <SelectItem value="all">All Types</SelectItem>
                     <SelectItem value="patient">Patients</SelectItem>
                     <SelectItem value="appointment">Appointments</SelectItem>
-                    <SelectItem value="clinical-note">Clinical Notes</SelectItem>
+                    <SelectItem value="clinical-note">
+                      Clinical Notes
+                    </SelectItem>
                     <SelectItem value="report">Reports</SelectItem>
                     <SelectItem value="message">Messages</SelectItem>
                   </SelectContent>
@@ -462,7 +543,12 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
 
               <div>
                 <Label className="text-sm font-medium">Date Range</Label>
-                <Select value={activeFilters.dateRange} onValueChange={(value) => handleFilterChange('dateRange', value)}>
+                <Select
+                  value={activeFilters.dateRange}
+                  onValueChange={(value) =>
+                    handleFilterChange("dateRange", value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -477,7 +563,10 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
 
               <div>
                 <Label className="text-sm font-medium">Status</Label>
-                <Select value={activeFilters.status} onValueChange={(value) => handleFilterChange('status', value)}>
+                <Select
+                  value={activeFilters.status}
+                  onValueChange={(value) => handleFilterChange("status", value)}
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -494,7 +583,12 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
 
               <div>
                 <Label className="text-sm font-medium">Priority</Label>
-                <Select value={activeFilters.priority} onValueChange={(value) => handleFilterChange('priority', value)}>
+                <Select
+                  value={activeFilters.priority}
+                  onValueChange={(value) =>
+                    handleFilterChange("priority", value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -510,7 +604,12 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
 
               <div>
                 <Label className="text-sm font-medium">Assigned To</Label>
-                <Select value={activeFilters.assignedTo} onValueChange={(value) => handleFilterChange('assignedTo', value)}>
+                <Select
+                  value={activeFilters.assignedTo}
+                  onValueChange={(value) =>
+                    handleFilterChange("assignedTo", value)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -536,14 +635,16 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
                 Search Results
                 {searchResults.length > 0 && (
                   <Badge variant="secondary">
-                    {searchResults.length} result{searchResults.length !== 1 ? 's' : ''}
+                    {searchResults.length} result
+                    {searchResults.length !== 1 ? "s" : ""}
                   </Badge>
                 )}
               </CardTitle>
               {searchQuery && (
                 <CardDescription>
                   Results for "{searchQuery}"
-                  {activeFilterCount > 0 && ` with ${activeFilterCount} filter${activeFilterCount !== 1 ? 's' : ''} applied`}
+                  {activeFilterCount > 0 &&
+                    ` with ${activeFilterCount} filter${activeFilterCount !== 1 ? "s" : ""} applied`}
                 </CardDescription>
               )}
             </CardHeader>
@@ -568,14 +669,20 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
               ) : searchQuery ? (
                 <div className="text-center py-8">
                   <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500">No results found for "{searchQuery}"</p>
-                  <p className="text-sm text-gray-400 mt-1">Try adjusting your search terms or filters</p>
+                  <p className="text-gray-500">
+                    No results found for "{searchQuery}"
+                  </p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Try adjusting your search terms or filters
+                  </p>
                 </div>
               ) : (
                 <div className="text-center py-8">
                   <Search className="h-12 w-12 text-gray-300 mx-auto mb-4" />
                   <p className="text-gray-500">Start typing to search</p>
-                  <p className="text-sm text-gray-400 mt-1">Search across patients, appointments, notes, and more</p>
+                  <p className="text-sm text-gray-400 mt-1">
+                    Search across patients, appointments, notes, and more
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -660,9 +767,9 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
                   size="sm"
                   className="w-full justify-start"
                   onClick={() => {
-                    setSearchQuery('');
-                    handleFilterChange('type', 'appointment');
-                    handleFilterChange('status', 'scheduled');
+                    setSearchQuery("");
+                    handleFilterChange("type", "appointment");
+                    handleFilterChange("status", "scheduled");
                   }}
                 >
                   Today's Appointments
@@ -672,9 +779,9 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
                   size="sm"
                   className="w-full justify-start"
                   onClick={() => {
-                    setSearchQuery('');
-                    handleFilterChange('type', 'patient');
-                    handleFilterChange('status', 'active');
+                    setSearchQuery("");
+                    handleFilterChange("type", "patient");
+                    handleFilterChange("status", "active");
                   }}
                 >
                   Active Patients
@@ -684,9 +791,9 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
                   size="sm"
                   className="w-full justify-start"
                   onClick={() => {
-                    setSearchQuery('');
-                    handleFilterChange('type', 'message');
-                    handleFilterChange('status', 'unread');
+                    setSearchQuery("");
+                    handleFilterChange("type", "message");
+                    handleFilterChange("status", "unread");
                   }}
                 >
                   Unread Messages
@@ -696,8 +803,8 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
                   size="sm"
                   className="w-full justify-start"
                   onClick={() => {
-                    setSearchQuery('');
-                    handleFilterChange('priority', 'high');
+                    setSearchQuery("");
+                    handleFilterChange("priority", "high");
                   }}
                 >
                   High Priority Items
@@ -711,4 +818,4 @@ const GlobalSearch = ({ onResultSelect, userRole = 'admin' }) => {
   );
 };
 
-export default GlobalSearch; 
+export default GlobalSearch;

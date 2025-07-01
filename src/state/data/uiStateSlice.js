@@ -18,5 +18,6 @@ const uiStateSlice = createSlice({
   },
 });
 
-export const { toggleSidebar, toggleDarkMode: toggleUiDarkMode } = uiStateSlice.actions;
+export const { toggleSidebar, toggleDarkMode: toggleUiDarkMode } =
+  uiStateSlice.actions;
 export default uiStateSlice.reducer;

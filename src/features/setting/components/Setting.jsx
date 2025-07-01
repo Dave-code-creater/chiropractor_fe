@@ -62,7 +62,7 @@ export default function Setting() {
       <div
         className={cn(
           "w-full md:w-1/3 lg:w-1/4 max-w-sm p-4",
-          tab && isMobile && "hidden"
+          tab && isMobile && "hidden",
         )}
       >
         <h2 className="text-2xl font-semibold mb-4 px-1">Settings</h2>
@@ -72,7 +72,7 @@ export default function Setting() {
               key={id}
               className={cn(
                 "cursor-pointer flex items-center gap-4 p-4 hover:bg-muted transition my-4",
-                tab === id && "border-primary bg-muted"
+                tab === id && "border-primary bg-muted",
               )}
               onClick={() => setTab(id)}
             >

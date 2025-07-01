@@ -25,14 +25,18 @@ export default function HomePageLayout() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className={`flex flex-col flex-1 ${sidebarPosition === "right" ? "md:flex-row-reverse" : "md:flex-row"}`}>
+      <div
+        className={`flex flex-col flex-1 ${sidebarPosition === "right" ? "md:flex-row-reverse" : "md:flex-row"}`}
+      >
         {showSidebar && (
           <aside className="transition-all duration-300">
             <Sidebar sidebarPosition={sidebarPosition} />
           </aside>
         )}
 
-        <main className="flex-1 min-w-0 overflow-auto bg-gray-50 main-content">          <Outlet />
+        <main className="flex-1 min-w-0 overflow-auto bg-gray-50 main-content">
+          {" "}
+          <Outlet />
           <Toaster richColors />
         </main>
       </div>

@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays } from "lucide-react";
@@ -21,11 +21,14 @@ const UnderDevelopment = () => {
         <CardContent className="space-y-4">
           <div className="text-center text-muted-foreground">
             <p className="mb-2">
-              The feature at <span className="font-mono bg-muted px-2 py-1 rounded">{location.pathname}</span>
+              The feature at{" "}
+              <span className="font-mono bg-muted px-2 py-1 rounded">
+                {location.pathname}
+              </span>
             </p>
             <p>is currently under development and will be available soon.</p>
           </div>
-          
+
           <div className="mt-6 p-4 bg-muted rounded-lg">
             <h3 className="font-semibold mb-2">What to expect:</h3>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
@@ -37,16 +40,16 @@ const UnderDevelopment = () => {
           </div>
 
           <div className="flex flex-col gap-2 mt-6">
-            <Button 
-              variant="default" 
+            <Button
+              variant="default"
               onClick={() => navigate(-1)}
               className="w-full"
             >
               Go Back
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/')}
+            <Button
+              variant="outline"
+              onClick={() => navigate("/")}
               className="w-full"
             >
               Return to Home
@@ -62,4 +65,4 @@ const UnderDevelopment = () => {
   );
 };
 
-export default UnderDevelopment; 
+export default UnderDevelopment;

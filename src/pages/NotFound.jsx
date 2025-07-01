@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -17,22 +17,25 @@ const NotFound = () => {
         <CardContent className="space-y-4">
           <div className="text-center text-muted-foreground">
             <p className="mb-2">
-              The page <span className="font-mono bg-muted px-2 py-1 rounded">{location.pathname}</span>
+              The page{" "}
+              <span className="font-mono bg-muted px-2 py-1 rounded">
+                {location.pathname}
+              </span>
             </p>
             <p>is currently under development or doesn't exist.</p>
           </div>
-          
+
           <div className="flex flex-col gap-2 mt-6">
-            <Button 
-              variant="default" 
+            <Button
+              variant="default"
               onClick={() => navigate(-1)}
               className="w-full"
             >
               Go Back
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => navigate('/')}
+            <Button
+              variant="outline"
+              onClick={() => navigate("/")}
               className="w-full"
             >
               Return to Home
@@ -48,4 +51,4 @@ const NotFound = () => {
   );
 };
 
-export default NotFound; 
+export default NotFound;

@@ -1,34 +1,39 @@
-import { useEffect } from 'react';
-import { useLocation, useNavigate, Outlet, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useLocation, Outlet, Navigate } from "react-router-dom";
+import { useAuthReady } from "../hooks/useAuthReady";
 
 export default function ProtectRoute({ allowedRoles }) {
-    const navigate = useNavigate();
-    const location = useLocation();
-    const isAuthenticated = useSelector(state => state.data.auth.isAuthenticated);
-    const userID = useSelector(state => state.data.auth.userID);
-    const role = useSelector(state => state.data.auth.role);
+  const location = useLocation();
+  const { isReady, isAuthenticated, userID, role } = useAuthReady();
 
-    // if you redirected here from /login, send them back to whatever they wanted
-    const from = location.state?.from?.pathname || `/dashboard/${userID || ''}`;
+  // Show loading while auth state is being rehydrated
+  if (!isReady) {
+    return (
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
+        fontSize: '16px',
+        color: '#6B7280'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ marginBottom: '10px' }}>🔄 Loading...</div>
+          <div style={{ fontSize: '14px' }}>Verifying access</div>
+        </div>
+      </div>
+    );
+  }
 
-    useEffect(() => {
-        if (isAuthenticated && location.pathname === '/login') {
-            navigate(from, { replace: true });
-        }
-    }, [isAuthenticated, from, navigate, location.pathname]);
+  // not logged in → go to login
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
-    // not logged in → go to login
-    if (!isAuthenticated) {
-        return <Navigate to="/login" replace state={{ from: location }} />;
-    }
+  // if allowedRoles is provided AND the user's role isn't in it → unauthorized
+  if (allowedRoles?.length && !allowedRoles.includes(role)) {
+    return <Navigate to="/unauthorized" replace />;
+  }
 
-    // if allowedRoles is provided AND the user's role isn't in it → unauthorized
-    if (allowedRoles?.length && !allowedRoles.includes(role)) {
-        console.warn(`Unauthorized access attempt by user with role: ${role}`);
-        return <Navigate to="/unauthorized" replace />;
-    }
-
-    // otherwise render the child route
-    return <Outlet />;
+  // otherwise render the child route
+  return <Outlet />;
 }

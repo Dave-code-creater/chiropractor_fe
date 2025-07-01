@@ -111,11 +111,16 @@ export default function PatientIntakeForm({
               className="mt-1"
             />
           ) : (
-            <CardTitle onClick={() => setEditingName(true)} className="cursor-pointer">
+            <CardTitle
+              onClick={() => setEditingName(true)}
+              className="cursor-pointer"
+            >
               {reportName || "Untitled Report"}
             </CardTitle>
           )}
-          <p className="text-sm text-muted-foreground mt-1">Patient Intake Form</p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Patient Intake Form
+          </p>
         </CardHeader>
         <CardContent className="space-y-6">
           {Object.keys(errors).length > 0 && (
@@ -211,8 +216,10 @@ export default function PatientIntakeForm({
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  {['Single','Married','Widowed','Divorced'].map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  {["Single", "Married", "Widowed", "Divorced"].map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {opt}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -227,77 +234,87 @@ export default function PatientIntakeForm({
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  {['Asian','Black','Caucasian','Hispanic','Other'].map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
-                  ))}
+                  {["Asian", "Black", "Caucasian", "Hispanic", "Other"].map(
+                    (opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ),
+                  )}
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <fieldset className="border rounded-md p-4 space-y-4">
-            <legend className="text-sm font-medium text-muted-foreground px-2">Home Address</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              Home Address
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="street">Street</Label>
-              <Input
-                id="street"
-                value={formData.street}
-                onChange={(e) => handleChange("street", e.target.value)}
-              />
-              {errors.street && (
-                <p className="text-red-500 text-sm mt-1">{errors.street}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="city">City</Label>
-              <Input
-                id="city"
-                value={formData.city}
-                onChange={(e) => handleChange("city", e.target.value)}
-              />
-              {errors.city && (
-                <p className="text-red-500 text-sm mt-1">{errors.city}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="state">State</Label>
-              <Input
-                id="state"
-                value={formData.state}
-                onChange={(e) => handleChange("state", e.target.value)}
-              />
-              {errors.state && (
-                <p className="text-red-500 text-sm mt-1">{errors.state}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="zip">Zip</Label>
-              <Input
-                id="zip"
-                value={formData.zip}
-                onChange={(e) => handleChange("zip", e.target.value)}
-              />
-              {errors.zip && (
-                <p className="text-red-500 text-sm mt-1">{errors.zip}</p>
-              )}
-            </div>
-            <div className="md:col-span-2">
-              <Label htmlFor="homePhone">Home Phone</Label>
-              <Input
-                id="homePhone"
-                value={formData.homePhone}
-                onChange={(e) => handleChange("homePhone", e.target.value)}
-              />
-              {errors.homePhone && (
-                <p className="text-red-500 text-sm mt-1">{errors.homePhone}</p>
-              )}
-            </div>
+                <Input
+                  id="street"
+                  value={formData.street}
+                  onChange={(e) => handleChange("street", e.target.value)}
+                />
+                {errors.street && (
+                  <p className="text-red-500 text-sm mt-1">{errors.street}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="city">City</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => handleChange("city", e.target.value)}
+                />
+                {errors.city && (
+                  <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="state">State</Label>
+                <Input
+                  id="state"
+                  value={formData.state}
+                  onChange={(e) => handleChange("state", e.target.value)}
+                />
+                {errors.state && (
+                  <p className="text-red-500 text-sm mt-1">{errors.state}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="zip">Zip</Label>
+                <Input
+                  id="zip"
+                  value={formData.zip}
+                  onChange={(e) => handleChange("zip", e.target.value)}
+                />
+                {errors.zip && (
+                  <p className="text-red-500 text-sm mt-1">{errors.zip}</p>
+                )}
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="homePhone">Home Phone</Label>
+                <Input
+                  id="homePhone"
+                  value={formData.homePhone}
+                  onChange={(e) => handleChange("homePhone", e.target.value)}
+                />
+                {errors.homePhone && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.homePhone}
+                  </p>
+                )}
+              </div>
             </div>
           </fieldset>
 
           <fieldset className="border rounded-md p-4 space-y-4">
-            <legend className="text-sm font-medium text-muted-foreground px-2">Employment &amp; Occupation</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              Employment &amp; Occupation
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="employer">Patient Employed By</Label>
@@ -325,66 +342,87 @@ export default function PatientIntakeForm({
               </div>
               <div>
                 <Label htmlFor="workPhone">Work Phone</Label>
-              <Input
-                id="workPhone"
-                value={formData.workPhone}
-                onChange={(e) => handleChange("workPhone", e.target.value)}
-              />
-              {errors.workPhone && (
-                <p className="text-red-500 text-sm mt-1">{errors.workPhone}</p>
-              )}
-            </div>
+                <Input
+                  id="workPhone"
+                  value={formData.workPhone}
+                  onChange={(e) => handleChange("workPhone", e.target.value)}
+                />
+                {errors.workPhone && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.workPhone}
+                  </p>
+                )}
+              </div>
             </div>
           </fieldset>
 
           <fieldset className="border rounded-md p-4 space-y-4">
-            <legend className="text-sm font-medium text-muted-foreground px-2">Emergency &amp; Spouse</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              Emergency &amp; Spouse
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="spousePhone">Spouse Phone</Label>
-              <Input
-                id="spousePhone"
-                value={formData.spousePhone}
-                onChange={(e) => handleChange("spousePhone", e.target.value)}
-              />
-              {errors.spousePhone && (
-                <p className="text-red-500 text-sm mt-1">{errors.spousePhone}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="contact1">Emergency Contact</Label>
-              <Input
-                id="contact1"
-                value={formData.contact1}
-                onChange={(e) => handleChange("contact1", e.target.value)}
-              />
-              {errors.contact1 && (
-                <p className="text-red-500 text-sm mt-1">{errors.contact1}</p>
-              )}
-            </div>
-            <div>
-              <Label htmlFor="contact1Phone">Contact Phone</Label>
-              <Input
-                id="contact1Phone"
-                value={formData.contact1Phone}
-                onChange={(e) => handleChange("contact1Phone", e.target.value)}
-              />
-              {errors.contact1Phone && (
-                <p className="text-red-500 text-sm mt-1">{errors.contact1Phone}</p>
-              )}
-            </div>
+                <Input
+                  id="spousePhone"
+                  value={formData.spousePhone}
+                  onChange={(e) => handleChange("spousePhone", e.target.value)}
+                />
+                {errors.spousePhone && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.spousePhone}
+                  </p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="contact1">Emergency Contact</Label>
+                <Input
+                  id="contact1"
+                  value={formData.contact1}
+                  onChange={(e) => handleChange("contact1", e.target.value)}
+                />
+                {errors.contact1 && (
+                  <p className="text-red-500 text-sm mt-1">{errors.contact1}</p>
+                )}
+              </div>
+              <div>
+                <Label htmlFor="contact1Phone">Contact Phone</Label>
+                <Input
+                  id="contact1Phone"
+                  value={formData.contact1Phone}
+                  onChange={(e) =>
+                    handleChange("contact1Phone", e.target.value)
+                  }
+                />
+                {errors.contact1Phone && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {errors.contact1Phone}
+                  </p>
+                )}
+              </div>
               <div>
                 <Label>Relationship</Label>
                 <Select
                   value={formData.contact1Relationship}
-                  onValueChange={(val) => handleChange("contact1Relationship", val)}
+                  onValueChange={(val) =>
+                    handleChange("contact1Relationship", val)
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    {['Spouse','Parent','Sibling','Child','Friend','Other'].map((opt) => (
-                      <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    {[
+                      "Spouse",
+                      "Parent",
+                      "Sibling",
+                      "Child",
+                      "Friend",
+                      "Other",
+                    ].map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>

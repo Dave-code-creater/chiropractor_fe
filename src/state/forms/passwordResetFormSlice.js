@@ -114,4 +114,4 @@ export const {
   resetForm,
 } = passwordResetFormSlice.actions;
 
-export default passwordResetFormSlice.reducer; 
+export default passwordResetFormSlice.reducer;

@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import React, { useState, useEffect, useRef } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
   Target,
   ArrowRight,
@@ -16,18 +16,18 @@ import {
   Pause,
   SkipForward,
   CheckCircle,
-  AlertCircle
-} from 'lucide-react';
+  AlertCircle,
+} from "lucide-react";
 
-const FeatureHighlight = ({ 
+const FeatureHighlight = ({
   isActive = false,
   onClose,
   steps = [],
   currentStep = 0,
   onStepChange,
   autoAdvance = true,
-  highlightColor = 'blue',
-  position = 'auto' // 'auto', 'top', 'bottom', 'left', 'right'
+  highlightColor = "blue",
+  position = "auto", // 'auto', 'top', 'bottom', 'left', 'right'
 }) => {
   const [isVisible, setIsVisible] = useState(isActive);
   const [highlightedElement, setHighlightedElement] = useState(null);
@@ -66,14 +66,15 @@ const FeatureHighlight = ({
 
     const rect = element.getBoundingClientRect();
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+    const scrollLeft =
+      window.pageXOffset || document.documentElement.scrollLeft;
 
     // Create highlight overlay
     const highlight = {
       top: rect.top + scrollTop,
       left: rect.left + scrollLeft,
       width: rect.width,
-      height: rect.height
+      height: rect.height,
     };
 
     setHighlightedElement(highlight);
@@ -85,7 +86,7 @@ const FeatureHighlight = ({
     setTooltipPosition({ x: tooltipX, y: tooltipY });
 
     // Scroll element into view
-    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
   };
 
   const removeHighlight = () => {
@@ -139,13 +140,20 @@ const FeatureHighlight = ({
             left: highlightedElement.left - 4,
             width: highlightedElement.width + 8,
             height: highlightedElement.height + 8,
-            boxShadow: `0 0 0 4px ${highlightColor === 'blue' ? '#3B82F6' : 
-                                   highlightColor === 'green' ? '#10B981' :
-                                   highlightColor === 'purple' ? '#8B5CF6' :
-                                   highlightColor === 'orange' ? '#F59E0B' : '#3B82F6'}, 
+            boxShadow: `0 0 0 4px ${
+              highlightColor === "blue"
+                ? "#3B82F6"
+                : highlightColor === "green"
+                  ? "#10B981"
+                  : highlightColor === "purple"
+                    ? "#8B5CF6"
+                    : highlightColor === "orange"
+                      ? "#F59E0B"
+                      : "#3B82F6"
+            }, 
                        0 0 0 9999px rgba(0, 0, 0, 0.5)`,
-            borderRadius: '8px',
-            animation: 'pulse 2s infinite'
+            borderRadius: "8px",
+            animation: "pulse 2s infinite",
           }}
         />
       )}
@@ -157,7 +165,7 @@ const FeatureHighlight = ({
         style={{
           left: tooltipPosition.x,
           top: tooltipPosition.y,
-          transform: 'translateX(-50%)'
+          transform: "translateX(-50%)",
         }}
       >
         <Card className="shadow-xl border-0 bg-white">
@@ -165,43 +173,78 @@ const FeatureHighlight = ({
             {/* Header */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center space-x-2">
-                <div className={`p-2 rounded-lg ${
-                  highlightColor === 'blue' ? 'bg-blue-100' :
-                  highlightColor === 'green' ? 'bg-green-100' :
-                  highlightColor === 'purple' ? 'bg-purple-100' :
-                  highlightColor === 'orange' ? 'bg-orange-100' : 'bg-blue-100'
-                }`}>
-                  {currentStepData.action === 'click' && (
-                    <MousePointer className={`h-4 w-4 ${
-                      highlightColor === 'blue' ? 'text-blue-600' :
-                      highlightColor === 'green' ? 'text-green-600' :
-                      highlightColor === 'purple' ? 'text-purple-600' :
-                      highlightColor === 'orange' ? 'text-orange-600' : 'text-blue-600'
-                    }`} />
+                <div
+                  className={`p-2 rounded-lg ${
+                    highlightColor === "blue"
+                      ? "bg-blue-100"
+                      : highlightColor === "green"
+                        ? "bg-green-100"
+                        : highlightColor === "purple"
+                          ? "bg-purple-100"
+                          : highlightColor === "orange"
+                            ? "bg-orange-100"
+                            : "bg-blue-100"
+                  }`}
+                >
+                  {currentStepData.action === "click" && (
+                    <MousePointer
+                      className={`h-4 w-4 ${
+                        highlightColor === "blue"
+                          ? "text-blue-600"
+                          : highlightColor === "green"
+                            ? "text-green-600"
+                            : highlightColor === "purple"
+                              ? "text-purple-600"
+                              : highlightColor === "orange"
+                                ? "text-orange-600"
+                                : "text-blue-600"
+                      }`}
+                    />
                   )}
-                  {currentStepData.action === 'look' && (
-                    <Eye className={`h-4 w-4 ${
-                      highlightColor === 'blue' ? 'text-blue-600' :
-                      highlightColor === 'green' ? 'text-green-600' :
-                      highlightColor === 'purple' ? 'text-purple-600' :
-                      highlightColor === 'orange' ? 'text-orange-600' : 'text-blue-600'
-                    }`} />
+                  {currentStepData.action === "look" && (
+                    <Eye
+                      className={`h-4 w-4 ${
+                        highlightColor === "blue"
+                          ? "text-blue-600"
+                          : highlightColor === "green"
+                            ? "text-green-600"
+                            : highlightColor === "purple"
+                              ? "text-purple-600"
+                              : highlightColor === "orange"
+                                ? "text-orange-600"
+                                : "text-blue-600"
+                      }`}
+                    />
                   )}
-                  {currentStepData.action === 'interact' && (
-                    <Hand className={`h-4 w-4 ${
-                      highlightColor === 'blue' ? 'text-blue-600' :
-                      highlightColor === 'green' ? 'text-green-600' :
-                      highlightColor === 'purple' ? 'text-purple-600' :
-                      highlightColor === 'orange' ? 'text-orange-600' : 'text-blue-600'
-                    }`} />
+                  {currentStepData.action === "interact" && (
+                    <Hand
+                      className={`h-4 w-4 ${
+                        highlightColor === "blue"
+                          ? "text-blue-600"
+                          : highlightColor === "green"
+                            ? "text-green-600"
+                            : highlightColor === "purple"
+                              ? "text-purple-600"
+                              : highlightColor === "orange"
+                                ? "text-orange-600"
+                                : "text-blue-600"
+                      }`}
+                    />
                   )}
                   {!currentStepData.action && (
-                    <Target className={`h-4 w-4 ${
-                      highlightColor === 'blue' ? 'text-blue-600' :
-                      highlightColor === 'green' ? 'text-green-600' :
-                      highlightColor === 'purple' ? 'text-purple-600' :
-                      highlightColor === 'orange' ? 'text-orange-600' : 'text-blue-600'
-                    }`} />
+                    <Target
+                      className={`h-4 w-4 ${
+                        highlightColor === "blue"
+                          ? "text-blue-600"
+                          : highlightColor === "green"
+                            ? "text-green-600"
+                            : highlightColor === "purple"
+                              ? "text-purple-600"
+                              : highlightColor === "orange"
+                                ? "text-orange-600"
+                                : "text-blue-600"
+                      }`}
+                    />
                   )}
                 </div>
                 <div>
@@ -231,14 +274,21 @@ const FeatureHighlight = ({
 
               {/* Action hint */}
               {currentStepData.action && (
-                <div className={`p-3 rounded-lg ${
-                  highlightColor === 'blue' ? 'bg-blue-50 border border-blue-200' :
-                  highlightColor === 'green' ? 'bg-green-50 border border-green-200' :
-                  highlightColor === 'purple' ? 'bg-purple-50 border border-purple-200' :
-                  highlightColor === 'orange' ? 'bg-orange-50 border border-orange-200' : 'bg-blue-50 border border-blue-200'
-                }`}>
+                <div
+                  className={`p-3 rounded-lg ${
+                    highlightColor === "blue"
+                      ? "bg-blue-50 border border-blue-200"
+                      : highlightColor === "green"
+                        ? "bg-green-50 border border-green-200"
+                        : highlightColor === "purple"
+                          ? "bg-purple-50 border border-purple-200"
+                          : highlightColor === "orange"
+                            ? "bg-orange-50 border border-orange-200"
+                            : "bg-blue-50 border border-blue-200"
+                  }`}
+                >
                   <div className="flex items-center space-x-2">
-                    {currentStepData.action === 'click' && (
+                    {currentStepData.action === "click" && (
                       <>
                         <MousePointer className="h-4 w-4 text-gray-600" />
                         <span className="text-sm font-medium text-gray-700">
@@ -246,7 +296,7 @@ const FeatureHighlight = ({
                         </span>
                       </>
                     )}
-                    {currentStepData.action === 'look' && (
+                    {currentStepData.action === "look" && (
                       <>
                         <Eye className="h-4 w-4 text-gray-600" />
                         <span className="text-sm font-medium text-gray-700">
@@ -254,7 +304,7 @@ const FeatureHighlight = ({
                         </span>
                       </>
                     )}
-                    {currentStepData.action === 'interact' && (
+                    {currentStepData.action === "interact" && (
                       <>
                         <Hand className="h-4 w-4 text-gray-600" />
                         <span className="text-sm font-medium text-gray-700">
@@ -272,7 +322,9 @@ const FeatureHighlight = ({
                   <Lightbulb className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
                   <div>
                     <p className="text-sm font-medium text-yellow-800">Tip</p>
-                    <p className="text-sm text-yellow-700">{currentStepData.tip}</p>
+                    <p className="text-sm text-yellow-700">
+                      {currentStepData.tip}
+                    </p>
                   </div>
                 </div>
               )}
@@ -282,8 +334,12 @@ const FeatureHighlight = ({
                 <div className="flex items-start space-x-2 p-3 bg-red-50 border border-red-200 rounded-lg">
                   <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
                   <div>
-                    <p className="text-sm font-medium text-red-800">Important</p>
-                    <p className="text-sm text-red-700">{currentStepData.warning}</p>
+                    <p className="text-sm font-medium text-red-800">
+                      Important
+                    </p>
+                    <p className="text-sm text-red-700">
+                      {currentStepData.warning}
+                    </p>
                   </div>
                 </div>
               )}
@@ -300,11 +356,7 @@ const FeatureHighlight = ({
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={togglePlay}
-                >
+                <Button variant="outline" size="sm" onClick={togglePlay}>
                   {isPlaying ? (
                     <Pause className="h-4 w-4" />
                   ) : (
@@ -320,7 +372,7 @@ const FeatureHighlight = ({
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Button
                   variant="ghost"
@@ -349,22 +401,28 @@ const FeatureHighlight = ({
         {/* Arrow pointing to highlighted element */}
         <div
           className={`absolute w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent ${
-            highlightColor === 'blue' ? 'border-t-blue-500' :
-            highlightColor === 'green' ? 'border-t-green-500' :
-            highlightColor === 'purple' ? 'border-t-purple-500' :
-            highlightColor === 'orange' ? 'border-t-orange-500' : 'border-t-blue-500'
+            highlightColor === "blue"
+              ? "border-t-blue-500"
+              : highlightColor === "green"
+                ? "border-t-green-500"
+                : highlightColor === "purple"
+                  ? "border-t-purple-500"
+                  : highlightColor === "orange"
+                    ? "border-t-orange-500"
+                    : "border-t-blue-500"
           }`}
           style={{
-            top: '-8px',
-            left: '50%',
-            transform: 'translateX(-50%)'
+            top: "-8px",
+            left: "50%",
+            transform: "translateX(-50%)",
           }}
         />
       </div>
 
       <style jsx>{`
         @keyframes pulse {
-          0%, 100% {
+          0%,
+          100% {
             opacity: 1;
           }
           50% {
@@ -376,4 +434,4 @@ const FeatureHighlight = ({
   );
 };
 
-export default FeatureHighlight; 
+export default FeatureHighlight;

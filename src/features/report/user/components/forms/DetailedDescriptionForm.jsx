@@ -3,7 +3,11 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export default function DetailedDescriptionForm({ initialData = {}, onSubmit, onBack }) {
+export default function DetailedDescriptionForm({
+  initialData = {},
+  onSubmit,
+  onBack,
+}) {
   const [formData, setFormData] = useState({
     symptomDetails: initialData.symptomDetails || "",
     mainComplaints: initialData.mainComplaints || "",
@@ -47,13 +51,17 @@ export default function DetailedDescriptionForm({ initialData = {}, onSubmit, on
             />
           </div>
           <div>
-            <Label htmlFor="previousHealthcare">Previous healthcare received</Label>
+            <Label htmlFor="previousHealthcare">
+              Previous healthcare received
+            </Label>
             <textarea
               id="previousHealthcare"
               className="w-full border rounded px-3 py-2 resize-y"
               rows={4}
               value={formData.previousHealthcare}
-              onChange={(e) => handleChange("previousHealthcare", e.target.value)}
+              onChange={(e) =>
+                handleChange("previousHealthcare", e.target.value)
+              }
             />
           </div>
           <div className="flex justify-between pt-4">

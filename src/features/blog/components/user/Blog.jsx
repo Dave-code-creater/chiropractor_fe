@@ -1,6 +1,9 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useFetchPostsQuery, useFetchCategoriesQuery } from "@/services/blogApi";
+import {
+  useGetBlogPostsQuery,
+  useGetCategoriesQuery,
+} from "@/services/blogApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,18 +12,18 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { 
-  Search, 
-  Calendar, 
-  Clock, 
-  Eye, 
-  Heart, 
-  User, 
+import {
+  Search,
+  Calendar,
+  Clock,
+  Eye,
+  Heart,
+  User,
   Tag,
   BookOpen,
   Filter,
   ArrowRight,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 import {
   Select,
@@ -36,20 +39,18 @@ export default function Blog() {
   const [sortBy, setSortBy] = useState("newest");
 
   // Fetch data
-  const { 
-    data: postsData, 
-    isLoading: postsLoading, 
-    error: postsError 
-  } = useFetchPostsQuery({
+  const {
+    data: postsData,
+    isLoading: postsLoading,
+    error: postsError,
+  } = useGetBlogPostsQuery({
     category: selectedCategory === "all" ? undefined : selectedCategory,
     search: searchTerm || undefined,
-    status: "published"
+    status: "published",
   });
 
-  const { 
-    data: categoriesData, 
-    isLoading: categoriesLoading 
-  } = useFetchCategoriesQuery();
+  const { data: categoriesData, isLoading: categoriesLoading } =
+    useGetCategoriesQuery();
 
   // Extract data from API response
   // The transformResponse function in blogApi returns the metadata directly
@@ -60,13 +61,17 @@ export default function Blog() {
   // Sort posts
   const sortedPosts = useMemo(() => {
     if (!posts.length) return [];
-    
+
     const sorted = [...posts];
     switch (sortBy) {
       case "newest":
-        return sorted.sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
+        return sorted.sort(
+          (a, b) => new Date(b.publishDate) - new Date(a.publishDate),
+        );
       case "oldest":
-        return sorted.sort((a, b) => new Date(a.publishDate) - new Date(b.publishDate));
+        return sorted.sort(
+          (a, b) => new Date(a.publishDate) - new Date(b.publishDate),
+        );
       case "popular":
         return sorted.sort((a, b) => (b.views || 0) - (a.views || 0));
       case "likes":
@@ -79,22 +84,22 @@ export default function Blog() {
   // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
     });
   };
 
   // Get category color
   const getCategoryColor = (categorySlug) => {
-    const category = categories.find(cat => cat.slug === categorySlug);
+    const category = categories.find((cat) => cat.slug === categorySlug);
     return category?.color || "#6b7280";
   };
 
   // Get category name
   const getCategoryName = (categorySlug) => {
-    const category = categories.find(cat => cat.slug === categorySlug);
+    const category = categories.find((cat) => cat.slug === categorySlug);
     return category?.name || categorySlug;
   };
 
@@ -118,8 +123,11 @@ export default function Blog() {
                   className="pl-10 bg-background/50 border-border/50 focus:bg-background"
                 />
               </div>
-              
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
                 <SelectTrigger className="w-full sm:w-48 bg-background/50 border-border/50">
                   <Filter className="w-4 h-4 mr-2" />
                   <SelectValue placeholder="Category" />
@@ -129,8 +137,8 @@ export default function Blog() {
                   {categories.map((category) => (
                     <SelectItem key={category.id} value={category.slug}>
                       <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
+                        <div
+                          className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: category.color }}
                         />
                         {category.name}
@@ -175,14 +183,22 @@ export default function Blog() {
                 {categories.map((category) => (
                   <Button
                     key={category.id}
-                    variant={selectedCategory === category.slug ? "default" : "outline"}
+                    variant={
+                      selectedCategory === category.slug ? "default" : "outline"
+                    }
                     size="sm"
                     onClick={() => setSelectedCategory(category.slug)}
                     className="shrink-0"
                     style={{
-                      backgroundColor: selectedCategory === category.slug ? category.color : undefined,
+                      backgroundColor:
+                        selectedCategory === category.slug
+                          ? category.color
+                          : undefined,
                       borderColor: category.color,
-                      color: selectedCategory === category.slug ? 'white' : category.color
+                      color:
+                        selectedCategory === category.slug
+                          ? "white"
+                          : category.color,
                     }}
                   >
                     {category.name}
@@ -242,7 +258,8 @@ export default function Blog() {
               </div>
               <h3 className="text-xl font-semibold">Unable to Load Posts</h3>
               <p className="text-muted-foreground">
-                We're having trouble loading the blog posts. Please try again later.
+                We're having trouble loading the blog posts. Please try again
+                later.
               </p>
               <Button onClick={() => window.location.reload()}>
                 Try Again
@@ -263,13 +280,12 @@ export default function Blog() {
                   </div>
                   <h3 className="text-xl font-semibold">No Posts Found</h3>
                   <p className="text-muted-foreground">
-                    {searchTerm 
+                    {searchTerm
                       ? `No posts match your search for "${searchTerm}"`
-                      : `No posts found in the selected category`
-                    }
+                      : `No posts found in the selected category`}
                   </p>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => {
                       setSearchTerm("");
                       setSelectedCategory("all");
@@ -289,9 +305,13 @@ export default function Blog() {
                     <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
                       <BookOpen className="w-16 h-16 text-primary/30" />
                     </div>
-                    <Badge 
+                    <Badge
                       className="absolute top-4 left-4"
-                      style={{ backgroundColor: getCategoryColor(featuredPost.category) }}
+                      style={{
+                        backgroundColor: getCategoryColor(
+                          featuredPost.category,
+                        ),
+                      }}
                     >
                       Featured
                     </Badge>
@@ -299,11 +319,13 @@ export default function Blog() {
                   <div className="p-6 md:w-1/2 flex flex-col justify-between">
                     <div className="space-y-4">
                       <div className="flex items-center gap-2">
-                        <Badge 
+                        <Badge
                           variant="outline"
-                          style={{ 
-                            borderColor: getCategoryColor(featuredPost.category),
-                            color: getCategoryColor(featuredPost.category)
+                          style={{
+                            borderColor: getCategoryColor(
+                              featuredPost.category,
+                            ),
+                            color: getCategoryColor(featuredPost.category),
                           }}
                         >
                           {getCategoryName(featuredPost.category)}
@@ -312,15 +334,15 @@ export default function Blog() {
                           {formatDate(featuredPost.publishDate)}
                         </span>
                       </div>
-                      
+
                       <h2 className="text-2xl md:text-3xl font-bold leading-tight">
                         {featuredPost.title}
                       </h2>
-                      
+
                       <p className="text-muted-foreground leading-relaxed">
                         {featuredPost.excerpt}
                       </p>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Clock className="w-4 h-4" />
@@ -336,21 +358,28 @@ export default function Blog() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between mt-6">
                       <div className="flex items-center gap-3">
                         <Avatar className="w-10 h-10">
                           <AvatarImage src={featuredPost.author?.avatar} />
                           <AvatarFallback>
-                            {featuredPost.author?.name?.split(' ').map(n => n[0]).join('') || 'A'}
+                            {featuredPost.author?.name
+                              ?.split(" ")
+                              .map((n) => n[0])
+                              .join("") || "A"}
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium text-sm">{featuredPost.author?.name}</p>
-                          <p className="text-xs text-muted-foreground">Author</p>
+                          <p className="font-medium text-sm">
+                            {featuredPost.author?.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            Author
+                          </p>
                         </div>
                       </div>
-                      
+
                       <Button asChild>
                         <Link to={`/blog/${featuredPost.slug}`}>
                           Read Article
@@ -367,20 +396,22 @@ export default function Blog() {
             {regularPosts.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {regularPosts.map((post) => (
-                  <Card 
-                    key={post.id} 
+                  <Card
+                    key={post.id}
                     className="group overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
                   >
                     <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
                       <BookOpen className="w-12 h-12 text-primary/30" />
-                      <Badge 
+                      <Badge
                         className="absolute top-3 left-3 text-xs"
-                        style={{ backgroundColor: getCategoryColor(post.category) }}
+                        style={{
+                          backgroundColor: getCategoryColor(post.category),
+                        }}
                       >
                         {getCategoryName(post.category)}
                       </Badge>
                     </div>
-                    
+
                     <CardContent className="p-5">
                       <div className="space-y-3">
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -396,38 +427,45 @@ export default function Blog() {
                             </div>
                           </div>
                         </div>
-                        
+
                         <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
                           {post.title}
                         </h3>
-                        
+
                         <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
                           {post.excerpt}
                         </p>
-                        
+
                         <div className="flex flex-wrap gap-1">
                           {post.tags?.slice(0, 3).map((tag) => (
-                            <Badge key={tag} variant="secondary" className="text-xs">
+                            <Badge
+                              key={tag}
+                              variant="secondary"
+                              className="text-xs"
+                            >
                               {tag}
                             </Badge>
                           ))}
                         </div>
-                        
+
                         <Separator />
-                        
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <Avatar className="w-6 h-6">
                               <AvatarImage src={post.author?.avatar} />
                               <AvatarFallback className="text-xs">
-                                {post.author?.name?.split(' ').map(n => n[0]).join('') || 'A'}
+                                {post.author?.name
+                                  ?.split(" ")
+                                  .map((n) => n[0])
+                                  .join("") || "A"}
                               </AvatarFallback>
                             </Avatar>
                             <span className="text-xs text-muted-foreground">
                               {post.author?.name}
                             </span>
                           </div>
-                          
+
                           <Button variant="ghost" size="sm" asChild>
                             <Link to={`/blog/${post.slug}`}>
                               Read More

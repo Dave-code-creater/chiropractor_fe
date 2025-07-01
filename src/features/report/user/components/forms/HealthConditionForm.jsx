@@ -11,7 +11,12 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-export default function HealthConditionForm({ initialData = {}, onSubmit, onBack, isLast = false }) {
+export default function HealthConditionForm({
+  initialData = {},
+  onSubmit,
+  onBack,
+  isLast = false,
+}) {
   const [formData, setFormData] = useState({
     hasCondition: initialData.hasCondition || "",
     conditionDetails: initialData.conditionDetails || "",
@@ -46,11 +51,16 @@ export default function HealthConditionForm({ initialData = {}, onSubmit, onBack
         </CardHeader>
         <CardContent className="space-y-6">
           <fieldset className="border rounded-md p-4 space-y-4">
-            <legend className="text-sm font-medium text-muted-foreground px-2">Medical &amp; Surgical History</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              Medical &amp; Surgical History
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Past medical conditions?</Label>
-                <Select value={formData.hasCondition} onValueChange={(val) => handleChange("hasCondition", val)}>
+                <Select
+                  value={formData.hasCondition}
+                  onValueChange={(val) => handleChange("hasCondition", val)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -62,12 +72,19 @@ export default function HealthConditionForm({ initialData = {}, onSubmit, onBack
               </div>
               <div>
                 <Label>Past surgical history?</Label>
-                <Select value={formData.hasSurgicalHistory} onValueChange={(val) => handleChange("hasSurgicalHistory", val)}>
+                <Select
+                  value={formData.hasSurgicalHistory}
+                  onValueChange={(val) =>
+                    handleChange("hasSurgicalHistory", val)
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="No">No major surgical history</SelectItem>
+                    <SelectItem value="No">
+                      No major surgical history
+                    </SelectItem>
                     <SelectItem value="Yes">Yes</SelectItem>
                   </SelectContent>
                 </Select>
@@ -79,28 +96,39 @@ export default function HealthConditionForm({ initialData = {}, onSubmit, onBack
                   className="w-full border rounded px-3 py-2 resize-y"
                   rows={3}
                   value={formData.conditionDetails}
-                  onChange={(e) => handleChange("conditionDetails", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("conditionDetails", e.target.value)
+                  }
                 />
               </div>
               <div className="md:col-span-2">
-                <Label htmlFor="surgicalHistoryDetails">Surgical History Details</Label>
+                <Label htmlFor="surgicalHistoryDetails">
+                  Surgical History Details
+                </Label>
                 <textarea
                   id="surgicalHistoryDetails"
                   className="w-full border rounded px-3 py-2 resize-y"
                   rows={3}
                   value={formData.surgicalHistoryDetails}
-                  onChange={(e) => handleChange("surgicalHistoryDetails", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("surgicalHistoryDetails", e.target.value)
+                  }
                 />
               </div>
             </div>
           </fieldset>
 
           <fieldset className="border rounded-md p-4 space-y-4">
-            <legend className="text-sm font-medium text-muted-foreground px-2">Medication</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              Medication
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Currently taking medication?</Label>
-                <Select value={formData.medication} onValueChange={(val) => handleChange("medication", val)}>
+                <Select
+                  value={formData.medication}
+                  onValueChange={(val) => handleChange("medication", val)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -117,18 +145,25 @@ export default function HealthConditionForm({ initialData = {}, onSubmit, onBack
                   className="w-full border rounded px-3 py-2 resize-y"
                   rows={3}
                   value={formData.medicationNames}
-                  onChange={(e) => handleChange("medicationNames", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("medicationNames", e.target.value)
+                  }
                 />
               </div>
             </div>
           </fieldset>
 
           <fieldset className="border rounded-md p-4 space-y-4">
-            <legend className="text-sm font-medium text-muted-foreground px-2">Occupational History</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              Occupational History
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Currently Working?</Label>
-                <Select value={formData.currentlyWorking} onValueChange={(val) => handleChange("currentlyWorking", val)}>
+                <Select
+                  value={formData.currentlyWorking}
+                  onValueChange={(val) => handleChange("currentlyWorking", val)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -141,7 +176,10 @@ export default function HealthConditionForm({ initialData = {}, onSubmit, onBack
               </div>
               <div>
                 <Label>Work Times</Label>
-                <Select value={formData.workTimes} onValueChange={(val) => handleChange("workTimes", val)}>
+                <Select
+                  value={formData.workTimes}
+                  onValueChange={(val) => handleChange("workTimes", val)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -156,7 +194,9 @@ export default function HealthConditionForm({ initialData = {}, onSubmit, onBack
                 <Input
                   id="workHoursPerDay"
                   value={formData.workHoursPerDay}
-                  onChange={(e) => handleChange("workHoursPerDay", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("workHoursPerDay", e.target.value)
+                  }
                 />
               </div>
               <div>
@@ -164,36 +204,51 @@ export default function HealthConditionForm({ initialData = {}, onSubmit, onBack
                 <Input
                   id="workDaysPerWeek"
                   value={formData.workDaysPerWeek}
-                  onChange={(e) => handleChange("workDaysPerWeek", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("workDaysPerWeek", e.target.value)
+                  }
                 />
               </div>
               <div className="md:col-span-2">
-                <Label htmlFor="jobDescription">Describe your present job requirements</Label>
+                <Label htmlFor="jobDescription">
+                  Describe your present job requirements
+                </Label>
                 <textarea
                   id="jobDescription"
                   className="w-full border rounded px-3 py-2 resize-y"
                   rows={3}
                   value={formData.jobDescription}
-                  onChange={(e) => handleChange("jobDescription", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("jobDescription", e.target.value)
+                  }
                 />
               </div>
             </div>
           </fieldset>
 
           <fieldset className="border rounded-md p-4 space-y-4">
-            <legend className="text-sm font-medium text-muted-foreground px-2">Female Specific</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              Female Specific
+            </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="lastMenstrualPeriod">Last menstrual period</Label>
+                <Label htmlFor="lastMenstrualPeriod">
+                  Last menstrual period
+                </Label>
                 <Input
                   id="lastMenstrualPeriod"
                   value={formData.lastMenstrualPeriod}
-                  onChange={(e) => handleChange("lastMenstrualPeriod", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("lastMenstrualPeriod", e.target.value)
+                  }
                 />
               </div>
               <div>
                 <Label>Are you or could you be pregnant?</Label>
-                <Select value={formData.isPregnantNow} onValueChange={(val) => handleChange("isPregnantNow", val)}>
+                <Select
+                  value={formData.isPregnantNow}
+                  onValueChange={(val) => handleChange("isPregnantNow", val)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -208,7 +263,9 @@ export default function HealthConditionForm({ initialData = {}, onSubmit, onBack
                 <Input
                   id="weeksPregnant"
                   value={formData.weeksPregnant}
-                  onChange={(e) => handleChange("weeksPregnant", e.target.value)}
+                  onChange={(e) =>
+                    handleChange("weeksPregnant", e.target.value)
+                  }
                 />
               </div>
             </div>

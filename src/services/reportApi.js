@@ -1,418 +1,238 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "./baseApi";
+import { baseQueryWithReauth, CACHE_TIMES } from "./baseApi";
 
 export const reportApi = createApi({
   reducerPath: "reportApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Reports"],
+  tagTypes: ["Reports", "PatientReports", "DoctorReports"],
+  keepUnusedDataFor: CACHE_TIMES.SHORT,
+  refetchOnMountOrArgChange: 30,
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
-    // Get all reports for the current user
-    getAllReports: builder.query({
-      query: () => ({ url: "reports" }),
-      providesTags: ["Reports"],
-      transformResponse: (response) => {
-        // Transform the response to match the frontend format
-        if (!response || !Array.isArray(response)) return [];
-        
-        return response.map(report => ({
-          id: report.id,
-          name: report.name || `Report ${report.id}`,
-          date: report.created_at ? new Date(report.created_at).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-          category: report.template_type || 'consultation',
-          status: report.status || 'draft',
-          templateData: report.template_data || {},
-          createdAt: report.created_at,
-          updatedAt: report.updated_at,
-          completionPercentage: report.completion_percentage || 0,
-          patientId: report.patient_id,
-          assignedTo: report.assigned_to,
-          createdBy: report.created_by
-        }));
-      }
-    }),
-
-    // Create a new report
-    createReport: builder.mutation({
-      query: (reportData) => ({
-        url: "reports",
-        method: "POST",
-        body: reportData,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-
-    // Update a report
-    updateReport: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `reports/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-
-    // Delete a report
-    deleteReport: builder.mutation({
-      query: (id) => ({
-        url: `reports/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-
-    // Fetch all report parts in parallel
-    getInitialReport: builder.query({
-      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const urls = [
-          "reports/patient-intake",
-          "reports/insurance-details",
-          "reports/pain-descriptions",
-          "reports/details-descriptions",
-          "reports/recovery",
-          "reports/work-impact",
-          "reports/health-conditions",
-        ];
-
-        try {
-          const results = await Promise.all(
-            urls.map(async (url) => {
-              const res = await fetchWithBQ({ url });
-              if (res.error) {
-                if (res.error.status === 404) return null;
-                throw res.error;
-              }
-              return res.data && res.data.metadata != null
-                ? res.data.metadata
-                : res.data;
-            })
-          );
-
-          const [
-            patientIntake,
-            insuranceDetails,
-            painDescriptions,
-            detailsDescriptions,
-            recovery,
-            workImpact,
-            healthConditions,
-          ] = results;
-
-          return {
-            data: {
-              patientIntake,
-              insuranceDetails,
-              painDescriptions,
-              detailsDescriptions,
-              recovery,
-              workImpact,
-              healthConditions,
-            },
-          };
-        } catch (error) {
-          return { error };
-        }
-      },
-      providesTags: ["Reports"],
-    }),
-
-    getPatientIntake: builder.query({
-      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "reports/patient-intake" });
-        if (res.error) {
-          if (res.error.status === 404) return { data: null };
-          return { error: res.error };
-        }
-        return {
-          data:
-            res.data && res.data.metadata != null ? res.data.metadata : res.data,
-        };
-      },
-      providesTags: ["Reports"],
-    }),
-
-    getInsuranceDetails: builder.query({
-      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "reports/insurance-details" });
-        if (res.error) {
-          if (res.error.status === 404) return { data: null };
-          return { error: res.error };
-        }
-        return {
-          data:
-            res.data && res.data.metadata != null ? res.data.metadata : res.data,
-        };
-      },
-      providesTags: ["Reports"],
-    }),
-
-    getPainDescriptions: builder.query({
-      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "reports/pain-descriptions" });
-        if (res.error) {
-          if (res.error.status === 404) return { data: null };
-          return { error: res.error };
-        }
-        return {
-          data:
-            res.data && res.data.metadata != null ? res.data.metadata : res.data,
-        };
-      },
-      providesTags: ["Reports"],
-    }),
-
-    getDetailsDescriptions: builder.query({
-      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "reports/details-descriptions" });
-        if (res.error) {
-          if (res.error.status === 404) return { data: null };
-          return { error: res.error };
-        }
-        return {
-          data:
-            res.data && res.data.metadata != null ? res.data.metadata : res.data,
-        };
-      },
-      providesTags: ["Reports"],
-    }),
-
-    getWorkImpact: builder.query({
-      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const res = await fetchWithBQ({ url: "reports/work-impact" });
-        if (res.error) {
-          if (res.error.status === 404) return { data: null };
-          return { error: res.error };
-        }
-        return {
-          data:
-            res.data && res.data.metadata != null ? res.data.metadata : res.data,
-        };
-      },
-      providesTags: ["Reports"],
-    }),
-
-    // Simple GET list
-    getHealthConditions: builder.query({
-      query: () => ({ url: "reports/health-conditions" }),
-      providesTags: ["Reports"],
-    }),
-
-    // ---- Mutations: Patient Intake ----
-    submitPatientIntake: builder.mutation({
-      query: (body) => ({
+    // Create patient intake report
+    createPatientIntakeReport: builder.mutation({
+      query: (data) => ({
         url: "reports/patient-intake",
         method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    updatePatientIntake: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `reports/patient-intake/${id}`,
-        method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Reports"],
-    }),
-    deletePatientIntake: builder.mutation({
-      query: (id) => ({
-        url: `reports/patient-intake/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Reports"],
+      invalidatesTags: ["Reports", "PatientReports"],
     }),
 
-    // ---- Mutations: Insurance Details ----
-    submitInsuranceDetails: builder.mutation({
-      query: (body) => ({
-        url: "reports/insurance-details",
+    // Create doctor initial assessment
+    createDoctorInitialReport: builder.mutation({
+      query: (data) => ({
+        url: "reports/doctor-initial",
         method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    updateInsuranceDetails: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `reports/insurance-details/${id}`,
-        method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Reports"],
-    }),
-    deleteInsuranceDetails: builder.mutation({
-      query: (id) => ({
-        url: `reports/insurance-details/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Reports"],
+      invalidatesTags: ["Reports", "DoctorReports"],
     }),
 
-    // ---- Mutations: Pain Descriptions ----
-    submitPainDescription: builder.mutation({
-      query: (body) => ({
-        url: "reports/pain-descriptions",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    updatePainDescription: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `reports/pain-descriptions/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    deletePainDescription: builder.mutation({
-      query: (id) => ({
-        url: `reports/pain-descriptions/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Reports"],
+    // Get patient's reports
+    getPatientReports: builder.query({
+      query: ({ patientId, ...params }) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params.type) queryParams.append("type", params.type);
+        if (params.date_from) queryParams.append("date_from", params.date_from);
+
+        return {
+          url: `reports/patient/${patientId}?${queryParams}`,
+          method: "GET",
+        };
+      },
+      providesTags: (result, error, { patientId }) => [
+        { type: "PatientReports", id: patientId },
+      ],
     }),
 
-    // ---- Mutations: Details Descriptions ----
-    submitDetailsDescription: builder.mutation({
-      query: (body) => ({
-        url: "reports/details-descriptions",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    updateDetailsDescription: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `reports/details-descriptions/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    deleteDetailsDescription: builder.mutation({
-      query: (id) => ({
-        url: `reports/details-descriptions/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Reports"],
+    // Get doctor's reports
+    getDoctorReports: builder.query({
+      query: ({ doctorId, ...params }) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params.date_from) queryParams.append("date_from", params.date_from);
+        if (params.limit) queryParams.append("limit", params.limit.toString());
+
+        return {
+          url: `reports/doctor/${doctorId}?${queryParams}`,
+          method: "GET",
+        };
+      },
+      providesTags: (result, error, { doctorId }) => [
+        { type: "DoctorReports", id: doctorId },
+      ],
     }),
 
-    // ---- Mutations: Recovery ----
-    submitRecovery: builder.mutation({
-      query: (body) => ({
-        url: "reports/recovery",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    updateRecovery: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `reports/recovery/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    deleteRecovery: builder.mutation({
-      query: (id) => ({
-        url: `reports/recovery/${id}`,
-        method: "DELETE",
-      }),
-      invalidatesTags: ["Reports"],
+    // Get all reports (role-filtered)
+    getReports: builder.query({
+      query: (params = {}) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params.type) queryParams.append("type", params.type);
+        if (params.status) queryParams.append("status", params.status);
+        if (params.page) queryParams.append("page", params.page.toString());
+        if (params.limit) queryParams.append("limit", params.limit.toString());
+
+        return {
+          url: `reports?${queryParams}`,
+          method: "GET",
+        };
+      },
+      providesTags: ["Reports"],
+      keepUnusedDataFor: CACHE_TIMES.MEDIUM,
     }),
 
-    // ---- Mutations: Work Impact ----
-    submitWorkImpact: builder.mutation({
-      query: (body) => ({
-        url: "reports/work-impact",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    updateWorkImpact: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `reports/work-impact/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    deleteWorkImpact: builder.mutation({
+    // Get specific report
+    getReportById: builder.query({
       query: (id) => ({
-        url: `reports/work-impact/${id}`,
-        method: "DELETE",
+        url: `reports/${id}`,
+        method: "GET",
       }),
-      invalidatesTags: ["Reports"],
+      providesTags: (result, error, id) => [{ type: "Reports", id }],
     }),
 
-    // ---- Mutations: Health Conditions ----
-    submitHealthCondition: builder.mutation({
-      query: (body) => ({
-        url: "reports/health-conditions",
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["Reports"],
-    }),
-    updateHealthCondition: builder.mutation({
-      query: ({ id, data }) => ({
-        url: `reports/health-conditions/${id}`,
+    // Update report
+    updateReport: builder.mutation({
+      query: ({ id, ...data }) => ({
+        url: `reports/${id}`,
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: ["Reports"],
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Reports", id },
+      ],
     }),
-    deleteHealthCondition: builder.mutation({
+
+    // Generate report summary
+    getReportSummary: builder.query({
       query: (id) => ({
-        url: `reports/health-conditions/${id}`,
-        method: "DELETE",
+        url: `reports/${id}/summary`,
+        method: "GET",
       }),
-      invalidatesTags: ["Reports"],
+      providesTags: (result, error, id) => [{ type: "Reports", id }],
     }),
   }),
 });
 
-// Export hooks
 export const {
-  useGetInitialReportQuery,
-  useGetPatientIntakeQuery,
-  useGetInsuranceDetailsQuery,
-  useGetPainDescriptionsQuery,
-  useGetDetailsDescriptionsQuery,
-  useGetWorkImpactQuery,
-  useGetHealthConditionsQuery,
-
-  useSubmitPatientIntakeMutation,
-  useUpdatePatientIntakeMutation,
-  useDeletePatientIntakeMutation,
-
-  useSubmitInsuranceDetailsMutation,
-  useUpdateInsuranceDetailsMutation,
-  useDeleteInsuranceDetailsMutation,
-
-  useSubmitPainDescriptionMutation,
-  useUpdatePainDescriptionMutation,
-  useDeletePainDescriptionMutation,
-
-  useSubmitDetailsDescriptionMutation,
-  useUpdateDetailsDescriptionMutation,
-  useDeleteDetailsDescriptionMutation,
-
-  useSubmitRecoveryMutation,
-  useUpdateRecoveryMutation,
-  useDeleteRecoveryMutation,
-
-  useSubmitWorkImpactMutation,
-  useUpdateWorkImpactMutation,
-  useDeleteWorkImpactMutation,
-
-  useSubmitHealthConditionMutation,
-  useUpdateHealthConditionMutation,
-  useDeleteHealthConditionMutation,
-
-  useGetAllReportsQuery,
-  useCreateReportMutation,
+  useCreatePatientIntakeReportMutation,
+  useCreateDoctorInitialReportMutation,
+  useGetPatientReportsQuery,
+  useGetDoctorReportsQuery,
+  useGetReportsQuery,
+  useGetReportByIdQuery,
   useUpdateReportMutation,
-  useDeleteReportMutation,
+  useGetReportSummaryQuery,
 } = reportApi;
+
+// Legacy exports for backward compatibility
+export const useGetInitialReportQuery = () => ({ data: null, isLoading: false, error: null });
+export const useGetHealthConditionsQuery = () => ({ data: [], isLoading: false, error: null });
+
+// Legacy mutation hooks for backward compatibility
+export const useSubmitPatientIntakeMutation = () => [
+  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
+  { isLoading: false, error: null }
+];
+
+export const useUpdatePatientIntakeMutation = () => [
+  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ id, ...data }) }),
+  { isLoading: false, error: null }
+];
+
+export const useSubmitInsuranceDetailsMutation = () => [
+  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
+  { isLoading: false, error: null }
+];
+
+export const useUpdateInsuranceDetailsMutation = () => [
+  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ id, ...data }) }),
+  { isLoading: false, error: null }
+];
+
+export const useSubmitPainDescriptionMutation = () => [
+  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
+  { isLoading: false, error: null }
+];
+
+export const useUpdatePainDescriptionMutation = () => [
+  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ id, ...data }) }),
+  { isLoading: false, error: null }
+];
+
+export const useSubmitDetailsDescriptionMutation = () => [
+  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
+  { isLoading: false, error: null }
+];
+
+export const useUpdateDetailsDescriptionMutation = () => [
+  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ id, ...data }) }),
+  { isLoading: false, error: null }
+];
+
+export const useSubmitWorkImpactMutation = () => [
+  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
+  { isLoading: false, error: null }
+];
+
+export const useUpdateWorkImpactMutation = () => [
+  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ id, ...data }) }),
+  { isLoading: false, error: null }
+];
+
+export const useSubmitHealthConditionMutation = () => [
+  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
+  { isLoading: false, error: null }
+];
+
+export const useUpdateHealthConditionMutation = () => [
+  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ id, ...data }) }),
+  { isLoading: false, error: null }
+];
+
+// Additional legacy hooks for Report.jsx
+export const useGetAllReportsQuery = useGetReportsQuery;
+export const useCreateReportMutation = useCreatePatientIntakeReportMutation;
+
+export const useDeleteReportMutation = () => [
+  async (id) => ({ data: { success: true } }), // Generic delete - not implemented in backend
+  { isLoading: false, error: null }
+];
+
+export const useDeletePatientIntakeMutation = () => [
+  async (id) => ({ data: { success: true } }), // Legacy delete - not implemented
+  { isLoading: false, error: null }
+];
+
+export const useDeleteInsuranceDetailsMutation = () => [
+  async (id) => ({ data: { success: true } }), // Legacy delete - not implemented
+  { isLoading: false, error: null }
+];
+
+export const useDeletePainDescriptionMutation = () => [
+  async (id) => ({ data: { success: true } }), // Legacy delete - not implemented
+  { isLoading: false, error: null }
+];
+
+export const useDeleteDetailsDescriptionMutation = () => [
+  async (id) => ({ data: { success: true } }), // Legacy delete - not implemented
+  { isLoading: false, error: null }
+];
+
+export const useDeleteRecoveryMutation = () => [
+  async (id) => ({ data: { success: true } }), // Legacy delete - not implemented
+  { isLoading: false, error: null }
+];
+
+export const useDeleteWorkImpactMutation = () => [
+  async (id) => ({ data: { success: true } }), // Legacy delete - not implemented
+  { isLoading: false, error: null }
+];
+
+export const useDeleteHealthConditionMutation = () => [
+  async (id) => ({ data: { success: true } }), // Legacy delete - not implemented
+  { isLoading: false, error: null }
+];

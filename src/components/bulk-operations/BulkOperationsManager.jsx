@@ -1,18 +1,30 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { toast } from 'sonner';
+import React, { useState, useCallback, useMemo } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { toast } from "sonner";
 import {
   Package,
   Users,
@@ -39,320 +51,308 @@ import {
   Activity,
   BarChart3,
   Target,
-  Zap
-} from 'lucide-react';
+  Zap,
+  XCircle,
+} from "lucide-react";
+import { useGetAppointmentsQuery } from "@/services/appointmentApi";
+import { useGetBlogPostsQuery } from "@/services/blogApi";
 
 const BulkOperationsManager = () => {
-  const [selectedOperation, setSelectedOperation] = useState('');
+  const [selectedOperation, setSelectedOperation] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [operationProgress, setOperationProgress] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [operationResults, setOperationResults] = useState(null);
   const [filterOptions, setFilterOptions] = useState({
-    type: 'all',
-    status: 'all',
-    dateRange: 'all'
+    type: "all",
+    status: "all",
+    dateRange: "all",
   });
 
   // Available bulk operations
   const [bulkOperations] = useState([
     {
-      id: 'update-status',
-      name: 'Update Status',
-      description: 'Change status for multiple records',
-      category: 'update',
+      id: "update-status",
+      name: "Update Status",
+      description: "Change status for multiple records",
+      category: "update",
       icon: Edit,
-      supportedTypes: ['patients', 'appointments', 'reports'],
+      supportedTypes: ["patients", "appointments", "reports"],
       requiresInput: true,
-      inputType: 'select',
-      inputOptions: ['active', 'inactive', 'pending', 'completed', 'cancelled']
+      inputType: "select",
+      inputOptions: ["active", "inactive", "pending", "completed", "cancelled"],
     },
     {
-      id: 'send-notifications',
-      name: 'Send Notifications',
-      description: 'Send email or SMS notifications to multiple recipients',
-      category: 'communication',
+      id: "send-notifications",
+      name: "Send Notifications",
+      description: "Send email or SMS notifications to multiple recipients",
+      category: "communication",
       icon: Mail,
-      supportedTypes: ['patients', 'appointments'],
+      supportedTypes: ["patients", "appointments"],
       requiresInput: true,
-      inputType: 'textarea',
-      inputPlaceholder: 'Enter notification message...'
+      inputType: "textarea",
+      inputPlaceholder: "Enter notification message...",
     },
     {
-      id: 'export-data',
-      name: 'Export Data',
-      description: 'Export selected records to CSV or PDF',
-      category: 'export',
+      id: "export-data",
+      name: "Export Data",
+      description: "Export selected records to CSV or PDF",
+      category: "export",
       icon: Download,
-      supportedTypes: ['patients', 'appointments', 'reports', 'clinical-notes'],
+      supportedTypes: ["patients", "appointments", "reports", "clinical-notes"],
       requiresInput: true,
-      inputType: 'select',
-      inputOptions: ['CSV', 'PDF', 'Excel']
+      inputType: "select",
+      inputOptions: ["CSV", "PDF", "Excel"],
     },
     {
-      id: 'delete-records',
-      name: 'Delete Records',
-      description: 'Permanently delete multiple records',
-      category: 'delete',
+      id: "delete-records",
+      name: "Delete Records",
+      description: "Permanently delete multiple records",
+      category: "delete",
       icon: Trash2,
-      supportedTypes: ['patients', 'appointments', 'reports'],
+      supportedTypes: ["patients", "appointments", "reports"],
       requiresInput: false,
-      dangerous: true
+      dangerous: true,
     },
     {
-      id: 'assign-doctor',
-      name: 'Assign Doctor',
-      description: 'Assign or reassign doctor to multiple patients/appointments',
-      category: 'assignment',
+      id: "assign-doctor",
+      name: "Assign Doctor",
+      description:
+        "Assign or reassign doctor to multiple patients/appointments",
+      category: "assignment",
       icon: Users,
-      supportedTypes: ['patients', 'appointments'],
+      supportedTypes: ["patients", "appointments"],
       requiresInput: true,
-      inputType: 'select',
-      inputOptions: ['Dr. Johnson', 'Dr. Smith', 'Dr. Wilson']
+      inputType: "select",
+      inputOptions: ["Dr. Johnson", "Dr. Smith", "Dr. Wilson"],
     },
     {
-      id: 'reschedule-appointments',
-      name: 'Reschedule Appointments',
-      description: 'Reschedule multiple appointments to new dates/times',
-      category: 'scheduling',
+      id: "reschedule-appointments",
+      name: "Reschedule Appointments",
+      description: "Reschedule multiple appointments to new dates/times",
+      category: "scheduling",
       icon: Calendar,
-      supportedTypes: ['appointments'],
+      supportedTypes: ["appointments"],
       requiresInput: true,
-      inputType: 'datetime'
+      inputType: "datetime",
     },
     {
-      id: 'generate-reports',
-      name: 'Generate Reports',
-      description: 'Generate reports for multiple patients',
-      category: 'reports',
+      id: "generate-reports",
+      name: "Generate Reports",
+      description: "Generate reports for multiple patients",
+      category: "reports",
       icon: FileText,
-      supportedTypes: ['patients'],
+      supportedTypes: ["patients"],
       requiresInput: true,
-      inputType: 'select',
-      inputOptions: ['Patient Summary', 'Treatment Plan', 'Progress Report']
+      inputType: "select",
+      inputOptions: ["Patient Summary", "Treatment Plan", "Progress Report"],
     },
     {
-      id: 'send-reminders',
-      name: 'Send Reminders',
-      description: 'Send appointment reminders to multiple patients',
-      category: 'communication',
+      id: "send-reminders",
+      name: "Send Reminders",
+      description: "Send appointment reminders to multiple patients",
+      category: "communication",
       icon: MessageSquare,
-      supportedTypes: ['appointments'],
+      supportedTypes: ["appointments"],
       requiresInput: true,
-      inputType: 'select',
-      inputOptions: ['24 hours before', '2 hours before', '1 hour before']
-    }
+      inputType: "select",
+      inputOptions: ["24 hours before", "2 hours before", "1 hour before"],
+    },
   ]);
 
-  // Sample data for different record types
-  const [sampleData] = useState({
-    patients: [
-      {
-        id: 'PAT-001',
-        name: 'John Smith',
-        email: 'john.smith@email.com',
-        phone: '+1-555-0123',
-        status: 'active',
-        assignedDoctor: 'Dr. Johnson',
-        lastVisit: '2025-01-15',
-        type: 'patients'
-      },
-      {
-        id: 'PAT-002',
-        name: 'Sarah Wilson',
-        email: 'sarah.wilson@email.com',
-        phone: '+1-555-0124',
-        status: 'active',
-        assignedDoctor: 'Dr. Smith',
-        lastVisit: '2025-01-12',
-        type: 'patients'
-      },
-      {
-        id: 'PAT-003',
-        name: 'Mike Johnson',
-        email: 'mike.johnson@email.com',
-        phone: '+1-555-0125',
-        status: 'inactive',
-        assignedDoctor: 'Dr. Wilson',
-        lastVisit: '2024-12-20',
-        type: 'patients'
-      }
-    ],
-    appointments: [
-      {
-        id: 'APT-001',
-        patientName: 'John Smith',
-        date: '2025-01-22',
-        time: '09:00',
-        type: 'Initial Consultation',
-        status: 'scheduled',
-        doctor: 'Dr. Johnson',
-        type: 'appointments'
-      },
-      {
-        id: 'APT-002',
-        patientName: 'Sarah Wilson',
-        date: '2025-01-22',
-        time: '10:30',
-        type: 'Follow-up',
-        status: 'confirmed',
-        doctor: 'Dr. Smith',
-        type: 'appointments'
-      },
-      {
-        id: 'APT-003',
-        patientName: 'Mike Johnson',
-        date: '2025-01-23',
-        time: '14:00',
-        type: 'Treatment',
-        status: 'pending',
-        doctor: 'Dr. Wilson',
-        type: 'appointments'
-      }
-    ],
-    reports: [
-      {
-        id: 'RPT-001',
-        name: 'John Smith - Patient Summary',
-        generatedDate: '2025-01-18',
-        status: 'completed',
-        size: '2.3 MB',
-        type: 'reports'
-      },
-      {
-        id: 'RPT-002',
-        name: 'Weekly Analytics',
-        generatedDate: '2025-01-15',
-        status: 'completed',
-        size: '1.8 MB',
-        type: 'reports'
-      }
-    ]
-  });
-
   // Get all records based on current tab
-  const [currentTab, setCurrentTab] = useState('patients');
-  const currentData = sampleData[currentTab] || [];
+  const [currentTab, setCurrentTab] = useState("patients");
+  
+  // Fetch data based on current tab
+  const { data: appointmentsData, isLoading: appointmentsLoading } = useGetAppointmentsQuery(
+    {},
+    { skip: currentTab !== "appointments" }
+  );
+  
+  const { data: postsData, isLoading: postsLoading } = useGetBlogPostsQuery(
+    { limit: 50 },
+    { skip: currentTab !== "reports" }
+  );
+
+  // Mock patients data (replace with actual patient API when available)
+  const mockPatients = [
+    {
+      id: "PAT-001",
+      name: "John Smith",
+      email: "john.smith@email.com",
+      phone: "+1-555-0123",
+      status: "active",
+      assignedDoctor: "Dr. Johnson",
+      lastVisit: "2025-01-15",
+      category: "patients",
+    },
+    {
+      id: "PAT-002",
+      name: "Sarah Wilson",
+      email: "sarah.wilson@email.com",
+      phone: "+1-555-0124",
+      status: "active",
+      assignedDoctor: "Dr. Smith",
+      lastVisit: "2025-01-12",
+      category: "patients",
+    },
+  ];
+
+  // Get current data based on tab
+  const getCurrentData = () => {
+    switch (currentTab) {
+      case "appointments":
+        return appointmentsData?.appointments || appointmentsData || [];
+      case "reports":
+        return postsData?.posts || postsData || [];
+      case "patients":
+      default:
+        return mockPatients; // Replace with real patient API call when available
+    }
+  };
+
+  const currentData = getCurrentData();
+  const isLoading = appointmentsLoading || postsLoading;
 
   // Filter operations based on current tab
   const availableOperations = useMemo(() => {
-    return bulkOperations.filter(op => op.supportedTypes.includes(currentTab));
+    return bulkOperations.filter((op) =>
+      op.supportedTypes.includes(currentTab),
+    );
   }, [bulkOperations, currentTab]);
 
   // Process bulk operation
-  const processBulkOperation = useCallback(async (operationId, items, inputValue = null) => {
-    const operation = bulkOperations.find(op => op.id === operationId);
-    if (!operation || items.length === 0) return;
+  const processBulkOperation = useCallback(
+    async (operationId, items, inputValue = null) => {
+      const operation = bulkOperations.find((op) => op.id === operationId);
+      if (!operation || items.length === 0) return;
 
-    setIsProcessing(true);
-    setOperationProgress(0);
-    setOperationResults(null);
-
-    const results = {
-      operation: operation.name,
-      totalItems: items.length,
-      successful: 0,
-      failed: 0,
-      errors: [],
-      details: []
-    };
-
-    try {
-      for (let i = 0; i < items.length; i++) {
-        // Simulate processing delay
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
-        const item = items[i];
-        const progress = ((i + 1) / items.length) * 100;
-        setOperationProgress(progress);
-
-        try {
-          // Simulate operation success/failure
-          const success = Math.random() > 0.1; // 90% success rate
-          
-          if (success) {
-            results.successful++;
-            results.details.push({
-              id: item.id,
-              name: item.name || item.patientName,
-              status: 'success',
-              message: `${operation.name} completed successfully`
-            });
-          } else {
-            results.failed++;
-            results.errors.push(`Failed to process ${item.name || item.patientName}: Simulated error`);
-            results.details.push({
-              id: item.id,
-              name: item.name || item.patientName,
-              status: 'error',
-              message: 'Processing failed'
-            });
-          }
-        } catch (error) {
-          results.failed++;
-          results.errors.push(`Error processing ${item.name || item.patientName}: ${error.message}`);
-        }
-      }
-
-      setOperationResults(results);
-      
-      if (results.failed === 0) {
-        toast.success(`${operation.name} completed successfully for all ${results.totalItems} items`);
-      } else {
-        toast.warning(`${operation.name} completed with ${results.failed} failures out of ${results.totalItems} items`);
-      }
-      
-    } catch (error) {
-      toast.error(`Bulk operation failed: ${error.message}`);
-    } finally {
-      setIsProcessing(false);
+      setIsProcessing(true);
       setOperationProgress(0);
-    }
-  }, [bulkOperations]);
+      setOperationResults(null);
+
+      const results = {
+        operation: operation.name,
+        totalItems: items.length,
+        successful: 0,
+        failed: 0,
+        errors: [],
+        details: [],
+      };
+
+      try {
+        for (let i = 0; i < items.length; i++) {
+          // Simulate processing delay
+          await new Promise((resolve) => setTimeout(resolve, 500));
+
+          const item = items[i];
+          const progress = ((i + 1) / items.length) * 100;
+          setOperationProgress(progress);
+
+          try {
+            // Simulate operation success/failure
+            const success = Math.random() > 0.1; // 90% success rate
+
+            if (success) {
+              results.successful++;
+              results.details.push({
+                id: item.id,
+                name: item.name || item.patientName,
+                status: "success",
+                message: `${operation.name} completed successfully`,
+              });
+            } else {
+              results.failed++;
+              results.errors.push(
+                `Failed to process ${item.name || item.patientName}: Simulated error`,
+              );
+              results.details.push({
+                id: item.id,
+                name: item.name || item.patientName,
+                status: "error",
+                message: "Processing failed",
+              });
+            }
+          } catch (error) {
+            results.failed++;
+            results.errors.push(
+              `Error processing ${item.name || item.patientName}: ${error.message}`,
+            );
+          }
+        }
+
+        setOperationResults(results);
+
+        if (results.failed === 0) {
+          toast.success(
+            `${operation.name} completed successfully for all ${results.totalItems} items`,
+          );
+        } else {
+          toast.warning(
+            `${operation.name} completed with ${results.failed} failures out of ${results.totalItems} items`,
+          );
+        }
+      } catch (error) {
+        toast.error(`Bulk operation failed: ${error.message}`);
+      } finally {
+        setIsProcessing(false);
+        setOperationProgress(0);
+      }
+    },
+    [bulkOperations],
+  );
 
   const handleSelectAll = useCallback(() => {
     if (selectedItems.length === currentData.length) {
       setSelectedItems([]);
     } else {
-      setSelectedItems(currentData.map(item => item.id));
+      setSelectedItems(currentData.map((item) => item.id));
     }
   }, [selectedItems, currentData]);
 
   const handleItemSelect = useCallback((itemId) => {
-    setSelectedItems(prev => 
-      prev.includes(itemId) 
-        ? prev.filter(id => id !== itemId)
-        : [...prev, itemId]
+    setSelectedItems((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId],
     );
   }, []);
 
   const filteredData = useMemo(() => {
-    return currentData.filter(item => {
-      if (filterOptions.status !== 'all' && item.status !== filterOptions.status) return false;
+    return currentData.filter((item) => {
+      if (
+        filterOptions.status !== "all" &&
+        item.status !== filterOptions.status
+      )
+        return false;
       return true;
     });
   }, [currentData, filterOptions]);
 
   const selectedItemsData = useMemo(() => {
-    return currentData.filter(item => selectedItems.includes(item.id));
+    return currentData.filter((item) => selectedItems.includes(item.id));
   }, [currentData, selectedItems]);
 
   const OperationCard = ({ operation }) => (
-    <Card 
+    <Card
       className={`cursor-pointer transition-all hover:shadow-md ${
-        selectedOperation === operation.id ? 'ring-2 ring-blue-500' : ''
-      } ${operation.dangerous ? 'border-red-200' : ''}`}
+        selectedOperation === operation.id ? "ring-2 ring-blue-500" : ""
+      } ${operation.dangerous ? "border-red-200" : ""}`}
       onClick={() => setSelectedOperation(operation.id)}
     >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className={`p-2 rounded-lg ${
-              operation.dangerous ? 'bg-red-100' : 'bg-blue-100'
-            }`}>
-              <operation.icon className={`h-4 w-4 ${
-                operation.dangerous ? 'text-red-600' : 'text-blue-600'
-              }`} />
+            <div
+              className={`p-2 rounded-lg ${
+                operation.dangerous ? "bg-red-100" : "bg-blue-100"
+              }`}
+            >
+              <operation.icon
+                className={`h-4 w-4 ${
+                  operation.dangerous ? "text-red-600" : "text-blue-600"
+                }`}
+              />
             </div>
             <div>
               <CardTitle className="text-lg">{operation.name}</CardTitle>
@@ -366,7 +366,7 @@ const BulkOperationsManager = () => {
         <div className="flex items-center justify-between text-sm">
           <span className="text-gray-600">Supported types:</span>
           <div className="flex space-x-1">
-            {operation.supportedTypes.slice(0, 2).map(type => (
+            {operation.supportedTypes.slice(0, 2).map((type) => (
               <Badge key={type} variant="secondary" size="sm">
                 {type}
               </Badge>
@@ -383,16 +383,18 @@ const BulkOperationsManager = () => {
   );
 
   const BulkOperationPanel = () => {
-    const [inputValue, setInputValue] = useState('');
-    const operation = bulkOperations.find(op => op.id === selectedOperation);
-    
+    const [inputValue, setInputValue] = useState("");
+    const operation = bulkOperations.find((op) => op.id === selectedOperation);
+
     if (!operation) {
       return (
         <Card>
           <CardContent className="flex items-center justify-center h-64">
             <div className="text-center">
               <Package className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">Select an operation to get started</p>
+              <p className="text-gray-500">
+                Select an operation to get started
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -417,20 +419,28 @@ const BulkOperationsManager = () => {
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>Dangerous Operation</AlertTitle>
               <AlertDescription>
-                This operation cannot be undone. Please review your selection carefully.
+                This operation cannot be undone. Please review your selection
+                carefully.
               </AlertDescription>
             </Alert>
           )}
 
           {/* Selected Items Summary */}
           <div className="space-y-3">
-            <h4 className="font-medium">Selected Items ({selectedItems.length})</h4>
+            <h4 className="font-medium">
+              Selected Items ({selectedItems.length})
+            </h4>
             {selectedItems.length > 0 ? (
               <div className="max-h-32 overflow-y-auto space-y-1">
-                {selectedItemsData.slice(0, 10).map(item => (
-                  <div key={item.id} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
+                {selectedItemsData.slice(0, 10).map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded"
+                  >
                     <span>{item.name || item.patientName}</span>
-                    <Badge variant="outline" size="sm">{item.status}</Badge>
+                    <Badge variant="outline" size="sm">
+                      {item.status}
+                    </Badge>
                   </div>
                 ))}
                 {selectedItemsData.length > 10 && (
@@ -450,13 +460,13 @@ const BulkOperationsManager = () => {
           {operation.requiresInput && (
             <div className="space-y-3">
               <Label>Operation Parameters</Label>
-              {operation.inputType === 'select' && (
+              {operation.inputType === "select" && (
                 <Select value={inputValue} onValueChange={setInputValue}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select option..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {operation.inputOptions.map(option => (
+                    {operation.inputOptions.map((option) => (
                       <SelectItem key={option} value={option}>
                         {option}
                       </SelectItem>
@@ -464,7 +474,7 @@ const BulkOperationsManager = () => {
                   </SelectContent>
                 </Select>
               )}
-              {operation.inputType === 'textarea' && (
+              {operation.inputType === "textarea" && (
                 <Textarea
                   placeholder={operation.inputPlaceholder}
                   value={inputValue}
@@ -472,7 +482,7 @@ const BulkOperationsManager = () => {
                   rows={4}
                 />
               )}
-              {operation.inputType === 'datetime' && (
+              {operation.inputType === "datetime" && (
                 <Input
                   type="datetime-local"
                   value={inputValue}
@@ -496,9 +506,21 @@ const BulkOperationsManager = () => {
           {/* Action Buttons */}
           <div className="flex items-center space-x-2">
             <Button
-              onClick={() => processBulkOperation(operation.id, selectedItemsData, inputValue)}
-              disabled={selectedItems.length === 0 || isProcessing || (operation.requiresInput && !inputValue)}
-              className={operation.dangerous ? 'bg-red-600 hover:bg-red-700' : ''}
+              onClick={() =>
+                processBulkOperation(
+                  operation.id,
+                  selectedItemsData,
+                  inputValue,
+                )
+              }
+              disabled={
+                selectedItems.length === 0 ||
+                isProcessing ||
+                (operation.requiresInput && !inputValue)
+              }
+              className={
+                operation.dangerous ? "bg-red-600 hover:bg-red-700" : ""
+              }
             >
               {isProcessing ? (
                 <>
@@ -541,15 +563,21 @@ const BulkOperationsManager = () => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-3 gap-4">
             <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">{operationResults.successful}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {operationResults.successful}
+              </div>
               <div className="text-sm text-green-700">Successful</div>
             </div>
             <div className="text-center p-3 bg-red-50 rounded-lg">
-              <div className="text-2xl font-bold text-red-600">{operationResults.failed}</div>
+              <div className="text-2xl font-bold text-red-600">
+                {operationResults.failed}
+              </div>
               <div className="text-sm text-red-700">Failed</div>
             </div>
             <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-2xl font-bold text-blue-600">{operationResults.totalItems}</div>
+              <div className="text-2xl font-bold text-blue-600">
+                {operationResults.totalItems}
+              </div>
               <div className="text-sm text-blue-700">Total</div>
             </div>
           </div>
@@ -559,7 +587,10 @@ const BulkOperationsManager = () => {
               <h4 className="font-medium text-red-600">Errors</h4>
               <div className="max-h-32 overflow-y-auto space-y-1">
                 {operationResults.errors.map((error, index) => (
-                  <div key={index} className="text-sm text-red-600 p-2 bg-red-50 rounded">
+                  <div
+                    key={index}
+                    className="text-sm text-red-600 p-2 bg-red-50 rounded"
+                  >
                     {error}
                   </div>
                 ))}
@@ -571,9 +602,17 @@ const BulkOperationsManager = () => {
             <h4 className="font-medium">Detailed Results</h4>
             <div className="max-h-48 overflow-y-auto space-y-1">
               {operationResults.details.map((detail, index) => (
-                <div key={index} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">
+                <div
+                  key={index}
+                  className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded"
+                >
                   <span>{detail.name}</span>
-                  <Badge variant={detail.status === 'success' ? 'default' : 'destructive'} size="sm">
+                  <Badge
+                    variant={
+                      detail.status === "success" ? "default" : "destructive"
+                    }
+                    size="sm"
+                  >
                     {detail.status}
                   </Badge>
                 </div>
@@ -602,7 +641,9 @@ const BulkOperationsManager = () => {
           </div>
           <div className="flex items-center space-x-2">
             <Button variant="outline" size="sm" onClick={handleSelectAll}>
-              {selectedItems.length === currentData.length ? 'Deselect All' : 'Select All'}
+              {selectedItems.length === currentData.length
+                ? "Deselect All"
+                : "Select All"}
             </Button>
             <Button variant="outline" size="sm">
               <Filter className="h-4 w-4 mr-2" />
@@ -614,11 +655,13 @@ const BulkOperationsManager = () => {
       <CardContent>
         <ScrollArea className="h-[400px]">
           <div className="space-y-2">
-            {filteredData.map(item => (
-              <div 
+            {filteredData.map((item) => (
+              <div
                 key={item.id}
                 className={`flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 ${
-                  selectedItems.includes(item.id) ? 'bg-blue-50 border-blue-200' : ''
+                  selectedItems.includes(item.id)
+                    ? "bg-blue-50 border-blue-200"
+                    : ""
                 }`}
               >
                 <div className="flex items-center space-x-3">
@@ -627,18 +670,30 @@ const BulkOperationsManager = () => {
                     onCheckedChange={() => handleItemSelect(item.id)}
                   />
                   <div>
-                    <div className="font-medium">{item.name || item.patientName}</div>
+                    <div className="font-medium">
+                      {item.name || item.patientName}
+                    </div>
                     <div className="text-sm text-gray-600">
-                      {currentTab === 'patients' && `${item.email} • ${item.assignedDoctor}`}
-                      {currentTab === 'appointments' && `${item.date} ${item.time} • ${item.doctor}`}
-                      {currentTab === 'reports' && `Generated: ${item.generatedDate} • ${item.size}`}
+                      {currentTab === "patients" &&
+                        `${item.email} • ${item.assignedDoctor}`}
+                      {currentTab === "appointments" &&
+                        `${item.date} ${item.time} • ${item.doctor}`}
+                      {currentTab === "reports" &&
+                        `Generated: ${item.generatedDate} • ${item.size}`}
                     </div>
                   </div>
                 </div>
-                <Badge variant={
-                  item.status === 'active' || item.status === 'completed' || item.status === 'confirmed' ? 'default' :
-                  item.status === 'pending' || item.status === 'scheduled' ? 'secondary' : 'outline'
-                }>
+                <Badge
+                  variant={
+                    item.status === "active" ||
+                    item.status === "completed" ||
+                    item.status === "confirmed"
+                      ? "default"
+                      : item.status === "pending" || item.status === "scheduled"
+                        ? "secondary"
+                        : "outline"
+                  }
+                >
                   {item.status}
                 </Badge>
               </div>
@@ -654,8 +709,12 @@ const BulkOperationsManager = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Bulk Operations Manager</h2>
-          <p className="text-gray-600">Perform batch operations on multiple records efficiently</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Bulk Operations Manager
+          </h2>
+          <p className="text-gray-600">
+            Perform batch operations on multiple records efficiently
+          </p>
         </div>
         <div className="flex items-center space-x-2">
           <Button variant="outline">
@@ -683,8 +742,12 @@ const BulkOperationsManager = () => {
             <div className="flex items-center space-x-2">
               <Activity className="h-5 w-5 text-green-600" />
               <div>
-                <div className="text-2xl font-bold">{availableOperations.length}</div>
-                <div className="text-sm text-gray-600">Available Operations</div>
+                <div className="text-2xl font-bold">
+                  {availableOperations.length}
+                </div>
+                <div className="text-sm text-gray-600">
+                  Available Operations
+                </div>
               </div>
             </div>
           </CardContent>
@@ -705,7 +768,9 @@ const BulkOperationsManager = () => {
             <div className="flex items-center space-x-2">
               <Zap className="h-5 w-5 text-yellow-600" />
               <div>
-                <div className="text-2xl font-bold">{operationResults?.successful || 0}</div>
+                <div className="text-2xl font-bold">
+                  {operationResults?.successful || 0}
+                </div>
                 <div className="text-sm text-gray-600">Last Success</div>
               </div>
             </div>
@@ -736,12 +801,14 @@ const BulkOperationsManager = () => {
             <CardHeader>
               <CardTitle>Available Operations</CardTitle>
               <CardDescription>
-                {availableOperations.length} operation{availableOperations.length !== 1 ? 's' : ''} available for {currentTab}
+                {availableOperations.length} operation
+                {availableOperations.length !== 1 ? "s" : ""} available for{" "}
+                {currentTab}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {availableOperations.map(operation => (
+                {availableOperations.map((operation) => (
                   <OperationCard key={operation.id} operation={operation} />
                 ))}
               </div>
@@ -759,4 +826,4 @@ const BulkOperationsManager = () => {
   );
 };
 
-export default BulkOperationsManager; 
+export default BulkOperationsManager;

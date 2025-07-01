@@ -1,7 +1,7 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import PublicNavbar from './PublicNavbar';
-import Footer from './Footer';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import PublicNavbar from "./PublicNavbar";
+import Footer from "./Footer";
 import { Toaster } from "@/components/ui/sonner";
 
 const PublicLayout = () => {
@@ -9,7 +9,7 @@ const PublicLayout = () => {
     <div className="min-h-screen bg-background">
       {/* Public Navbar */}
       <PublicNavbar />
-      
+
       {/* Main content area - no sidebar for public pages */}
       <main className="min-h-[calc(100vh-4rem)]">
         <Outlet />
@@ -19,7 +19,7 @@ const PublicLayout = () => {
       <Footer />
 
       {/* Toast Notifications */}
-      <Toaster 
+      <Toaster
         position="top-right"
         toastOptions={{
           duration: 4000,
@@ -30,4 +30,4 @@ const PublicLayout = () => {
   );
 };
 
-export default PublicLayout; 
+export default PublicLayout;

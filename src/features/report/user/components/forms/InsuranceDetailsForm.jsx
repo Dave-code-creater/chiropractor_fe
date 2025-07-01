@@ -11,7 +11,11 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-export default function InsuranceDetailsForm({ initialData = {}, onSubmit, onBack }) {
+export default function InsuranceDetailsForm({
+  initialData = {},
+  onSubmit,
+  onBack,
+}) {
   const [formData, setFormData] = useState({
     typeCar: initialData.typeCar || "",
     accidentDate: initialData.accidentDate || "",
@@ -98,7 +102,9 @@ export default function InsuranceDetailsForm({ initialData = {}, onSubmit, onBac
               <Input
                 id="accidentLocation"
                 value={formData.accidentLocation}
-                onChange={(e) => handleChange("accidentLocation", e.target.value)}
+                onChange={(e) =>
+                  handleChange("accidentLocation", e.target.value)
+                }
               />
             </div>
             <div>
@@ -111,8 +117,10 @@ export default function InsuranceDetailsForm({ initialData = {}, onSubmit, onBac
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
-                  {['Auto Collision','On the job','Other'].map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                  {["Auto Collision", "On the job", "Other"].map((opt) => (
+                    <SelectItem key={opt} value={opt}>
+                      {opt}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -124,7 +132,9 @@ export default function InsuranceDetailsForm({ initialData = {}, onSubmit, onBac
                 className="w-full border rounded px-3 py-2 resize-y"
                 rows={4}
                 value={formData.accidentDescription}
-                onChange={(e) => handleChange("accidentDescription", e.target.value)}
+                onChange={(e) =>
+                  handleChange("accidentDescription", e.target.value)
+                }
               />
             </div>
             <div>
@@ -143,13 +153,17 @@ export default function InsuranceDetailsForm({ initialData = {}, onSubmit, onBac
               </Select>
             </div>
             <div className="md:col-span-2">
-              <Label htmlFor="acciddentAppearanceOfAmbulance">Did an ambulance appear at the scene?</Label>
+              <Label htmlFor="acciddentAppearanceOfAmbulance">
+                Did an ambulance appear at the scene?
+              </Label>
               <textarea
                 id="acciddentAppearanceOfAmbulance"
                 className="w-full border rounded px-3 py-2 resize-y"
                 rows={2}
                 value={formData.acciddentAppearanceOfAmbulance}
-                onChange={(e) => handleChange("acciddentAppearanceOfAmbulance", e.target.value)}
+                onChange={(e) =>
+                  handleChange("acciddentAppearanceOfAmbulance", e.target.value)
+                }
               />
             </div>
             <div>
@@ -204,7 +218,9 @@ export default function InsuranceDetailsForm({ initialData = {}, onSubmit, onBac
                 className="w-full border rounded px-3 py-2 resize-y"
                 rows={3}
                 value={formData.anyPastAccidents}
-                onChange={(e) => handleChange("anyPastAccidents", e.target.value)}
+                onChange={(e) =>
+                  handleChange("anyPastAccidents", e.target.value)
+                }
               />
             </div>
             <div>
@@ -246,7 +262,9 @@ export default function InsuranceDetailsForm({ initialData = {}, onSubmit, onBac
               </Select>
             </div>
             <div>
-              <Label htmlFor="childrenInfo">Number &amp; Ages of Children</Label>
+              <Label htmlFor="childrenInfo">
+                Number &amp; Ages of Children
+              </Label>
               <Input
                 id="childrenInfo"
                 value={formData.childrenInfo}
@@ -279,15 +297,17 @@ export default function InsuranceDetailsForm({ initialData = {}, onSubmit, onBac
                 </SelectTrigger>
                 <SelectContent>
                   {[
-                    'Group Insurance',
-                    'Blue Cross / Blue Shield',
-                    'Worker\u2019s Compensation',
-                    'Auto Insurance',
-                    'Medicare',
-                    'Personal Injury',
-                    'Other Insurance',
+                    "Group Insurance",
+                    "Blue Cross / Blue Shield",
+                    "Worker\u2019s Compensation",
+                    "Auto Insurance",
+                    "Medicare",
+                    "Personal Injury",
+                    "Other Insurance",
                   ].map((opt) => (
-                    <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                    <SelectItem key={opt} value={opt}>
+                      {opt}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>

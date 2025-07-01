@@ -24,5 +24,6 @@ const modalsSlice = createSlice({
   },
 });
 
-export const { openLogin, closeLogin, openConfirmDelete, closeConfirmDelete } = modalsSlice.actions;
+export const { openLogin, closeLogin, openConfirmDelete, closeConfirmDelete } =
+  modalsSlice.actions;
 export default modalsSlice.reducer;

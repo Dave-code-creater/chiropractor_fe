@@ -17,7 +17,8 @@ export default function PainEvaluationForm({
     setPainEvaluations((prev) => {
       const list = [...prev];
       const curr = list[0] || { painMap: {}, formData: {} };
-      const newData = typeof updater === "function" ? updater(curr.formData || {}) : updater;
+      const newData =
+        typeof updater === "function" ? updater(curr.formData || {}) : updater;
       list[0] = { ...curr, formData: newData };
       return list;
     });
@@ -27,7 +28,8 @@ export default function PainEvaluationForm({
     setPainEvaluations((prev) => {
       const list = [...prev];
       const curr = list[0] || { painMap: {}, formData: {} };
-      const newMap = typeof updater === "function" ? updater(curr.painMap || {}) : updater;
+      const newMap =
+        typeof updater === "function" ? updater(curr.painMap || {}) : updater;
       list[0] = { ...curr, painMap: newMap };
       return list;
     });
@@ -52,7 +54,6 @@ export default function PainEvaluationForm({
             formData={evaluation.formData}
             setFormData={handleFormDataChange}
           />
-
 
           <div className="flex justify-between pt-4">
             {onBack && (

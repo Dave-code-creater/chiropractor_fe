@@ -94,7 +94,9 @@ export default function Display() {
         </CardContent>
 
         <div className="px-6 pb-6">
-          <Button onClick={() => alert("Preferences saved!")}>Save Changes</Button>
+          <Button onClick={() => alert("Preferences saved!")}>
+            Save Changes
+          </Button>
         </div>
       </Card>
     </div>

@@ -1,27 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
-import { Alert, AlertDescription } from './ui/alert';
-import { 
-  Trash2, 
-  RefreshCw, 
-  Database, 
-  HardDrive, 
-  Activity, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
+import { Alert, AlertDescription } from "./ui/alert";
+import {
+  Trash2,
+  RefreshCw,
+  Database,
+  HardDrive,
+  Activity,
   Info,
   CheckCircle,
-  AlertCircle 
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { cacheUtils, CACHE_DURATION, CACHE_NAMESPACES } from '../utils/cache';
-import { cacheActions } from '../store/store';
+  AlertCircle,
+} from "lucide-react";
+import { toast } from "sonner";
+import { cacheUtils, CACHE_DURATION, CACHE_NAMESPACES } from "../utils/cache";
+import { cacheActions } from "../store/store";
 
 const CacheManager = ({ isOpen, onClose }) => {
   const [stats, setStats] = useState({
-    memory: { entries: 0, size: '0 entries' },
-    localStorage: { entries: 0, size: '0 entries' }
+    memory: { entries: 0, size: "0 entries" },
+    localStorage: { entries: 0, size: "0 entries" },
   });
   const [rtqStats, setRtqStats] = useState({});
   const [isClearing, setIsClearing] = useState(false);
@@ -46,18 +52,18 @@ const CacheManager = ({ isOpen, onClose }) => {
     try {
       // Clear custom cache
       cacheUtils.clearAll();
-      
+
       // Clear RTK Query cache
       cacheActions.clearAllApiCache();
-      
+
       // Update stats
       setStats(cacheUtils.getStats());
       setRtqStats(cacheActions.getCacheStats());
-      
-      toast.success('All cache cleared successfully');
+
+      toast.success("All cache cleared successfully");
     } catch (error) {
-      console.error('Failed to clear cache:', error);
-      toast.error('Failed to clear cache');
+      console.error("Failed to clear cache:", error);
+      toast.error("Failed to clear cache");
     } finally {
       setIsClearing(false);
     }
@@ -78,42 +84,42 @@ const CacheManager = ({ isOpen, onClose }) => {
     try {
       cacheUtils.clearExpired();
       setStats(cacheUtils.getStats());
-      toast.success('Expired cache entries cleared');
+      toast.success("Expired cache entries cleared");
     } catch (error) {
-      console.error('Failed to clear expired cache:', error);
-      toast.error('Failed to clear expired cache');
+      console.error("Failed to clear expired cache:", error);
+      toast.error("Failed to clear expired cache");
     }
   };
 
   const handlePrefetchData = async () => {
     try {
       cacheActions.prefetchCommonData();
-      toast.success('Common data prefetching initiated');
+      toast.success("Common data prefetching initiated");
     } catch (error) {
-      console.error('Failed to prefetch data:', error);
-      toast.error('Failed to prefetch data');
+      console.error("Failed to prefetch data:", error);
+      toast.error("Failed to prefetch data");
     }
   };
 
   const formatBytes = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const getStorageUsage = () => {
     try {
       let totalSize = 0;
       for (let key in localStorage) {
-        if (localStorage.hasOwnProperty(key) && key.startsWith('chirocare_')) {
+        if (localStorage.hasOwnProperty(key) && key.startsWith("chirocare_")) {
           totalSize += localStorage[key].length;
         }
       }
       return formatBytes(totalSize);
     } catch (error) {
-      return 'Unable to calculate';
+      return "Unable to calculate";
     }
   };
 
@@ -158,7 +164,9 @@ const CacheManager = ({ isOpen, onClose }) => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{stats.memory.entries}</div>
+                    <div className="text-2xl font-bold">
+                      {stats.memory.entries}
+                    </div>
                     <p className="text-xs text-gray-600">Active entries</p>
                   </CardContent>
                 </Card>
@@ -171,7 +179,9 @@ const CacheManager = ({ isOpen, onClose }) => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{stats.localStorage.entries}</div>
+                    <div className="text-2xl font-bold">
+                      {stats.localStorage.entries}
+                    </div>
                     <p className="text-xs text-gray-600">{getStorageUsage()}</p>
                   </CardContent>
                 </Card>
@@ -185,7 +195,10 @@ const CacheManager = ({ isOpen, onClose }) => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">
-                      {Object.values(rtqStats).reduce((sum, api) => sum + api.queries, 0)}
+                      {Object.values(rtqStats).reduce(
+                        (sum, api) => sum + api.queries,
+                        0,
+                      )}
                     </div>
                     <p className="text-xs text-gray-600">Cached queries</p>
                   </CardContent>
@@ -200,17 +213,17 @@ const CacheManager = ({ isOpen, onClose }) => {
               </Alert>
 
               <div className="flex flex-wrap gap-3">
-                <Button 
+                <Button
                   onClick={handleClearAll}
                   disabled={isClearing}
                   variant="destructive"
                   className="flex items-center gap-2"
                 >
                   <Trash2 className="w-4 h-4" />
-                  {isClearing ? 'Clearing...' : 'Clear All Cache'}
+                  {isClearing ? "Clearing..." : "Clear All Cache"}
                 </Button>
-                
-                <Button 
+
+                <Button
                   onClick={handleClearExpired}
                   variant="outline"
                   className="flex items-center gap-2"
@@ -218,8 +231,8 @@ const CacheManager = ({ isOpen, onClose }) => {
                   <RefreshCw className="w-4 h-4" />
                   Clear Expired
                 </Button>
-                
-                <Button 
+
+                <Button
                   onClick={handlePrefetchData}
                   variant="outline"
                   className="flex items-center gap-2"
@@ -244,11 +257,14 @@ const CacheManager = ({ isOpen, onClose }) => {
                       <span>Total Entries:</span>
                       <Badge variant="secondary">{stats.memory.entries}</Badge>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <h4 className="font-medium">Cache by Namespace:</h4>
-                      {Object.values(CACHE_NAMESPACES).map(namespace => (
-                        <div key={namespace} className="flex justify-between items-center">
+                      {Object.values(CACHE_NAMESPACES).map((namespace) => (
+                        <div
+                          key={namespace}
+                          className="flex justify-between items-center"
+                        >
                           <span className="capitalize">{namespace}:</span>
                           <div className="flex items-center gap-2">
                             <Badge variant="outline">Active</Badge>
@@ -280,9 +296,11 @@ const CacheManager = ({ isOpen, onClose }) => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
                       <span>Total Entries:</span>
-                      <Badge variant="secondary">{stats.localStorage.entries}</Badge>
+                      <Badge variant="secondary">
+                        {stats.localStorage.entries}
+                      </Badge>
                     </div>
-                    
+
                     <div className="flex justify-between items-center">
                       <span>Storage Used:</span>
                       <Badge variant="secondary">{getStorageUsage()}</Badge>
@@ -291,7 +309,8 @@ const CacheManager = ({ isOpen, onClose }) => {
                     <Alert>
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>
-                        Local storage cache persists between browser sessions and is automatically cleaned up when expired.
+                        Local storage cache persists between browser sessions
+                        and is automatically cleaned up when expired.
                       </AlertDescription>
                     </Alert>
                   </div>
@@ -305,7 +324,7 @@ const CacheManager = ({ isOpen, onClose }) => {
                   <Card key={apiName}>
                     <CardHeader>
                       <CardTitle className="text-lg capitalize">
-                        {apiName.replace('Api', ' API')}
+                        {apiName.replace("Api", " API")}
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
@@ -328,7 +347,8 @@ const CacheManager = ({ isOpen, onClose }) => {
                 <Alert>
                   <Info className="h-4 w-4" />
                   <AlertDescription>
-                    No RTK Query cache data available yet. Make some API calls to see statistics.
+                    No RTK Query cache data available yet. Make some API calls
+                    to see statistics.
                   </AlertDescription>
                 </Alert>
               )}
@@ -340,4 +360,4 @@ const CacheManager = ({ isOpen, onClose }) => {
   );
 };
 
-export default CacheManager; 
+export default CacheManager;

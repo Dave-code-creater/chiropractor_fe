@@ -1,18 +1,18 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { API_CONFIG, API_ENDPOINTS, handleApiResponse } from '../config/api';
-import { getToken } from '../utils/token';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { API_CONFIG, API_ENDPOINTS, handleApiResponse } from "../config/api";
+import { getToken } from "../utils/token";
 
 export const vitalsApi = createApi({
-  reducerPath: 'vitalsApi',
+  reducerPath: "vitalsApi",
   baseQuery: fetchBaseQuery({
     baseUrl: API_CONFIG.BASE_URL,
     timeout: API_CONFIG.TIMEOUT,
     prepareHeaders: (headers) => {
       const token = getToken();
       if (token) {
-        headers.set('authorization', `Bearer ${token}`);
+        headers.set("authorization", `Bearer ${token}`);
       }
-      headers.set('content-type', 'application/json');
+      headers.set("content-type", "application/json");
       return headers;
     },
     responseHandler: async (response) => {
@@ -20,7 +20,7 @@ export const vitalsApi = createApi({
       return handleApiResponse(data);
     },
   }),
-  tagTypes: ['Vitals', 'PatientVitals', 'VitalsTrend'],
+  tagTypes: ["Vitals", "PatientVitals", "VitalsTrend"],
   endpoints: (builder) => ({
     // Get all vitals
     getVitals: builder.query({
@@ -28,7 +28,7 @@ export const vitalsApi = createApi({
         url: API_ENDPOINTS.VITALS.BASE,
         params: { page, limit, patientId, dateFrom, dateTo },
       }),
-      providesTags: ['Vitals'],
+      providesTags: ["Vitals"],
     }),
 
     // Get vitals by patient
@@ -38,8 +38,8 @@ export const vitalsApi = createApi({
         params: { page, limit, dateFrom, dateTo },
       }),
       providesTags: (result, error, { patientId }) => [
-        { type: 'PatientVitals', id: patientId },
-        'Vitals',
+        { type: "PatientVitals", id: patientId },
+        "Vitals",
       ],
     }),
 
@@ -47,32 +47,34 @@ export const vitalsApi = createApi({
     getLatestVitals: builder.query({
       query: (patientId) => API_ENDPOINTS.VITALS.LATEST(patientId),
       providesTags: (result, error, patientId) => [
-        { type: 'PatientVitals', id: patientId },
-        { type: 'Vitals', id: 'LATEST' },
+        { type: "PatientVitals", id: patientId },
+        { type: "Vitals", id: "LATEST" },
       ],
     }),
 
     // Get single vital record
     getVital: builder.query({
       query: (vitalId) => `${API_ENDPOINTS.VITALS.BASE}/${vitalId}`,
-      providesTags: (result, error, vitalId) => [{ type: 'Vitals', id: vitalId }],
+      providesTags: (result, error, vitalId) => [
+        { type: "Vitals", id: vitalId },
+      ],
     }),
 
     // Create vital record
     createVital: builder.mutation({
       query: (vitalData) => ({
         url: API_ENDPOINTS.VITALS.BASE,
-        method: 'POST',
+        method: "POST",
         body: {
           ...vitalData,
           recordedAt: vitalData.recordedAt || new Date().toISOString(),
         },
       }),
       invalidatesTags: (result, error, vitalData) => [
-        'Vitals',
-        { type: 'PatientVitals', id: vitalData.patientId },
-        { type: 'Vitals', id: 'LATEST' },
-        'VitalsTrend',
+        "Vitals",
+        { type: "PatientVitals", id: vitalData.patientId },
+        { type: "Vitals", id: "LATEST" },
+        "VitalsTrend",
       ],
     }),
 
@@ -80,13 +82,13 @@ export const vitalsApi = createApi({
     updateVital: builder.mutation({
       query: ({ vitalId, ...vitalData }) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/${vitalId}`,
-        method: 'PUT',
+        method: "PUT",
         body: vitalData,
       }),
       invalidatesTags: (result, error, { vitalId, patientId }) => [
-        { type: 'Vitals', id: vitalId },
-        { type: 'PatientVitals', id: patientId },
-        'VitalsTrend',
+        { type: "Vitals", id: vitalId },
+        { type: "PatientVitals", id: patientId },
+        "VitalsTrend",
       ],
     }),
 
@@ -94,19 +96,19 @@ export const vitalsApi = createApi({
     deleteVital: builder.mutation({
       query: (vitalId) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/${vitalId}`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['Vitals', 'PatientVitals', 'VitalsTrend'],
+      invalidatesTags: ["Vitals", "PatientVitals", "VitalsTrend"],
     }),
 
     // Get vitals trends for patient
     getVitalsTrends: builder.query({
-      query: ({ patientId, period = '30d', vitalTypes = [] }) => ({
+      query: ({ patientId, period = "30d", vitalTypes = [] }) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/trends`,
-        params: { patientId, period, vitalTypes: vitalTypes.join(',') },
+        params: { patientId, period, vitalTypes: vitalTypes.join(",") },
       }),
       providesTags: (result, error, { patientId }) => [
-        { type: 'VitalsTrend', id: patientId },
+        { type: "VitalsTrend", id: patientId },
       ],
     }),
 
@@ -114,29 +116,29 @@ export const vitalsApi = createApi({
     createBulkVitals: builder.mutation({
       query: ({ patientId, vitalsArray }) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/bulk`,
-        method: 'POST',
+        method: "POST",
         body: {
           patientId,
           vitals: vitalsArray,
         },
       }),
       invalidatesTags: (result, error, { patientId }) => [
-        'Vitals',
-        { type: 'PatientVitals', id: patientId },
-        { type: 'Vitals', id: 'LATEST' },
-        'VitalsTrend',
+        "Vitals",
+        { type: "PatientVitals", id: patientId },
+        { type: "Vitals", id: "LATEST" },
+        "VitalsTrend",
       ],
     }),
 
     // Get vitals summary for patient
     getVitalsSummary: builder.query({
-      query: ({ patientId, period = '30d' }) => ({
+      query: ({ patientId, period = "30d" }) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/summary`,
         params: { patientId, period },
       }),
       providesTags: (result, error, { patientId }) => [
-        { type: 'PatientVitals', id: patientId },
-        'VitalsTrend',
+        { type: "PatientVitals", id: patientId },
+        "VitalsTrend",
       ],
     }),
 
@@ -144,9 +146,9 @@ export const vitalsApi = createApi({
     getVitalsReferenceRanges: builder.query({
       query: ({ age, gender, conditions = [] }) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/reference-ranges`,
-        params: { age, gender, conditions: conditions.join(',') },
+        params: { age, gender, conditions: conditions.join(",") },
       }),
-      providesTags: ['VitalsReference'],
+      providesTags: ["VitalsReference"],
     }),
   }),
 });
@@ -163,4 +165,4 @@ export const {
   useCreateBulkVitalsMutation,
   useGetVitalsSummaryQuery,
   useGetVitalsReferenceRangesQuery,
-} = vitalsApi; 
+} = vitalsApi;

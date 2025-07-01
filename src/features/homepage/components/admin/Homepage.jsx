@@ -1,11 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import TutorialLauncher from '@/components/tutorial/TutorialLauncher';
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import TutorialLauncher from "@/components/tutorial/TutorialLauncher";
 import {
   BarChart3,
   Users,
@@ -24,21 +30,21 @@ import {
   DollarSign,
   Download,
   Eye,
-  Plus
-} from 'lucide-react';
+  Plus,
+} from "lucide-react";
 
 // Import the new feature components
-import DashboardStats from '@/components/dashboard/DashboardStats';
-import NotificationSystem from '@/components/notifications/NotificationSystem';
-import GlobalSearch from '@/components/advanced-search/GlobalSearch';
-import AdvancedPatientManagement from '@/features/patients/components/AdvancedPatientManagement';
-import DoctorAvailabilitySystem from '@/features/doctors/components/DoctorAvailabilitySystem';
-import PDFReportGenerator from '@/components/reports/PDFReportGenerator';
-import BulkOperationsManager from '@/components/bulk-operations/BulkOperationsManager';
-import SecurityManager from '@/components/security/SecurityManager';
+import DashboardStats from "@/components/dashboard/DashboardStats";
+import NotificationSystem from "@/components/notifications/NotificationSystem";
+import GlobalSearch from "@/components/advanced-search/GlobalSearch";
+import AdvancedPatientManagement from "@/features/patients/components/AdvancedPatientManagement";
+import DoctorAvailabilitySystem from "@/features/doctors/components/DoctorAvailabilitySystem";
+import PDFReportGenerator from "@/components/reports/PDFReportGenerator";
+import BulkOperationsManager from "@/components/bulk-operations/BulkOperationsManager";
+import SecurityManager from "@/components/security/SecurityManager";
 
 const AdminDashboard = () => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState("overview");
   const [dashboardStats, setDashboardStats] = useState({
     totalPatients: 1250,
     activeAppointments: 28,
@@ -47,119 +53,136 @@ const AdminDashboard = () => {
     pendingTasks: 12,
     unreadNotifications: 5,
     securityAlerts: 2,
-    reportsGenerated: 45
+    reportsGenerated: 45,
   });
 
   const [quickActions] = useState([
     {
-      id: 'add-patient',
-      title: 'Add New Patient',
-      description: 'Register a new patient in the system',
+      id: "add-patient",
+      title: "Add New Patient",
+      description: "Register a new patient in the system",
       icon: Users,
-      color: 'blue',
-      action: () => console.log('Add patient')
+      color: "blue",
+      action: () => {}, // TODO: Implement add patient functionality
     },
     {
-      id: 'schedule-appointment',
-      title: 'Schedule Appointment',
-      description: 'Book a new appointment',
+      id: "schedule-appointment",
+      title: "Schedule Appointment",
+      description: "Book a new appointment",
       icon: Calendar,
-      color: 'green',
-      action: () => console.log('Schedule appointment')
+      color: "green",
+      action: () => {}, // TODO: Implement schedule appointment functionality
     },
     {
-      id: 'generate-report',
-      title: 'Generate Report',
-      description: 'Create analytics or patient reports',
+      id: "generate-report",
+      title: "Generate Report",
+      description: "Create analytics or patient reports",
       icon: FileText,
-      color: 'purple',
-      action: () => console.log('Generate report')
+      color: "purple",
+      action: () => {}, // TODO: Implement generate report functionality
     },
     {
-      id: 'security-review',
-      title: 'Security Review',
-      description: 'Review security alerts and logs',
+      id: "security-review",
+      title: "Security Review",
+      description: "Review security alerts and logs",
       icon: Shield,
-      color: 'red',
-      action: () => console.log('Security review')
-    }
+      color: "red",
+      action: () => console.log("Security review"),
+    },
   ]);
 
   const [recentActivities] = useState([
     {
       id: 1,
-      type: 'patient',
-      title: 'New patient registered',
-      description: 'Sarah Johnson completed registration',
-      timestamp: '2 minutes ago',
+      type: "patient",
+      title: "New patient registered",
+      description: "Sarah Johnson completed registration",
+      timestamp: "2 minutes ago",
       icon: Users,
-      color: 'blue'
+      color: "blue",
     },
     {
       id: 2,
-      type: 'appointment',
-      title: 'Appointment confirmed',
-      description: 'John Smith - Tomorrow 2:00 PM',
-      timestamp: '5 minutes ago',
+      type: "appointment",
+      title: "Appointment confirmed",
+      description: "John Smith - Tomorrow 2:00 PM",
+      timestamp: "5 minutes ago",
       icon: Calendar,
-      color: 'green'
+      color: "green",
     },
     {
       id: 3,
-      type: 'security',
-      title: 'Security alert resolved',
-      description: 'Suspicious login attempt blocked',
-      timestamp: '10 minutes ago',
+      type: "security",
+      title: "Security alert resolved",
+      description: "Suspicious login attempt blocked",
+      timestamp: "10 minutes ago",
       icon: Shield,
-      color: 'red'
+      color: "red",
     },
     {
       id: 4,
-      type: 'report',
-      title: 'Monthly report generated',
-      description: 'Patient analytics report completed',
-      timestamp: '15 minutes ago',
+      type: "report",
+      title: "Monthly report generated",
+      description: "Patient analytics report completed",
+      timestamp: "15 minutes ago",
       icon: FileText,
-      color: 'purple'
-    }
+      color: "purple",
+    },
   ]);
 
   const [systemAlerts] = useState([
     {
       id: 1,
-      type: 'warning',
-      title: 'System Maintenance Scheduled',
-      description: 'Scheduled maintenance tonight from 11 PM - 1 AM',
-      severity: 'medium'
+      type: "warning",
+      title: "System Maintenance Scheduled",
+      description: "Scheduled maintenance tonight from 11 PM - 1 AM",
+      severity: "medium",
     },
     {
       id: 2,
-      type: 'security',
-      title: 'Security Update Available',
-      description: 'New security patch available for installation',
-      severity: 'high'
-    }
+      type: "security",
+      title: "Security Update Available",
+      description: "New security patch available for installation",
+      severity: "high",
+    },
   ]);
 
   const QuickActionCard = ({ action }) => {
     const IconComponent = action.icon;
-    
+
     return (
-      <Card className="cursor-pointer hover:shadow-md transition-all" onClick={action.action}>
+      <Card
+        className="cursor-pointer hover:shadow-md transition-all"
+        onClick={action.action}
+      >
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
-            <div className={`p-3 rounded-lg ${
-              action.color === 'blue' ? 'bg-blue-100' :
-              action.color === 'green' ? 'bg-green-100' :
-              action.color === 'purple' ? 'bg-purple-100' :
-              action.color === 'red' ? 'bg-red-100' : 'bg-gray-100'
-            }`}>
-              <IconComponent className={`h-6 w-6 ${
-                action.color === 'blue' ? 'text-blue-600' :
-                action.color === 'green' ? 'text-green-600' :
-                action.color === 'purple' ? 'text-purple-600' :
-                action.color === 'red' ? 'text-red-600' : 'text-gray-600'
-              }`} />
+            <div
+              className={`p-3 rounded-lg ${
+                action.color === "blue"
+                  ? "bg-blue-100"
+                  : action.color === "green"
+                    ? "bg-green-100"
+                    : action.color === "purple"
+                      ? "bg-purple-100"
+                      : action.color === "red"
+                        ? "bg-red-100"
+                        : "bg-gray-100"
+              }`}
+            >
+              <IconComponent
+                className={`h-6 w-6 ${
+                  action.color === "blue"
+                    ? "text-blue-600"
+                    : action.color === "green"
+                      ? "text-green-600"
+                      : action.color === "purple"
+                        ? "text-purple-600"
+                        : action.color === "red"
+                          ? "text-red-600"
+                          : "text-gray-600"
+                }`}
+              />
             </div>
             <div>
               <h3 className="font-medium text-gray-900">{action.title}</h3>
@@ -179,23 +202,40 @@ const AdminDashboard = () => {
             <p className="text-sm font-medium text-gray-600">{title}</p>
             <p className="text-2xl font-bold text-gray-900">{value}</p>
             {change && (
-              <p className={`text-sm ${change > 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {change > 0 ? '+' : ''}{change}% from last month
+              <p
+                className={`text-sm ${change > 0 ? "text-green-600" : "text-red-600"}`}
+              >
+                {change > 0 ? "+" : ""}
+                {change}% from last month
               </p>
             )}
           </div>
-          <div className={`p-3 rounded-lg ${
-            color === 'blue' ? 'bg-blue-100' :
-            color === 'green' ? 'bg-green-100' :
-            color === 'emerald' ? 'bg-emerald-100' :
-            color === 'purple' ? 'bg-purple-100' : 'bg-gray-100'
-          }`}>
-            <Icon className={`h-6 w-6 ${
-              color === 'blue' ? 'text-blue-600' :
-              color === 'green' ? 'text-green-600' :
-              color === 'emerald' ? 'text-emerald-600' :
-              color === 'purple' ? 'text-purple-600' : 'text-gray-600'
-            }`} />
+          <div
+            className={`p-3 rounded-lg ${
+              color === "blue"
+                ? "bg-blue-100"
+                : color === "green"
+                  ? "bg-green-100"
+                  : color === "emerald"
+                    ? "bg-emerald-100"
+                    : color === "purple"
+                      ? "bg-purple-100"
+                      : "bg-gray-100"
+            }`}
+          >
+            <Icon
+              className={`h-6 w-6 ${
+                color === "blue"
+                  ? "text-blue-600"
+                  : color === "green"
+                    ? "text-green-600"
+                    : color === "emerald"
+                      ? "text-emerald-600"
+                      : color === "purple"
+                        ? "text-purple-600"
+                        : "text-gray-600"
+              }`}
+            />
           </div>
         </div>
       </CardContent>
@@ -204,21 +244,35 @@ const AdminDashboard = () => {
 
   const ActivityItem = ({ activity }) => {
     const IconComponent = activity.icon;
-    
+
     return (
       <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
-        <div className={`p-2 rounded-lg ${
-          activity.color === 'blue' ? 'bg-blue-100' :
-          activity.color === 'green' ? 'bg-green-100' :
-          activity.color === 'purple' ? 'bg-purple-100' :
-          activity.color === 'red' ? 'bg-red-100' : 'bg-gray-100'
-        }`}>
-          <IconComponent className={`h-4 w-4 ${
-            activity.color === 'blue' ? 'text-blue-600' :
-            activity.color === 'green' ? 'text-green-600' :
-            activity.color === 'purple' ? 'text-purple-600' :
-            activity.color === 'red' ? 'text-red-600' : 'text-gray-600'
-          }`} />
+        <div
+          className={`p-2 rounded-lg ${
+            activity.color === "blue"
+              ? "bg-blue-100"
+              : activity.color === "green"
+                ? "bg-green-100"
+                : activity.color === "purple"
+                  ? "bg-purple-100"
+                  : activity.color === "red"
+                    ? "bg-red-100"
+                    : "bg-gray-100"
+          }`}
+        >
+          <IconComponent
+            className={`h-4 w-4 ${
+              activity.color === "blue"
+                ? "text-blue-600"
+                : activity.color === "green"
+                  ? "text-green-600"
+                  : activity.color === "purple"
+                    ? "text-purple-600"
+                    : activity.color === "red"
+                      ? "text-red-600"
+                      : "text-gray-600"
+            }`}
+          />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm font-medium text-gray-900">{activity.title}</p>
@@ -234,12 +288,17 @@ const AdminDashboard = () => {
       {/* System Alerts */}
       {systemAlerts.length > 0 && (
         <div className="space-y-3">
-          {systemAlerts.map(alert => (
-            <Alert key={alert.id} className={
-              alert.severity === 'high' ? 'border-red-200 bg-red-50' :
-              alert.severity === 'medium' ? 'border-yellow-200 bg-yellow-50' :
-              'border-blue-200 bg-blue-50'
-            }>
+          {systemAlerts.map((alert) => (
+            <Alert
+              key={alert.id}
+              className={
+                alert.severity === "high"
+                  ? "border-red-200 bg-red-50"
+                  : alert.severity === "medium"
+                    ? "border-yellow-200 bg-yellow-50"
+                    : "border-blue-200 bg-blue-50"
+              }
+            >
               <AlertTriangle className="h-4 w-4" />
               <AlertTitle>{alert.title}</AlertTitle>
               <AlertDescription>{alert.description}</AlertDescription>
@@ -284,11 +343,13 @@ const AdminDashboard = () => {
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
-          <CardDescription>Frequently used administrative tasks</CardDescription>
+          <CardDescription>
+            Frequently used administrative tasks
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {quickActions.map(action => (
+            {quickActions.map((action) => (
               <QuickActionCard key={action.id} action={action} />
             ))}
           </div>
@@ -306,12 +367,14 @@ const AdminDashboard = () => {
                 View All
               </Button>
             </CardTitle>
-            <CardDescription>Latest system activities and events</CardDescription>
+            <CardDescription>
+              Latest system activities and events
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <ScrollArea className="h-[300px]">
               <div className="p-4 space-y-1">
-                {recentActivities.map(activity => (
+                {recentActivities.map((activity) => (
                   <ActivityItem key={activity.id} activity={activity} />
                 ))}
               </div>
@@ -322,34 +385,60 @@ const AdminDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle>System Status</CardTitle>
-            <CardDescription>Current system performance and health</CardDescription>
+            <CardDescription>
+              Current system performance and health
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Server Status</span>
-                <Badge variant="default" className="bg-green-100 text-green-800">Online</Badge>
+                <Badge
+                  variant="default"
+                  className="bg-green-100 text-green-800"
+                >
+                  Online
+                </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Database</span>
-                <Badge variant="default" className="bg-green-100 text-green-800">Healthy</Badge>
+                <Badge
+                  variant="default"
+                  className="bg-green-100 text-green-800"
+                >
+                  Healthy
+                </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Security Status</span>
-                <Badge variant="default" className="bg-yellow-100 text-yellow-800">
-                  {dashboardStats.securityAlerts} Alert{dashboardStats.securityAlerts !== 1 ? 's' : ''}
+                <Badge
+                  variant="default"
+                  className="bg-yellow-100 text-yellow-800"
+                >
+                  {dashboardStats.securityAlerts} Alert
+                  {dashboardStats.securityAlerts !== 1 ? "s" : ""}
                 </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">Backup Status</span>
-                <Badge variant="default" className="bg-green-100 text-green-800">Up to Date</Badge>
+                <Badge
+                  variant="default"
+                  className="bg-green-100 text-green-800"
+                >
+                  Up to Date
+                </Badge>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm font-medium">API Status</span>
-                <Badge variant="default" className="bg-green-100 text-green-800">Operational</Badge>
+                <Badge
+                  variant="default"
+                  className="bg-green-100 text-green-800"
+                >
+                  Operational
+                </Badge>
               </div>
             </div>
-            
+
             <div className="pt-4 border-t">
               <div className="flex items-center justify-between text-sm">
                 <span>Last System Check</span>
@@ -372,7 +461,9 @@ const AdminDashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Comprehensive system management and analytics</p>
+          <p className="text-gray-600">
+            Comprehensive system management and analytics
+          </p>
         </div>
         <div className="flex items-center space-x-3">
           <TutorialLauncher variant="inline" className="mr-2" />
@@ -397,7 +488,11 @@ const AdminDashboard = () => {
       </div>
 
       {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -439,8 +534,8 @@ const AdminDashboard = () => {
 
         <TabsContent value="search">
           <div className="space-y-6">
-            <GlobalSearch 
-              onResultSelect={(result) => console.log('Selected:', result)}
+            <GlobalSearch
+              onResultSelect={(result) => console.log("Selected:", result)}
               userRole="admin"
             />
             <NotificationSystem userId="admin" userRole="admin" />

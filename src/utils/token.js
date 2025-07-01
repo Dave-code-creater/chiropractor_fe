@@ -1,6 +1,4 @@
 import { jwtDecode } from "jwt-decode";
-import { store } from "../store/store";
-import { authApi } from "../services/authApi";
 
 /**
  * Get the current access token from the Redux store
@@ -8,10 +6,36 @@ import { authApi } from "../services/authApi";
  */
 export const getToken = () => {
   try {
+    // Access store from window to avoid circular dependency
+    const store = window.__REDUX_STORE__;
+    if (!store) {
+      console.warn("Redux store not available on window");
+      return null;
+    }
     const state = store.getState();
-    return state.data?.auth?.accessToken || null;
+    return state?.auth?.accessToken || null;
   } catch (error) {
-    console.error('Failed to get token from store:', error);
+    console.error("Failed to get token from store:", error);
+    return null;
+  }
+};
+
+/**
+ * Get the current refresh token from the Redux store
+ * @returns {string|null} - Current refresh token or null
+ */
+export const getRefreshToken = () => {
+  try {
+    // Access store from window to avoid circular dependency
+    const store = window.__REDUX_STORE__;
+    if (!store) {
+      console.warn("Redux store not available on window");
+      return null;
+    }
+    const state = store.getState();
+    return state?.auth?.refreshToken || null;
+  } catch (error) {
+    console.error("Failed to get refresh token from store:", error);
     return null;
   }
 };
@@ -21,13 +45,53 @@ export const getToken = () => {
  * Default buffer is 60 s (one minute).
  */
 export const willExpireSoon = (token, buffer = 60) => {
+  try {
+    const { exp } = jwtDecode(token); // exp = seconds since epoch
+    return exp - Date.now() / 1000 < buffer;
+  } catch {
+    // Bad token → treat as expired
+    return true;
+  }
+};
+
+/**
+ * Manually trigger token refresh if needed
+ * This can be called from components or route guards
+ */
+export const ensureValidToken = async () => {
+  const token = getToken();
+  
+  if (!token) {
+    return false;
+  }
+
+  // If token will expire within 5 minutes, refresh it
+  if (willExpireSoon(token, 300)) {
     try {
-        const { exp } = jwtDecode(token); // exp = seconds since epoch
-        return exp - Date.now() / 1000 < buffer;
-    } catch {
-        // Bad token → treat as expired
-        return true;
+      // Access store from window to avoid circular dependency
+      const store = window.__REDUX_STORE__;
+      if (!store) {
+        console.warn("Redux store not available on window");
+        return false;
+      }
+
+      // Import the refresh function dynamically to avoid circular dependency
+      const { refreshTokens } = await import('../services/baseApi');
+      
+      const mockApi = {
+        getState: () => store.getState(),
+        dispatch: (action) => store.dispatch(action)
+      };
+      
+      await refreshTokens(mockApi);
+      return true;
+    } catch (error) {
+      console.error('Manual token refresh failed:', error);
+      return false;
     }
+  }
+
+  return true;
 };
 
 /**
@@ -35,10 +99,11 @@ export const willExpireSoon = (token, buffer = 60) => {
  * outside Axios. Usually the interceptor is enough.
  */
 export const autoRefreshTokenIfNeeded = async () => {
-    const { accessToken } = store.getState().data.auth;
-    if (accessToken && willExpireSoon(accessToken)) {
-        await store.dispatch(authApi.endpoints.refreshToken.initiate()).unwrap();
-    }
+  const accessToken = getToken();
+  if (accessToken && willExpireSoon(accessToken)) {
+    return await ensureValidToken();
+  }
+  return true;
 };
 
 // Token utility functions for secure JWT handling
@@ -53,20 +118,20 @@ export const autoRefreshTokenIfNeeded = async () => {
  */
 export const decodeJWTPayload = (token) => {
   try {
-    if (!token || typeof token !== 'string') {
+    if (!token || typeof token !== "string") {
       return null;
     }
-    
-    const parts = token.split('.');
+
+    const parts = token.split(".");
     if (parts.length !== 3) {
       return null;
     }
-    
+
     const payload = parts[1];
     const decoded = JSON.parse(atob(payload));
     return decoded;
   } catch (error) {
-    console.warn('Failed to decode JWT payload:', error);
+    console.warn("Failed to decode JWT payload:", error);
     return null;
   }
 };
@@ -82,7 +147,7 @@ export const isTokenExpired = (token) => {
     if (!payload || !payload.exp) {
       return true;
     }
-    
+
     const currentTime = Math.floor(Date.now() / 1000);
     return payload.exp < currentTime;
   } catch (error) {
@@ -101,7 +166,7 @@ export const getTokenExpiration = (token) => {
     if (!payload || !payload.exp) {
       return null;
     }
-    
+
     return new Date(payload.exp * 1000);
   } catch (error) {
     return null;
@@ -119,7 +184,7 @@ export const extractUserFromToken = (token) => {
     if (!payload) {
       return null;
     }
-    
+
     return {
       id: payload.sub || payload.id,
       email: payload.email,
@@ -127,10 +192,10 @@ export const extractUserFromToken = (token) => {
       firstName: payload.firstName || payload.first_name,
       lastName: payload.lastName || payload.last_name,
       exp: payload.exp,
-      iat: payload.iat
+      iat: payload.iat,
     };
   } catch (error) {
-    console.warn('Failed to extract user from token:', error);
+    console.warn("Failed to extract user from token:", error);
     return null;
   }
 };
@@ -141,12 +206,12 @@ export const extractUserFromToken = (token) => {
  * @returns {boolean} - True if format is valid
  */
 export const isValidTokenFormat = (token) => {
-  if (!token || typeof token !== 'string') {
+  if (!token || typeof token !== "string") {
     return false;
   }
-  
-  const parts = token.split('.');
-  return parts.length === 3 && parts.every(part => part.length > 0);
+
+  const parts = token.split(".");
+  return parts.length === 3 && parts.every((part) => part.length > 0);
 };
 
 /**
@@ -158,28 +223,28 @@ export const getTokenInfo = (token) => {
   if (!isValidTokenFormat(token)) {
     return {
       valid: false,
-      error: 'Invalid token format'
+      error: "Invalid token format",
     };
   }
-  
+
   const payload = decodeJWTPayload(token);
   const isExpired = isTokenExpired(token);
   const expiration = getTokenExpiration(token);
-  
+
   return {
     valid: true,
     payload,
     isExpired,
     expiration,
-    timeUntilExpiry: expiration ? expiration.getTime() - Date.now() : null
+    timeUntilExpiry: expiration ? expiration.getTime() - Date.now() : null,
   };
 };
 
 // Storage keys for tokens
 export const TOKEN_STORAGE_KEYS = {
-  ACCESS_TOKEN: 'accessToken',
-  REFRESH_TOKEN: 'refreshToken',
-  USER_DATA: 'userData'
+  ACCESS_TOKEN: "accessToken",
+  REFRESH_TOKEN: "refreshToken",
+  USER_DATA: "userData",
 };
 
 /**
@@ -198,10 +263,13 @@ export const storeTokens = (accessToken, refreshToken, userData) => {
       localStorage.setItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
     }
     if (userData) {
-      localStorage.setItem(TOKEN_STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
+      localStorage.setItem(
+        TOKEN_STORAGE_KEYS.USER_DATA,
+        JSON.stringify(userData),
+      );
     }
   } catch (error) {
-    console.error('Failed to store tokens:', error);
+    console.error("Failed to store tokens:", error);
   }
 };
 
@@ -210,11 +278,11 @@ export const storeTokens = (accessToken, refreshToken, userData) => {
  */
 export const clearTokens = () => {
   try {
-    Object.values(TOKEN_STORAGE_KEYS).forEach(key => {
+    Object.values(TOKEN_STORAGE_KEYS).forEach((key) => {
       localStorage.removeItem(key);
     });
   } catch (error) {
-    console.error('Failed to clear tokens:', error);
+    console.error("Failed to clear tokens:", error);
   }
 };
 
@@ -227,27 +295,27 @@ export const getStoredTokens = () => {
     const accessToken = localStorage.getItem(TOKEN_STORAGE_KEYS.ACCESS_TOKEN);
     const refreshToken = localStorage.getItem(TOKEN_STORAGE_KEYS.REFRESH_TOKEN);
     const userDataStr = localStorage.getItem(TOKEN_STORAGE_KEYS.USER_DATA);
-    
+
     let userData = null;
     if (userDataStr) {
       try {
         userData = JSON.parse(userDataStr);
       } catch (e) {
-        console.warn('Failed to parse stored user data');
+        console.warn("Failed to parse stored user data");
       }
     }
-    
+
     return {
       accessToken,
       refreshToken,
-      userData
+      userData,
     };
   } catch (error) {
-    console.error('Failed to get stored tokens:', error);
+    console.error("Failed to get stored tokens:", error);
     return {
       accessToken: null,
       refreshToken: null,
-      userData: null
+      userData: null,
     };
   }
 };

@@ -24,5 +24,10 @@ const errorsSlice = createSlice({
   },
 });
 
-export const { setGlobalError, clearGlobalError, setLoginError, clearLoginError } = errorsSlice.actions;
+export const {
+  setGlobalError,
+  clearGlobalError,
+  setLoginError,
+  clearLoginError,
+} = errorsSlice.actions;
 export default errorsSlice.reducer;

@@ -1,44 +1,40 @@
 import React from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useGetPostQuery } from "@/services/blogApi";
+import { useGetBlogPostByIdQuery } from "@/services/blogApi";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { 
-  ArrowLeft, 
-  Calendar, 
-  Clock, 
-  Eye, 
-  Heart, 
+import {
+  ArrowLeft,
+  Calendar,
+  Clock,
+  Eye,
+  Heart,
   Share2,
   BookOpen,
   Tag,
-  User
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function BlogPost() {
   const { slug } = useParams();
   const navigate = useNavigate();
-  
-  const { 
-    data: postData, 
-    isLoading, 
-    error 
-  } = useGetPostQuery(slug);
 
-  const post = postData?.post;
+  const { data: postData, isLoading, error } = useGetBlogPostByIdQuery(slug);
+
+  const post = postData;
 
   // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -52,7 +48,7 @@ export default function BlogPost() {
           url: window.location.href,
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+
       }
     } else {
       // Fallback to clipboard
@@ -108,15 +104,15 @@ export default function BlogPost() {
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
         <div className="container mx-auto px-4 py-8 max-w-4xl">
           <div className="space-y-6">
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/blog')}
+            <Button
+              variant="ghost"
+              onClick={() => navigate("/blog")}
               className="gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
             </Button>
-            
+
             <Card className="p-8 text-center">
               <div className="space-y-4">
                 <div className="p-4 rounded-full bg-destructive/10 w-fit mx-auto">
@@ -124,7 +120,8 @@ export default function BlogPost() {
                 </div>
                 <h1 className="text-2xl font-bold">Post Not Found</h1>
                 <p className="text-muted-foreground">
-                  The blog post you're looking for doesn't exist or has been removed.
+                  The blog post you're looking for doesn't exist or has been
+                  removed.
                 </p>
                 <Button asChild>
                   <Link to="/blog">Browse All Posts</Link>
@@ -142,9 +139,9 @@ export default function BlogPost() {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="space-y-6">
           {/* Back Navigation */}
-          <Button 
-            variant="ghost" 
-            onClick={() => navigate('/blog')}
+          <Button
+            variant="ghost"
+            onClick={() => navigate("/blog")}
             className="gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -163,11 +160,14 @@ export default function BlogPost() {
               <div className="space-y-6">
                 {/* Meta Information */}
                 <div className="flex flex-wrap items-center gap-3">
-                  <Badge 
+                  <Badge
                     className="text-sm"
-                    style={{ backgroundColor: '#10b981' }}
+                    style={{ backgroundColor: "#10b981" }}
                   >
-                    {post.category?.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Health Tips'}
+                    {post.category
+                      ?.replace("-", " ")
+                      .replace(/\b\w/g, (l) => l.toUpperCase()) ||
+                      "Health Tips"}
                   </Badge>
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
@@ -205,7 +205,10 @@ export default function BlogPost() {
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={post.author?.avatar} />
                       <AvatarFallback>
-                        {post.author?.name?.split(' ').map(n => n[0]).join('') || 'A'}
+                        {post.author?.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("") || "A"}
                       </AvatarFallback>
                     </Avatar>
                     <div>
@@ -230,44 +233,60 @@ export default function BlogPost() {
             <CardContent className="p-8">
               <div className="prose prose-lg max-w-none prose-headings:text-foreground prose-p:text-muted-foreground prose-strong:text-foreground prose-ul:text-muted-foreground prose-ol:text-muted-foreground">
                 {/* Convert content to HTML-like structure */}
-                {post.content?.split('\n\n').map((paragraph, index) => {
-                  if (paragraph.startsWith('## ')) {
+                {post.content?.split("\n\n").map((paragraph, index) => {
+                  if (paragraph.startsWith("## ")) {
                     return (
-                      <h2 key={index} className="text-2xl font-bold mt-8 mb-4 text-foreground">
-                        {paragraph.replace('## ', '')}
+                      <h2
+                        key={index}
+                        className="text-2xl font-bold mt-8 mb-4 text-foreground"
+                      >
+                        {paragraph.replace("## ", "")}
                       </h2>
                     );
-                  } else if (paragraph.startsWith('### ')) {
+                  } else if (paragraph.startsWith("### ")) {
                     return (
-                      <h3 key={index} className="text-xl font-semibold mt-6 mb-3 text-foreground">
-                        {paragraph.replace('### ', '')}
+                      <h3
+                        key={index}
+                        className="text-xl font-semibold mt-6 mb-3 text-foreground"
+                      >
+                        {paragraph.replace("### ", "")}
                       </h3>
                     );
-                  } else if (paragraph.startsWith('- ')) {
-                    const items = paragraph.split('\n').filter(item => item.startsWith('- '));
+                  } else if (paragraph.startsWith("- ")) {
+                    const items = paragraph
+                      .split("\n")
+                      .filter((item) => item.startsWith("- "));
                     return (
                       <ul key={index} className="list-disc pl-6 space-y-2 my-4">
                         {items.map((item, itemIndex) => (
                           <li key={itemIndex} className="text-muted-foreground">
-                            {item.replace('- ', '')}
+                            {item.replace("- ", "")}
                           </li>
                         ))}
                       </ul>
                     );
                   } else if (paragraph.match(/^\d+\./)) {
-                    const items = paragraph.split('\n').filter(item => item.match(/^\d+\./));
+                    const items = paragraph
+                      .split("\n")
+                      .filter((item) => item.match(/^\d+\./));
                     return (
-                      <ol key={index} className="list-decimal pl-6 space-y-2 my-4">
+                      <ol
+                        key={index}
+                        className="list-decimal pl-6 space-y-2 my-4"
+                      >
                         {items.map((item, itemIndex) => (
                           <li key={itemIndex} className="text-muted-foreground">
-                            {item.replace(/^\d+\.\s/, '')}
+                            {item.replace(/^\d+\.\s/, "")}
                           </li>
                         ))}
                       </ol>
                     );
                   } else if (paragraph.trim()) {
                     return (
-                      <p key={index} className="text-muted-foreground leading-relaxed mb-4">
+                      <p
+                        key={index}
+                        className="text-muted-foreground leading-relaxed mb-4"
+                      >
                         {paragraph}
                       </p>
                     );
@@ -308,18 +327,25 @@ export default function BlogPost() {
                   <Avatar className="w-16 h-16">
                     <AvatarImage src={post.author?.avatar} />
                     <AvatarFallback>
-                      {post.author?.name?.split(' ').map(n => n[0]).join('') || 'A'}
+                      {post.author?.name
+                        ?.split(" ")
+                        .map((n) => n[0])
+                        .join("") || "A"}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <h4 className="font-semibold text-lg">{post.author?.name}</h4>
+                    <h4 className="font-semibold text-lg">
+                      {post.author?.name}
+                    </h4>
                     <p className="text-sm text-muted-foreground mb-2">
                       Healthcare Professional & Medical Writer
                     </p>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      {post.author?.name} is a licensed healthcare professional with years of experience 
-                      in patient care and medical education. They specialize in creating accessible 
-                      health content to help patients make informed decisions about their wellness journey.
+                      {post.author?.name} is a licensed healthcare professional
+                      with years of experience in patient care and medical
+                      education. They specialize in creating accessible health
+                      content to help patients make informed decisions about
+                      their wellness journey.
                     </p>
                   </div>
                 </div>
@@ -344,4 +370,4 @@ export default function BlogPost() {
       </div>
     </div>
   );
-} 
+}

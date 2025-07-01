@@ -5,324 +5,463 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useCreateAppointmentMutation, useGetDoctorsQuery } from "@/services/appointmentApi";
+import {
+  useCreateAppointmentMutation,
+  useGetDoctorsQuery,
+} from "@/services/appointmentApi";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import LocationSelector from "./Location";
 import DateSelector from "./Date";
 import DoctorSelector from "./Types";
 import BookingSummary from "./BookingSummary";
+import { cn } from "@/lib/utils";
+import { getLocationByValue, DEFAULT_CLINIC_LOCATION } from "@/constants/clinicLocations";
 
 export default function DoctorBooking() {
-    const [activeTab, setActiveTab] = useState("doctor"); // Start with doctor selection
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [bookingData, setBookingData] = useState({
-        doctor: "",        // Doctor first
-        location: "",      // Then location
-        date: null,        // Then date
-        time: "",          // And time
-        notes: "",
-        reason: "",
-        type: "initial"
-    });
+  const [activeTab, setActiveTab] = useState("doctor");
+  const [manualTabNavigation, setManualTabNavigation] = useState(false);
+  const [bookingData, setBookingData] = useState({
+    doctor: "",
+    location: "",
+    date: null,
+    time: "",
+    notes: "",
+    reason: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const user = useSelector((state) => state.data.auth);
-    const [createAppointment] = useCreateAppointmentMutation();
-    const { data: doctorsData, isLoading: doctorsLoading, isError: doctorsError } = useGetDoctorsQuery();
+  const user = useSelector((state) => state.auth);
+  const [createAppointment] = useCreateAppointmentMutation();
+  const {
+    data: doctorsData,
+    isLoading: doctorsLoading,
+    isError: doctorsError,
+    error: doctorsErrorDetails,
+  } = useGetDoctorsQuery({ is_available: true });
+
+
+
+  // Ensure doctors is always an array with fallback data and transform API response
+  const doctors = useMemo(() => {
+    let rawDoctors = [];
     
-    // Ensure doctors is always an array with fallback data
-    const doctors = useMemo(() => {
-        if (doctorsData?.doctors) return doctorsData.doctors;
-        if (Array.isArray(doctorsData)) return doctorsData;
-        
-        // Fallback doctors data when API fails
-        return [
-            {
-                id: 'dr-001',
-                name: 'Dr. Sarah Johnson',
-                specialty: 'General Chiropractic',
-                experience: '8 years',
-                rating: 4.9,
-                image: '/images/dr.png',
-                locations: ['Downtown Clinic', 'Westside Branch'],
-                availability: {
-                    'Downtown Clinic': ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'],
-                    'Westside Branch': ['08:00', '09:00', '10:00', '13:00', '14:00', '15:00']
-                }
-            },
-            {
-                id: 'dr-002',
-                name: 'Dr. Michael Chen',
-                specialty: 'Sports Chiropractic',
-                experience: '12 years',
-                rating: 4.8,
-                image: '/images/dr.png',
-                locations: ['Downtown Clinic', 'Sports Center'],
-                availability: {
-                    'Downtown Clinic': ['10:00', '11:00', '14:00', '15:00', '16:00'],
-                    'Sports Center': ['08:00', '09:00', '10:00', '11:00', '13:00', '14:00']
-                }
-            }
-        ];
-    }, [doctorsData]);
+    // Handle the actual backend response structure
+    if (doctorsData?.data) {
+      // Backend returns { success: true, data: [...] }
+      if (Array.isArray(doctorsData.data)) {
+        rawDoctors = doctorsData.data;
+      } else if (doctorsData.data.doctors && Array.isArray(doctorsData.data.doctors)) {
+        rawDoctors = doctorsData.data.doctors;
+      }
+    }
+    // Fallback to other possible structures
+    else if (doctorsData?.metadata) rawDoctors = doctorsData.metadata;
+    else if (doctorsData?.doctors) rawDoctors = doctorsData.doctors;
+    else if (Array.isArray(doctorsData)) rawDoctors = doctorsData;
 
-    const updateBookingData = (newData) => {
-        setBookingData(prev => {
-            const updated = { ...prev, ...newData };
-            
-            // If doctor changes, reset location, date, and time since availability might be different
-            if (newData.doctor && newData.doctor !== prev.doctor) {
-                updated.location = "";
-                updated.date = null;
-                updated.time = "";
-            }
-            
-            // If location changes, reset date and time
-            if (newData.location && newData.location !== prev.location) {
-                updated.date = null;
-                updated.time = "";
-            }
-            
-            return updated;
+    // Transform snake_case API response to camelCase for component compatibility
+    const transformedDoctors = rawDoctors.map(doctor => ({
+      ...doctor,
+      firstName: doctor.first_name || doctor.firstName,
+      lastName: doctor.last_name || doctor.lastName,
+      profileImage: doctor.profile_image || doctor.profileImage,
+      yearsOfExperience: doctor.years_of_experience || doctor.yearsOfExperience,
+      // Handle specialization data
+      specialization: doctor.specialization || doctor.specialty || 'Chiropractor',
+      specializations: doctor.specializations || {
+        primary: doctor.specialization || doctor.specialty || 'Chiropractor'
+      }
+    }));
+    
+    return transformedDoctors;
+  }, [doctorsData]);
+
+  const updateBookingData = (newData) => {
+    setBookingData((prev) => {
+      const updated = { ...prev, ...newData };
+
+      // If doctor changes, reset location, date, and time since availability might be different
+      if (newData.doctor && newData.doctor !== prev.doctor) {
+        updated.location = "";
+        updated.date = null;
+        updated.time = "";
+        // Reset manual navigation when user selects a new doctor (natural progression)
+        setManualTabNavigation(false);
+      }
+
+      // If location changes, reset date and time
+      if (newData.location && newData.location !== prev.location) {
+        updated.date = null;
+        updated.time = "";
+        // Reset manual navigation when user selects a new location (natural progression)
+        setManualTabNavigation(false);
+      }
+
+      // If date or time changes, allow auto-advance to summary
+      if ((newData.date && newData.date !== prev.date) || (newData.time && newData.time !== prev.time)) {
+        // Reset manual navigation when user selects date/time (natural progression)
+        setManualTabNavigation(false);
+      }
+
+      return updated;
+    });
+  };
+
+  // Auto-advance tabs when required fields are filled (only if not manually navigated)
+  useEffect(() => {
+    // Only auto-advance if user hasn't manually navigated
+    if (manualTabNavigation) return;
+    
+    if (activeTab === "doctor" && bookingData.doctor) {
+      setActiveTab("location");
+    } else if (activeTab === "location" && bookingData.location) {
+      setActiveTab("date");
+    } else if (activeTab === "date" && bookingData.date && bookingData.time) {
+      setActiveTab("summary");
+    }
+  }, [bookingData, activeTab, manualTabNavigation]);
+
+  // Custom tab change handler that tracks manual navigation
+  const handleTabChange = (newTab) => {
+    setManualTabNavigation(true);
+    setActiveTab(newTab);
+    
+    // Don't reset manual navigation automatically - only reset when user naturally fills form
+  };
+
+  const handleSubmit = async () => {
+    if (
+      !bookingData.doctor ||
+      !bookingData.location ||
+      !bookingData.date ||
+      !bookingData.time
+    ) {
+      toast.error("Please complete all required fields");
+      return;
+    }
+
+    if (!user?.userID) {
+      toast.error("Please log in to book an appointment");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Get selected doctor details
+      const selectedDoctor = getSelectedDoctor();
+      
+      // Get selected location details
+      const selectedLocation = getLocationByValue(bookingData.location) || DEFAULT_CLINIC_LOCATION;
+      
+      // Format date to match backend expectation: "Thursday, June 26, 2025"
+      const formattedDate = bookingData.date.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      
+      // Format time to match backend expectation: "11:30 AM"
+      const [hours, minutes] = bookingData.time.split(":");
+      const hour = parseInt(hours);
+      const ampm = hour >= 12 ? "PM" : "AM";
+      const displayHour = hour % 12 || 12;
+      const formattedTime = `${displayHour}:${minutes} ${ampm}`;
+      
+      // Format the appointment data according to backend specification
+      const appointmentData = {
+        doctor_id: bookingData.doctor,
+        date: formattedDate,
+        time: formattedTime,
+        reason_for_visit: bookingData.reason || "Chiropractic consultation",
+        additional_notes: bookingData.notes || "",
+        duration: 30,
+        // Include location information
+        location: selectedLocation.label,
+        clinic_address: selectedLocation.address,
+        clinic_phone: selectedLocation.phone,
+        clinic_hours: selectedLocation.hours,
+      };
+
+      
+
+      const result = await createAppointment(appointmentData).unwrap();
+
+      if (result.success) {
+        toast.success("Appointment booked successfully!");
+        // Reset form
+        setBookingData({
+          doctor: "",
+          location: "",
+          date: null,
+          time: "",
+          notes: "",
+          reason: "",
         });
-    };
+        setActiveTab("doctor"); // Reset to first step
+      }
+    } catch (error) {
+      console.error("Booking error:", error);
 
-    // Auto-advance tabs when required fields are filled
-    useEffect(() => {
-        if (activeTab === "doctor" && bookingData.doctor) {
-            setActiveTab("location");
-        } else if (activeTab === "location" && bookingData.location) {
-            setActiveTab("date");
-        } else if (activeTab === "date" && bookingData.date && bookingData.time) {
-            setActiveTab("summary");
+      // Handle specific API errors
+      if (error.status === 409) {
+        toast.error(
+          "This time slot is no longer available. Please select a different time.",
+        );
+      } else if (error.status === 404) {
+        toast.error("Doctor not found. Please select a different doctor.");
+      } else if (error.status === 400) {
+        const errorDetails = error.data?.error?.details;
+        if (Array.isArray(errorDetails)) {
+          errorDetails.forEach((detail) => {
+            toast.error(`${detail.field}: ${detail.message}`);
+          });
+        } else {
+          toast.error(error.data?.message || "Invalid appointment data");
         }
-    }, [bookingData, activeTab]);
+      } else {
+        toast.error("Failed to book appointment. Please try again.");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-    const handleSubmit = async () => {
-        if (!bookingData.doctor || !bookingData.location || !bookingData.date || !bookingData.time) {
-            toast.error("Please complete all required fields");
-            return;
-        }
+  const isStepComplete = (step) => {
+    switch (step) {
+      case "doctor":
+        return !!bookingData.doctor;
+      case "location":
+        return !!bookingData.location;
+      case "date":
+        return !!bookingData.date && !!bookingData.time;
+      default:
+        return false;
+    }
+  };
 
-        if (!user?.userID) {
-            toast.error("Please log in to book an appointment");
-            return;
-        }
-
-        setIsSubmitting(true);
-        
-        try {
-            // Format the appointment data according to API specification
-            const appointmentData = {
-                doctorId: bookingData.doctor,
-                patientId: user.userID,
-                datetime: new Date(`${bookingData.date.toISOString().split('T')[0]}T${bookingData.time}:00Z`).toISOString(),
-                duration: 30, // Default 30 minutes
-                type: bookingData.type || "initial",
-                notes: bookingData.notes || "",
-                reason: bookingData.reason || "Chiropractic consultation",
-                location: bookingData.location
-            };
-
-            const response = await createAppointment(appointmentData).unwrap();
-            
-            if (response.success) {
-                toast.success("Appointment booked successfully!");
-                // Reset form
-                setBookingData({
-                    doctor: "",
-                    location: "",
-                    date: null,
-                    time: "",
-                    notes: "",
-                    reason: "",
-                    type: "initial"
-                });
-                setActiveTab("doctor"); // Reset to first step
-            }
-        } catch (error) {
-            console.error("Booking error:", error);
-            
-            // Handle specific API errors
-            if (error.status === 409) {
-                toast.error("This time slot is no longer available. Please select a different time.");
-            } else if (error.status === 404) {
-                toast.error("Doctor not found. Please select a different doctor.");
-            } else if (error.status === 400) {
-                const errorDetails = error.data?.error?.details;
-                if (Array.isArray(errorDetails)) {
-                    errorDetails.forEach(detail => {
-                        toast.error(`${detail.field}: ${detail.message}`);
-                    });
-                } else {
-                    toast.error(error.data?.message || "Invalid appointment data");
-                }
-            } else {
-                toast.error("Failed to book appointment. Please try again.");
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const isStepComplete = (step) => {
-        switch (step) {
-            case "doctor":
-                return !!bookingData.doctor;
-            case "location":
-                return !!bookingData.location;
-            case "date":
-                return !!bookingData.date && !!bookingData.time;
-            default:
-                return false;
-        }
-    };
-
-    const canProceedToSummary = () => {
-        return bookingData.doctor && bookingData.location && bookingData.date && bookingData.time;
-    };
-
-    const getSelectedDoctor = () => {
-        // Ensure doctors is an array before calling find
-        if (!Array.isArray(doctors) || doctors.length === 0) {
-            return null;
-        }
-        return doctors.find(doc => doc.id === bookingData.doctor) || null;
-    };
-
+  const canProceedToSummary = () => {
     return (
-        <div className="grid md:grid-cols-3 gap-6">
-            {/* Left: Form Steps */}
-            <div className="md:col-span-2">
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                    <TabsList className="grid grid-cols-4 mb-6">
-                        <TabsTrigger 
-                            value="doctor" 
-                            className={isStepComplete("doctor") ? "bg-primary/10 text-primary" : ""}
-                        >
-                            Doctor
-                        </TabsTrigger>
-                        <TabsTrigger 
-                            value="location"
-                            disabled={!isStepComplete("doctor")}
-                            className={isStepComplete("location") ? "bg-primary/10 text-primary" : ""}
-                        >
-                            Location
-                        </TabsTrigger>
-                        <TabsTrigger 
-                            value="date"
-                            disabled={!isStepComplete("location")}
-                            className={isStepComplete("date") ? "bg-primary/10 text-primary" : ""}
-                        >
-                            Date & Time
-                        </TabsTrigger>
-                        <TabsTrigger 
-                            value="summary" 
-                            disabled={!canProceedToSummary()}
-                        >
-                            Summary
-                        </TabsTrigger>
-                    </TabsList>
-
-                    <TabsContent value="doctor">
-                        <DoctorSelector
-                            bookingData={bookingData}
-                            updateBookingData={updateBookingData}
-                            doctors={doctors}
-                        />
-                    </TabsContent>
-
-                    <TabsContent value="location">
-                        <LocationSelector
-                            bookingData={bookingData}
-                            updateBookingData={updateBookingData}
-                            selectedDoctor={getSelectedDoctor()}
-                        />
-                    </TabsContent>
-
-                    <TabsContent value="date">
-                        <DateSelector
-                            bookingData={bookingData}
-                            updateBookingData={updateBookingData}
-                            selectedDoctor={getSelectedDoctor()}
-                        />
-                    </TabsContent>
-
-                    <TabsContent value="summary">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Confirm Your Appointment</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-6">
-                                <BookingSummary bookingData={bookingData} doctors={doctors} />
-                                
-                                {/* Additional Notes */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Additional Notes (Optional)</label>
-                                    <textarea
-                                        className="w-full p-3 border rounded-lg resize-none"
-                                        rows={3}
-                                        placeholder="Any specific concerns or requests..."
-                                        value={bookingData.notes}
-                                        onChange={(e) => updateBookingData({ notes: e.target.value })}
-                                    />
-                                </div>
-
-                                {/* Reason for Visit */}
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium">Reason for Visit</label>
-                                    <input
-                                        type="text"
-                                        className="w-full p-3 border rounded-lg"
-                                        placeholder="e.g., Lower back pain, routine check-up..."
-                                        value={bookingData.reason}
-                                        onChange={(e) => updateBookingData({ reason: e.target.value })}
-                                    />
-                                </div>
-
-                                {/* Action Buttons */}
-                                <div className="flex gap-3 pt-4">
-                                    <Button
-                                        variant="outline"
-                                        onClick={() => setActiveTab("date")}
-                                        className="flex-1"
-                                    >
-                                        Back
-                                    </Button>
-                                    <Button
-                                        onClick={handleSubmit}
-                                        disabled={isSubmitting || !canProceedToSummary()}
-                                        className="flex-1"
-                                    >
-                                        {isSubmitting ? "Booking..." : "Confirm Appointment"}
-                                    </Button>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </TabsContent>
-                </Tabs>
-            </div>
-
-            {/* Right: Booking Summary Sidebar */}
-            <div>
-                <Card className="sticky top-6">
-                    <CardHeader>
-                        <CardTitle className="text-lg">Booking Summary</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <BookingSummary bookingData={bookingData} doctors={doctors} />
-                        
-                        {canProceedToSummary() && activeTab !== "summary" && (
-                            <Button
-                                onClick={() => setActiveTab("summary")}
-                                className="w-full mt-4"
-                            >
-                                Review & Book
-                            </Button>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
-        </div>
+      bookingData.doctor &&
+      bookingData.location &&
+      bookingData.date &&
+      bookingData.time
     );
+  };
+
+  const getSelectedDoctor = () => {
+    // Ensure doctors is an array before calling find
+    if (!Array.isArray(doctors) || doctors.length === 0) {
+      return null;
+    }
+    return doctors.find((doc) => doc.id === bookingData.doctor) || null;
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="grid lg:grid-cols-3 gap-6">
+        {/* Left: Form Steps */}
+        <div className="lg:col-span-2">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <TabsList className="grid grid-cols-4 mb-6 w-full">
+              <TabsTrigger
+                value="doctor"
+                className={cn(
+                  "text-xs sm:text-sm",
+                  isStepComplete("doctor") ? "bg-primary/10 text-primary" : ""
+                )}
+              >
+                Doctor
+              </TabsTrigger>
+              <TabsTrigger
+                value="location"
+                disabled={!isStepComplete("doctor")}
+                className={cn(
+                  "text-xs sm:text-sm",
+                  isStepComplete("location") ? "bg-primary/10 text-primary" : ""
+                )}
+              >
+                Location
+              </TabsTrigger>
+              <TabsTrigger
+                value="date"
+                disabled={!isStepComplete("location")}
+                className={cn(
+                  "text-xs sm:text-sm",
+                  isStepComplete("date") ? "bg-primary/10 text-primary" : ""
+                )}
+              >
+                <span className="hidden sm:inline">Date & Time</span>
+                <span className="sm:hidden">Date</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="summary" 
+                disabled={!canProceedToSummary()}
+                className="text-xs sm:text-sm"
+              >
+                Summary
+              </TabsTrigger>
+            </TabsList>
+
+                      <TabsContent value="doctor">
+            <DoctorSelector
+              bookingData={bookingData}
+              updateBookingData={updateBookingData}
+              doctors={doctors}
+              isLoading={doctorsLoading}
+              isError={doctorsError}
+              error={doctorsErrorDetails}
+            />
+            
+            {/* Mobile Progress Summary */}
+            <div className="lg:hidden mt-6">
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="p-4">
+                  <div className="text-sm">
+                    <div className="font-medium mb-2">Progress Summary:</div>
+                    <BookingSummary bookingData={bookingData} doctors={doctors} />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+                      <TabsContent value="location">
+            <LocationSelector
+              bookingData={bookingData}
+              updateBookingData={updateBookingData}
+              selectedDoctor={getSelectedDoctor()}
+            />
+            
+            {/* Mobile Progress Summary */}
+            <div className="lg:hidden mt-6">
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="p-4">
+                  <div className="text-sm">
+                    <div className="font-medium mb-2">Progress Summary:</div>
+                    <BookingSummary bookingData={bookingData} doctors={doctors} />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="date">
+            <DateSelector
+              bookingData={bookingData}
+              updateBookingData={updateBookingData}
+              selectedDoctor={getSelectedDoctor()}
+            />
+            
+            {/* Mobile Progress Summary */}
+            <div className="lg:hidden mt-6">
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="p-4">
+                  <div className="text-sm">
+                    <div className="font-medium mb-2">Progress Summary:</div>
+                    <BookingSummary bookingData={bookingData} doctors={doctors} />
+                    
+                    {canProceedToSummary() && (
+                      <Button
+                        onClick={() => setActiveTab("summary")}
+                        className="w-full mt-3"
+                        size="sm"
+                      >
+                        Continue to Summary
+                      </Button>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+            <TabsContent value="summary">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Confirm Your Appointment</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <BookingSummary bookingData={bookingData} doctors={doctors} />
+
+                  {/* Additional Notes */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      Additional Notes (Optional)
+                    </label>
+                    <textarea
+                      className="w-full p-3 border rounded-lg resize-none"
+                      rows={3}
+                      placeholder="Any specific concerns or requests..."
+                      value={bookingData.notes}
+                      onChange={(e) =>
+                        updateBookingData({ notes: e.target.value })
+                      }
+                    />
+                  </div>
+
+                  {/* Reason for Visit */}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">
+                      Reason for Visit
+                    </label>
+                    <input
+                      type="text"
+                      className="w-full p-3 border rounded-lg"
+                      placeholder="e.g., Lower back pain, routine check-up..."
+                      value={bookingData.reason}
+                      onChange={(e) =>
+                        updateBookingData({ reason: e.target.value })
+                      }
+                    />
+                  </div>
+
+                                  {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setActiveTab("date")}
+                    className="flex-1 order-2 sm:order-1"
+                  >
+                    Back
+                  </Button>
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={isSubmitting || !canProceedToSummary()}
+                    className="flex-1 order-1 sm:order-2"
+                  >
+                    {isSubmitting ? "Booking..." : "Confirm Appointment"}
+                  </Button>
+                </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
+
+              {/* Right: Booking Summary Sidebar - Only show on large screens */}
+      <div className="hidden lg:block">
+        <Card className="sticky top-6">
+          <CardHeader>
+            <CardTitle className="text-lg">Booking Summary</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <BookingSummary bookingData={bookingData} doctors={doctors} />
+
+            {canProceedToSummary() && activeTab !== "summary" && (
+              <Button
+                onClick={() => setActiveTab("summary")}
+                className="w-full"
+              >
+                Review & Book
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+      </div>
+    </div>
+  );
 }

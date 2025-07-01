@@ -45,7 +45,9 @@ export default function WorkImpactForm({ initialData = {}, onSubmit, onBack }) {
         </CardHeader>
         <CardContent className="space-y-4">
           <fieldset className="border rounded-md p-4 space-y-2">
-            <legend className="text-sm font-medium text-muted-foreground px-2">Work Activities Affected</legend>
+            <legend className="text-sm font-medium text-muted-foreground px-2">
+              Work Activities Affected
+            </legend>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {activities.map((opt) => (
                 <div key={opt} className="flex items-center text-sm">
@@ -57,7 +59,9 @@ export default function WorkImpactForm({ initialData = {}, onSubmit, onBack }) {
                         const curr = p.workActivities;
                         return {
                           ...p,
-                          workActivities: checked ? [...curr, opt] : curr.filter((v) => v !== opt),
+                          workActivities: checked
+                            ? [...curr, opt]
+                            : curr.filter((v) => v !== opt),
                         };
                       });
                     }}
@@ -73,7 +77,10 @@ export default function WorkImpactForm({ initialData = {}, onSubmit, onBack }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <Label>Lost time from work?</Label>
-              <Select value={formData.lostWork} onValueChange={(val) => handleChange("lostWork", val)}>
+              <Select
+                value={formData.lostWork}
+                onValueChange={(val) => handleChange("lostWork", val)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>

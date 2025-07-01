@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Separator } from '@/components/ui/separator';
-import InteractiveTutorial from './InteractiveTutorial';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import InteractiveTutorial from "./InteractiveTutorial";
 import {
   HelpCircle,
   BookOpen,
@@ -21,14 +31,14 @@ import {
   Eye,
   GraduationCap,
   Lightbulb,
-  Zap
-} from 'lucide-react';
+  Zap,
+} from "lucide-react";
 
-const TutorialLauncher = ({ 
-  variant = 'button', // 'button', 'fab', 'card', 'inline'
+const TutorialLauncher = ({
+  variant = "button", // 'button', 'fab', 'card', 'inline'
   feature = null, // specific feature to highlight
-  className = '',
-  showBadge = true 
+  className = "",
+  showBadge = true,
 }) => {
   const [showTutorial, setShowTutorial] = useState(false);
   const [showQuickStart, setShowQuickStart] = useState(false);
@@ -36,37 +46,37 @@ const TutorialLauncher = ({
   // Quick tutorial options
   const quickTutorials = [
     {
-      id: 'overview',
-      title: 'System Overview',
-      description: 'Basic navigation and dashboard',
+      id: "overview",
+      title: "System Overview",
+      description: "Basic navigation and dashboard",
       icon: Eye,
-      duration: '3 min',
-      color: 'blue'
+      duration: "3 min",
+      color: "blue",
     },
     {
-      id: 'patients',
-      title: 'Patient Management',
-      description: 'Add and manage patient records',
+      id: "patients",
+      title: "Patient Management",
+      description: "Add and manage patient records",
       icon: Users,
-      duration: '5 min',
-      color: 'green'
+      duration: "5 min",
+      color: "green",
     },
     {
-      id: 'scheduling',
-      title: 'Appointment Scheduling',
-      description: 'Book and manage appointments',
+      id: "scheduling",
+      title: "Appointment Scheduling",
+      description: "Book and manage appointments",
       icon: Calendar,
-      duration: '4 min',
-      color: 'orange'
+      duration: "4 min",
+      color: "orange",
     },
     {
-      id: 'search',
-      title: 'Global Search',
-      description: 'Find anything quickly',
+      id: "search",
+      title: "Global Search",
+      description: "Find anything quickly",
       icon: Search,
-      duration: '3 min',
-      color: 'cyan'
-    }
+      duration: "3 min",
+      color: "cyan",
+    },
   ];
 
   const handleStartTutorial = (tutorialId = null) => {
@@ -79,7 +89,7 @@ const TutorialLauncher = ({
   };
 
   // Floating Action Button variant
-  if (variant === 'fab') {
+  if (variant === "fab") {
     return (
       <>
         <div className={`fixed bottom-6 right-6 z-40 ${className}`}>
@@ -92,9 +102,9 @@ const TutorialLauncher = ({
                 <HelpCircle className="h-6 w-6" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent 
-              className="w-80 p-0" 
-              side="top" 
+            <PopoverContent
+              className="w-80 p-0"
+              side="top"
               align="end"
               sideOffset={10}
             >
@@ -106,9 +116,9 @@ const TutorialLauncher = ({
                 <p className="text-sm text-gray-600 mb-4">
                   Choose a tutorial to get started quickly
                 </p>
-                
+
                 <div className="space-y-2">
-                  {quickTutorials.map(tutorial => {
+                  {quickTutorials.map((tutorial) => {
                     const IconComponent = tutorial.icon;
                     return (
                       <button
@@ -117,22 +127,40 @@ const TutorialLauncher = ({
                         className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors border border-gray-100"
                       >
                         <div className="flex items-center space-x-3">
-                          <div className={`p-2 rounded-lg ${
-                            tutorial.color === 'blue' ? 'bg-blue-100' :
-                            tutorial.color === 'green' ? 'bg-green-100' :
-                            tutorial.color === 'orange' ? 'bg-orange-100' :
-                            tutorial.color === 'cyan' ? 'bg-cyan-100' : 'bg-gray-100'
-                          }`}>
-                            <IconComponent className={`h-4 w-4 ${
-                              tutorial.color === 'blue' ? 'text-blue-600' :
-                              tutorial.color === 'green' ? 'text-green-600' :
-                              tutorial.color === 'orange' ? 'text-orange-600' :
-                              tutorial.color === 'cyan' ? 'text-cyan-600' : 'text-gray-600'
-                            }`} />
+                          <div
+                            className={`p-2 rounded-lg ${
+                              tutorial.color === "blue"
+                                ? "bg-blue-100"
+                                : tutorial.color === "green"
+                                  ? "bg-green-100"
+                                  : tutorial.color === "orange"
+                                    ? "bg-orange-100"
+                                    : tutorial.color === "cyan"
+                                      ? "bg-cyan-100"
+                                      : "bg-gray-100"
+                            }`}
+                          >
+                            <IconComponent
+                              className={`h-4 w-4 ${
+                                tutorial.color === "blue"
+                                  ? "text-blue-600"
+                                  : tutorial.color === "green"
+                                    ? "text-green-600"
+                                    : tutorial.color === "orange"
+                                      ? "text-orange-600"
+                                      : tutorial.color === "cyan"
+                                        ? "text-cyan-600"
+                                        : "text-gray-600"
+                              }`}
+                            />
                           </div>
                           <div className="flex-1">
-                            <div className="font-medium text-sm text-gray-900">{tutorial.title}</div>
-                            <div className="text-xs text-gray-500">{tutorial.description}</div>
+                            <div className="font-medium text-sm text-gray-900">
+                              {tutorial.title}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {tutorial.description}
+                            </div>
                           </div>
                           <div className="text-xs text-gray-400 flex items-center">
                             <Clock className="h-3 w-3 mr-1" />
@@ -143,10 +171,10 @@ const TutorialLauncher = ({
                     );
                   })}
                 </div>
-                
+
                 <Separator className="my-3" />
-                
-                <Button 
+
+                <Button
                   onClick={() => handleStartTutorial()}
                   className="w-full"
                   variant="outline"
@@ -160,7 +188,7 @@ const TutorialLauncher = ({
         </div>
 
         {showTutorial && (
-          <InteractiveTutorial 
+          <InteractiveTutorial
             onClose={handleCloseTutorial}
             initialFeature={feature}
           />
@@ -170,16 +198,21 @@ const TutorialLauncher = ({
   }
 
   // Card variant
-  if (variant === 'card') {
+  if (variant === "card") {
     return (
       <>
-        <Card className={`hover:shadow-md transition-shadow cursor-pointer ${className}`}>
+        <Card
+          className={`hover:shadow-md transition-shadow cursor-pointer ${className}`}
+        >
           <CardHeader className="pb-3">
             <CardTitle className="text-lg flex items-center">
               <Lightbulb className="h-5 w-5 mr-2 text-yellow-600" />
               Interactive Tutorials
               {showBadge && (
-                <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-800">
+                <Badge
+                  variant="secondary"
+                  className="ml-2 bg-blue-100 text-blue-800"
+                >
                   New
                 </Badge>
               )}
@@ -190,7 +223,7 @@ const TutorialLauncher = ({
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid grid-cols-2 gap-2">
-              {quickTutorials.slice(0, 4).map(tutorial => {
+              {quickTutorials.slice(0, 4).map((tutorial) => {
                 const IconComponent = tutorial.icon;
                 return (
                   <button
@@ -201,16 +234,20 @@ const TutorialLauncher = ({
                     <div className="flex items-center space-x-2">
                       <IconComponent className="h-4 w-4 text-gray-600" />
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{tutorial.title}</div>
-                        <div className="text-xs text-gray-500">{tutorial.duration}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {tutorial.title}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {tutorial.duration}
+                        </div>
                       </div>
                     </div>
                   </button>
                 );
               })}
             </div>
-            
-            <Button 
+
+            <Button
               onClick={() => handleStartTutorial()}
               className="w-full"
               variant="outline"
@@ -222,7 +259,7 @@ const TutorialLauncher = ({
         </Card>
 
         {showTutorial && (
-          <InteractiveTutorial 
+          <InteractiveTutorial
             onClose={handleCloseTutorial}
             initialFeature={feature}
           />
@@ -232,7 +269,7 @@ const TutorialLauncher = ({
   }
 
   // Inline variant
-  if (variant === 'inline') {
+  if (variant === "inline") {
     return (
       <>
         <div className={`flex items-center space-x-2 ${className}`}>
@@ -246,7 +283,10 @@ const TutorialLauncher = ({
             How to use this feature
           </Button>
           {showBadge && (
-            <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 text-xs">
+            <Badge
+              variant="secondary"
+              className="bg-yellow-100 text-yellow-800 text-xs"
+            >
               <Zap className="h-3 w-3 mr-1" />
               Tutorial
             </Badge>
@@ -254,7 +294,7 @@ const TutorialLauncher = ({
         </div>
 
         {showTutorial && (
-          <InteractiveTutorial 
+          <InteractiveTutorial
             onClose={handleCloseTutorial}
             initialFeature={feature}
           />
@@ -281,7 +321,7 @@ const TutorialLauncher = ({
       </Button>
 
       {showTutorial && (
-        <InteractiveTutorial 
+        <InteractiveTutorial
           onClose={handleCloseTutorial}
           initialFeature={feature}
         />
@@ -290,4 +330,4 @@ const TutorialLauncher = ({
   );
 };
 
-export default TutorialLauncher; 
+export default TutorialLauncher;
