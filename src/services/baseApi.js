@@ -45,16 +45,22 @@ export const CACHE_TIMES = {
   VERY_LONG: 24 * 60 * 60, // 24 hours
 };
 
-// Simple configuration - no need for env variables
+// Configuration with environment variable support
 const API_CONFIG = {
-  development: 'http://localhost:3000/v1/api/2025',
-  production: 'https://your-production-api.com/v1/api/2025',
-  staging: 'https://your-staging-api.com/v1/api/2025'
+  development: 'https://localhost:3000/v1/api/2025',
+  production: 'https://drdieuphanchiropractor.com/v1/api/2025',
+  staging: 'http://staging.drdieuphanchiropractor.com/v1/api/2025',
 };
 
 // Determine environment and get base URL
 const getBaseUrl = () => {
-  // Simple environment detection
+  // Check build-time environment variable first (for static builds)
+  const buildEnv = import.meta.env.VITE_API_ENVIRONMENT;
+  if (buildEnv && API_CONFIG[buildEnv]) {
+    return API_CONFIG[buildEnv];
+  }
+  
+  // Fallback to runtime hostname detection
   const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const isStaging = window.location.hostname.includes('staging');
   

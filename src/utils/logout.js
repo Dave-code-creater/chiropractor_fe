@@ -2,11 +2,35 @@
  * Complete logout utility that wipes all user data
  * This function provides a nuclear logout option that clears absolutely everything
  */
+
+// Get the correct API base URL (same logic as baseApi.js)
+const getBaseUrl = () => {
+  // Check build-time environment variable first (for static builds)
+  const buildEnv = import.meta.env.VITE_API_ENVIRONMENT;
+  const API_CONFIG = {
+    development: 'http://localhost:3000/v1/api/2025',
+    production: 'http://drdieuphanchiropractor.com/v1/api/2025',
+    staging: 'http://staging.drdieuphanchiropractor.com/v1/api/2025',
+  };
+  
+  if (buildEnv && API_CONFIG[buildEnv]) {
+    return API_CONFIG[buildEnv];
+  }
+  
+  // Fallback to runtime hostname detection
+  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const isStaging = window.location.hostname.includes('staging');
+  
+  if (isDevelopment) return API_CONFIG.development;
+  if (isStaging) return API_CONFIG.staging;
+  return API_CONFIG.production;
+};
+
 export const performCompleteLogout = async (dispatch, navigate) => {
   try {
     // Step 1: Try API logout first (non-blocking)
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/auth/logout`, {
+      const response = await fetch(`${getBaseUrl()}/auth/logout`, {
         method: 'POST',
         credentials: 'include'
       });
