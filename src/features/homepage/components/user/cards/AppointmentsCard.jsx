@@ -10,7 +10,7 @@ export default function AppointmentsCard() {
   const [rescheduling, setRescheduling] = useState(false);
   const userID = useSelector((state) => state?.auth?.userID);
   const { data, isLoading, error } = useGetUserAppointmentsQuery(
-    { status: 'scheduled', limit: 3 },
+    { status: 'scheduled', limit: 10 }, // Get more appointments to account for filtering
     { 
       skip: !userID,
       refetchOnMountOrArgChange: false,
@@ -18,8 +18,6 @@ export default function AppointmentsCard() {
       refetchOnReconnect: false,
     }
   );
-
-
 
   // Extract appointments from the correct API response structure
   const appointments = useMemo(() => {
@@ -34,8 +32,14 @@ export default function AppointmentsCard() {
       rawAppointments = data.appointments;
     }
 
-    // Transform the appointment data to match the card format
-    return rawAppointments.map(appt => ({
+    // Filter out canceled appointments for the main dashboard view
+    const activeAppointments = rawAppointments.filter(appt => {
+      // Filter out appointments that are canceled
+      return !appt.is_cancel && !appt.is_cancelled && appt.status !== 'cancelled';
+    });
+
+    // Transform the appointment data to match the card format and limit to 3 for dashboard
+    return activeAppointments.slice(0, 3).map(appt => ({
       id: appt.id,
       doctorName: `Dr. ${appt.doctor_first_name || appt.patient_first_name || 'Unknown'} ${appt.doctor_last_name || appt.patient_last_name || ''}`.trim(),
       specialty: appt.doctor_specialization || 'Chiropractic',
@@ -52,7 +56,8 @@ export default function AppointmentsCard() {
       }),
       duration: `${appt.duration_minutes || 30} minutes`,
       location: appt.location || "Clinic",
-      status: appt.status
+      status: appt.status,
+      is_cancel: appt.is_cancel || appt.is_cancelled || false
     }));
   }, [data]);
 
@@ -104,7 +109,7 @@ export default function AppointmentsCard() {
                 <CalendarDays className="w-8 h-8 text-muted-foreground" />
               </div>
               <p className="text-sm text-muted-foreground">
-                No appointment exist.
+                No upcoming appointments.
               </p>
             </div>
           )}

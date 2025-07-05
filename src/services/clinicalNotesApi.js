@@ -193,15 +193,6 @@ export const clinicalNotesApi = createApi({
       ],
     }),
 
-    // Get recent clinical notes for dashboard
-    getRecentClinicalNotes: builder.query({
-      query: ({ doctorId, limit = 10 } = {}) => ({
-        url: "/recent",
-        params: { doctorId, limit },
-      }),
-      providesTags: ["ClinicalNote"],
-    }),
-
     // Get patient alerts and flags
     getPatientAlerts: builder.query({
       query: (patientId) => `/patients/${patientId}/alerts`,
@@ -243,7 +234,6 @@ export const {
   useExportClinicalNotesMutation,
   useGetPatientMedicalHistoryQuery,
   useUpdatePatientMedicalHistoryMutation,
-  useGetRecentClinicalNotesQuery,
   useGetPatientAlertsQuery,
   useCreatePatientAlertMutation,
 } = clinicalNotesApi;

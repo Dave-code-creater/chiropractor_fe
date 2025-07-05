@@ -54,16 +54,24 @@ export default function AppointmentManagement() {
   const appointments = React.useMemo(() => {
     if (isLoading || error) return [];
 
+    let allAppointments = [];
     if (Array.isArray(appointmentsData?.metadata)) {
-      return appointmentsData.metadata;
+      allAppointments = appointmentsData.metadata;
+    } else if (Array.isArray(appointmentsData)) {
+      allAppointments = appointmentsData;
+    } else {
+      allAppointments = [];
     }
 
-    if (Array.isArray(appointmentsData)) {
-      return appointmentsData;
-    }
-
-    return [];
+    // Add cancellation status to appointments
+    return allAppointments.map(apt => ({
+      ...apt,
+      is_cancel: apt.is_cancel || apt.is_cancelled || false
+    }));
   }, [appointmentsData, isLoading, error]);
+
+  // Get active appointments (non-canceled) for stats
+  const activeAppointments = appointments.filter(apt => !apt.is_cancel);
 
   const filteredAppointments = appointments.filter((appointment) => {
     const matchesSearch =
@@ -248,7 +256,7 @@ export default function AppointmentManagement() {
   const stats = [
     {
       title: "Today's Appointments",
-      value: appointments.filter(
+      value: activeAppointments.filter(
         (apt) => apt.date === new Date().toISOString().split("T")[0],
       ).length,
       icon: CalendarDays,
@@ -257,14 +265,14 @@ export default function AppointmentManagement() {
     },
     {
       title: "Pending Confirmations",
-      value: appointments.filter((apt) => apt.status === "pending").length,
+      value: activeAppointments.filter((apt) => apt.status === "pending").length,
       icon: Clock,
       color: "text-yellow-600",
       bgColor: "bg-yellow-50",
     },
     {
       title: "Completed Today",
-      value: appointments.filter(
+      value: activeAppointments.filter(
         (apt) =>
           apt.status === "completed" &&
           apt.date === new Date().toISOString().split("T")[0],
@@ -275,7 +283,7 @@ export default function AppointmentManagement() {
     },
     {
       title: "Total This Week",
-      value: appointments.filter((apt) => {
+      value: activeAppointments.filter((apt) => {
         const aptDate = new Date(apt.date);
         const today = new Date();
         const weekStart = new Date(

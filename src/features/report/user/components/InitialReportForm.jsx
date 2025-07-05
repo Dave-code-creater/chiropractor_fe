@@ -67,6 +67,7 @@ export default function InitialReportForm({
   initialData = {},
   onBack,
   onDelete,
+  isPatientView = false,
 }) {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [sectionsData, setSectionsData] = useState({
@@ -200,7 +201,9 @@ export default function InitialReportForm({
         </Button>
       )}
       <div className="hidden md:block md:w-80 border-r p-4 overflow-y-auto max-h-full pt-16 px-8">
-        <h2 className="text-lg font-semibold mb-4">Initial Reports</h2>
+        <h2 className="text-lg font-semibold mb-4">
+          {isPatientView ? "Your Health Report" : "Initial Reports"}
+        </h2>
         <Accordion
           type="single"
           collapsible
@@ -234,6 +237,7 @@ export default function InitialReportForm({
           setReportName={setReportName}
           editingName={editingName}
           setEditingName={setEditingName}
+          isPatientView={isPatientView}
         />
       </div>
     </div>

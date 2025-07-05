@@ -43,15 +43,19 @@ export default function StaffDashboard() {
   const appointments = React.useMemo(() => {
     if (isLoading || error) return [];
 
+    let allAppointments = [];
     if (Array.isArray(appointmentsData?.metadata)) {
-      return appointmentsData.metadata;
+      allAppointments = appointmentsData.metadata;
+    } else if (Array.isArray(appointmentsData)) {
+      allAppointments = appointmentsData;
+    } else {
+      allAppointments = [];
     }
 
-    if (Array.isArray(appointmentsData)) {
-      return appointmentsData;
-    }
-
-    return [];
+    // Filter out canceled appointments from staff overview
+    return allAppointments.filter(apt => 
+      !apt.is_cancel && !apt.is_cancelled && apt.status !== 'cancelled'
+    );
   }, [appointmentsData, isLoading, error]);
 
   // Filter appointments for today

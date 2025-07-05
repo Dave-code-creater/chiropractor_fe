@@ -50,6 +50,12 @@ export default function InsuranceDetailsForm({
 
   return (
     <form onSubmit={handleSubmit}>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold mb-1">Accident & Insurance Details</h1>
+        <p className="text-muted-foreground text-base">
+          Please provide details about your accident and your insurance coverage. This helps us process your case and coordinate your care.
+        </p>
+      </div>
       <Card>
         <CardHeader>
           <CardTitle>Accident &amp; Insurance Details</CardTitle>

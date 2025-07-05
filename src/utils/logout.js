@@ -28,15 +28,62 @@ const getBaseUrl = () => {
 
 export const performCompleteLogout = async (dispatch, navigate) => {
   try {
-    // Step 1: Try API logout first (non-blocking)
+    // Step 1: Call backend logout first and wait for confirmation
+    let backendLogoutSuccess = false;
+    
     try {
       const response = await fetch(`${getBaseUrl()}/auth/logout`, {
         method: 'POST',
-        credentials: 'include'
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Check if backend explicitly confirms logout success
+        if (data && (data.success === true || data.message === "Logout successful")) {
+          backendLogoutSuccess = true;
+          console.log("Backend logout successful");
+        } else {
+          console.error("Backend logout failed - invalid response:", data);
+          throw new Error(data?.message || "Logout not confirmed by server");
+        }
+      } else {
+        console.error("Backend logout failed with status:", response.status);
+        
+        // Only proceed with emergency cleanup if server is unreachable (5xx errors)
+        if (response.status >= 500) {
+          console.warn("Server error - will proceed with emergency cleanup");
+          backendLogoutSuccess = true; // Allow cleanup for server errors
+        } else {
+          throw new Error(`Logout failed with status: ${response.status}`);
+        }
+      }
     } catch (error) {
-      // API logout failed, continue with cleanup anyway
+      console.error("Backend logout error:", error);
+      
+      // Only proceed with cleanup if it's a network error (server unreachable)
+      if (error.name === 'TypeError' || error.message.includes('Failed to fetch')) {
+        console.warn("Network error - server may be unreachable, proceeding with emergency cleanup");
+        backendLogoutSuccess = true;
+      } else {
+        // Backend explicitly rejected logout, don't proceed
+        alert(`Logout failed: ${error.message}`);
+        return;
+      }
     }
+
+    // Only proceed with cleanup if backend logout was successful or server is unreachable
+    if (!backendLogoutSuccess) {
+      console.error("Backend logout failed - not proceeding with local cleanup");
+      alert("Logout failed. Please try again.");
+      return;
+    }
+
+    console.log("Proceeding with local cleanup after backend confirmation");
 
     // Step 2: Set logout flag to prevent token refresh interference
     try {
@@ -44,6 +91,7 @@ export const performCompleteLogout = async (dispatch, navigate) => {
       setLoggingOut(true);
     } catch (error) {
       // Non-critical if this fails
+      console.warn("Could not set logout flag:", error);
     }
 
     // Step 3: Clear Redux auth state and user entity
@@ -55,6 +103,7 @@ export const performCompleteLogout = async (dispatch, navigate) => {
       dispatch(clearUserData());
     } catch (error) {
       // Continue even if Redux clear fails
+      console.warn("Could not clear Redux state:", error);
     }
 
     // Step 4: Clear browser storage
@@ -86,6 +135,7 @@ export const performCompleteLogout = async (dispatch, navigate) => {
       }
     } catch (error) {
       // Non-critical if cache clear fails
+      console.warn("Could not clear RTK Query cache:", error);
     }
 
     // Step 7: Stop token management
@@ -94,6 +144,7 @@ export const performCompleteLogout = async (dispatch, navigate) => {
       stopPeriodicTokenCheck();
     } catch (error) {
       // Non-critical if this fails
+      console.warn("Could not stop token management:", error);
     }
 
     // Step 8: Clear IndexedDB (if used by the app)
@@ -112,6 +163,7 @@ export const performCompleteLogout = async (dispatch, navigate) => {
       }
     } catch (error) {
       // Non-critical if IndexedDB clear fails
+      console.warn("Could not clear IndexedDB:", error);
     }
 
     // Step 9: Navigate to login or force reload
@@ -122,8 +174,10 @@ export const performCompleteLogout = async (dispatch, navigate) => {
     }
     
   } catch (error) {
-    // Nuclear fallback - if anything fails, still try to clear everything and redirect
+    console.error("Complete logout failed:", error);
     
+    // Emergency fallback - only if we know backend confirmed logout
+    // or if it's a critical system error after successful backend logout
     try {
       localStorage.clear();
       sessionStorage.clear();
@@ -140,6 +194,7 @@ export const performCompleteLogout = async (dispatch, navigate) => {
       
     } catch (e) {
       // Last resort - force page reload
+      console.error("Emergency fallback failed:", e);
       window.location.reload();
     }
   }

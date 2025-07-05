@@ -173,11 +173,22 @@ export const authApi = createApi({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          await queryFulfilled;
-        } finally {
-          dispatch(logOut());
-          const { clearUserData } = await import('../state/data/userSlice');
-          dispatch(clearUserData());
+          const { data } = await queryFulfilled;
+          
+          // Only proceed with local logout if backend explicitly confirms success
+          if (data && (data.success === true || data.message === "Logout successful")) {
+            dispatch(logOut());
+            const { clearUserData } = await import('../state/data/userSlice');
+            dispatch(clearUserData());
+            return { success: true, message: "Logout successful" };
+          } else {
+            // Backend didn't confirm successful logout
+            throw new Error(data?.message || "Logout not confirmed by server");
+          }
+        } catch (error) {
+          // Backend logout failed, don't clear local state
+          console.error("Backend logout failed:", error);
+          throw error;
         }
       },
       invalidatesTags: ["User"],

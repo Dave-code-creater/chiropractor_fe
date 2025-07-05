@@ -1,4 +1,35 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { createSelector } from "@reduxjs/toolkit";
+
+// Base selector
+const selectAuth = (state) => state.auth;
+
+// Memoized selectors
+export const selectCurrentUser = createSelector(
+  [selectAuth],
+  (auth) => ({
+    firstName: auth.firstName,
+    lastName: auth.lastName,
+    name: auth.username,
+    email: auth.email,
+    role: auth.role
+  })
+);
+
+export const selectUserId = createSelector(
+  [selectAuth],
+  (auth) => auth.userID
+);
+
+export const selectUserRole = createSelector(
+  [selectAuth],
+  (auth) => auth.role
+);
+
+export const selectIsAuthenticated = createSelector(
+  [selectAuth],
+  (auth) => auth.isAuthenticated
+);
 
 const initialState = {
   // Authentication tokens
@@ -13,6 +44,8 @@ const initialState = {
   role: null,
   email: null,
   username: null,
+  firstName: null,
+  lastName: null
 };
 
 const authSlice = createSlice({
@@ -97,35 +130,10 @@ export const {
 } = authSlice.actions;
 
 // Auth-focused selectors (minimal data only)
-export const selectIsAuthenticated = (state) => state?.auth?.isAuthenticated ?? false;
-export const selectUserId = (state) => state?.auth?.userID ?? null;
-export const selectUserRole = (state) => state?.auth?.role ?? null;
-export const selectUserEmail = (state) => state?.auth?.email ?? null;
-export const selectUsername = (state) => state?.auth?.username ?? null;
 export const selectAuthLoading = (state) => state?.auth?.loading ?? false;
 export const selectAuthError = (state) => state?.auth?.error ?? null;
 
 // Combined selectors that access both auth and user entities
-export const selectCurrentUser = (state) => {
-  const authData = {
-    id: state?.auth?.userID,
-    role: state?.auth?.role,
-    email: state?.auth?.email,
-    username: state?.auth?.username,
-  };
-  
-  const userDetails = state?.entities?.user?.details;
-  const userProfile = state?.entities?.user?.profile;
-  
-  if (!authData.id) return null;
-  
-  return {
-    ...authData,
-    ...userDetails,
-    profile: userProfile,
-  };
-};
-
 export const selectUserProfile = (state) => 
   state?.entities?.user?.profile ?? null;
 

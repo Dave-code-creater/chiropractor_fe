@@ -70,7 +70,6 @@ export default function Appointments() {
       return { upcomingAppointments: [], pastAppointments: [] };
     }
 
-
     // Handle the actual API response structure
     let appointments = [];
     if (appointmentsData?.data?.appointments && Array.isArray(appointmentsData.data.appointments)) {
@@ -97,12 +96,13 @@ export default function Appointments() {
       }
     }
 
-    // Match appointments with doctors
+    // Match appointments with doctors and add cancellation status
     const appointmentsWithDoctors = appointments.map(appointment => {
       const doctor = doctors.find(doc => doc.id === appointment.doctor_id);
       return {
         ...appointment,
-        doctor: doctor
+        doctor: doctor,
+        is_cancel: appointment.is_cancel || appointment.is_cancelled || false
       };
     });
 
@@ -136,10 +136,12 @@ export default function Appointments() {
     // Sort past by date (most recent first)
     past.sort((a, b) => b.parsedDate - a.parsedDate);
 
-   
-
     return { upcomingAppointments: upcoming, pastAppointments: past };
   }, [appointmentsData, doctorsData]);
+
+  // Calculate counts excluding canceled appointments for display
+  const activeUpcomingCount = upcomingAppointments.filter(apt => !apt.is_cancel).length;
+  const activePastCount = pastAppointments.filter(apt => !apt.is_cancel).length;
 
   // Transform appointment data for the compact card format
   const transformAppointmentForCompactCard = (appointment) => {
@@ -464,8 +466,6 @@ export default function Appointments() {
     );
   };
 
-
-
   const EmptyState = ({ type }) => (
     <div className="text-center py-12">
       <Calendar className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
@@ -538,11 +538,11 @@ export default function Appointments() {
           </TabsTrigger>
           <TabsTrigger value="upcoming" className="flex items-center gap-2">
             <Calendar className="h-4 w-4" />
-            Upcoming ({upcomingAppointments.length})
+            Upcoming ({activeUpcomingCount})
           </TabsTrigger>
           <TabsTrigger value="past" className="flex items-center gap-2">
             <Clock className="h-4 w-4" />
-            Past ({pastAppointments.length})
+            Past ({activePastCount})
           </TabsTrigger>
         </TabsList>
 

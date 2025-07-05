@@ -2,16 +2,11 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useLogoutMutation } from "../../../services/authApi";
-import { USER_FEATURES } from "../../../constants/navbar";
+import { getNavigationByRole } from "../../../constants/navigation";
 import {
   selectCurrentUser,
-  selectUserEmail,
-  selectUsername,
   selectUserRole,
   selectIsAuthenticated,
-  selectUserDisplayName,
-  selectUserInitials,
-  selectUserRoleDisplay,
   logOut,
 } from "../../../state/data/authSlice";
 import { Badge } from "@/components/ui/badge";
@@ -19,35 +14,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Menu,
-  HomeIcon,
-  Calendar,
-  MessageSquare,
-  FileText,
-  Settings,
-  Bell,
-  ClipboardList,
-  Pill,
-  CreditCard,
-  Video,
-  Activity,
-  Shield,
-  UserPlus,
-  LogOut,
-  BookOpen,
-  CircleUserRound,
-  Mail,
-  User,
-} from "lucide-react";
-
-// Safe selectors
-const selectSafeUser = (state) => state?.data?.auth?.user ?? null;
-const selectSafeEmail = (state) => state?.data?.auth?.email ?? null;
-const selectSafeUsername = (state) => state?.data?.auth?.username ?? null;
-const selectSafeRole = (state) => state?.data?.auth?.role ?? null;
-const selectSafeIsAuthenticated = (state) => state?.data?.auth?.isAuthenticated ?? false;
-const selectSafeAuthState = (state) => state?.data?.auth ?? null;
+import { Menu, LogOut } from "lucide-react";
 
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -55,203 +22,76 @@ const Sidebar = () => {
   const dispatch = useDispatch();
   const [logout] = useLogoutMutation();
 
-  // Use secure selectors to get user data with null checks
-  const currentUser = useSelector((state) => state?.auth?.user ?? null);
-  const userEmail = useSelector((state) => state?.auth?.email ?? null);
-  const username = useSelector((state) => state?.auth?.username ?? null);
-  const userRole = useSelector((state) => state?.auth?.role ?? null);
-  const isAuthenticated = useSelector((state) => state?.auth?.isAuthenticated ?? false);
+  const currentUser = useSelector(selectCurrentUser);
+  const userRole = useSelector(selectUserRole);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  // Also get the raw auth state for fallback with null check
-  const rawAuthState = useSelector((state) => state?.auth ?? null);
+  // Get navigation items based on role
+  const navigationItems = React.useMemo(() => getNavigationByRole(userRole), [userRole]);
 
-  // Generate display name
   const getUserDisplayName = () => {
-    const user = currentUser || rawAuthState?.user;
-    const role = userRole || rawAuthState?.role;
+    if (!currentUser) return "Welcome Back";
 
-    if (!user) return "Welcome Back";
-
-    if (role === "admin" || role === "doctor") {
-      if (user?.profile?.full_name) {
-        return `Dr. ${user.profile.full_name}`;
+    if (userRole === "admin" || userRole === "doctor") {
+      if (currentUser.firstName && currentUser.lastName) {
+        return `Dr. ${currentUser.firstName} ${currentUser.lastName}`;
       }
-      if (user?.username) {
-        return `Dr. ${user.username}`;
+      if (currentUser.name) {
+        return `Dr. ${currentUser.name}`;
       }
       return "Dr. Admin";
     }
 
-    // For patients and other roles
-    if (user?.profile?.full_name) {
-      return user.profile.full_name;
+    if (currentUser.firstName && currentUser.lastName) {
+      return `${currentUser.firstName} ${currentUser.lastName}`;
     }
-    if (user?.username) {
-      return user.username;
+    if (currentUser.name) {
+      return currentUser.name;
     }
-    if (user?.email) {
-      return user.email.split("@")[0];
+    if (currentUser.email) {
+      return currentUser.email.split("@")[0];
     }
     return "Welcome Back";
   };
 
-    const handleLogout = async () => {
+  const handleLogout = async () => {
     try {
-      
-      
-      // Step 1: Try API logout first (non-blocking)
-      logout(currentUser?.id).unwrap().catch(error => {
-
-      });
-      
-      // Step 2: Set logout flag to prevent token refresh interference
-      try {
-        const { setLoggingOut } = await import('../../../services/baseApi');
-        setLoggingOut(true);
-
-      } catch (error) {
-        
-      }
-      
-      // Step 3: Clear Redux auth state and user entity
+      await logout().unwrap();
       dispatch(logOut());
-      
-      // Also clear user entity data
-      try {
-        const { clearUserData } = await import('../../../state/data/userSlice');
-        dispatch(clearUserData());
-
-      } catch (error) {
-        
-      }
-      
-      // Step 4: Clear ALL browser storage
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      
-      // Step 5: Clear all cookies
-      document.cookie.split(";").forEach((c) => {
-        const eqPos = c.indexOf("=");
-        const name = eqPos > -1 ? c.substr(0, eqPos) : c;
-        document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-        document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
-      });
-      
-      
-      // Step 6: Clear RTK Query cache
-      try {
-        const store = window.__REDUX_STORE__;
-        if (store) {
-          store.dispatch({ type: 'api/util/resetApiState' });
-  
-        }
-      } catch (error) {
-        
-      }
-      
-      // Step 7: Stop token management
-      try {
-        const { stopPeriodicTokenCheck } = await import('../../../services/baseApi');
-        stopPeriodicTokenCheck();
-
-      } catch (error) {
-        
-      }
-      
-      // Step 8: Force page reload for completely clean state
-      
-      window.location.href = '/login';
-      
+      navigate("/login");
     } catch (error) {
-      
-      
-      // Nuclear fallback: clear everything and force reload
-      try {
-        dispatch(logOut());
-      } catch (e) {
-        
-      }
-      
-      localStorage.clear();
-      sessionStorage.clear();
-      
-      // Clear cookies aggressively
-      document.cookie.split(";").forEach((c) => {
-        const eqPos = c.indexOf("=");
-        const name = eqPos > -1 ? c.substr(0, eqPos) : c;
-        document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
-        document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
-      });
-      
-      window.location.href = '/login';
+      console.error("Logout failed:", error);
     }
   };
 
-  // Generate user initials for avatar fallback
   const getUserInitials = () => {
-    const user = currentUser || rawAuthState?.user;
+    if (!currentUser) return "U";
     
-    if (user?.firstName && user?.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
+    if (currentUser.firstName && currentUser.lastName) {
+      return `${currentUser.firstName[0]}${currentUser.lastName[0]}`.toUpperCase();
     }
-    if (username) {
-      return username.substring(0, 2).toUpperCase();
+    if (currentUser.name) {
+      return currentUser.name.substring(0, 2).toUpperCase();
     }
-    if (userEmail) {
-      return userEmail.substring(0, 2).toUpperCase();
-    }
-    if (user?.username) {
-      return user.username.substring(0, 2).toUpperCase();
-    }
-    if (user?.email) {
-      return user.email.substring(0, 2).toUpperCase();
+    if (currentUser.email) {
+      return currentUser.email.substring(0, 2).toUpperCase();
     }
     return "U";
   };
 
-  // Get role badge text
-  const getRoleBadge = () => {
-    switch (userRole) {
-      case "admin":
-        return { text: "Admin", variant: "default" };
-      case "doctor":
-        return { text: "Doctor", variant: "secondary" };
-      case "patient":
-        return { text: "Patient", variant: "outline" };
-      default:
-        return { text: "User", variant: "outline" };
-    }
-  };
+  const NavLink = ({ item }) => {
+    const isActive = location.pathname === item.path;
+    const Icon = item.icon;
 
-  // Map icons to feature names
-  const getFeatureIcon = (name) => {
-    const iconMap = {
-      Dashboard: HomeIcon,
-      Appointments: Calendar,
-      Profile: CircleUserRound,
-      Chat: MessageSquare,
-      Blog: BookOpen,
-      Report: FileText,
-      Settings: Settings,
-      Notifications: Bell,
-      "Medical Records": ClipboardList,
-      Prescriptions: Pill,
-      Billing: CreditCard,
-      Telehealth: Video,
-      "Health Tracking": Activity,
-      Insurance: Shield,
-      Referrals: UserPlus,
+    const handleClick = (e) => {
+      e.preventDefault();
+      navigate(item.path);
     };
-    const IconComponent = iconMap[name] || HomeIcon;
-    return <IconComponent className="h-4 w-4" />;
-  };
 
-  const NavLink = ({ feature, badge }) => {
-    const isActive = location.pathname === feature.href;
     return (
-      <Link
-        to={feature.href}
+      <a
+        href={item.path}
+        onClick={handleClick}
         className={`group flex items-center justify-between rounded-xl px-4 py-3 text-sm transition-all duration-200 hover:bg-accent/50 hover:scale-[1.02] ${
           isActive
             ? "bg-gradient-to-r from-primary/10 to-primary/5 text-primary border border-primary/20 shadow-sm"
@@ -264,26 +104,21 @@ const Sidebar = () => {
               isActive ? "bg-primary/10" : "group-hover:bg-accent"
             }`}
           >
-            {getFeatureIcon(feature.name)}
+            {Icon && <Icon className="h-4 w-4" />}
           </div>
-          <span className="font-medium">{feature.name}</span>
+          <span className="font-medium">{item.name}</span>
         </div>
-        {badge && (
-          <Badge variant={badge.variant} className="ml-auto text-xs">
-            {badge.text}
+        {item.badge && (
+          <Badge variant={item.badge.variant} className="ml-auto text-xs">
+            {item.badge.text}
           </Badge>
         )}
-      </Link>
+      </a>
     );
   };
 
   const SidebarContent = () => {
-    const roleBadge = getRoleBadge();
     const displayName = getUserDisplayName();
-
-    // Fallback values for robust display
-    const displayEmail = userEmail || rawAuthState?.user?.email;
-    const displayUsername = username || rawAuthState?.user?.username;
 
     return (
       <div className="h-full flex flex-col">
@@ -308,55 +143,40 @@ const Sidebar = () => {
                   {displayName}
                 </h2>
                 <Badge
-                  variant={roleBadge.variant}
+                  variant="secondary"
                   className="ml-2 bg-primary/5 text-primary border-primary/20"
                 >
-                  {roleBadge.text}
+                  {userRole?.charAt(0).toUpperCase() + userRole?.slice(1)}
                 </Badge>
               </div>
-
-              {/* Username display */}
-              {displayUsername && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                  <User className="h-3 w-3" />
-                  <span className="truncate" title={displayUsername}>
-                    {displayUsername}
-                  </span>
-                </div>
-              )}
-
-              {/* Email display */}
-              {displayEmail && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Mail className="h-3 w-3" />
-                  <span className="truncate" title={displayEmail}>
-                    {displayEmail}
-                  </span>
-                </div>
-              )}
+              <p className="text-sm text-muted-foreground truncate">
+                {currentUser?.email}
+              </p>
             </div>
           </div>
         </div>
 
-        {/* Navigation - This will take up remaining space */}
+        {/* Navigation */}
         <div className="flex-1 flex flex-col min-h-0">
           <ScrollArea className="flex-1 px-4">
-            <div className="py-6">
-              <div>
-                <h3 className="mb-4 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Main Features
-                </h3>
-                <div className="space-y-2">
-                  {USER_FEATURES.active.map((feature) => (
-                    <NavLink key={feature.href} feature={feature} />
-                  ))}
+            <div className="py-6 space-y-6">
+              {navigationItems.map((section) => (
+                <div key={section.id}>
+                  <h3 className="mb-4 px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    {section.label}
+                  </h3>
+                  <div className="space-y-2">
+                    {section.items.map((item) => (
+                      <NavLink key={item.path} item={item} />
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
           </ScrollArea>
         </div>
 
-        {/* Logout Button - Fixed at bottom */}
+        {/* Logout Button */}
         <div className="mt-auto border-t bg-gradient-to-br from-card to-muted/20 p-4">
           <Button
             variant="outline"
@@ -396,8 +216,8 @@ const Sidebar = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Desktop Sidebar Content */}
-      <div className="bg-gradient-to-b from-background to-muted/20 border-r">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block bg-gradient-to-b from-background to-muted/20 border-r">
         <SidebarContent />
       </div>
     </>

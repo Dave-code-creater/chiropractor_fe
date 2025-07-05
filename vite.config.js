@@ -10,6 +10,23 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'), 
     },
   },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'react-redux',
+      '@reduxjs/toolkit',
+      'axios',
+      'clsx',
+      'tailwind-merge',
+      'styled-components',
+      'shallowequal'
+    ],
+    exclude: [
+      // 'styled-components'
+    ]
+  },
   // Vite automatically exposes VITE_ prefixed variables safely
   // Removed unsafe define that exposed all environment variables
 })

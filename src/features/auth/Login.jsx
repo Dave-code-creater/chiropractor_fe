@@ -10,7 +10,7 @@ import {
   clearPasswordError,
 } from "../../state/forms/loginFormSlice";
 import { useAuthReady } from "../../hooks/useAuthReady";
-
+import { toast } from "sonner";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -18,12 +18,10 @@ export default function Login() {
   const { isReady, isAuthenticated, userID, role } = useAuthReady();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loginMutation, { isLoading, error: loginError }] = useLoginMutation();
+  const [loginMutation, { isLoading }] = useLoginMutation();
   const dispatch = useDispatch();
   const errorEmail = useSelector((state) => state?.forms?.loginForm?.errors?.email);
   const pwError = useSelector((state) => state?.forms?.loginForm?.errors?.password);
-
-
 
   const handleEmailBlur = () => {
     try {
@@ -44,48 +42,66 @@ export default function Login() {
   };
 
   useEffect(() => {
-    // Only redirect if auth state is ready, we're authenticated, AND currently on the login page
-    if (isReady && isAuthenticated && location.pathname === '/login') {
-      // Get intended destination from location state, or default based on role
+    if (isReady && isAuthenticated) {
+      // Get intended destination from location state
       const intendedPath = location.state?.from?.pathname;
       
-      let homePath;
+      let redirectPath;
       if (intendedPath && intendedPath !== '/login') {
-        homePath = intendedPath;
+        redirectPath = intendedPath;
       } else {
         // Route users based on their role
-        switch (role) {
+        switch (role?.toLowerCase()) {
           case "admin":
-            homePath = "/admin";
+            redirectPath = "/admin/dashboard";
             break;
           case "doctor":
-            homePath = "/doctor";
+            redirectPath = "/doctor/dashboard";
             break;
           case "staff":
-            homePath = "/staff";
+            redirectPath = "/staff/dashboard";
             break;
           case "patient":
-          default:
-            homePath = userID ? `/dashboard/${userID}` : "/dashboard";
+            redirectPath = userID ? `/dashboard/${userID}` : "/dashboard";
             break;
+          default:
+            redirectPath = "/dashboard";
         }
       }
       
-
-      navigate(homePath, { replace: true });
+      // Add a small delay to ensure state is properly updated
+      setTimeout(() => {
+        navigate(redirectPath, { replace: true });
+      }, 100);
     }
-  }, [isReady, isAuthenticated, navigate, userID, role, location.pathname, location.state]);
+  }, [isReady, isAuthenticated, navigate, userID, role, location.state]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    
+    // Clear any existing errors
     dispatch(clearEmailError());
     dispatch(clearPasswordError());
     
+    if (!email || !password) {
+      toast.error("Please enter both email and password");
+      return;
+    }
+    
     try {
       const result = await loginMutation({ email, password }).unwrap();
-    } catch (error) {
       
-      // any error will be displayed below
+      if (!result.data?.user?.role) {
+        throw new Error("Invalid user role received");
+      }
+
+      // Success toast
+      toast.success(`Welcome back${result.data.user.first_name ? `, ${result.data.user.first_name}` : ''}!`);
+      
+    } catch (error) {
+      console.error('Login failed:', error);
+      const errorMessage = error.data?.message || error.error || 'Invalid email or password';
+      toast.error(errorMessage);
     }
   };
 
@@ -101,12 +117,12 @@ export default function Login() {
     );
   }
 
-  // If already authenticated and not on login page, show redirecting message
-  if (isAuthenticated && location.pathname !== '/login') {
+  // If already authenticated, show redirecting message
+  if (isAuthenticated) {
     return (
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="text-center">
-          <div className="text-lg text-gray-600">🚀 Redirecting...</div>
+          <div className="text-lg text-gray-600">🚀 Redirecting to your dashboard...</div>
         </div>
       </div>
     );
@@ -141,7 +157,7 @@ export default function Login() {
               placeholder="you@example.com"
               className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
             />
-            {errorEmail && <p style={{ color: "red" }}>{errorEmail}</p>}
+            {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
           </div>
 
           <div>
@@ -172,26 +188,28 @@ export default function Login() {
               onBlur={handlePwBlur}
               className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
             />
-            {pwError && <p className="text-red-500">{pwError}</p>}
+            {pwError && <p className="text-red-500 text-sm mt-1">{pwError}</p>}
           </div>
 
           <div>
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500"
+              className="w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? (
+                <span className="flex items-center justify-center">
+                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Signing in...
+                </span>
+              ) : (
+                "Sign in"
+              )}
             </button>
           </div>
-
-          {loginError && (
-            <div>
-              <p className="text-sm text-red-600">
-                {loginError.data?.message || loginError.error || "Login failed"}
-              </p>
-            </div>
-          )}
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">

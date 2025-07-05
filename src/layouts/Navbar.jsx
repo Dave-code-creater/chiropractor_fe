@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Bell, MessageSquare, Search } from "lucide-react";
 import stethoscopeLogo from "@/assets/images/stethoscope.svg";
 import { Button } from "@/components/ui/button";
@@ -16,13 +16,100 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { selectUserRole, selectUserId } from "../state/data/authSlice";
+import { selectUserRole, selectUserId, logOut } from "../state/data/authSlice";
+import { useLogoutMutation } from "../services/authApi";
 
 const Navbar = () => {
-  const { userID, role } = useSelector((state) => ({
+  const dispatch = useDispatch();
+  const [logout] = useLogoutMutation();
+  
+  const { userID, role, currentUser } = useSelector((state) => ({
     userID: selectUserId(state),
-    role: selectUserRole(state)
+    role: selectUserRole(state),
+    currentUser: state?.auth?.user ?? null
   }));
+
+  const handleLogout = async () => {
+    try {
+      // Step 1: Call backend logout and wait for confirmation
+      const result = await logout(currentUser?.id).unwrap();
+      
+      // Only proceed if backend confirmed successful logout
+      if (result && (result.success === true || result.message === "Logout successful")) {
+        console.log("Backend logout successful, proceeding with cleanup");
+        
+        // Step 2: Set logout flag to prevent token refresh interference
+        try {
+          const { setLoggingOut } = await import('../services/baseApi');
+          setLoggingOut(true);
+        } catch (error) {
+          console.warn("Could not set logging out flag:", error);
+        }
+        
+        // Step 3: Clear ALL browser storage
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Step 4: Clear all cookies
+        document.cookie.split(";").forEach((c) => {
+          const eqPos = c.indexOf("=");
+          const name = eqPos > -1 ? c.substr(0, eqPos) : c;
+          document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
+          document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
+        });
+        
+        // Step 5: Clear RTK Query cache
+        try {
+          const store = window.__REDUX_STORE__;
+          if (store) {
+            store.dispatch({ type: 'api/util/resetApiState' });
+          }
+        } catch (error) {
+          console.warn("Could not clear RTK Query cache:", error);
+        }
+        
+        // Step 6: Stop token management
+        try {
+          const { stopPeriodicTokenCheck } = await import('../services/baseApi');
+          stopPeriodicTokenCheck();
+        } catch (error) {
+          console.warn("Could not stop token management:", error);
+        }
+        
+        // Step 7: Navigate to login
+        window.location.href = '/login';
+        
+      } else {
+        console.error("Backend logout failed - not proceeding with local cleanup");
+        alert("Logout failed. Please try again.");
+      }
+      
+    } catch (error) {
+      console.error("Logout error:", error);
+      
+      // Show user-friendly error message
+      const errorMessage = error?.data?.message || error?.message || "Logout failed. Please try again.";
+      alert(`Logout failed: ${errorMessage}`);
+      
+      // Only do emergency cleanup if it's a network error or server is unreachable
+      if (error?.status === undefined || error?.status >= 500) {
+        console.warn("Server unreachable - performing emergency cleanup");
+        
+        try {
+          dispatch(logOut());
+          const { clearUserData } = await import('../state/data/userSlice');
+          dispatch(clearUserData());
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.href = '/login';
+        } catch (cleanupError) {
+          console.error("Emergency cleanup failed:", cleanupError);
+          // Force page reload as last resort
+          window.location.reload();
+        }
+      }
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -89,7 +176,7 @@ const Navbar = () => {
                 <Link to="/appointments">Appointments</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="text-red-600">
+              <DropdownMenuItem className="text-red-600" onClick={handleLogout}>
                 Logout
               </DropdownMenuItem>
             </DropdownMenuContent>

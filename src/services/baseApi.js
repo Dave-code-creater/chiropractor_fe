@@ -47,7 +47,7 @@ export const CACHE_TIMES = {
 
 // Configuration with environment variable support
 const API_CONFIG = {
-  development: 'https://localhost:3000/v1/api/2025',
+  development: 'http://localhost:3000/v1/api/2025',
   production: 'https://drdieuphanchiropractor.com/v1/api/2025',
   staging: 'http://staging.drdieuphanchiropractor.com/v1/api/2025',
 };
@@ -372,41 +372,7 @@ export const baseQueryWithReauth = retry(
     }
 
     return result;
-  },
-  {
-    maxRetries: 2, // Allow 2 retries for network issues
-    retryCondition: (error, args) => {
-      const status = error?.status;
-      const url = typeof args === 'string' ? args : args?.url || '';
-      
-      // Don't retry known problematic endpoints that are spamming console
-      const problematicEndpoints = [
-        '/reports/patient/',
-        '/recent',
-        'type=health-condition',
-        '/clinical-notes',
-        '/doctor-notes'
-      ];
-      
-      const isProblematicEndpoint = problematicEndpoints.some(endpoint => 
-        url.includes(endpoint)
-      );
-      
-      if (isProblematicEndpoint) {
-        return false; // Don't retry these endpoints
-      }
-      
-      // Only retry on genuine network errors (no status) or temporary server issues
-      // Don't retry 4xx client errors or known 500 errors from problematic endpoints
-      if (!status) {
-        return true; // Network error, retry
-      }
-      
-      // Don't retry any 4xx or 5xx errors to prevent console spam
-      // The backend issues need to be fixed, not worked around with retries
-      return false;
-    },
-  },
+  }
 );
 
 // Create base API

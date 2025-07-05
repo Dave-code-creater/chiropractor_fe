@@ -35,586 +35,324 @@ import {
   ChevronDown,
   ArrowLeft,
   Plus,
+  Car,
+  AlertTriangle,
 } from "lucide-react";
 
-const ReportTemplateSelector = ({ isOpen, onClose, onSelectTemplate }) => {
+const ReportTemplateSelector = ({ 
+  isOpen, 
+  onClose, 
+  onSelectTemplate, 
+  patientView = false,
+  incidentTypes = [] 
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedFolder, setSelectedFolder] = useState(null);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [expandedFolders, setExpandedFolders] = useState(new Set());
+  const [selectedIncident, setSelectedIncident] = useState(null);
 
-  // Enhanced folder structure with templates
-  const [folderStructure] = useState({
-    "initial-consultation": {
-      id: "initial-consultation",
-      name: "Initial Consultation",
-      description: "Complete patient intake and assessment forms",
-      icon: User,
-      color: "bg-blue-50 border-blue-200",
-      iconColor: "text-blue-600",
-      templates: [
-        {
-          id: "patient-intake",
-          name: "Patient Intake Form",
-          description: "Comprehensive patient information and medical history",
-          icon: FileText,
-          color: "bg-blue-100",
-          iconColor: "text-blue-600",
-          fields: [
-            "Personal Information",
-            "Medical History",
-            "Current Symptoms",
-            "Emergency Contacts",
-          ],
-          estimatedTime: "15-20 min",
-          required: true,
-          formType: "PatientIntakeForm",
-        },
-        {
-          id: "insurance-details",
-          name: "Insurance Information",
-          description: "Insurance coverage and billing details",
-          icon: Shield,
-          color: "bg-green-100",
-          iconColor: "text-green-600",
-          fields: [
-            "Primary Insurance",
-            "Secondary Insurance",
-            "Coverage Details",
-            "Authorization",
-          ],
-          estimatedTime: "5-10 min",
-          required: true,
-          formType: "InsuranceDetailsForm",
-        },
-        {
-          id: "health-questionnaire",
-          name: "Health Questionnaire",
-          description: "Detailed health assessment and lifestyle factors",
-          icon: Heart,
-          color: "bg-red-100",
-          iconColor: "text-red-600",
-          fields: [
-            "Health History",
-            "Medications",
-            "Allergies",
-            "Lifestyle Factors",
-          ],
-          estimatedTime: "10-15 min",
-          required: false,
-          formType: "HealthConditionForm",
-        },
-        {
-          id: "work-injury-assessment",
-          name: "Work Injury Assessment",
-          description: "Workplace injury evaluation and documentation",
-          icon: Briefcase,
-          color: "bg-orange-100",
-          iconColor: "text-orange-600",
-          fields: [
-            "Incident Details",
-            "Work Environment",
-            "Injury Mechanism",
-            "Workers Comp",
-          ],
-          estimatedTime: "15-20 min",
-          required: false,
-          formType: "WorkImpactForm",
-        },
-        {
-          id: "pain-evaluation",
-          name: "Pain Evaluation Form",
-          description: "Comprehensive pain assessment and tracking",
-          icon: Activity,
-          color: "bg-purple-100",
-          iconColor: "text-purple-600",
-          fields: [
-            "Pain Location",
-            "Pain Scale",
-            "Pain Triggers",
-            "Impact on Daily Life",
-          ],
-          estimatedTime: "10-15 min",
-          required: true,
-          formType: "PainEvaluationForm",
-        },
-      ],
-    },
-    "follow-up": {
-      id: "follow-up",
-      name: "Follow-up Visits",
-      description: "Progress tracking and treatment updates",
-      icon: Calendar,
-      color: "bg-green-50 border-green-200",
-      iconColor: "text-green-600",
-      templates: [
-        {
-          id: "progress-update",
-          name: "Progress Update",
-          description: "Track patient improvement and treatment response",
-          icon: Activity,
-          color: "bg-green-100",
-          iconColor: "text-green-600",
-          fields: [
-            "Symptom Changes",
-            "Treatment Response",
-            "Functional Improvement",
-            "Next Steps",
-          ],
-          estimatedTime: "5-10 min",
-          required: false,
-          formType: "DetailedDescriptionForm",
-        },
-        {
-          id: "treatment-adjustment",
-          name: "Treatment Plan Adjustment",
-          description: "Modify treatment plan based on progress",
-          icon: FileText,
-          color: "bg-blue-100",
-          iconColor: "text-blue-600",
-          fields: [
-            "Current Status",
-            "Plan Modifications",
-            "New Goals",
-            "Timeline Updates",
-          ],
-          estimatedTime: "10-15 min",
-          required: false,
-          formType: "DetailedDescriptionForm",
-        },
-        {
-          id: "discharge-planning",
-          name: "Discharge Planning",
-          description: "Prepare patient for treatment completion",
-          icon: Star,
-          color: "bg-yellow-100",
-          iconColor: "text-yellow-600",
-          fields: [
-            "Treatment Outcomes",
-            "Home Care Instructions",
-            "Maintenance Plan",
-            "Follow-up Schedule",
-          ],
-          estimatedTime: "15-20 min",
-          required: false,
-          formType: "DetailedDescriptionForm",
-        },
-      ],
-    },
-    "specialized-assessments": {
-      id: "specialized-assessments",
-      name: "Specialized Assessments",
-      description: "Detailed injury and condition evaluations",
-      icon: Star,
-      color: "bg-purple-50 border-purple-200",
-      iconColor: "text-purple-600",
-      templates: [
-        {
-          id: "spinal-assessment",
-          name: "Spinal Assessment",
-          description: "Comprehensive spinal examination and evaluation",
-          icon: Activity,
-          color: "bg-purple-100",
-          iconColor: "text-purple-600",
-          fields: [
-            "Range of Motion",
-            "Neurological Tests",
-            "Orthopedic Tests",
-            "Diagnostic Imaging",
-          ],
-          estimatedTime: "20-30 min",
-          required: false,
-          formType: "DetailedDescriptionForm",
-        },
-        {
-          id: "injury-documentation",
-          name: "Injury Documentation",
-          description:
-            "Detailed documentation of injury mechanism and presentation",
-          icon: FileText,
-          color: "bg-red-100",
-          iconColor: "text-red-600",
-          fields: [
-            "Injury History",
-            "Physical Examination",
-            "Diagnostic Tests",
-            "Treatment Plan",
-          ],
-          estimatedTime: "15-25 min",
-          required: false,
-          formType: "DetailedDescriptionForm",
-        },
-        {
-          id: "functional-assessment",
-          name: "Functional Assessment",
-          description: "Evaluate patient functional capacity and limitations",
-          icon: User,
-          color: "bg-indigo-100",
-          iconColor: "text-indigo-600",
-          fields: [
-            "Activities of Daily Living",
-            "Work Capacity",
-            "Recreational Activities",
-            "Limitations",
-          ],
-          estimatedTime: "20-25 min",
-          required: false,
-          formType: "WorkImpactForm",
-        },
-      ],
-    },
-  });
-
-  const toggleFolder = (folderId) => {
-    const newExpanded = new Set(expandedFolders);
-    if (newExpanded.has(folderId)) {
-      newExpanded.delete(folderId);
-    } else {
-      newExpanded.add(folderId);
-    }
-    setExpandedFolders(newExpanded);
+  // Filter incident types based on search
+  const getFilteredIncidents = () => {
+    if (!searchTerm) return incidentTypes;
+    
+    return incidentTypes.filter(incident =>
+      incident.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      incident.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
   };
 
-  const selectFolder = (folderId) => {
-    setSelectedFolder(folderId);
+  const handleIncidentSelect = (incident) => {
+    setSelectedIncident(incident);
+  };
+
+  const handleFormSelect = (incident, formType) => {
+    const template = {
+      id: formType,
+      name: `${incident.title} - ${formType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`,
+      formType: formType,
+      incidentType: incident.id,
+      folder: incident.title,
+      description: incident.description
+    };
+    
+    onSelectTemplate(template);
+    onClose();
+  };
+
+  const handleCreateIncident = (incident) => {
+    const template = {
+      id: 'new-incident',
+      name: incident.title,
+      formType: 'InitialReportForm',
+      incidentType: incident.id,
+      folder: incident.title,
+      description: incident.description
+    };
+    
+    onSelectTemplate(template);
+    onClose();
   };
 
   const goBack = () => {
-    setSelectedFolder(null);
+    setSelectedIncident(null);
   };
 
-  const handleTemplateSelect = (template, folder) => {
-    const templateData = {
-      ...template,
-      folder: folder.name,
-      folderId: folder.id,
-    };
-
-    onSelectTemplate(templateData);
-    onClose();
-  };
-
-  const handleBlankReportSelect = () => {
-    onSelectTemplate({
-      id: "blank-report",
-      name: "Blank Report",
-      formType: "InitialReportForm",
-      folder: "Custom",
-      description: "Complete comprehensive report with all sections",
-    });
-    onClose();
-  };
-
-  // Filter templates based on search
-  const getFilteredFolders = () => {
-    if (!searchTerm) return folderStructure;
-
-    const filtered = {};
-    Object.entries(folderStructure).forEach(([key, folder]) => {
-      const matchingTemplates = folder.templates.filter(
-        (template) =>
-          template.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          template.description
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase()) ||
-          folder.name.toLowerCase().includes(searchTerm.toLowerCase()),
-      );
-
-      if (matchingTemplates.length > 0) {
-        filtered[key] = {
-          ...folder,
-          templates: matchingTemplates,
-        };
-      }
-    });
-
-    return filtered;
-  };
-
-  const filteredFolders = getFilteredFolders();
-
-  const FolderView = () => (
-    <div className="space-y-4">
+  const IncidentListView = () => (
+    <div className="space-y-6">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search templates..."
+          placeholder="Search incident types..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="pl-10"
         />
       </div>
 
-      {/* Folder Grid */}
+      {/* Incident Types Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {Object.entries(filteredFolders).map(([key, folder]) => {
-          const IconComponent = folder.icon;
-          const isExpanded = expandedFolders.has(key);
-
+        {getFilteredIncidents().map((incident) => {
+          const Icon = incident.icon;
           return (
-            <div key={key} className="space-y-2">
-              {/* Folder Header */}
-              <Card
-                className={`cursor-pointer transition-all hover:shadow-md ${folder.color}`}
-                onClick={() => selectFolder(key)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-lg bg-white shadow-sm`}>
-                        <IconComponent
-                          className={`h-5 w-5 ${folder.iconColor}`}
-                        />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">
-                          {folder.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {folder.description}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="secondary" className="text-xs">
-                        {folder.templates.length} templates
+            <Card 
+              key={incident.id}
+              className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 group border-2 hover:border-primary/30"
+              onClick={() => handleIncidentSelect(incident)}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex items-center gap-4">
+                  <div className={`p-4 rounded-xl ${incident.color} group-hover:scale-110 transition-transform`}>
+                    <Icon className={`h-8 w-8 ${incident.iconColor}`} />
+                  </div>
+                  <div className="flex-1">
+                    <CardTitle className="text-xl group-hover:text-primary transition-colors">
+                      {incident.title}
+                    </CardTitle>
+                    <CardDescription className="text-sm mt-1">
+                      {incident.description}
+                    </CardDescription>
+                    <div className="flex items-center gap-2 mt-3">
+                      <Badge variant={incident.priority === 'high' ? 'destructive' : 'secondary'} className="text-xs">
+                        {incident.priority === 'high' ? 'Urgent' : 'Standard'}
                       </Badge>
-                      <ChevronRight className="h-4 w-4 text-gray-400" />
+                      <span className="text-xs text-muted-foreground">
+                        {incident.forms?.length || 0} forms
+                      </span>
+                      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Quick Preview (when expanded) */}
-              {isExpanded && (
-                <div className="ml-4 space-y-2">
-                  {folder.templates.slice(0, 3).map((template) => {
-                    const TemplateIcon = template.icon;
-                    return (
-                      <div
-                        key={template.id}
-                        className="flex items-center space-x-2 p-2 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer text-sm"
-                        onClick={() => handleTemplateSelect(template, folder)}
-                      >
-                        <div className={`p-1 rounded ${template.color}`}>
-                          <TemplateIcon
-                            className={`h-3 w-3 ${template.iconColor}`}
-                          />
-                        </div>
-                        <span className="font-medium">{template.name}</span>
-                        {template.required && (
-                          <Badge variant="destructive" className="text-xs">
-                            Required
-                          </Badge>
-                        )}
-                      </div>
-                    );
-                  })}
-                  {folder.templates.length > 3 && (
-                    <div className="text-xs text-gray-500 pl-6">
-                      +{folder.templates.length - 3} more templates
-                    </div>
-                  )}
                 </div>
-              )}
-
-              {/* Expand/Collapse Toggle */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="w-full"
-                onClick={() => toggleFolder(key)}
-              >
-                {isExpanded ? (
-                  <>
-                    <ChevronDown className="h-4 w-4 mr-2" />
-                    Hide Templates
-                  </>
-                ) : (
-                  <>
-                    <ChevronRight className="h-4 w-4 mr-2" />
-                    Show Templates
-                  </>
-                )}
-              </Button>
-            </div>
+              </CardHeader>
+            </Card>
           );
         })}
       </div>
 
-      {Object.keys(filteredFolders).length === 0 && (
-        <div className="text-center py-8">
-          <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No templates found
-          </h3>
-          <p className="text-gray-600">Try adjusting your search terms</p>
+      {getFilteredIncidents().length === 0 && (
+        <div className="text-center py-12">
+          <FileText className="h-16 w-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+          <h3 className="text-lg font-semibold mb-2">No incident types found</h3>
+          <p className="text-muted-foreground">
+            Try adjusting your search terms or contact support for assistance.
+          </p>
         </div>
       )}
     </div>
   );
 
-  const TemplateView = () => {
-    const folder = folderStructure[selectedFolder];
-    if (!folder) return null;
+  const IncidentDetailView = () => {
+    if (!selectedIncident) return null;
 
-    const FolderIcon = folder.icon;
-
+    const Icon = selectedIncident.icon;
+    
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <Button variant="ghost" size="sm" onClick={goBack}>
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <div className={`p-2 rounded-lg ${folder.color}`}>
-              <FolderIcon className={`h-5 w-5 ${folder.iconColor}`} />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold">{folder.name}</h2>
-              <p className="text-sm text-gray-600">{folder.description}</p>
-            </div>
-          </div>
-          <Badge variant="secondary">{folder.templates.length} templates</Badge>
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" onClick={goBack}>
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back to Incident Types
+          </Button>
         </div>
 
-        {/* Templates Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {folder.templates.map((template) => {
-            const TemplateIcon = template.icon;
-            return (
-              <Card
-                key={template.id}
-                className="cursor-pointer transition-all hover:shadow-md hover:border-blue-300"
-                onClick={() => handleTemplateSelect(template, folder)}
+        {/* Incident Info */}
+        <Card className="border-2 border-primary/20">
+          <CardHeader>
+            <div className="flex items-center gap-4">
+              <div className={`p-4 rounded-xl ${selectedIncident.color}`}>
+                <Icon className={`h-8 w-8 ${selectedIncident.iconColor}`} />
+              </div>
+              <div className="flex-1">
+                <CardTitle className="text-2xl">{selectedIncident.title}</CardTitle>
+                <CardDescription className="text-base mt-1">
+                  {selectedIncident.description}
+                </CardDescription>
+                <div className="flex items-center gap-2 mt-3">
+                  <Badge variant={selectedIncident.priority === 'high' ? 'destructive' : 'secondary'}>
+                    {selectedIncident.priority === 'high' ? 'Urgent Documentation' : 'Standard Process'}
+                  </Badge>
+                  <span className="text-sm text-muted-foreground">
+                    {selectedIncident.forms?.length || 0} forms to complete
+                  </span>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+        </Card>
+
+        {/* Create New Incident */}
+        <Card className="border-2 border-green-200 bg-green-50">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-lg bg-green-100">
+                  <Plus className="h-6 w-6 text-green-600" />
+                </div>
+                <div>
+                  <CardTitle className="text-lg text-green-800">Create New {selectedIncident.title} Report</CardTitle>
+                  <CardDescription className="text-green-700">
+                    Start documenting this incident with a complete intake form
+                  </CardDescription>
+                </div>
+              </div>
+              <Button 
+                onClick={() => handleCreateIncident(selectedIncident)}
+                className="bg-green-600 hover:bg-green-700"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className={`p-2 rounded-lg ${template.color}`}>
-                        <TemplateIcon
-                          className={`h-5 w-5 ${template.iconColor}`}
-                        />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">
-                          {template.name}
-                        </CardTitle>
-                        <CardDescription>
-                          {template.description}
-                        </CardDescription>
-                      </div>
-                    </div>
-                    {template.required && (
-                      <Badge variant="destructive" className="text-xs">
-                        Required
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {/* Estimated Time */}
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center space-x-1 text-gray-600">
-                      <Clock className="h-4 w-4" />
-                      <span>Estimated time: {template.estimatedTime}</span>
-                    </div>
-                  </div>
+                Start Report
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
 
-                  {/* Fields Preview */}
-                  <div className="space-y-2">
-                    <div className="text-sm font-medium text-gray-700">
-                      Includes:
-                    </div>
-                    <div className="flex flex-wrap gap-1">
-                      {template.fields.slice(0, 3).map((field) => (
-                        <Badge
-                          key={field}
-                          variant="outline"
-                          className="text-xs"
-                        >
-                          {field}
-                        </Badge>
-                      ))}
-                      {template.fields.length > 3 && (
-                        <Badge variant="outline" className="text-xs">
-                          +{template.fields.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
+        {/* Available Forms */}
+        <div>
+          <h3 className="text-lg font-semibold mb-4">Available Forms for {selectedIncident.title}</h3>
+          <div className="grid gap-3">
+            {selectedIncident.forms?.map((form) => {
+              const getFormIcon = (formKey) => {
+                switch (formKey) {
+                  case 'patient_intake': return User;
+                  case 'accident_details': return Car;
+                  case 'incident_details': return AlertTriangle;
+                  case 'injuries_symptoms': return Heart;
+                  case 'insurance_info': return Shield;
+                  case 'workers_comp': return Briefcase;
+                  case 'pain_evaluation': return Activity;
+                  case 'work_impact': return Calendar;
+                  case 'work_status': return Briefcase;
+                  case 'activity_impact': return Activity;
+                  case 'pain_details': return Heart;
+                  case 'medical_history': return FileText;
+                  case 'lifestyle_impact': return Calendar;
+                  default: return FileText;
+                }
+              };
 
-                  {/* Action Button */}
-                  <Button
-                    className="w-full mt-3"
-                    onClick={() => handleTemplateSelect(template, folder)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Use This Template
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+              const FormIcon = getFormIcon(form.key);
+              
+              return (
+                <Card 
+                  key={form.key}
+                  className="cursor-pointer transition-all hover:shadow-md hover:border-primary/30"
+                  onClick={() => handleFormSelect(selectedIncident, form.key)}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-lg ${form.required ? 'bg-red-100' : 'bg-blue-100'}`}>
+                          <FormIcon className={`h-5 w-5 ${form.required ? 'text-red-600' : 'text-blue-600'}`} />
+                        </div>
+                        <div>
+                          <CardTitle className="text-base">{form.title}</CardTitle>
+                          <CardDescription className="text-sm">
+                            {form.required ? 'Required' : 'Optional'} • Individual form
+                          </CardDescription>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={form.required ? 'destructive' : 'outline'} className="text-xs">
+                          {form.required ? 'Required' : 'Optional'}
+                        </Badge>
+                        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                      </div>
+                    </div>
+                  </CardHeader>
+                </Card>
+              );
+            })}
+          </div>
         </div>
+
+        {/* Help Text */}
+        <Card className="bg-blue-50 border-blue-200">
+          <CardContent className="pt-6">
+            <div className="flex items-start gap-3">
+              <FileText className="h-5 w-5 text-blue-600 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-blue-900 mb-1">How It Works</h4>
+                <p className="text-sm text-blue-800">
+                  <strong>Create New Report:</strong> Starts a complete incident folder with all necessary forms. 
+                  <br />
+                  <strong>Individual Forms:</strong> Add specific forms to an existing incident folder.
+                  <br />
+                  <strong>Required vs Optional:</strong> Required forms must be completed for proper documentation.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
-        <DialogHeader>
+      <DialogContent className="max-w-7xl max-h-[95vh] overflow-hidden flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <DialogTitle className="text-2xl">
-                {selectedFolder ? "Select Template" : "Choose Report Template"}
+              <DialogTitle className="text-3xl font-bold">
+                {selectedIncident ? `${selectedIncident.title} Documentation` : 'Create New Incident Report'}
               </DialogTitle>
-              <DialogDescription>
-                {selectedFolder
-                  ? "Choose a template from this category to get started"
-                  : "Select a category to view available templates"}
+              <DialogDescription className="text-lg mt-2">
+                {selectedIncident 
+                  ? `Choose how to document your ${selectedIncident.title.toLowerCase()} incident`
+                  : 'Select the type of incident you need to document'
+                }
               </DialogDescription>
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="h-6 w-6" />
             </Button>
           </div>
         </DialogHeader>
 
-        <ScrollArea className="max-h-[70vh] pr-4">
-          {selectedFolder ? <TemplateView /> : <FolderView />}
+        <ScrollArea className="flex-1 pr-4">
+          <div className="py-6">
+            {selectedIncident ? <IncidentDetailView /> : <IncidentListView />}
+          </div>
         </ScrollArea>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between pt-4 border-t">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="outline"
-              onClick={handleBlankReportSelect}
-              className="flex items-center space-x-2 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300 hover:from-gray-100 hover:to-gray-200"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              <span>Start Blank Report</span>
-            </Button>
-            <div className="flex items-center space-x-4 text-sm text-gray-600">
-              <div className="flex items-center space-x-1">
-                <Badge variant="destructive" className="text-xs">
-                  Required
-                </Badge>
-                <span>Must be completed</span>
-              </div>
-              <div className="flex items-center space-x-1">
-                <Clock className="h-4 w-4" />
-                <span>Estimated completion time</span>
-              </div>
+        <div className="flex-shrink-0 border-t pt-4">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-muted-foreground">
+              {patientView ? 'Patient View' : 'Admin View'} • 
+              {selectedIncident 
+                ? `${selectedIncident.forms?.length || 0} forms available`
+                : `${incidentTypes.length} incident types available`
+              }
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={onClose}>
+                Cancel
+              </Button>
+              {selectedIncident && (
+                <Button onClick={() => handleCreateIncident(selectedIncident)}>
+                  Create {selectedIncident.title} Report
+                </Button>
+              )}
             </div>
           </div>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
         </div>
       </DialogContent>
     </Dialog>
