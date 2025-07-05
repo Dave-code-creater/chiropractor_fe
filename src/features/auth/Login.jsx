@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLoginMutation } from "../../services/authApi";
-import { useNavigate, Link, useLocation } from "react-router-dom";
-import { renderGmailExprs, renderPassword } from "../../utils/renderUtilsFunc";
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { validateEmail, validatePassword } from "../../components/forms/FormUtils";
 import {
   setEmailError,
   clearEmailError,
@@ -11,6 +11,14 @@ import {
 } from "../../state/forms/loginFormSlice";
 import { useAuthReady } from "../../hooks/useAuthReady";
 import { toast } from "sonner";
+
+// Role-based redirect paths
+const ROLE_REDIRECTS = {
+  admin: (id) => `/dashboard/admin/${id}`,
+  doctor: (id) => `/dashboard/doctor/${id}`,
+  staff: (id) => `/dashboard/staff/${id}`,
+  patient: (id) => `/dashboard/patient/${id}`,
+};
 
 export default function Login() {
   const navigate = useNavigate();
@@ -25,7 +33,7 @@ export default function Login() {
 
   const handleEmailBlur = () => {
     try {
-      const good = renderGmailExprs(email);
+      const good = validateEmail(email);
       dispatch(clearEmailError(good));
     } catch (err) {
       dispatch(setEmailError(err.message));
@@ -34,7 +42,7 @@ export default function Login() {
 
   const handlePwBlur = () => {
     try {
-      const good = renderPassword(password);
+      const good = validatePassword(password);
       dispatch(clearPasswordError(good));
     } catch (err) {
       dispatch(setPasswordError(err.message));
@@ -42,38 +50,30 @@ export default function Login() {
   };
 
   useEffect(() => {
-    if (isReady && isAuthenticated) {
-      // Get intended destination from location state
-      const intendedPath = location.state?.from?.pathname;
-      
-      let redirectPath;
-      if (intendedPath && intendedPath !== '/login') {
-        redirectPath = intendedPath;
-      } else {
-        // Route users based on their role
-        switch (role?.toLowerCase()) {
-          case "admin":
-            redirectPath = "/admin/dashboard";
-            break;
-          case "doctor":
-            redirectPath = "/doctor/dashboard";
-            break;
-          case "staff":
-            redirectPath = "/staff/dashboard";
-            break;
-          case "patient":
-            redirectPath = userID ? `/dashboard/${userID}` : "/dashboard";
-            break;
-          default:
-            redirectPath = "/dashboard";
-        }
-      }
-      
-      // Add a small delay to ensure state is properly updated
-      setTimeout(() => {
-        navigate(redirectPath, { replace: true });
-      }, 100);
+    if (!isReady || !isAuthenticated || !userID || !role) {
+      return; // Don't redirect if we don't have all required data
     }
+
+    // Get the redirect function for the user's role
+    const getRedirectPath = ROLE_REDIRECTS[role.toLowerCase()];
+    
+    if (!getRedirectPath) {
+      console.error(`Unknown role: ${role}`);
+      toast.error("Login successful but role configuration is invalid");
+      return;
+    }
+
+    // Determine final redirect path
+    const redirectPath = location.state?.from?.pathname || getRedirectPath(userID);
+
+    // Validate the redirect path
+    if (!redirectPath.startsWith('/dashboard')) {
+      console.warn(`Invalid redirect path: ${redirectPath}`);
+      navigate(getRedirectPath(userID), { replace: true });
+      return;
+    }
+
+    navigate(redirectPath, { replace: true });
   }, [isReady, isAuthenticated, navigate, userID, role, location.state]);
 
   const handleLogin = async (e) => {
@@ -91,12 +91,13 @@ export default function Login() {
     try {
       const result = await loginMutation({ email, password }).unwrap();
       
-      if (!result.data?.user?.role) {
-        throw new Error("Invalid user role received");
+      // The API returns { token, refreshToken, user } directly
+      if (!result?.user?.role) {
+        throw new Error("Invalid response from server");
       }
 
-      // Success toast
-      toast.success(`Welcome back${result.data.user.first_name ? `, ${result.data.user.first_name}` : ''}!`);
+      // Success toast - use first_name from the response if available
+      toast.success(`Welcome back${result.user.first_name ? `, ${result.user.first_name}` : ''}! (Role: ${result.user.role})`);
       
     } catch (error) {
       console.error('Login failed:', error);
@@ -197,17 +198,7 @@ export default function Login() {
               disabled={isLoading}
               className="w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? (
-                <span className="flex items-center justify-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Signing in...
-                </span>
-              ) : (
-                "Sign in"
-              )}
+              {isLoading ? "Signing in..." : "Sign in"}
             </button>
           </div>
         </form>
@@ -216,9 +207,9 @@ export default function Login() {
           Not a member?{" "}
           <Link
             to="/register"
-            className="font-semibold text-indigo-600 hover:text-indigo-500"
+            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
           >
-            Register with us
+            Register now
           </Link>
         </p>
       </div>

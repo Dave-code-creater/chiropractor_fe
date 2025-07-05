@@ -46,30 +46,38 @@ const DefaultLayout = () => {
   // Get page title from route
   const getPageTitle = () => {
     const path = location.pathname;
+    // Extract the last part of the path for nested routes
+    const pathSegments = path.split('/').filter(Boolean);
+    const lastSegment = pathSegments[pathSegments.length - 1];
+    
     const titles = {
-      "/dashboard": "Dashboard",
-      "/appointments": "Appointments",
-      "/profile": "Profile",
-      "/chat": "Messages",
-      "/blog": "Blog",
-      "/report": "Reports",
-      "/settings": "Settings",
+      "dashboard": "Dashboard",
+      "appointments": "Appointments",
+      "profile": "Profile",
+      "chat": "Messages",
+      "blog": "Blog",
+      "reports": "Reports",
+      "settings": "Settings",
     };
-    return titles[path] || "Dashboard";
+    return titles[lastSegment] || "Dashboard";
   };
 
   const getPageDescription = () => {
     const path = location.pathname;
+    // Extract the last part of the path for nested routes
+    const pathSegments = path.split('/').filter(Boolean);
+    const lastSegment = pathSegments[pathSegments.length - 1];
+    
     const descriptions = {
-      "/dashboard": "Overview of your health journey and upcoming appointments",
-      "/appointments": "Schedule and manage your appointments",
-      "/profile": "Manage your personal and medical information",
-      "/chat": "Communicate with your healthcare providers",
-      "/blog": "Read the latest health articles and updates",
-      "/report": "View and manage your medical reports",
-      "/settings": "Customize your account preferences",
+      "dashboard": "Overview of your health journey and upcoming appointments",
+      "appointments": "Schedule and manage your appointments",
+      "profile": "Manage your personal and medical information",
+      "chat": "Communicate with your healthcare providers",
+      "blog": "Read the latest health articles and updates",
+      "reports": "View and manage your medical reports",
+      "settings": "Customize your account preferences",
     };
-    return descriptions[path] || "Manage your healthcare experience";
+    return descriptions[lastSegment] || "Manage your healthcare experience";
   };
 
   return (

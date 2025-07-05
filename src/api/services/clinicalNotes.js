@@ -1,25 +1,8 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { API_CONFIG, API_ENDPOINTS, handleApiResponse } from "../config/api";
-import { getToken } from "../utils/token";
+import { createBaseApi } from '../core/baseApi';
+import { API_ENDPOINTS } from '../config/endpoints';
 
-export const clinicalNotesApi = createApi({
+export const clinicalNotesApi = createBaseApi({
   reducerPath: "clinicalNotesApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: API_CONFIG.BASE_URL,
-    timeout: API_CONFIG.TIMEOUT,
-    prepareHeaders: (headers) => {
-      const token = getToken();
-      if (token) {
-        headers.set("authorization", `Bearer ${token}`);
-      }
-      headers.set("content-type", "application/json");
-      return headers;
-    },
-    responseHandler: async (response) => {
-      const data = await response.json();
-      return handleApiResponse(data);
-    },
-  }),
   tagTypes: ["ClinicalNote", "SOAPNote", "PatientNotes"],
   endpoints: (builder) => ({
     // Get all clinical notes
@@ -150,4 +133,4 @@ export const {
   useGetSOAPNotesQuery,
   useSearchClinicalNotesQuery,
   useGetNoteTemplatesQuery,
-} = clinicalNotesApi;
+} = clinicalNotesApi; 

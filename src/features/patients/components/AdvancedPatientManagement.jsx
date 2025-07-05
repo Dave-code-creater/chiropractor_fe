@@ -40,7 +40,7 @@ import {
   Phone,
   Mail,
   MapPin,
-  Calendar as CalendarIcon,
+  CalendarIcon,
   Clock,
   AlertTriangle,
   CheckCircle,

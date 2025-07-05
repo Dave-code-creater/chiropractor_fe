@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { getTokenExpiration, isTokenExpired, willExpireSoon } from '../utils/token';
+import { getTokenExpiration, isTokenExpired, willExpireSoon } from '../api/core/tokenManager';
 
 /**
  * Custom hook to monitor token status and provide real-time information

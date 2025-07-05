@@ -8,8 +8,6 @@ const selectAuth = (state) => state.auth;
 export const selectCurrentUser = createSelector(
   [selectAuth],
   (auth) => ({
-    firstName: auth.firstName,
-    lastName: auth.lastName,
     name: auth.username,
     email: auth.email,
     role: auth.role
@@ -43,9 +41,7 @@ const initialState = {
   userID: null,
   role: null,
   email: null,
-  username: null,
-  firstName: null,
-  lastName: null
+  username: null
 };
 
 const authSlice = createSlice({

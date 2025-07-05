@@ -31,12 +31,19 @@ import {
   MapPin,
 } from "lucide-react";
 import { toast } from "sonner";
-import { 
-  useGetPatientClinicalNotesQuery,
+import {
+  useGetClinicalNotesQuery,
+  useGetClinicalNotesByPatientQuery,
+  useGetClinicalNoteQuery,
   useCreateClinicalNoteMutation,
   useUpdateClinicalNoteMutation,
-  useDeleteClinicalNoteMutation
-} from "@/services/clinicalNotesApi";
+  useDeleteClinicalNoteMutation,
+  useCreateSOAPNoteMutation,
+  useUpdateSOAPNoteMutation,
+  useGetSOAPNotesQuery,
+  useSearchClinicalNotesQuery,
+  useGetNoteTemplatesQuery,
+} from "@/api";
 
 // Mock patient data - in real app, this would come from API
 const mockPatients = [
@@ -203,7 +210,7 @@ export default function Notes() {
   });
 
   // API hooks
-  const { data: clinicalNotes = [], isLoading: notesLoading } = useGetPatientClinicalNotesQuery(
+  const { data: clinicalNotes = [], isLoading: notesLoading } = useGetClinicalNotesQuery(
     selectedPatient?.id ? { patientId: selectedPatient.id } : undefined,
     { skip: !selectedPatient?.id }
   );

@@ -1,10 +1,4 @@
-// Centralized API Configuration
-export const API_CONFIG = {
-  BASE_URL: "/api/v1",
-  TIMEOUT: 10000,
-  RETRY_ATTEMPTS: 3,
-};
-
+// API Endpoint Definitions
 export const API_ENDPOINTS = {
   // Authentication
   AUTH: {
@@ -69,38 +63,4 @@ export const API_ENDPOINTS = {
     POSTS: "/blog/posts",
     CATEGORIES: "/blog/categories",
   },
-};
-
-// API Response Types
-export const API_RESPONSE_TYPES = {
-  SUCCESS: "success",
-  ERROR: "error",
-  VALIDATION_ERROR: "validation_error",
-  UNAUTHORIZED: "unauthorized",
-  NOT_FOUND: "not_found",
-};
-
-// Standard API Error Class
-export class ApiError extends Error {
-  constructor(message, status, code, details = null) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-    this.code = code;
-    this.details = details;
-  }
-}
-
-// Response Interceptor Helper
-export const handleApiResponse = (response) => {
-  if (response.success) {
-    return response.data;
-  } else {
-    throw new ApiError(
-      response.error?.message || "API request failed",
-      response.status || 500,
-      response.error?.code || "UNKNOWN_ERROR",
-      response.error?.details,
-    );
-  }
-};
+}; 

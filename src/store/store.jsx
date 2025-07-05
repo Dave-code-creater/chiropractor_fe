@@ -32,7 +32,7 @@ import { reportApi } from "../services/reportApi";
 import { blogApi } from "../services/blogApi";
 import { appointmentApi } from "../services/appointmentApi";
 import { chatApi } from "../services/chatApi";
-import { clinicalNotesApi } from "../services/clinicalNotesApi";
+import { clinicalNotesApi, vitalsApi } from "../api";
 import { profileApi } from "../services/profileApi";
 import { userApi } from "../services/userApi";
 
@@ -40,7 +40,7 @@ import { userApi } from "../services/userApi";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "entities", "forms", "ui", "settings", "uiState"],
+  whitelist: ["settings", "uiState"], // Only persist non-sensitive data
   version: 1,
   migrate: (state) => {
     return Promise.resolve(state);
@@ -52,8 +52,19 @@ const persistConfig = {
   },
 };
 
+// Separate persist config for auth
+const authPersistConfig = {
+  key: "auth",
+  storage,
+  whitelist: ["accessToken", "refreshToken"], // Only persist tokens
+  version: 1,
+  migrate: (state) => {
+    return Promise.resolve(state);
+  },
+};
+
 const rootReducer = combineReducers({
-  auth: authReducer,
+  auth: persistReducer(authPersistConfig, authReducer),
   settings: settingsReducer,
   uiState: uiStateReducer,
   entities: combineReducers({
@@ -81,6 +92,7 @@ const rootReducer = combineReducers({
   [appointmentApi.reducerPath]: appointmentApi.reducer,
   [chatApi.reducerPath]: chatApi.reducer,
   [clinicalNotesApi.reducerPath]: clinicalNotesApi.reducer,
+  [vitalsApi.reducerPath]: vitalsApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 });
@@ -107,11 +119,10 @@ export const store = configureStore({
       appointmentApi.middleware,
       chatApi.middleware,
       clinicalNotesApi.middleware,
+      vitalsApi.middleware,
       profileApi.middleware,
       userApi.middleware
     );
-
-
 
     return middleware;
   },

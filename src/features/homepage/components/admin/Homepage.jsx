@@ -72,23 +72,7 @@ const AdminDashboard = () => {
       icon: Calendar,
       color: "green",
       action: () => {}, // TODO: Implement schedule appointment functionality
-    },
-    {
-      id: "generate-report",
-      title: "Generate Report",
-      description: "Create analytics or patient reports",
-      icon: FileText,
-      color: "purple",
-      action: () => {}, // TODO: Implement generate report functionality
-    },
-    {
-      id: "security-review",
-      title: "Security Review",
-      description: "Review security alerts and logs",
-      icon: Shield,
-      color: "red",
-      action: () => console.log("Security review"),
-    },
+    }
   ]);
 
   const [recentActivities] = useState([

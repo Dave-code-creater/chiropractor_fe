@@ -41,7 +41,7 @@ import {
   Filter,
   Clock,
   User,
-  Calendar as CalendarIcon,
+  CalendarIcon,
   FileText,
   MessageSquare,
   Settings,

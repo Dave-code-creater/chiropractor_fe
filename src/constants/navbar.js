@@ -52,50 +52,6 @@ const USER_FEATURES = {
       description: "Manage your account settings",
     },
   ],
-  underDevelopment: [
-    {
-      name: "Notifications",
-      href: "/notifications",
-      description: "Manage your notification preferences",
-    },
-    {
-      name: "Medical Records",
-      href: "/medical-records",
-      description: "Access your medical history",
-    },
-    {
-      name: "Prescriptions",
-      href: "/prescriptions",
-      description: "View and manage prescriptions",
-    },
-    {
-      name: "Billing",
-      href: "/billing",
-      description: "View and manage billing information",
-    },
-  ],
-  comingSoon: [
-    {
-      name: "Telehealth",
-      href: "/telehealth",
-      description: "Virtual healthcare consultations",
-    },
-    {
-      name: "Health Tracking",
-      href: "/health-tracking",
-      description: "Track your health metrics",
-    },
-    {
-      name: "Insurance",
-      href: "/insurance",
-      description: "Manage insurance information",
-    },
-    {
-      name: "Referrals",
-      href: "/referrals",
-      description: "Manage and track referrals",
-    },
-  ],
 };
 
 const SERVICES = [

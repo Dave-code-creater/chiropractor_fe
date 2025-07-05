@@ -41,86 +41,233 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { useGetAppointmentsQuery } from "@/services/appointmentApi";
+import { useGetPatientsQuery } from "@/services/userApi";
+import { useGetReportsQuery } from "@/services/reportApi";
 
 const DashboardStats = ({ userRole = "admin" }) => {
   const [timeRange, setTimeRange] = useState("7d");
-  const [stats, setStats] = useState({
-    patients: {
-      total: 1250,
-      active: 1180,
-      newThisMonth: 45,
-      growth: 8.5,
-      demographics: {
-        male: 580,
-        female: 670,
-      },
-    },
-    appointments: {
-      today: 28,
-      thisWeek: 156,
-      thisMonth: 680,
-      completed: 24,
-      pending: 4,
-      cancelled: 2,
-      noShow: 1,
-      completionRate: 92.3,
-      averageDuration: 42,
-    },
-    revenue: {
-      today: 3200,
-      thisWeek: 18500,
-      thisMonth: 75600,
-      growth: 12.8,
-      target: 80000,
-      completion: 94.5,
-    },
-    clinical: {
-      notesToday: 22,
-      avgPainReduction: 3.2,
-      treatmentSuccess: 87.5,
-      patientSatisfaction: 4.8,
-    },
-    system: {
-      activeUsers: 45,
-      systemHealth: 98.5,
-      responseTime: 245,
-      uptime: 99.9,
-    },
-  });
+  
+  // Fetch data from APIs
+  const { data: appointmentsData, isLoading: isLoadingAppointments } = useGetAppointmentsQuery();
+  const { data: patientsData, isLoading: isLoadingPatients } = useGetPatientsQuery();
+  const { data: reportsData, isLoading: isLoadingReports } = useGetReportsQuery();
 
-  const [chartData, setChartData] = useState({
-    patientTrends: [
-      { month: "Jan", patients: 980, newPatients: 35 },
-      { month: "Feb", patients: 1020, newPatients: 42 },
-      { month: "Mar", patients: 1080, newPatients: 38 },
-      { month: "Apr", patients: 1150, newPatients: 45 },
-      { month: "May", patients: 1200, newPatients: 52 },
-      { month: "Jun", patients: 1250, newPatients: 48 },
-    ],
-    appointmentTrends: [
-      { day: "Mon", scheduled: 32, completed: 28, cancelled: 3, noShow: 1 },
-      { day: "Tue", scheduled: 35, completed: 32, cancelled: 2, noShow: 1 },
-      { day: "Wed", scheduled: 30, completed: 27, cancelled: 2, noShow: 1 },
-      { day: "Thu", scheduled: 33, completed: 30, cancelled: 2, noShow: 1 },
-      { day: "Fri", scheduled: 28, completed: 26, cancelled: 1, noShow: 1 },
-      { day: "Sat", scheduled: 15, completed: 14, cancelled: 1, noShow: 0 },
-      { day: "Sun", scheduled: 8, completed: 8, cancelled: 0, noShow: 0 },
-    ],
-    revenueTrends: [
-      { month: "Jan", revenue: 68000, target: 70000 },
-      { month: "Feb", revenue: 72000, target: 70000 },
-      { month: "Mar", revenue: 69500, target: 72000 },
-      { month: "Apr", revenue: 74000, target: 72000 },
-      { month: "May", revenue: 76500, target: 75000 },
-      { month: "Jun", revenue: 75600, target: 80000 },
-    ],
-    treatmentOutcomes: [
-      { name: "Excellent", value: 35, color: "#10B981" },
-      { name: "Good", value: 28, color: "#3B82F6" },
-      { name: "Fair", value: 18, color: "#F59E0B" },
-      { name: "Poor", value: 8, color: "#EF4444" },
-    ],
-  });
+  // Process appointments data
+  const appointments = useMemo(() => {
+    if (!appointmentsData) return [];
+    return Array.isArray(appointmentsData?.metadata) ? appointmentsData.metadata :
+           Array.isArray(appointmentsData) ? appointmentsData : [];
+  }, [appointmentsData]);
+
+  // Process patients data
+  const patients = useMemo(() => {
+    if (!patientsData) return [];
+    return Array.isArray(patientsData?.metadata) ? patientsData.metadata :
+           Array.isArray(patientsData) ? patientsData : [];
+  }, [patientsData]);
+
+  // Process reports data
+  const reports = useMemo(() => {
+    if (!reportsData) return [];
+    return Array.isArray(reportsData?.metadata) ? reportsData.metadata :
+           Array.isArray(reportsData) ? reportsData : [];
+  }, [reportsData]);
+
+  // Calculate stats from real data
+  const stats = useMemo(() => {
+    const today = new Date().toISOString().split('T')[0];
+    const thisMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+
+    const todayAppointments = appointments.filter(apt => 
+      apt.date === today || apt.datetime?.startsWith(today)
+    );
+
+    const thisMonthAppointments = appointments.filter(apt => {
+      const aptDate = apt.date || apt.datetime?.split('T')[0];
+      return aptDate?.startsWith(thisMonth);
+    });
+
+    const completedAppointments = appointments.filter(apt => 
+      apt.status === "completed"
+    );
+
+    const calculateRevenue = (appts) => {
+      return appts.reduce((sum, apt) => sum + (apt.fee || 0), 0);
+    };
+
+    return {
+      patients: {
+        total: patients.length,
+        active: patients.filter(p => p.status === "active").length,
+        newThisMonth: patients.filter(p => {
+          const createdDate = new Date(p.created_at || p.createdAt);
+          return createdDate.toISOString().startsWith(thisMonth);
+        }).length,
+        growth: 0, // Calculate based on historical data if available
+        demographics: {
+          male: patients.filter(p => p.gender === "male").length,
+          female: patients.filter(p => p.gender === "female").length,
+        },
+      },
+      appointments: {
+        today: todayAppointments.length,
+        thisWeek: appointments.filter(apt => {
+          const aptDate = new Date(apt.date || apt.datetime);
+          const weekStart = new Date();
+          weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+          return aptDate >= weekStart;
+        }).length,
+        thisMonth: thisMonthAppointments.length,
+        completed: completedAppointments.length,
+        pending: appointments.filter(apt => apt.status === "pending").length,
+        cancelled: appointments.filter(apt => apt.status === "cancelled").length,
+        noShow: appointments.filter(apt => apt.status === "no_show").length,
+        completionRate: appointments.length ? 
+          (completedAppointments.length / appointments.length * 100).toFixed(1) : 0,
+        averageDuration: 30, // Default if not available in data
+      },
+      revenue: {
+        today: calculateRevenue(todayAppointments),
+        thisWeek: calculateRevenue(appointments.filter(apt => {
+          const aptDate = new Date(apt.date || apt.datetime);
+          const weekStart = new Date();
+          weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+          return aptDate >= weekStart;
+        })),
+        thisMonth: calculateRevenue(thisMonthAppointments),
+        growth: 0, // Calculate based on historical data if available
+        target: 80000, // This should come from settings/goals
+        completion: 0, // Calculate based on target
+      },
+      clinical: {
+        notesToday: reports.filter(r => {
+          const reportDate = new Date(r.created_at || r.createdAt);
+          return reportDate.toISOString().split('T')[0] === today;
+        }).length,
+        avgPainReduction: calculateAveragePainReduction(reports),
+        treatmentSuccess: calculateTreatmentSuccess(reports),
+        patientSatisfaction: calculatePatientSatisfaction(reports),
+      },
+      system: {
+        activeUsers: 0, // This should come from a real-time service
+        systemHealth: 98.5,
+        responseTime: 245,
+        uptime: 99.9,
+      },
+    };
+  }, [appointments, patients, reports]);
+
+  // Helper functions for clinical metrics
+  const calculateAveragePainReduction = (reports) => {
+    const reportsWithPain = reports.filter(r => 
+      r.pain_before && r.pain_after
+    );
+    if (!reportsWithPain.length) return 0;
+    
+    const totalReduction = reportsWithPain.reduce((sum, r) => 
+      sum + (r.pain_before - r.pain_after), 0
+    );
+    return (totalReduction / reportsWithPain.length).toFixed(1);
+  };
+
+  const calculateTreatmentSuccess = (reports) => {
+    if (!reports.length) return 0;
+    const successfulTreatments = reports.filter(r => 
+      r.outcome === "successful" || r.outcome === "improved"
+    ).length;
+    return ((successfulTreatments / reports.length) * 100).toFixed(1);
+  };
+
+  const calculatePatientSatisfaction = (reports) => {
+    const reportsWithSatisfaction = reports.filter(r => r.satisfaction_rating);
+    if (!reportsWithSatisfaction.length) return 0;
+    
+    const totalSatisfaction = reportsWithSatisfaction.reduce((sum, r) => 
+      sum + r.satisfaction_rating, 0
+    );
+    return (totalSatisfaction / reportsWithSatisfaction.length).toFixed(1);
+  };
+
+  // Generate chart data from real data
+  const chartData = useMemo(() => ({
+    patientTrends: generatePatientTrends(patients),
+    appointmentTrends: generateAppointmentTrends(appointments),
+    revenueTrends: generateRevenueTrends(appointments),
+    treatmentOutcomes: generateTreatmentOutcomes(reports),
+  }), [patients, appointments, reports]);
+
+  // Helper functions for chart data
+  function generatePatientTrends(patients) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    return months.map(month => {
+      const monthPatients = patients.filter(p => {
+        const createdDate = new Date(p.created_at || p.createdAt);
+        return createdDate.toLocaleString('en-US', { month: 'short' }) === month;
+      });
+      return {
+        month,
+        patients: patients.length, // Cumulative
+        newPatients: monthPatients.length,
+      };
+    });
+  }
+
+  function generateAppointmentTrends(appointments) {
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    return days.map(day => {
+      const dayAppointments = appointments.filter(apt => {
+        const aptDate = new Date(apt.date || apt.datetime);
+        return aptDate.toLocaleString('en-US', { weekday: 'short' }) === day;
+      });
+      return {
+        day,
+        scheduled: dayAppointments.length,
+        completed: dayAppointments.filter(apt => apt.status === 'completed').length,
+        cancelled: dayAppointments.filter(apt => apt.status === 'cancelled').length,
+        noShow: dayAppointments.filter(apt => apt.status === 'no_show').length,
+      };
+    });
+  }
+
+  function generateRevenueTrends(appointments) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    const monthlyTarget = 80000; // This should come from settings
+    return months.map(month => {
+      const monthRevenue = appointments
+        .filter(apt => {
+          const aptDate = new Date(apt.date || apt.datetime);
+          return aptDate.toLocaleString('en-US', { month: 'short' }) === month;
+        })
+        .reduce((sum, apt) => sum + (apt.fee || 0), 0);
+      return {
+        month,
+        revenue: monthRevenue,
+        target: monthlyTarget,
+      };
+    });
+  }
+
+  function generateTreatmentOutcomes(reports) {
+    const outcomes = [
+      { name: 'Excellent', color: '#10B981' },
+      { name: 'Good', color: '#3B82F6' },
+      { name: 'Fair', color: '#F59E0B' },
+      { name: 'Poor', color: '#EF4444' },
+    ];
+    
+    const totalReports = reports.length;
+    if (!totalReports) return outcomes.map(o => ({ ...o, value: 0 }));
+
+    return outcomes.map(outcome => ({
+      ...outcome,
+      value: Math.round(
+        (reports.filter(r => 
+          r.outcome?.toLowerCase() === outcome.name.toLowerCase()
+        ).length / totalReports) * 100
+      ),
+    }));
+  }
 
   // Real-time data simulation
   useEffect(() => {

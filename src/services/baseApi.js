@@ -1,40 +1,15 @@
 /**
- * Enhanced Base API with Automatic Token Management
- * 
- * This module provides automatic JWT token refresh capabilities:
+ * Base API configuration with automatic token refresh
  * 
  * Features:
- * - Automatic token validation before each API request
- * - Automatic token refresh when expired or expiring soon
- * - Periodic background token checking (every 5 minutes)
- * - Prevents multiple simultaneous refresh attempts
- * - Automatic logout and redirect on refresh failure
- * - Performance monitoring and error tracking
- * 
- * How it works:
- * 1. Before each API request, checks if token is expired or expiring soon
- * 2. If token needs refresh, automatically calls /auth/refresh endpoint
- * 3. Updates Redux store with new tokens
- * 4. Retries original request with new token
- * 5. Periodic background checks every 5 minutes for proactive refresh
- * 
- * Usage:
- * - No changes needed in your API endpoints
- * - Tokens are automatically included in Authorization headers
- * - Automatic refresh happens transparently
- * - Use TokenStatusIndicator component for debugging in development
- * 
- * Manual token management:
- * - Import { ensureValidToken } from '../utils/token' for manual refresh
- * - Use useTokenStatus() hook to monitor token status in components
- * 
- * @author AI Assistant
- * @version 2.0
+ * - Automatic token refresh when expired or about to expire
+ * - Retry failed requests with exponential backoff
+ * - Import { ensureValidToken } from '../api/core/tokenManager' for manual refresh
  */
 
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { logOut, setCredentials } from "../state/data/authSlice";
-import { isTokenExpired, willExpireSoon } from "../utils/token";
+import { isTokenExpired, willExpireSoon } from "../api/core/tokenManager";
 import { jwtDecode } from "jwt-decode";
 
 // Cache configuration

@@ -5,13 +5,13 @@ import {
   useVerifyResetTokenQuery,
 } from "../../services/authApi";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { renderPwRegister } from "../../utils/renderUtilsFunc";
+import { renderPwRegister, validatePassword } from "../../components/forms/FormUtils";
 import {
   setPasswordError,
   clearPasswordError,
   setConfirmPasswordError,
   clearConfirmPasswordError,
-} from "../../state/forms/registerFormSlice";
+} from "../../state/forms/passwordResetFormSlice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,10 +39,10 @@ export default function ResetPassword() {
   const [isResetSuccessful, setIsResetSuccessful] = useState(false);
 
   const pwError = useSelector(
-    (state) => state.forms.registerForm.errors.password,
+    (state) => state.forms.passwordResetForm.errors.password,
   );
   const confirmpwError = useSelector(
-    (state) => state.forms.registerForm.errors.confirmPassword,
+    (state) => state.forms.passwordResetForm.errors.confirmPassword,
   );
 
   // Verify token on component mount

@@ -21,27 +21,30 @@ import {
   Bell,
 } from "lucide-react";
 
+// Helper function to create role-based paths
+const createPath = (role, userId, path) => `/dashboard/${role}/${userId}${path}`;
+
 // Patient Navigation
-export const patientNavigation = [
+export const patientNavigation = (userId) => [
   {
     id: "dashboard",
     label: "Dashboard",
     items: [
       {
         name: "Dashboard",
-        path: "/dashboard",
+        path: createPath('patient', userId, ''),
         icon: LayoutDashboard,
         description: "Overview of your health information",
       },
       {
         name: "Appointments",
-        path: "/appointments",
+        path: createPath('patient', userId, '/appointments'),
         icon: Calendar,
         description: "Schedule and manage appointments",
       },
       {
         name: "Profile",
-        path: "/profile",
+        path: createPath('patient', userId, '/profile'),
         icon: User,
         description: "Manage your personal information",
       },
@@ -53,19 +56,19 @@ export const patientNavigation = [
     items: [
       {
         name: "Medical Records",
-        path: "/medical-records",
+        path: createPath('patient', userId, '/medical-records'),
         icon: FileText,
         description: "View your medical history",
       },
       {
         name: "Reports",
-        path: "/report",
+        path: createPath('patient', userId, '/reports'),
         icon: ClipboardList,
         description: "Health reports and assessments",
       },
       {
         name: "Prescriptions",
-        path: "/prescriptions",
+        path: createPath('patient', userId, '/prescriptions'),
         icon: Pill,
         description: "Manage your prescriptions",
       },
@@ -77,13 +80,13 @@ export const patientNavigation = [
     items: [
       {
         name: "Messages",
-        path: "/chat",
+        path: createPath('patient', userId, '/chat'),
         icon: MessageSquare,
         description: "Chat with healthcare providers",
       },
       {
         name: "Blog",
-        path: "/blog",
+        path: createPath('patient', userId, '/blog'),
         icon: FileText,
         description: "Health tips and articles",
       },
@@ -95,7 +98,7 @@ export const patientNavigation = [
     items: [
       {
         name: "Settings",
-        path: "/settings",
+        path: createPath('patient', userId, '/settings'),
         icon: Settings,
         description: "Account and app settings",
       },
@@ -104,20 +107,20 @@ export const patientNavigation = [
 ];
 
 // Doctor Navigation
-export const doctorNavigation = [
+export const doctorNavigation = (userId) => [
   {
     id: "dashboard",
     label: "Dashboard",
     items: [
       {
         name: "Dashboard",
-        path: "/doctor/dashboard",
+        path: createPath('doctor', userId, ''),
         icon: LayoutDashboard,
         description: "Clinical overview and summary",
       },
       {
         name: "Appointments",
-        path: "/doctor/appointments",
+        path: createPath('doctor', userId, '/appointments'),
         icon: Calendar,
         description: "Patient appointments and schedule",
       },
@@ -129,25 +132,25 @@ export const doctorNavigation = [
     items: [
       {
         name: "Patients",
-        path: "/doctor/patients",
+        path: createPath('doctor', userId, '/patients'),
         icon: Users,
         description: "Patient management and records",
       },
       {
         name: "Clinical Notes",
-        path: "/doctor/notes",
+        path: createPath('doctor', userId, '/notes'),
         icon: ClipboardList,
         description: "Patient cases and clinical documentation",
       },
       {
         name: "Clinical Reports",
-        path: "/doctor/reports",
+        path: createPath('doctor', userId, '/reports'),
         icon: FileText,
         description: "Patient reports and assessments",
       },
       {
         name: "Treatment Plans",
-        path: "/doctor/treatments",
+        path: createPath('doctor', userId, '/treatments'),
         icon: Stethoscope,
         description: "Create and manage treatment plans",
       },
@@ -159,13 +162,13 @@ export const doctorNavigation = [
     items: [
       {
         name: "Messages",
-        path: "/doctor/messages",
+        path: createPath('doctor', userId, '/chat'),
         icon: MessageSquare,
         description: "Patient communications",
       },
       {
         name: "Consultations",
-        path: "/doctor/consultations",
+        path: createPath('doctor', userId, '/consultations'),
         icon: Video,
         description: "Virtual consultations",
       },
@@ -177,13 +180,13 @@ export const doctorNavigation = [
     items: [
       {
         name: "Profile",
-        path: "/doctor/profile",
+        path: createPath('doctor', userId, '/profile'),
         icon: User,
         description: "Professional profile settings",
       },
       {
         name: "Settings",
-        path: "/doctor/settings",
+        path: createPath('doctor', userId, '/settings'),
         icon: Settings,
         description: "Account and app settings",
       },
@@ -192,46 +195,28 @@ export const doctorNavigation = [
 ];
 
 // Staff Navigation
-export const staffNavigation = [
+export const staffNavigation = (userId) => [
   {
     id: "dashboard",
     label: "Dashboard",
     items: [
       {
         name: "Dashboard",
-        path: "/staff/dashboard",
+        path: createPath('staff', userId, ''),
         icon: LayoutDashboard,
-        description: "Operations overview",
+        description: "Staff dashboard overview",
       },
       {
         name: "Appointments",
-        path: "/staff/appointments",
+        path: createPath('staff', userId, '/appointments'),
         icon: Calendar,
-        description: "Appointment scheduling and management",
+        description: "Manage appointments",
       },
-    ],
-  },
-  {
-    id: "operations",
-    label: "Operations",
-    items: [
       {
-        name: "Patient Management",
-        path: "/staff/patients",
+        name: "Patients",
+        path: createPath('staff', userId, '/patients'),
         icon: Users,
-        description: "Patient database and information",
-      },
-      {
-        name: "Scheduling",
-        path: "/staff/scheduling",
-        icon: Clock,
-        description: "Advanced scheduling tools",
-      },
-      {
-        name: "Tasks",
-        path: "/staff/tasks",
-        icon: ClipboardList,
-        description: "Daily tasks and follow-ups",
+        description: "Patient management",
       },
     ],
   },
@@ -240,16 +225,10 @@ export const staffNavigation = [
     label: "Communication",
     items: [
       {
-        name: "Patient Calls",
-        path: "/staff/calls",
-        icon: Phone,
-        description: "Patient communication log",
-      },
-      {
         name: "Messages",
-        path: "/staff/messages",
+        path: createPath('staff', userId, '/chat'),
         icon: MessageSquare,
-        description: "Internal and patient messages",
+        description: "Internal communications",
       },
     ],
   },
@@ -259,116 +238,122 @@ export const staffNavigation = [
     items: [
       {
         name: "Profile",
-        path: "/staff/profile",
+        path: createPath('staff', userId, '/profile'),
         icon: User,
-        description: "Staff profile settings",
+        description: "Profile settings",
       },
       {
         name: "Settings",
-        path: "/staff/settings",
+        path: createPath('staff', userId, '/settings'),
         icon: Settings,
-        description: "Account and app settings",
+        description: "Account settings",
       },
     ],
   },
 ];
 
 // Admin Navigation
-export const adminNavigation = [
+export const adminNavigation = (userId) => [
   {
     id: "dashboard",
     label: "Dashboard",
     items: [
       {
         name: "Dashboard",
-        path: "/admin/dashboard",
+        path: createPath('admin', userId, ''),
         icon: LayoutDashboard,
-        description: "System overview and analytics",
+        description: "Administrative overview",
       },
       {
-        name: "Analytics",
-        path: "/analytics",
-        icon: BarChart3,
-        description: "System analytics and reports",
+        name: "Appointments",
+        path: createPath('admin', userId, '/appointments'),
+        icon: Calendar,
+        description: "Appointment management",
       },
     ],
   },
   {
-    id: "user-management",
-    label: "User Management",
+    id: "management",
+    label: "Management",
     items: [
       {
-        name: "Users",
-        path: "/manage-users",
+        name: "Patients",
+        path: createPath('admin', userId, '/patients'),
         icon: Users,
-        description: "Manage system users",
+        description: "Patient management",
       },
       {
-        name: "Roles & Permissions",
-        path: "/admin/roles",
-        icon: Shield,
-        description: "Manage user roles and permissions",
+        name: "Doctors",
+        path: createPath('admin', userId, '/doctors'),
+        icon: Stethoscope,
+        description: "Doctor management",
       },
       {
-        name: "Doctor Reports",
-        path: "/doctor-report",
-        icon: FileText,
-        description: "Doctor performance reports",
+        name: "Staff",
+        path: createPath('admin', userId, '/staff'),
+        icon: UserCheck,
+        description: "Staff management",
       },
     ],
   },
   {
-    id: "system",
-    label: "System Management",
+    id: "reports",
+    label: "Reports & Analytics",
     items: [
       {
-        name: "Database",
-        path: "/admin/database",
-        icon: Database,
-        description: "Database management",
+        name: "Reports",
+        path: createPath('admin', userId, '/reports'),
+        icon: BarChart3,
+        description: "System reports and analytics",
       },
       {
-        name: "System Settings",
-        path: "/admin/system",
+        name: "Audit Logs",
+        path: createPath('admin', userId, '/audit'),
+        icon: Shield,
+        description: "System audit logs",
+      },
+    ],
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    items: [
+      {
+        name: "Settings",
+        path: createPath('admin', userId, '/settings'),
         icon: Settings,
-        description: "System configuration",
-      },
-      {
-        name: "Notifications",
-        path: "/admin/notifications",
-        icon: Bell,
-        description: "System notifications",
+        description: "System settings",
       },
     ],
   },
 ];
 
-// Helper function to get navigation based on role
-export const getNavigationByRole = (role) => {
+export const getNavigationByRole = (role, userId) => {
   switch (role) {
-    case "admin":
-      return adminNavigation;
-    case "doctor":
-      return doctorNavigation;
-    case "staff":
-      return staffNavigation;
     case "patient":
+      return patientNavigation(userId);
+    case "doctor":
+      return doctorNavigation(userId);
+    case "staff":
+      return staffNavigation(userId);
+    case "admin":
+      return adminNavigation(userId);
     default:
-      return patientNavigation;
+      return patientNavigation(userId);
   }
 };
 
-// Helper function to get default route by role
-export const getDefaultRouteByRole = (role, userID) => {
+export const getDefaultRouteByRole = (role, userId) => {
   switch (role) {
-    case "admin":
-      return "/admin";
-    case "doctor":
-      return "/doctor";
-    case "staff":
-      return "/staff";
     case "patient":
+      return createPath('patient', userId, '');
+    case "doctor":
+      return createPath('doctor', userId, '');
+    case "staff":
+      return createPath('staff', userId, '');
+    case "admin":
+      return createPath('admin', userId, '');
     default:
-      return `/dashboard/${userID}`;
+      return "/";
   }
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -23,7 +23,6 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import {
   Shield,
@@ -240,15 +239,15 @@ const SecurityManager = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const updateSecuritySetting = useCallback((key, value) => {
+  const updateSecuritySetting = (key, value) => {
     setSecuritySettings((prev) => ({ ...prev, [key]: value }));
     toast.success("Security setting updated");
-  }, []);
+  };
 
-  const handleThreatAction = useCallback((threatId, action) => {
+  const handleThreatAction = (threatId, action) => {
     // Handle threat actions (block, investigate, dismiss)
     toast.success(`Threat ${action} successfully`);
-  }, []);
+  };
 
   const getRiskLevelColor = (level) => {
     switch (level) {

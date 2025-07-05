@@ -34,8 +34,6 @@ export const routeStatuses = {
   // Admin routes
   "/admin": RouteStatus.ACTIVE,
   "/admin/dashboard": RouteStatus.ACTIVE,
-  "/manage-users": RouteStatus.UNDER_DEVELOPMENT,
-  "/analytics": RouteStatus.UNDER_DEVELOPMENT,
   "/doctor-report": RouteStatus.ACTIVE,
 
   // Doctor routes
@@ -53,22 +51,8 @@ export const routeStatuses = {
   "/staff": RouteStatus.ACTIVE,
   "/staff/dashboard": RouteStatus.ACTIVE,
   "/staff/appointments": RouteStatus.ACTIVE,
-  "/staff/patients": RouteStatus.UNDER_DEVELOPMENT,
-  "/staff/scheduling": RouteStatus.UNDER_DEVELOPMENT,
   "/staff/profile": RouteStatus.ACTIVE,
   "/staff/settings": RouteStatus.ACTIVE,
-
-  // Under development routes
-  "/notifications": RouteStatus.UNDER_DEVELOPMENT,
-  "/medical-records": RouteStatus.UNDER_DEVELOPMENT,
-  "/prescriptions": RouteStatus.UNDER_DEVELOPMENT,
-  "/billing": RouteStatus.UNDER_DEVELOPMENT,
-
-  // Coming soon features
-  "/telehealth": RouteStatus.COMING_SOON,
-  "/health-tracking": RouteStatus.COMING_SOON,
-  "/insurance": RouteStatus.COMING_SOON,
-  "/referrals": RouteStatus.COMING_SOON,
 };
 
 // Helper function to check route status

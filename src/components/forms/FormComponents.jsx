@@ -1,5 +1,3 @@
-// src/utils/renderQuesFuncs.jsx
-// ────────────────────────────────────────────────────────────────────────────
 import React from "react";
 import {
   HoverCard,
@@ -23,7 +21,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { renderCalAge, renderDate } from "./renderUtilsFunc";
+import { renderCalAge, renderDate } from "./FormUtils";
 
 export function FormatLegend({ question }) {
   return (
@@ -56,7 +54,6 @@ export function RenderQuesFuncs({
       <FormatLegend question={question} />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
         {question.fields.map((field) => {
-          // any skip‐logic here…
           const isReq = !!field.required;
           const value = formData[field.id] || "";
 
@@ -309,4 +306,4 @@ export function RenderOtherQues({
       )}
     </fieldset>
   );
-}
+} 

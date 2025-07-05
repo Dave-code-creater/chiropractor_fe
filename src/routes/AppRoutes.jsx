@@ -3,9 +3,9 @@ import { useEffect } from "react";
 import DefaultLayout from "../layouts/DefaultLayout";
 import PublicLayout from "../layouts/PublicLayout";
 import HomePageLayout from "../layouts/user/HomePageLayout";
-import AdminLayout from "../layouts/admin/HomePageLayout";
-import DoctorLayout from "../layouts/doctor/HomePageLayout";
-import StaffLayout from "../layouts/staff/HomePageLayout";
+import AdminHomePageLayout from "../layouts/admin/HomePageLayout";
+import DoctorHomePageLayout from "../layouts/doctor/HomePageLayout";
+import StaffHomePageLayout from "../layouts/staff/HomePageLayout";
 
 import LandingPage from "../pages/LandingPage";
 import About from "../pages/About";
@@ -22,7 +22,6 @@ import ResetPassword from "../features/auth/ResetPassword";
 
 import HomePage from "../features/homepage/components/user/HomePage";
 import Setting from "../features/setting/components/Setting";
-import Appointments from "../features/appointments/Appointments";
 import Blog from "../features/blog/components/user/Blog";
 import BlogPost from "../features/blog/components/user/BlogPost";
 import NewChat from "../features/chat/components/NewChat";
@@ -40,6 +39,7 @@ import PrivacyPolicy from "../pages/PrivacyPolicy";
 import AppointmentManagement from "../features/appointments/components/AppointmentManagement";
 import PatientManagement from "../features/patients/components/PatientManagement";
 import QuickScheduler from "../features/appointments/components/QuickScheduler";
+import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
 
 import { getRouteStatus, RouteStatus } from "../config/routes";
 
@@ -65,12 +65,7 @@ const RouteWrapper = ({ element: Element, ...props }) => {
 };
 
 const AppRoutes = () => {
-  const location = useLocation();
 
-  useEffect(() => {
-    // Scroll to top on route change
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
 
   return (
     <Routes>
@@ -105,122 +100,65 @@ const AppRoutes = () => {
         <Route path="/unauthorized" element={<Unauthorized />} />
       </Route>
 
-      {/* Protected user routes */}
-      <Route element={<ProtectRoute />}>
+      {/* Patient/User Dashboard Routes */}
+      <Route element={<ProtectRoute allowedRoles={["patient"]} />}>
         <Route element={<DefaultLayout />}>
-          <Route
-            path="/dashboard"
-            element={<RouteWrapper element={HomePage} />}
-          />
-          <Route
-            path="/dashboard/:id"
-            element={<RouteWrapper element={HomePage} />}
-          />
-          <Route
-            path="/settings"
-            element={<RouteWrapper element={Setting} />}
-          />
-          <Route
-            path="/appointments"
-            element={<RouteWrapper element={Appointments} />}
-          />
-          <Route path="/blog" element={<RouteWrapper element={Blog} />} />
-          <Route
-            path="/blog/:slug"
-            element={<RouteWrapper element={BlogPost} />}
-          />
-          <Route path="/chat" element={<RouteWrapper element={NewChat} />} />
-          <Route path="/chat-demo" element={<RouteWrapper element={ChatDemo} />} />
-          <Route path="/profile" element={<RouteWrapper element={Profile} />} />
-          <Route path="/report" element={<RouteWrapper element={Report} />} />
-
-          {/* Routes under development */}
-          <Route
-            path="/notifications"
-            element={<RouteWrapper element={NotFound} />}
-          />
-          <Route
-            path="/medical-records"
-            element={<RouteWrapper element={NotFound} />}
-          />
-          <Route
-            path="/prescriptions"
-            element={<RouteWrapper element={NotFound} />}
-          />
-          <Route
-            path="/billing"
-            element={<RouteWrapper element={NotFound} />}
-          />
-
-          {/* Coming soon routes */}
-          <Route
-            path="/telehealth"
-            element={<RouteWrapper element={NotFound} />}
-          />
-          <Route
-            path="/health-tracking"
-            element={<RouteWrapper element={NotFound} />}
-          />
-          <Route
-            path="/insurance"
-            element={<RouteWrapper element={NotFound} />}
-          />
-          <Route
-            path="/referrals"
-            element={<RouteWrapper element={NotFound} />}
-          />
+          <Route path="/dashboard/patient/:id">
+            <Route index element={<HomePage />} />
+            <Route path="appointments" element={<PatientAppointments />} />
+            <Route path="appointments/book" element={<QuickScheduler />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Setting />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:slug" element={<BlogPost />} />
+            <Route path="chat" element={<NewChat />} />
+            <Route path="reports" element={<Report />} />
+          </Route>
         </Route>
       </Route>
 
-      {/* Protected admin routes */}
-      <Route element={<ProtectRoute allowedRoles={["admin"]} />}>
-        <Route element={<AdminLayout />}>
-          <Route
-            path="/admin"
-            element={<RouteWrapper element={AdminDashboard} />}
-          />
-          <Route path="manage-users" element={<div>Manage Users</div>} />
-          <Route path="analytics" element={<div>Analytics</div>} />
-          <Route path="doctor-report" element={<ProfileUser />} />
-          {/* Add more admin routes here */}
-        </Route>
-      </Route>
-
-      {/* Protected doctor routes */}
+      {/* Doctor Dashboard Routes */}
       <Route element={<ProtectRoute allowedRoles={["doctor"]} />}>
-        <Route element={<DoctorLayout />}>
-          <Route path="/doctor" element={<DoctorDashboard />} />
-          <Route path="/doctor/appointments" element={<Appointments />} />
-          <Route
-            path="/doctor/appointments/manage"
-            element={<AppointmentManagement />}
-          />
-          <Route path="/doctor/patients" element={<PatientManagement />} />
-          <Route path="/doctor/reports" element={<Report />} />
-          <Route path="/doctor/notes" element={<Notes />} />
-          <Route path="/doctor/messages" element={<NewChat />} />
-          <Route path="/doctor/profile" element={<Profile />} />
-          <Route path="/doctor/settings" element={<Setting />} />
+        <Route element={<DoctorHomePageLayout />}>
+          <Route path="/dashboard/doctor/:id">
+            <Route index element={<DoctorDashboard />} />
+            <Route path="appointments" element={<AppointmentManagement />} />
+            <Route path="patients" element={<PatientManagement />} />
+            <Route path="reports" element={<Report />} />
+            <Route path="notes" element={<Notes />} />
+            <Route path="chat" element={<NewChat />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Setting />} />
+          </Route>
         </Route>
       </Route>
 
-      {/* Protected staff routes */}
+      {/* Staff Dashboard Routes */}
       <Route element={<ProtectRoute allowedRoles={["staff"]} />}>
-        <Route element={<StaffLayout />}>
-          <Route path="/staff" element={<StaffDashboard />} />
-          <Route path="/staff/appointments" element={<Appointments />} />
-          <Route
-            path="/staff/appointments/manage"
-            element={<AppointmentManagement />}
-          />
-          <Route
-            path="/staff/appointments/quick"
-            element={<QuickScheduler />}
-          />
-          <Route path="/staff/patients" element={<PatientManagement />} />
-          <Route path="/staff/scheduling" element={<Appointments />} />
-          <Route path="/staff/profile" element={<Profile />} />
-          <Route path="/staff/settings" element={<Setting />} />
+        <Route element={<StaffHomePageLayout />}>
+          <Route path="/dashboard/staff/:id">
+            <Route index element={<StaffDashboard />} />
+            <Route path="appointments" element={<AppointmentManagement />} />
+            <Route path="patients" element={<PatientManagement />} />
+            <Route path="chat" element={<NewChat />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="settings" element={<Setting />} />
+          </Route>
+        </Route>
+      </Route>
+
+      {/* Admin Dashboard Routes */}
+      <Route element={<ProtectRoute allowedRoles={["admin"]} />}>
+        <Route element={<AdminHomePageLayout />}>
+          <Route path="/dashboard/admin/:id">
+            <Route index element={<AdminDashboard />} />
+            <Route path="appointments" element={<AppointmentManagement />} />
+            <Route path="patients" element={<PatientManagement />} />
+            <Route path="doctors" element={<PatientManagement />} />
+            <Route path="staff" element={<PatientManagement />} />
+            <Route path="reports" element={<Report />} />
+            <Route path="settings" element={<Setting />} />
+          </Route>
         </Route>
       </Route>
 

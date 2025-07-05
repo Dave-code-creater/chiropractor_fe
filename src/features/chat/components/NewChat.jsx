@@ -10,18 +10,19 @@ import {
   useUpdateConversationStatusMutation,
   useDeleteConversationMutation,
 } from "@/services/chatApi";
-import { 
-  canStartConversation, 
-  getAllowedRoles, 
+import {
+  CHAT_ROLES,
+  CONVERSATION_TYPES,
+  PRIORITY_LEVELS,
+  canStartConversation,
   validateConversationData,
   getRoleRestrictionError,
   formatConversationType,
   formatPriority,
+  getAllowedRoles,
   canUpdateConversationStatus,
-  CONVERSATION_TYPES,
-  PRIORITY_LEVELS,
   MESSAGE_TYPES
-} from "@/utils/chatRoles";
+} from "../constants/roles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

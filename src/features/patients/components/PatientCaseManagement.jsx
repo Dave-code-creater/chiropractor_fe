@@ -38,12 +38,19 @@ import {
   Filter,
 } from "lucide-react";
 import { toast } from "sonner";
-import { 
-  useGetPatientClinicalNotesQuery,
+import {
+  useGetClinicalNotesQuery,
+  useGetClinicalNotesByPatientQuery,
+  useGetClinicalNoteQuery,
   useCreateClinicalNoteMutation,
   useUpdateClinicalNoteMutation,
-  useDeleteClinicalNoteMutation
-} from "@/services/clinicalNotesApi";
+  useDeleteClinicalNoteMutation,
+  useCreateSOAPNoteMutation,
+  useUpdateSOAPNoteMutation,
+  useGetSOAPNotesQuery,
+  useSearchClinicalNotesQuery,
+  useGetNoteTemplatesQuery,
+} from "@/api";
 
 // Mock patient data with comprehensive medical information
 const mockPatients = [
@@ -248,7 +255,7 @@ export default function PatientCaseManagement() {
   });
 
   // API hooks
-  const { data: clinicalNotes = [], isLoading: notesLoading } = useGetPatientClinicalNotesQuery(
+  const { data: clinicalNotes = [], isLoading: notesLoading } = useGetClinicalNotesQuery(
     selectedPatient?.id ? { patientId: selectedPatient.id } : undefined,
     { skip: !selectedPatient?.id }
   );

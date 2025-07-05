@@ -31,6 +31,13 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from "@/components/ui/hover-card";
+import {
+  RenderQuesFuncs,
+  RenderTextAreaQues,
+  RenderRadioQues,
+  RenderCheckboxQues,
+  RenderOtherQues,
+} from "@/components/forms/FormComponents";
 
 const painFields = [
   { id: "head", label: "Head" },
@@ -57,13 +64,6 @@ const painFields = [
   { id: "feet", label: "Feet" },
   { id: "toes", label: "Toes" },
 ];
-import {
-  RenderQuesFuncs,
-  RenderTextAreaQues,
-  RenderRadioQues,
-  RenderCheckboxQues,
-  RenderOtherQues,
-} from "../../../../utils/renderQuesFuncs.jsx";
 
 export default function PainChartSection({
   gender,

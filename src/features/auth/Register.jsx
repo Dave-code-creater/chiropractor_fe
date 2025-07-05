@@ -6,8 +6,8 @@ import {
   renderPhoneNumber,
   renderGmailExprs,
   renderPwRegister,
-  validatePhoneNumber,
-} from "../../utils/renderUtilsFunc";
+  validatePhoneNumber
+} from "../../components/forms/FormUtils";
 import {
   setPhoneError,
   clearPhoneError,
