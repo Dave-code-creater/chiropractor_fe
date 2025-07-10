@@ -15,16 +15,16 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import FormattedInput from "../../../components/forms/FormattedInput";
 
 // Import API service for medical info updates
-import { useUpdateMedicalInfoMutation } from "@/services/profileApi";
+import { useUpdateMedicalInfoMutation } from "@/api/services/profileApi";
 
 function MedicalInfo() {
   const [bloodType, setBloodType] = React.useState("");
   const [allergies, setAllergies] = React.useState("");
   const [conditions, setConditions] = React.useState("");
   const [physicianName, setPhysicianName] = React.useState("");
-  const [physicianPhoneCode, setPhysicianPhoneCode] = React.useState("");
   const [physicianPhone, setPhysicianPhone] = React.useState("");
   const [insuranceProvider, setInsuranceProvider] = React.useState("");
   const [policyNumber, setPolicyNumber] = React.useState("");
@@ -41,7 +41,7 @@ function MedicalInfo() {
       allergies: allergies,
       chronic_conditions: conditions,
       physician_name: physicianName,
-      physician_phone: `${physicianPhoneCode}${physicianPhone}`,
+      physician_phone: physicianPhone,
       insurance_provider: insuranceProvider,
       policy_number: policyNumber,
     };
@@ -116,27 +116,12 @@ function MedicalInfo() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Physician Phone
               </label>
-              <div className="flex gap-2">
-                <Select
-                  value={physicianPhoneCode}
-                  onValueChange={setPhysicianPhoneCode}
-                >
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Code" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="720">+1 (720)</SelectItem>
-                    <SelectItem value="303">+1 (303)</SelectItem>
-                    <SelectItem value="970">+1 (970)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <input
-                  type="tel"
-                  className="flex-1 border rounded-md px-3 py-2 text-sm"
-                  value={physicianPhone}
-                  onChange={(e) => setPhysicianPhone(e.target.value)}
-                />
-              </div>
+              <FormattedInput
+                type="phone"
+                value={physicianPhone}
+                onChange={setPhysicianPhone}
+                className="w-full"
+              />
             </div>
 
             <FormField

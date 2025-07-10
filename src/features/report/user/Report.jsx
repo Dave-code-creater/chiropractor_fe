@@ -30,16 +30,33 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import TemplateFormRouter from "./components/TemplateFormRouter";
-import ReportTemplateSelector from "@/components/reports/ReportTemplateSelector";
+import ViewEditIncidentForms from "./components/ViewEditIncidentForms";
 import {
   useGetIncidentsQuery,
   useCreateIncidentMutation,
   useUpdateIncidentMutation,
   useAddIncidentNoteMutation,
-} from "@/services/reportApi";
+} from "@/api/services/reportApi";
 
 // Incident types with tailored forms - matching backend form_type values
 const INCIDENT_TYPES = [
+  {
+    id: "general_pain",
+    title: "General Pain",
+    description: "Document chronic pain or general discomfort",
+    icon: Heart,
+    color: "bg-green-50",
+    iconColor: "text-green-600",
+    estimatedTime: "10-15 min",
+    forms: [
+      { key: 'patient_info', title: 'Patient Information', required: true },
+      { key: 'pain_description', title: 'Pain Description', required: false },
+      { key: 'medical_history', title: 'Medical History', required: false },
+      { key: 'health_insurance', title: 'Health Insurance', required: false },
+      { key: 'pain_assessment', title: 'Pain Assessment', required: false },
+      { key: 'lifestyle_impact', title: 'Lifestyle Impact', required: false },
+    ]
+  },
   {
     id: "car_accident",
     title: "Car Accident",
@@ -47,13 +64,13 @@ const INCIDENT_TYPES = [
     icon: Car,
     color: "bg-red-50",
     iconColor: "text-red-600",
-    priority: "high",
+    estimatedTime: "15-20 min",
     forms: [
       { key: 'patient_info', title: 'Patient Information', required: true },
-      { key: 'accident_details', title: 'Accident Details', required: true },
-      { key: 'injuries_symptoms', title: 'Injuries & Symptoms', required: true },
-      { key: 'auto_insurance', title: 'Auto Insurance', required: true },
-      { key: 'pain_assessment', title: 'Pain Assessment', required: true },
+      { key: 'accident_details', title: 'Accident Details', required: false },
+      { key: 'injuries_symptoms', title: 'Injuries & Symptoms', required: false },
+      { key: 'auto_insurance', title: 'Auto Insurance', required: false },
+      { key: 'pain_assessment', title: 'Pain Assessment', required: false },
       { key: 'work_impact', title: 'Work Impact', required: false },
     ]
   },
@@ -64,7 +81,7 @@ const INCIDENT_TYPES = [
     icon: Briefcase,
     color: "bg-orange-50",
     iconColor: "text-orange-600",
-    priority: "high",
+    estimatedTime: "15-20 min",
     forms: [
       { key: 'patient_info', title: 'Patient Information', required: true },
       { key: 'work_incident_details', title: 'Work Incident Details', required: true },
@@ -72,40 +89,6 @@ const INCIDENT_TYPES = [
       { key: 'workers_comp', title: 'Workers\' Compensation', required: true },
       { key: 'pain_assessment', title: 'Pain Assessment', required: true },
       { key: 'work_status_restrictions', title: 'Work Status & Restrictions', required: true },
-    ]
-  },
-  {
-    id: "sports_injury",
-    title: "Sports Injury",
-    description: "Document sports or recreational activity injury",
-    icon: Activity,
-    color: "bg-blue-50",
-    iconColor: "text-blue-600",
-    priority: "medium",
-    forms: [
-      { key: 'patient_info', title: 'Patient Information', required: true },
-      { key: 'sports_incident_details', title: 'Sports Incident Details', required: true },
-      { key: 'injuries_symptoms', title: 'Injuries & Symptoms', required: true },
-      { key: 'health_insurance', title: 'Health Insurance', required: true },
-      { key: 'pain_assessment', title: 'Pain Assessment', required: true },
-      { key: 'activity_impact', title: 'Activity Impact', required: false },
-    ]
-  },
-  {
-    id: "general_pain",
-    title: "General Pain",
-    description: "Document chronic pain or general discomfort",
-    icon: Heart,
-    color: "bg-green-50",
-    iconColor: "text-green-600",
-    priority: "medium",
-    forms: [
-      { key: 'patient_info', title: 'Patient Information', required: true },
-      { key: 'pain_description', title: 'Pain Description', required: true },
-      { key: 'medical_history', title: 'Medical History', required: true },
-      { key: 'health_insurance', title: 'Health Insurance', required: true },
-      { key: 'pain_assessment', title: 'Pain Assessment', required: true },
-      { key: 'lifestyle_impact', title: 'Lifestyle Impact', required: false },
     ]
   },
 ];
@@ -133,20 +116,24 @@ const ErrorState = ({ error, onRetry }) => (
   </div>
 );
 
-const QuickStartSection = ({ onCreateIncident }) => (
+const QuickStartSection = ({ onSelectIncidentType }) => (
   <div className="p-6 border-b bg-gradient-to-r from-blue-50 to-indigo-50">
     <div className="mb-6">
       <h2 className="text-2xl font-bold mb-2">Quick Start</h2>
-      <p className="text-muted-foreground">
-        Create your first incident report to begin documenting your care journey
+      <p className="text-muted-foreground mb-3">
+        Choose your incident type to start your medical report. Only basic contact information is required.
       </p>
+      <div className="flex items-center gap-2 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded px-3 py-2">
+        <span>🔒</span>
+        <span><strong>Privacy First:</strong> Share only what you're comfortable with - most sections are optional.</span>
+      </div>
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       {INCIDENT_TYPES.map((incidentType) => (
         <IncidentTypeCard
           key={incidentType.id}
           incidentType={incidentType}
-          onClick={onCreateIncident}
+          onClick={onSelectIncidentType}
         />
       ))}
     </div>
@@ -158,24 +145,26 @@ const IncidentTypeCard = ({ incidentType, onClick }) => {
   
   return (
     <Card 
-      className="cursor-pointer transition-all hover:shadow-lg hover:scale-105 group border-2 hover:border-primary/20"
+      className="cursor-pointer transition-all hover:shadow-md group border border-gray-200 hover:border-primary/20"
       onClick={() => onClick(incidentType)}
+      tabIndex={-1}
     >
       <CardHeader className="pb-3">
         <div className="flex items-center gap-4">
-          <div className={`p-4 rounded-xl ${incidentType.color} group-hover:scale-110 transition-transform`}>
+          <div className={`p-4 rounded-xl ${incidentType.color}`}>
             <Icon className={`h-7 w-7 ${incidentType.iconColor}`} />
           </div>
           <div className="flex-1">
-            <CardTitle className="text-xl group-hover:text-primary transition-colors">
+            <CardTitle className="text-xl text-gray-900">
               {incidentType.title}
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
               {incidentType.description}
             </p>
             <div className="flex items-center gap-2 mt-2">
-              <Badge variant={incidentType.priority === 'high' ? 'destructive' : 'secondary'} className="text-xs">
-                {incidentType.priority === 'high' ? 'Urgent' : 'Standard'}
+              <Badge variant="outline" className="text-xs bg-transparent">
+                <Clock className="h-3 w-3 mr-1" />
+                {incidentType.estimatedTime}
               </Badge>
               <span className="text-xs text-muted-foreground">
                 {incidentType.forms.length} forms
@@ -188,7 +177,7 @@ const IncidentTypeCard = ({ incidentType, onClick }) => {
   );
 };
 
-const IncidentFolderCard = ({ incident, onToggle, onEditIncident, onOpenForm, onAddNote }) => {
+const IncidentFolderCard = ({ incident, onToggle, onEditIncident, onOpenForm, onAddNote, onViewAllForms }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editTitle, setEditTitle] = useState(incident.title);
   const [showNoteForm, setShowNoteForm] = useState(false);
@@ -276,6 +265,17 @@ const IncidentFolderCard = ({ incident, onToggle, onEditIncident, onOpenForm, on
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onViewAllForms(incident.id);
+              }}
+            >
+              <FolderOpen className="h-4 w-4 mr-2" />
+              View All Forms
+            </Button>
             <Button
               variant="ghost"
               size="sm"
@@ -412,8 +412,9 @@ const IncidentFolderCard = ({ incident, onToggle, onEditIncident, onOpenForm, on
 
 export default function Report() {
   const [selectedFormData, setSelectedFormData] = useState(null);
-  const [showTemplateSelector, setShowTemplateSelector] = useState(false);
   const [expandedIncidents, setExpandedIncidents] = useState({});
+  const [pendingIncidentType, setPendingIncidentType] = useState(null);
+  const [viewingIncidentForms, setViewingIncidentForms] = useState(null);
 
   // Get current user info
   const currentUser = useSelector((state) => state?.auth?.user);
@@ -442,29 +443,6 @@ export default function Report() {
   }, [incidentsData, expandedIncidents]);
 
   // Handlers
-  const handleCreateIncident = useCallback(async (incidentType) => {
-    try {
-      const incidentData = {
-        incident_type: incidentType.id,
-        title: `${incidentType.title} - ${new Date().toLocaleDateString()}`,
-        description: incidentType.description,
-        incident_date: new Date().toISOString().slice(0, 10)
-      };
-
-      const result = await createIncident(incidentData).unwrap();
-      
-      // Auto-expand the new incident
-      setExpandedIncidents(prev => ({
-        ...prev,
-        [result.data.id]: true
-      }));
-      
-      refetch();
-    } catch (error) {
-      console.error("Failed to create incident:", error);
-    }
-  }, [createIncident, refetch]);
-
   const handleToggleIncident = useCallback((incidentId) => {
     setExpandedIncidents(prev => ({
       ...prev,
@@ -509,25 +487,79 @@ export default function Report() {
 
   const handleFormSubmit = useCallback(async (formData) => {
     console.log("Form submitted:", formData);
-    // Handle form submission
+    
+    // If this is a new incident (pendingIncidentType exists), create it first
+    if (pendingIncidentType) {
+      try {
+        const incidentData = {
+          incident_type: pendingIncidentType.id,
+          title: `${pendingIncidentType.title} - ${new Date().toLocaleDateString()}`,
+          description: pendingIncidentType.description,
+          incident_date: new Date().toISOString().slice(0, 10)
+        };
+
+        const result = await createIncident(incidentData).unwrap();
+        
+        // Auto-expand the new incident
+        setExpandedIncidents(prev => ({
+          ...prev,
+          [result.data.id]: true
+        }));
+        
+        setPendingIncidentType(null);
+        refetch();
+      } catch (error) {
+        console.error("Failed to create incident:", error);
+      }
+    }
+    
     setSelectedFormData(null);
     refetch();
-  }, [refetch]);
+  }, [refetch, pendingIncidentType, createIncident]);
 
   const handleFormBack = useCallback(() => {
     setSelectedFormData(null);
+    setPendingIncidentType(null);
   }, []);
+
+  const handleViewIncidentForms = useCallback((incidentId) => {
+    setViewingIncidentForms(incidentId);
+  }, []);
+
+  const handleBackFromViewForms = useCallback(() => {
+    setViewingIncidentForms(null);
+  }, []);
+
+  // If viewing incident forms, show the ViewEditIncidentForms component
+  if (viewingIncidentForms) {
+    return (
+      <ViewEditIncidentForms
+        incidentId={viewingIncidentForms}
+        onBack={handleBackFromViewForms}
+      />
+    );
+  }
 
   // If form is selected, show the form
   if (selectedFormData) {
+    // Ensure we have valid values for all required properties
+    const formType = selectedFormData.formType || 'InitialReportForm';
+    const existingFormTitle = selectedFormData.existingForm?.title || `${formType} Form`;
+    const incidentTitle = selectedFormData.incident?.title || pendingIncidentType?.title || "New Report";
+    const incidentDescription = selectedFormData.incident?.description || pendingIncidentType?.description || "";
+    
+    const selectedTemplate = {
+      id: formType,
+      name: existingFormTitle,
+      formType: formType,
+      incidentType: selectedFormData.incidentType || 'general',
+      folder: incidentTitle,
+      description: incidentDescription
+    };
+    
     return (
       <TemplateFormRouter
-        selectedTemplate={{
-          id: selectedFormData.formType,
-          name: selectedFormData.existingForm?.title || `${selectedFormData.formType} Form`,
-          formType: selectedFormData.formType,
-          incidentType: selectedFormData.incidentType
-        }}
+        selectedTemplate={selectedTemplate}
         onSubmit={handleFormSubmit}
         initialData={selectedFormData.existingForm}
         onBack={handleFormBack}
@@ -548,14 +580,6 @@ export default function Report() {
               Document incidents, track recovery, and manage your care
             </p>
           </div>
-          <Button 
-            onClick={() => setShowTemplateSelector(true)} 
-            className="bg-primary hover:bg-primary/90"
-            size="lg"
-          >
-            <PlusIcon className="h-5 w-5 mr-2" />
-            New Incident
-          </Button>
         </div>
       </div>
 
@@ -566,7 +590,17 @@ export default function Report() {
         ) : isError ? (
           <ErrorState error={error} onRetry={refetch} />
         ) : incidents.length === 0 ? (
-          <QuickStartSection onCreateIncident={handleCreateIncident} />
+          <QuickStartSection onSelectIncidentType={(incidentType) => {
+            // Set pending incident type and open form directly
+            setPendingIncidentType(incidentType);
+            setSelectedFormData({
+              incidentId: null,
+              formType: 'InitialReportForm', // Start with the main comprehensive form
+              incidentType: incidentType.id,
+              existingForm: null,
+              incident: null
+            });
+          }} />
         ) : (
           <div className="p-6">
             <div className="flex items-center justify-between mb-6">
@@ -595,27 +629,27 @@ export default function Report() {
                   onEditIncident={handleEditIncident}
                   onOpenForm={handleOpenForm}
                   onAddNote={handleAddNote}
+                  onViewAllForms={handleViewIncidentForms}
                 />
               ))}
+            </div>
+            
+            {/* Add Quick Start section for existing users too */}
+            <div className="mt-8 pt-8 border-t">
+              <QuickStartSection onSelectIncidentType={(incidentType) => {
+                setPendingIncidentType(incidentType);
+                setSelectedFormData({
+                  incidentId: null,
+                  formType: 'InitialReportForm',
+                  incidentType: incidentType.id,
+                  existingForm: null,
+                  incident: null
+                });
+              }} />
             </div>
           </div>
         )}
       </div>
-
-      {/* Template Selector Modal */}
-      <ReportTemplateSelector
-        isOpen={showTemplateSelector}
-        onClose={() => setShowTemplateSelector(false)}
-        onSelectTemplate={(template) => {
-          const incidentType = INCIDENT_TYPES.find(t => t.id === template.incidentType);
-          if (incidentType) {
-            handleCreateIncident(incidentType);
-          }
-          setShowTemplateSelector(false);
-        }}
-        patientView={true}
-        incidentTypes={INCIDENT_TYPES}
-      />
     </div>
   );
 }

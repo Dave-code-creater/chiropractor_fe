@@ -19,17 +19,17 @@ import {
   ClipboardList,
   Search,
 } from "lucide-react";
-import { useGetAppointmentsQuery } from "@/services/appointmentApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import RecentChatMessages from "@/components/dashboard/RecentChatMessages";
 import { Link } from "react-router-dom";
 import { selectCurrentUser, selectUserId } from "../../../../state/data/authSlice";
-import { useGetPatientsQuery } from '@/services/userApi';
-import { useGetConversationsQuery } from '@/services/chatApi';
-import { useGetBlogPostsQuery } from '@/services/blogApi';
+import { useGetPatientsQuery } from '@/api/services/userApi';
+import { useGetConversationsQuery } from '@/api/services/chatApi';
+import { useGetBlogPostsQuery } from '@/api/services/blogApi';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogClose, DialogDescription } from '@/components/ui/dialog';
-import { useCreateAppointmentMutation } from '@/services/appointmentApi';
-import { useCreateConversationMutation } from '@/services/chatApi';
-import { useCreateBlogPostMutation } from '@/services/blogApi';
+import { useCreateAppointmentMutation } from '@/api/services/appointmentApi';
+import { useCreateConversationMutation } from '@/api/services/chatApi';
+import { useCreateBlogPostMutation } from '@/api/services/blogApi';
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
@@ -109,12 +109,21 @@ export default function DoctorDashboard() {
   }, [patientsData, isLoadingPatients]);
 
   // Messages
-  const { data: conversationsData, isLoading: isLoadingConversations } = useGetConversationsQuery();
+  const { data: conversationsData, isLoading: isLoadingConversations } = useGetConversationsQuery({ 
+    status: 'active' 
+  });
   const conversations = React.useMemo(() => {
     if (isLoadingConversations || !conversationsData) return [];
-    if (Array.isArray(conversationsData)) return conversationsData;
-    if (Array.isArray(conversationsData?.data)) return conversationsData.data;
-    return [];
+    
+    let conversationsArray = [];
+    if (Array.isArray(conversationsData)) {
+      conversationsArray = conversationsData;
+    } else if (Array.isArray(conversationsData?.data)) {
+      conversationsArray = conversationsData.data;
+    }
+    
+    // Filter to only show active conversations
+    return conversationsArray.filter(conv => conv.status === 'active');
   }, [conversationsData, isLoadingConversations]);
 
   // Blog
@@ -236,12 +245,12 @@ export default function DoctorDashboard() {
         patient_id: appointmentForm.patientId,
         patient_name: `${selectedPatient.firstName} ${selectedPatient.lastName}`,
         doctor_id: userID,
-        date: appointmentForm.date,
-        time: appointmentForm.time,
-        type: appointmentForm.type || 'regular',
+        appointment_date: appointmentForm.date,
+        appointment_time: appointmentForm.time,
+        type: appointmentForm.type || 'consultation',
         notes: appointmentForm.notes || '',
         status: 'scheduled',
-        duration: 30, // Default duration in minutes
+        duration_minutes: 30, // Default duration in minutes
       };
 
       await createAppointment(appointmentData).unwrap();

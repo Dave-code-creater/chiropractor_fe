@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth, CACHE_TIMES } from "./baseApi";
+import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 
 export const blogApi = createApi({
   reducerPath: "blogApi",

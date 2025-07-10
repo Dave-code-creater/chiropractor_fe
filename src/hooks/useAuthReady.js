@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 
 /**
@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
  */
 export const useAuthReady = () => {
   const [isReady, setIsReady] = useState(false);
+  const stabilityCheck = useRef(null);
   
   // Get auth state from Redux
   const isAuthenticated = useSelector(state => state?.auth?.isAuthenticated ?? false);
@@ -16,12 +17,22 @@ export const useAuthReady = () => {
   const _persist = useSelector(state => state?._persist);
   
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // Clear any existing timer
+    if (stabilityCheck.current) {
+      clearTimeout(stabilityCheck.current);
+    }
+    
+    // Set ready state after a short delay to ensure state is stable
+    stabilityCheck.current = setTimeout(() => {
       setIsReady(true);
-    }, 100);
+    }, 150);
 
-    return () => clearTimeout(timer);
-  }, []); // Empty dependency array - only run once
+    return () => {
+      if (stabilityCheck.current) {
+        clearTimeout(stabilityCheck.current);
+      }
+    };
+  }, [isAuthenticated, userID, role]); // Re-run if key auth values change
 
   return {
     isReady,

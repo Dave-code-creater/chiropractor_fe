@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import FormattedInput from '../../components/forms/FormattedInput';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
     User,
@@ -334,10 +335,10 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-sm font-medium">Social Security Number</label>
-                                        <Input
+                                        <FormattedInput
+                                            type="ssn"
                                             value={formData.ssn}
-                                            onChange={(e) => updateFormData('ssn', e.target.value)}
-                                            placeholder="123-45-6789"
+                                            onChange={(value) => updateFormData('ssn', value)}
                                         />
                                     </div>
                                     <div>
@@ -376,10 +377,10 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-sm font-medium">Phone Number *</label>
-                                        <Input
+                                        <FormattedInput
+                                            type="phone"
                                             value={formData.phone}
-                                            onChange={(e) => updateFormData('phone', e.target.value)}
-                                            placeholder="(555) 123-4567"
+                                            onChange={(value) => updateFormData('phone', value)}
                                             className={errors.phone ? 'border-red-500' : ''}
                                         />
                                         {errors.phone && (
@@ -508,10 +509,10 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium">Phone Number *</label>
-                                        <Input
+                                        <FormattedInput
+                                            type="phone"
                                             value={formData.emergencyContactPhone}
-                                            onChange={(e) => updateFormData('emergencyContactPhone', e.target.value)}
-                                            placeholder="(555) 987-6543"
+                                            onChange={(value) => updateFormData('emergencyContactPhone', value)}
                                             className={errors.emergencyContactPhone ? 'border-red-500' : ''}
                                         />
                                         {errors.emergencyContactPhone && (

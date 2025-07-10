@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { useGetBlogPostByIdQuery } from "@/services/blogApi";
+import { useGetBlogPostByIdQuery } from "@/api/services/blogApi";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";

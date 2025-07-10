@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { selectUserRole, selectUserId, logOut } from "../state/data/authSlice";
-import { useLogoutMutation } from "../services/authApi";
+import { useLogoutMutation } from "../api/services/authApi";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -40,8 +40,8 @@ const Navbar = () => {
         
         // Step 2: Set logout flag to prevent token refresh interference
         try {
-          const { setLoggingOut } = await import('../services/baseApi');
-          setLoggingOut(true);
+                const { setLoggingOut } = await import('../api');
+      setLoggingOut(true);
         } catch (error) {
           console.warn("Could not set logging out flag:", error);
         }
@@ -70,8 +70,8 @@ const Navbar = () => {
         
         // Step 6: Stop token management
         try {
-          const { stopPeriodicTokenCheck } = await import('../services/baseApi');
-          stopPeriodicTokenCheck();
+                const { stopPeriodicTokenCheck } = await import('../api');
+      stopPeriodicTokenCheck();
         } catch (error) {
           console.warn("Could not stop token management:", error);
         }
@@ -97,8 +97,6 @@ const Navbar = () => {
         
         try {
           dispatch(logOut());
-          const { clearUserData } = await import('../state/data/userSlice');
-          dispatch(clearUserData());
           localStorage.clear();
           sessionStorage.clear();
           window.location.href = '/login';

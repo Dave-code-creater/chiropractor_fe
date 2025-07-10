@@ -4,7 +4,13 @@ export { API_ENDPOINTS } from './config/endpoints';
 export { API_RESPONSE_TYPES, ApiError, handleApiResponse } from './config/errors';
 
 // Core exports
-export { createBaseApi } from './core/baseApi';
+export { 
+  createBaseApi, 
+  baseApi, 
+  baseQueryWithReauth, 
+  CACHE_TIMES,
+  performanceTracker 
+} from './core/baseApi';
 export { 
   refreshTokens, 
   startPeriodicTokenCheck, 
@@ -41,4 +47,22 @@ export {
   useCreateBulkVitalsMutation,
   useGetVitalsSummaryQuery,
   useGetVitalsReferenceRangesQuery,
-} from './services/vitals'; 
+} from './services/vitals';
+
+export {
+  doctorScheduleApi,
+  useGetDoctorProfilesQuery,
+  useGetDoctorProfileQuery,
+  useUpdateDoctorProfileMutation,
+  useGetDoctorWorkingHoursQuery,
+  useUpdateDoctorWorkingHoursMutation,
+  useGetDoctorScheduleQuery,
+  useGetAllDoctorsScheduleQuery,
+  useGetTimeOffRequestsQuery,
+  useCreateTimeOffRequestMutation,
+  useUpdateTimeOffRequestMutation,
+  useDeleteTimeOffRequestMutation,
+  useApproveTimeOffRequestMutation,
+  useGetDoctorConflictsQuery,
+  useGetScheduleStatisticsQuery,
+} from './services/doctorScheduleApi'; 

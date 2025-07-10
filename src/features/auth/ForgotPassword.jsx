@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useForgotPasswordMutation } from "../../services/authApi";
+import { useForgotPasswordMutation } from "../../api/services/authApi";
 import { Link, useNavigate } from "react-router-dom";
 import { renderGmailExprs, validateEmail } from "../../components/forms/FormUtils";
 import {

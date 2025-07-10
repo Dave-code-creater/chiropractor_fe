@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Clock, CalendarDays, AlertCircle, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useGetDoctorAvailabilityQuery } from "@/services/appointmentApi";
+import { useGetDoctorAvailabilityQuery } from "@/api/services/appointmentApi";
 
 export default function DateSelector({
   bookingData,
@@ -20,7 +20,7 @@ export default function DateSelector({
   const [availableSlots, setAvailableSlots] = useState([]);
 
   // Get doctor availability when date and doctor are selected
-  const { data: availabilityData, isLoading: isLoadingAvailability } =
+  const { data: availabilityData, isLoading: isLoadingAvailability, error: availabilityError } =
     useGetDoctorAvailabilityQuery(
       {
         doctorId: bookingData.doctor,
@@ -31,32 +31,19 @@ export default function DateSelector({
       },
     );
 
-  // Generate default time slots if no API data is available
-  const generateDefaultTimeSlots = () => {
-    const slots = [];
-    const startHour = 9; // 9 AM
-    const endHour = 17; // 5 PM
-    const slotDuration = 30; // 30 minutes
-
-    for (let hour = startHour; hour < endHour; hour++) {
-      for (let minute = 0; minute < 60; minute += slotDuration) {
-        const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-        slots.push({
-          time: timeString,
-          available: Math.random() > 0.3, // 70% chance of being available
-          label: formatTime(timeString),
-        });
-      }
-    }
-    return slots;
-  };
-
   useEffect(() => {
-    if (availabilityData?.slots) {
+    if (availabilityData?.available_slots) {
+      // Handle direct available_slots in response
+      setAvailableSlots(availabilityData.available_slots);
+    } else if (availabilityData?.data?.available_slots) {
+      // Handle nested available_slots in data object
+      setAvailableSlots(availabilityData.data.available_slots);
+    } else if (availabilityData?.slots) {
+      // Handle legacy slots format
       setAvailableSlots(availabilityData.slots);
-    } else if (selectedDate && bookingData.doctor) {
-      // Use default slots if no API data
-      setAvailableSlots(generateDefaultTimeSlots());
+    } else if (availabilityData?.data?.slots) {
+      // Handle legacy nested slots format
+      setAvailableSlots(availabilityData.data.slots);
     } else {
       setAvailableSlots([]);
     }
@@ -153,7 +140,6 @@ export default function DateSelector({
                 <p className="text-sm text-green-700">
                   {selectedDoctor.specializations?.primary}
                 </p>
-                
               </div>
             </div>
           </CardContent>
@@ -230,44 +216,58 @@ export default function DateSelector({
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            {!selectedDate ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <Clock className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">Please select a date first</p>
+          <CardContent className="space-y-4">
+            {/* Loading State */}
+            {isLoadingAvailability && (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <span className="ml-2 text-sm text-muted-foreground">
+                  Loading available times...
+                </span>
               </div>
-            ) : !bookingData.doctor ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <AlertCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">Please select a doctor first</p>
+            )}
+
+            {/* Error State */}
+            {availabilityError && (
+              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                <AlertCircle className="h-4 w-4 text-red-600" />
+                <span className="text-sm text-red-700">
+                  Unable to load available times. Please try again.
+                </span>
               </div>
-            ) : isLoadingAvailability ? (
+            )}
+
+            {/* No Date Selected */}
+            {!selectedDate && !isLoadingAvailability && (
               <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-3"></div>
-                <p className="text-sm text-muted-foreground">
-                  Loading{" "}
-                  {selectedDoctor ? `Dr. ${selectedDoctor.lastName}'s` : ""}{" "}
-                  availability...
+                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground">
+                  Please select a date to view available times
                 </p>
               </div>
-            ) : availableSlots.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <AlertCircle className="h-12 w-12 mx-auto mb-3 opacity-50" />
-                <p className="text-sm">
-                  No available times for{" "}
-                  {selectedDoctor
-                    ? `Dr. ${selectedDoctor.lastName}`
-                    : "this doctor"}{" "}
-                  on this date
+            )}
+
+            {/* No Doctor Selected */}
+            {!bookingData.doctor && selectedDate && !isLoadingAvailability && (
+              <div className="text-center py-8">
+                <User className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground">
+                  Please select a doctor to view available times
                 </p>
-                <p className="text-xs mt-2">Please select a different date</p>
               </div>
-            ) : (
-              <div className="space-y-6">
-                {/* Morning Slots */}
+            )}
+
+            {/* Available Times */}
+            {selectedDate && 
+             bookingData.doctor && 
+             !isLoadingAvailability && 
+             !availabilityError && 
+             availableSlots.length > 0 && (
+              <div className="space-y-4">
+                {/* Morning */}
                 {morning.length > 0 && (
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground mb-3 block">
+                    <Label className="text-sm font-medium text-muted-foreground mb-2 block">
                       Morning
                     </Label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -277,27 +277,32 @@ export default function DateSelector({
                           variant={
                             bookingData.time === slot.time
                               ? "default"
-                              : "outline"
+                              : slot.available
+                                ? "outline"
+                                : "secondary"
                           }
                           size="sm"
                           disabled={!slot.available}
                           onClick={() => handleTimeSelect(slot.time)}
                           className={cn(
-                            "justify-center text-xs sm:text-sm h-8 sm:h-9",
-                            !slot.available && "opacity-50 cursor-not-allowed",
+                            "h-10 text-sm",
+                            bookingData.time === slot.time &&
+                              "bg-primary text-primary-foreground",
+                            !slot.available &&
+                              "opacity-50 cursor-not-allowed bg-muted",
                           )}
                         >
-                          {slot.label || formatTime(slot.time)}
+                          {formatTime(slot.time)}
                         </Button>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Afternoon Slots */}
+                {/* Afternoon */}
                 {afternoon.length > 0 && (
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground mb-3 block">
+                    <Label className="text-sm font-medium text-muted-foreground mb-2 block">
                       Afternoon
                     </Label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -307,27 +312,32 @@ export default function DateSelector({
                           variant={
                             bookingData.time === slot.time
                               ? "default"
-                              : "outline"
+                              : slot.available
+                                ? "outline"
+                                : "secondary"
                           }
                           size="sm"
                           disabled={!slot.available}
                           onClick={() => handleTimeSelect(slot.time)}
                           className={cn(
-                            "justify-center text-xs sm:text-sm h-8 sm:h-9",
-                            !slot.available && "opacity-50 cursor-not-allowed",
+                            "h-10 text-sm",
+                            bookingData.time === slot.time &&
+                              "bg-primary text-primary-foreground",
+                            !slot.available &&
+                              "opacity-50 cursor-not-allowed bg-muted",
                           )}
                         >
-                          {slot.label || formatTime(slot.time)}
+                          {formatTime(slot.time)}
                         </Button>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {/* Evening Slots */}
+                {/* Evening */}
                 {evening.length > 0 && (
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground mb-3 block">
+                    <Label className="text-sm font-medium text-muted-foreground mb-2 block">
                       Evening
                     </Label>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -337,17 +347,22 @@ export default function DateSelector({
                           variant={
                             bookingData.time === slot.time
                               ? "default"
-                              : "outline"
+                              : slot.available
+                                ? "outline"
+                                : "secondary"
                           }
                           size="sm"
                           disabled={!slot.available}
                           onClick={() => handleTimeSelect(slot.time)}
                           className={cn(
-                            "justify-center text-xs sm:text-sm h-8 sm:h-9",
-                            !slot.available && "opacity-50 cursor-not-allowed",
+                            "h-10 text-sm",
+                            bookingData.time === slot.time &&
+                              "bg-primary text-primary-foreground",
+                            !slot.available &&
+                              "opacity-50 cursor-not-allowed bg-muted",
                           )}
                         >
-                          {slot.label || formatTime(slot.time)}
+                          {formatTime(slot.time)}
                         </Button>
                       ))}
                     </div>
@@ -356,46 +371,37 @@ export default function DateSelector({
               </div>
             )}
 
-            {/* Selected Time Display */}
+            {/* No Available Times */}
+            {selectedDate && 
+             bookingData.doctor && 
+             !isLoadingAvailability && 
+             !availabilityError && 
+             availableSlots.length === 0 && (
+              <div className="text-center py-8">
+                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-muted-foreground">
+                  No available times for this date
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Please select a different date
+                </p>
+              </div>
+            )}
+
+            {/* Selected Time Info */}
             {bookingData.time && (
-              <div className="mt-4 p-3 bg-primary/10 rounded-lg border border-primary/20">
-                <div className="flex items-center gap-2">
-                  <Badge variant="secondary">Selected Time</Badge>
-                  <span className="font-medium">
-                    {formatTime(bookingData.time)}
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                <div className="flex items-center gap-2 text-green-800">
+                  <Clock className="h-4 w-4" />
+                  <span className="text-sm font-medium">
+                    Selected: {formatTime(bookingData.time)}
                   </span>
-                  {selectedDoctor && (
-                    <span className="text-sm text-muted-foreground ml-auto">
-                      with Dr. {selectedDoctor.lastName}
-                    </span>
-                  )}
                 </div>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Booking Guidelines */}
-      <Card className="bg-blue-50 border-blue-200">
-        <CardContent className="p-4">
-          <h4 className="text-sm font-medium text-blue-900 mb-2">
-            Booking Guidelines:
-          </h4>
-          <ul className="text-sm text-blue-800 space-y-1">
-            <li>• Appointments can be scheduled up to 3 months in advance</li>
-            <li>• Same-day appointments may be available for urgent needs</li>
-            <li>• Weekend appointments are currently not available</li>
-            <li>• You will receive a confirmation email once booked</li>
-            {selectedDoctor && (
-              <li>
-                • Dr. {selectedDoctor.lastName} specializes in{" "}
-                {selectedDoctor.specializations?.primary}
-              </li>
-            )}
-          </ul>
-        </CardContent>
-      </Card>
     </div>
   );
 }

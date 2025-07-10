@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { renderCalAge, renderDate } from "./FormUtils";
+import FormattedInput from "./FormattedInput";
 
 export function FormatLegend({ question }) {
   return (
@@ -52,53 +53,26 @@ export function RenderQuesFuncs({
   return (
     <fieldset key={question.id} className={commonFieldsetClasses}>
       <FormatLegend question={question} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+      <div className="grid gap-4">
         {question.fields.map((field) => {
-          const isReq = !!field.required;
           const value = formData[field.id] || "";
+          const isReq = !!field.required;
+
+          // Determine if this field should use formatted input
+          const isPhoneField = field.type === "tel" || 
+                              field.id.toLowerCase().includes("phone") ||
+                              field.placeholder?.includes("(") && field.placeholder?.includes(")");
+          const isSSNField = field.id === "ssn" || 
+                           field.id.toLowerCase().includes("ssn") ||
+                           field.placeholder?.includes("-") && field.placeholder?.length <= 12;
 
           return (
-            <div key={field.id} className="min-h-[100px]">
-              <div className="flex items-center gap-1">
-                <Label htmlFor={field.id}>
-                  {field.label}
-                  {isReq && <span className="ml-1 text-red-500">*</span>}
-                </Label>
-                {field.extra_info && (
-                  <HoverCard>
-                    <HoverCardTrigger asChild>
-                      <Info
-                        size={14}
-                        className="text-muted-foreground cursor-pointer"
-                      />
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-72 text-sm">
-                      {field.extra_info}
-                    </HoverCardContent>
-                  </HoverCard>
-                )}
-              </div>
+            <div key={field.id}>
+              <Label htmlFor={field.id} className="text-sm font-medium">
+                {field.label} {isReq && <span className="text-red-500">*</span>}
+              </Label>
 
-              {field.type === "radio" ? (
-                <Select
-                  value={value}
-                  onValueChange={(val) =>
-                    setFormData((p) => ({ ...p, [field.id]: val }))
-                  }
-                  required={isReq}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder={`Select ${field.label}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {field.options.map((opt) => (
-                      <SelectItem key={opt} value={opt}>
-                        {opt}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : field.type === "date" ? (
+              {field.type === "date" ? (
                 <Popover>
                   <PopoverTrigger asChild>
                     <Input
@@ -152,6 +126,30 @@ export function RenderQuesFuncs({
                     />
                   </PopoverContent>
                 </Popover>
+              ) : isPhoneField ? (
+                <FormattedInput
+                  type="phone"
+                  id={field.id}
+                  placeholder={field.placeholder}
+                  value={value}
+                  onChange={(value) =>
+                    setFormData((p) => ({ ...p, [field.id]: value }))
+                  }
+                  required={isReq}
+                  className={errors[field.id] ? "border-red-500" : ""}
+                />
+              ) : isSSNField ? (
+                <FormattedInput
+                  type="ssn"
+                  id={field.id}
+                  placeholder={field.placeholder}
+                  value={value}
+                  onChange={(value) =>
+                    setFormData((p) => ({ ...p, [field.id]: value }))
+                  }
+                  required={isReq}
+                  className={errors[field.id] ? "border-red-500" : ""}
+                />
               ) : (
                 <Input
                   id={field.id}

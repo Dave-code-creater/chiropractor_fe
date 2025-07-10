@@ -97,8 +97,8 @@ export const startPeriodicTokenCheck = (api) => {
   // Check every 5 minutes
   tokenCheckInterval = setInterval(async () => {
     try {
-      // Don't check if user is logging out
-      if (isLoggingOut) {
+      // Don't check if user is logging out or app is not ready
+      if (isLoggingOut || !api?.getState) {
         return;
       }
 

@@ -1,6 +1,7 @@
 import * as React from "react";
 
-const MOBILE_BREAKPOINT = 768;
+const MOBILE_BREAKPOINT = 768; // sm breakpoint in Tailwind
+const TABLET_BREAKPOINT = 1024; // lg breakpoint in Tailwind
 
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
@@ -18,4 +19,22 @@ export function useIsMobile() {
   }, []);
 
   return !!isMobile;
+}
+
+export function useIsTablet() {
+  const [isTablet, setIsTablet] = React.useState<boolean | undefined>(
+    undefined,
+  );
+
+  React.useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${TABLET_BREAKPOINT - 1}px)`);
+    const onChange = () => {
+      setIsTablet(window.innerWidth < TABLET_BREAKPOINT);
+    };
+    mql.addEventListener("change", onChange);
+    setIsTablet(window.innerWidth < TABLET_BREAKPOINT);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
+
+  return !!isTablet;
 }

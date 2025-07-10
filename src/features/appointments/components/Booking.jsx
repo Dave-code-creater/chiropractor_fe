@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   useCreateAppointmentMutation,
   useGetDoctorsQuery,
-} from "@/services/appointmentApi";
+} from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import LocationSelector from "./Location";
@@ -38,7 +38,7 @@ export default function DoctorBooking() {
     isLoading: doctorsLoading,
     isError: doctorsError,
     error: doctorsErrorDetails,
-  } = useGetDoctorsQuery({ is_available: true });
+  } = useGetDoctorsQuery();
 
 
 
@@ -155,37 +155,28 @@ export default function DoctorBooking() {
       // Get selected location details
       const selectedLocation = getLocationByValue(bookingData.location) || DEFAULT_CLINIC_LOCATION;
       
-      // Format date to match backend expectation: "Thursday, June 26, 2025"
-      const formattedDate = bookingData.date.toLocaleDateString("en-US", {
-        weekday: "long",
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
+      // Format date to ISO date string (YYYY-MM-DD)
+      const formattedDate = bookingData.date.toISOString().split('T')[0];
       
-      // Format time to match backend expectation: "11:30 AM"
-      const [hours, minutes] = bookingData.time.split(":");
-      const hour = parseInt(hours);
-      const ampm = hour >= 12 ? "PM" : "AM";
-      const displayHour = hour % 12 || 12;
-      const formattedTime = `${displayHour}:${minutes} ${ampm}`;
+      // Use time as is (24-hour format HH:MM from time input)
+      const formattedTime = bookingData.time;
       
-      // Format the appointment data according to backend specification
+      // Format the appointment data to match backend expectation (same as staff/doctor components)
       const appointmentData = {
         doctor_id: bookingData.doctor,
-        date: formattedDate,
-        time: formattedTime,
+        appointment_date: formattedDate,
+        appointment_time: formattedTime,
         reason_for_visit: bookingData.reason || "Chiropractic consultation",
         additional_notes: bookingData.notes || "",
-        duration: 30,
+        duration_minutes: 30,
+        type: "consultation",
+        status: "pending",
         // Include location information
         location: selectedLocation.label,
         clinic_address: selectedLocation.address,
         clinic_phone: selectedLocation.phone,
         clinic_hours: selectedLocation.hours,
       };
-
-      
 
       const result = await createAppointment(appointmentData).unwrap();
 
@@ -207,20 +198,11 @@ export default function DoctorBooking() {
 
       // Handle specific API errors
       if (error.status === 409) {
-        toast.error(
-          "This time slot is no longer available. Please select a different time.",
-        );
-      } else if (error.status === 404) {
-        toast.error("Doctor not found. Please select a different doctor.");
+        toast.error("This time slot is already booked. Please select a different time.");
       } else if (error.status === 400) {
-        const errorDetails = error.data?.error?.details;
-        if (Array.isArray(errorDetails)) {
-          errorDetails.forEach((detail) => {
-            toast.error(`${detail.field}: ${detail.message}`);
-          });
-        } else {
-          toast.error(error.data?.message || "Invalid appointment data");
-        }
+        toast.error("Invalid appointment data. Please check your selections.");
+      } else if (error.status === 401) {
+        toast.error("Please log in to book an appointment.");
       } else {
         toast.error("Failed to book appointment. Please try again.");
       }
@@ -234,62 +216,55 @@ export default function DoctorBooking() {
       case "doctor":
         return !!bookingData.doctor;
       case "location":
-        return !!bookingData.location;
+        return !!bookingData.doctor && !!bookingData.location;
       case "date":
-        return !!bookingData.date && !!bookingData.time;
+        return !!bookingData.doctor && !!bookingData.location && !!bookingData.date && !!bookingData.time;
       default:
         return false;
     }
   };
 
   const canProceedToSummary = () => {
-    return (
-      bookingData.doctor &&
-      bookingData.location &&
-      bookingData.date &&
-      bookingData.time
-    );
+    return isStepComplete("date");
   };
 
   const getSelectedDoctor = () => {
-    // Ensure doctors is an array before calling find
-    if (!Array.isArray(doctors) || doctors.length === 0) {
-      return null;
-    }
     return doctors.find((doc) => doc.id === bookingData.doctor) || null;
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="grid lg:grid-cols-3 gap-6">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Left: Form Steps */}
         <div className="lg:col-span-2">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid grid-cols-4 mb-6 w-full">
+            <TabsList className="grid grid-cols-4 mb-4 sm:mb-6 w-full h-auto">
               <TabsTrigger
                 value="doctor"
                 className={cn(
-                  "text-xs sm:text-sm",
+                  "text-xs sm:text-sm py-2 px-1 sm:px-2",
                   isStepComplete("doctor") ? "bg-primary/10 text-primary" : ""
                 )}
               >
-                Doctor
+                <span className="hidden sm:inline">Doctor</span>
+                <span className="sm:hidden">Dr.</span>
               </TabsTrigger>
               <TabsTrigger
                 value="location"
                 disabled={!isStepComplete("doctor")}
                 className={cn(
-                  "text-xs sm:text-sm",
+                  "text-xs sm:text-sm py-2 px-1 sm:px-2",
                   isStepComplete("location") ? "bg-primary/10 text-primary" : ""
                 )}
               >
-                Location
+                <span className="hidden sm:inline">Location</span>
+                <span className="sm:hidden">Loc.</span>
               </TabsTrigger>
               <TabsTrigger
                 value="date"
                 disabled={!isStepComplete("location")}
                 className={cn(
-                  "text-xs sm:text-sm",
+                  "text-xs sm:text-sm py-2 px-1 sm:px-2",
                   isStepComplete("date") ? "bg-primary/10 text-primary" : ""
                 )}
               >
@@ -299,91 +274,92 @@ export default function DoctorBooking() {
               <TabsTrigger 
                 value="summary" 
                 disabled={!canProceedToSummary()}
-                className="text-xs sm:text-sm"
+                className="text-xs sm:text-sm py-2 px-1 sm:px-2"
               >
-                Summary
+                <span className="hidden sm:inline">Summary</span>
+                <span className="sm:hidden">Sum.</span>
               </TabsTrigger>
             </TabsList>
 
-                      <TabsContent value="doctor">
-            <DoctorSelector
-              bookingData={bookingData}
-              updateBookingData={updateBookingData}
-              doctors={doctors}
-              isLoading={doctorsLoading}
-              isError={doctorsError}
-              error={doctorsErrorDetails}
-            />
-            
-            {/* Mobile Progress Summary */}
-            <div className="lg:hidden mt-6">
-              <Card className="bg-primary/5 border-primary/20">
-                <CardContent className="p-4">
-                  <div className="text-sm">
-                    <div className="font-medium mb-2">Progress Summary:</div>
-                    <BookingSummary bookingData={bookingData} doctors={doctors} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+            <TabsContent value="doctor">
+              <DoctorSelector
+                bookingData={bookingData}
+                updateBookingData={updateBookingData}
+                doctors={doctors}
+                isLoading={doctorsLoading}
+                isError={doctorsError}
+                error={doctorsErrorDetails}
+              />
+              
+              {/* Mobile Progress Summary */}
+              <div className="lg:hidden mt-4 sm:mt-6">
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="text-xs sm:text-sm">
+                      <div className="font-medium mb-2">Progress Summary:</div>
+                      <BookingSummary bookingData={bookingData} doctors={doctors} />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
-                      <TabsContent value="location">
-            <LocationSelector
-              bookingData={bookingData}
-              updateBookingData={updateBookingData}
-              selectedDoctor={getSelectedDoctor()}
-            />
-            
-            {/* Mobile Progress Summary */}
-            <div className="lg:hidden mt-6">
-              <Card className="bg-primary/5 border-primary/20">
-                <CardContent className="p-4">
-                  <div className="text-sm">
-                    <div className="font-medium mb-2">Progress Summary:</div>
-                    <BookingSummary bookingData={bookingData} doctors={doctors} />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+            <TabsContent value="location">
+              <LocationSelector
+                bookingData={bookingData}
+                updateBookingData={updateBookingData}
+                selectedDoctor={getSelectedDoctor()}
+              />
+              
+              {/* Mobile Progress Summary */}
+              <div className="lg:hidden mt-4 sm:mt-6">
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="text-xs sm:text-sm">
+                      <div className="font-medium mb-2">Progress Summary:</div>
+                      <BookingSummary bookingData={bookingData} doctors={doctors} />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
-          <TabsContent value="date">
-            <DateSelector
-              bookingData={bookingData}
-              updateBookingData={updateBookingData}
-              selectedDoctor={getSelectedDoctor()}
-            />
-            
-            {/* Mobile Progress Summary */}
-            <div className="lg:hidden mt-6">
-              <Card className="bg-primary/5 border-primary/20">
-                <CardContent className="p-4">
-                  <div className="text-sm">
-                    <div className="font-medium mb-2">Progress Summary:</div>
-                    <BookingSummary bookingData={bookingData} doctors={doctors} />
-                    
-                    {canProceedToSummary() && (
-                      <Button
-                        onClick={() => setActiveTab("summary")}
-                        className="w-full mt-3"
-                        size="sm"
-                      >
-                        Continue to Summary
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </TabsContent>
+            <TabsContent value="date">
+              <DateSelector
+                bookingData={bookingData}
+                updateBookingData={updateBookingData}
+                selectedDoctor={getSelectedDoctor()}
+              />
+              
+              {/* Mobile Progress Summary */}
+              <div className="lg:hidden mt-4 sm:mt-6">
+                <Card className="bg-primary/5 border-primary/20">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="text-xs sm:text-sm">
+                      <div className="font-medium mb-2">Progress Summary:</div>
+                      <BookingSummary bookingData={bookingData} doctors={doctors} />
+                      
+                      {canProceedToSummary() && (
+                        <Button
+                          onClick={() => setActiveTab("summary")}
+                          className="w-full mt-3"
+                          size="sm"
+                        >
+                          Continue to Summary
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
 
             <TabsContent value="summary">
               <Card>
                 <CardHeader>
-                  <CardTitle>Confirm Your Appointment</CardTitle>
+                  <CardTitle className="text-lg sm:text-xl">Confirm Your Appointment</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4 sm:space-y-6">
                   <BookingSummary bookingData={bookingData} doctors={doctors} />
 
                   {/* Additional Notes */}
@@ -392,7 +368,7 @@ export default function DoctorBooking() {
                       Additional Notes (Optional)
                     </label>
                     <textarea
-                      className="w-full p-3 border rounded-lg resize-none"
+                      className="w-full p-3 border rounded-lg resize-none text-sm"
                       rows={3}
                       placeholder="Any specific concerns or requests..."
                       value={bookingData.notes}
@@ -409,7 +385,7 @@ export default function DoctorBooking() {
                     </label>
                     <input
                       type="text"
-                      className="w-full p-3 border rounded-lg"
+                      className="w-full p-3 border rounded-lg text-sm"
                       placeholder="e.g., Lower back pain, routine check-up..."
                       value={bookingData.reason}
                       onChange={(e) =>
@@ -418,49 +394,49 @@ export default function DoctorBooking() {
                     />
                   </div>
 
-                                  {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                  <Button
-                    variant="outline"
-                    onClick={() => setActiveTab("date")}
-                    className="flex-1 order-2 sm:order-1"
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting || !canProceedToSummary()}
-                    className="flex-1 order-1 sm:order-2"
-                  >
-                    {isSubmitting ? "Booking..." : "Confirm Appointment"}
-                  </Button>
-                </div>
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setActiveTab("date")}
+                      className="flex-1 order-2 sm:order-1"
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={isSubmitting || !canProceedToSummary()}
+                      className="flex-1 order-1 sm:order-2"
+                    >
+                      {isSubmitting ? "Booking..." : "Confirm Appointment"}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
         </div>
 
-              {/* Right: Booking Summary Sidebar - Only show on large screens */}
-      <div className="hidden lg:block">
-        <Card className="sticky top-6">
-          <CardHeader>
-            <CardTitle className="text-lg">Booking Summary</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <BookingSummary bookingData={bookingData} doctors={doctors} />
+        {/* Right: Booking Summary Sidebar - Only show on large screens */}
+        <div className="hidden lg:block">
+          <Card className="sticky top-6">
+            <CardHeader>
+              <CardTitle className="text-lg">Booking Summary</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <BookingSummary bookingData={bookingData} doctors={doctors} />
 
-            {canProceedToSummary() && activeTab !== "summary" && (
-              <Button
-                onClick={() => setActiveTab("summary")}
-                className="w-full"
-              >
-                Review & Book
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+              {canProceedToSummary() && activeTab !== "summary" && (
+                <Button
+                  onClick={() => setActiveTab("summary")}
+                  className="w-full"
+                >
+                  Review & Book
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );

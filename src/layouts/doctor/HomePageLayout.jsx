@@ -1,7 +1,8 @@
 import { Outlet } from "react-router-dom";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SiteHeader } from "@/components/site-header";
-import { AppSidebar } from "@/components/app-sidebar";
+import AppSidebar from "@/components/sidebar/Sidebar";
+import Footer from "@/layouts/Footer";
 
 export default function DoctorHomePageLayout() {
   return (
@@ -14,6 +15,7 @@ export default function DoctorHomePageLayout() {
             <Outlet />
           </div>
         </div>
+        <Footer />
       </SidebarInset>
     </SidebarProvider>
   );

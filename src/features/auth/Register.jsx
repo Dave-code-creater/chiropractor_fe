@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useRegisterMutation } from "../../services/authApi";
+import { useRegisterMutation } from "../../api/services/authApi";
 import { useNavigate } from "react-router-dom";
+import FormattedInput from "../../components/forms/FormattedInput";
+import PasswordInput from "../../components/forms/PasswordInput";
 import {
   renderPhoneNumber,
   renderGmailExprs,
@@ -49,10 +51,9 @@ export default function Register() {
     useRegisterMutation();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && userID && role) {
       // After successful registration, navigate to the appropriate dashboard
-      const path =
-        role === "admin" ? `/admin/${userID}` : `/dashboard/${userID}`;
+      const path = `/dashboard/${role.toLowerCase()}/${userID}`;
       navigate(path);
     }
   }, [isAuthenticated, navigate, role, userID]);
@@ -164,13 +165,11 @@ export default function Register() {
               <label htmlFor="phone" className="text-sm block mb-1">
                 Phone Number
               </label>
-              <input
-                type="text"
+              <FormattedInput
+                type="phone"
                 id="phone"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                onBlur={handlePhoneBlur}
-                placeholder="123-456-7890"
+                onChange={setPhone}
                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -198,36 +197,32 @@ export default function Register() {
               <label htmlFor="password" className="text-sm block mb-1">
                 Password
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={handlePwBlur}
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-              {pwError && <p className="text-red-500">{pwError}</p>}
+              {pwError && <p style={{ color: "red" }}>{pwError}</p>}
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="text-sm block mb-1">
                 Confirm Password
               </label>
-              <input
-                type="password"
+              <PasswordInput
                 id="confirmPassword"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 onBlur={handleConfirmPwBlur}
-                placeholder="••••••••"
+                placeholder="Confirm your password"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-              {confirmpwError && (
-                <p className="text-red-500">{confirmpwError}</p>
-              )}
+              {confirmpwError && <p style={{ color: "red" }}>{confirmpwError}</p>}
             </div>
 
             <div className="col-span-1 sm:col-span-2">

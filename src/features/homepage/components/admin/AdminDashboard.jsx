@@ -6,7 +6,7 @@ import { Users, FileText } from "lucide-react";
 import RecentChatMessages from "@/components/dashboard/RecentChatMessages";
 
 import ScheduleGrid from "./ScheduleGrid";
-import { useGetAppointmentsQuery } from "@/services/appointmentApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 
 export default function AdminDashboard() {
   const [currentHour, setCurrentHour] = useState("");

@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
+import FormattedInput from "../components/forms/FormattedInput";
 import callCenter from "../assets/images/call-center.jpg";
 
 export default function Contact() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+
   return (
     <section className="py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -14,17 +20,24 @@ export default function Contact() {
               type="text"
               className="w-full h-12 text-gray-600 placeholder-gray-400  shadow-sm bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-10"
               placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
             />
             <input
               type="text"
               className="w-full h-12 text-gray-600 placeholder-gray-400 shadow-sm bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-10"
               placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
             />
-            <input
-              type="text"
-              className="w-full h-12 text-gray-600 placeholder-gray-400 shadow-sm bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-10"
-              placeholder="Phone"
-            />
+            <div className="mb-10">
+              <FormattedInput
+                type="phone"
+                value={phone}
+                onChange={setPhone}
+                className="w-full h-12 text-gray-600 placeholder-gray-400 shadow-sm bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4"
+              />
+            </div>
             <div className="mb-10">
               <h4 className="text-gray-500 text-lg font-normal leading-7 mb-4">
                 Preferred method of communication
@@ -66,6 +79,8 @@ export default function Contact() {
               type="text"
               className="w-full h-12 text-gray-600 placeholder-gray-400 bg-transparent text-lg shadow-sm font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-10"
               placeholder="Message"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
             />
             <button className="w-full h-12 text-white text-base font-semibold leading-6 rounded-full transition-all duration-700 hover:bg-indigo-800 bg-indigo-600 shadow-sm">
               Send

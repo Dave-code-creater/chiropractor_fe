@@ -1,6 +1,6 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth, CACHE_TIMES } from "./baseApi";
-import { cacheUtils } from "../utils/cache";
+import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
+import { cacheUtils } from "../../utils/cache";
 
 export const appointmentApi = createApi({
   reducerPath: "appointmentApi",

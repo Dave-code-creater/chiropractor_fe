@@ -4,12 +4,11 @@ import { toast } from "sonner";
 import {
   useGetAvailableUsersQuery,
   useGetConversationsQuery,
-  useGetMessagesQuery,
   useSendMessageMutation,
   useCreateConversationMutation,
   useUpdateConversationStatusMutation,
   useDeleteConversationMutation,
-} from "@/services/chatApi";
+} from "@/api/services/chatApi";
 import {
   CHAT_ROLES,
   CONVERSATION_TYPES,
@@ -192,7 +191,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     error: usersError 
   } = useGetAvailableUsersQuery({ 
     search: debouncedSearchTerm,
-    role: roleFilter,
+    role: roleFilter === 'all' ? undefined : roleFilter, // Don't send 'all' to API
     limit: 50 
   }, {
     skip: !isOpen, // Only fetch when modal is open
@@ -201,7 +200,20 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     refetchOnReconnect: false, // Prevent refetch on reconnect
   });
 
-  const availableUsers = useMemo(() => extractDataFromResponse(availableUsersData), [availableUsersData]);
+  const availableUsers = useMemo(() => {
+    const users = extractDataFromResponse(availableUsersData);
+    
+    // Filter users based on current user's role restrictions
+    if (currentUserRole === 'patient') {
+      // Patients can only see doctors, staff, and admins
+      return users.filter(user => {
+        const userRole = user.role || user.type;
+        return ['doctor', 'staff', 'admin'].includes(userRole?.toLowerCase());
+      });
+    }
+    
+    return users;
+  }, [availableUsersData, currentUserRole]);
 
   const updateFormData = (updates) => {
     setFormData(prev => ({ ...prev, ...updates }));
@@ -221,27 +233,42 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   };
 
   const handleSubmit = () => {
+
     // Validate form data
     const validation = validateConversationData(formData);
+    
     if (!validation.isValid) {
+      console.log('❌ Validation failed:', validation.errorMessage);
       toast.error(validation.errorMessage);
       return;
     }
 
     // Find selected user to validate role restrictions
     const selectedUser = availableUsers.find(user => user.id.toString() === formData.target_user_id.toString());
+    console.log('🎯 Selected User:', selectedUser);
+    
     if (!selectedUser) {
+      console.log('❌ No valid user selected');
       toast.error("Please select a valid user");
       return;
     }
 
+    // Get the target user's role (handle both 'role' and 'type' properties)
+    const targetUserRole = selectedUser.role || selectedUser.type;
+    console.log('🎭 Target User Role:', targetUserRole, 'from properties:', { role: selectedUser.role, type: selectedUser.type });
+
     // Client-side role validation (redundant with server-side but provides better UX)
-    if (!canStartConversation(currentUserRole, selectedUser.role)) {
-      const errorMessage = getRoleRestrictionError(currentUserRole, selectedUser.role);
+    const canStart = canStartConversation(currentUserRole, targetUserRole);
+    console.log('🔐 Can start conversation:', canStart);
+    
+    if (!canStart) {
+      const errorMessage = getRoleRestrictionError(currentUserRole, targetUserRole);
+      console.log('❌ Role restriction:', errorMessage);
       toast.error(errorMessage);
       return;
     }
 
+    console.log('✅ All validations passed, calling onSubmit');
     onSubmit(formData);
     resetForm();
   };
@@ -396,8 +423,8 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
                           {user.full_name || user.username}
                         </div>
                                                  <div className="text-xs text-muted-foreground truncate flex items-center gap-1">
-                           {getRoleIconComponent(user.role)}
-                           {getRoleDisplayName(user.role)}
+                           {getRoleIconComponent(user.role || user.type)}
+                           {getRoleDisplayName(user.role || user.type)}
                            {user.email && ` • ${user.email}`}
                         </div>
                       </div>
@@ -420,11 +447,11 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
                      {selectedUser && (
              <div className="p-3 bg-muted/50 rounded-lg">
                <div className="flex items-center gap-2 text-sm">
-                 {getRoleIconComponent(selectedUser.role)}
+                 {getRoleIconComponent(selectedUser.role || selectedUser.type)}
                  <span className="font-medium">Selected:</span>
                  <span>{selectedUser.full_name || selectedUser.username}</span>
                  <Badge variant="secondary" className="ml-auto">
-                   {getRoleDisplayName(selectedUser.role)}
+                   {getRoleDisplayName(selectedUser.role || selectedUser.type)}
                  </Badge>
                </div>
              </div>
@@ -511,6 +538,14 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
               onClick={handleSubmit} 
               disabled={isCreating || !formData.target_user_id || !formData.subject}
               className="flex-1"
+              onMouseEnter={() => {
+                console.log('🔍 Button hover - disabled state:', {
+                  isCreating,
+                  noTargetUser: !formData.target_user_id,
+                  noSubject: !formData.subject,
+                  totalDisabled: isCreating || !formData.target_user_id || !formData.subject
+                });
+              }}
             >
               {isCreating ? "Creating..." : "Start Conversation"}
             </Button>
@@ -549,8 +584,8 @@ export default function NewChat() {
     data: messagesData, 
     isLoading: messagesLoading, 
     refetch: refetchMessages 
-  } = useGetMessagesQuery(
-    { conversationId: selectedConversation?.id },
+  } = useGetConversationsQuery(
+    selectedConversation?.conversation_id ? { conversationId: selectedConversation.conversation_id } : undefined,
     { skip: !selectedConversation?.id }
   );
 
@@ -601,13 +636,19 @@ export default function NewChat() {
   };
 
   const handleCreateConversation = async (formData) => {
+    console.log('🌐 Creating conversation with data:', formData);
+    console.log('🔗 Backend available:', isBackendAvailable);
+    
     if (!isBackendAvailable) {
+      console.log('❌ Backend not available');
       toast.error("Chat service is currently unavailable.");
       return;
     }
 
     try {
+      console.log('📡 Making API call to create conversation...');
       const result = await createConversation(formData).unwrap();
+      console.log('✅ API call successful:', result);
       
       toast.success("Conversation created successfully!");
       setShowNewConversationModal(false);
@@ -619,6 +660,8 @@ export default function NewChat() {
       } else if (result) {
         newConversation = result;
       }
+      console.log('💬 New conversation object:', result);
+      console.log('💬 New conversation object:', newConversation);
       
       // Set as selected conversation if we have valid data
       if (newConversation?.id) {
@@ -629,7 +672,12 @@ export default function NewChat() {
       await refetchConversations();
       
     } catch (error) {
-      console.error('Failed to create conversation:', error);
+      console.error('❌ Failed to create conversation:', error);
+      console.error('📋 Error details:', {
+        status: error?.status,
+        data: error?.data,
+        message: error?.message
+      });
       
       // Handle specific role-based errors
       if (error?.data?.error_code === '4031') {
@@ -677,12 +725,16 @@ export default function NewChat() {
     }
   };
 
-  // Filter conversations based on search term
+  // Filter conversations based on search term and status
   const filteredConversations = useMemo(() => {
-    if (!searchTerm.trim()) return conversations;
+    // First filter by status - only show active conversations
+    const activeConversations = conversations.filter(conv => conv.status === 'active');
+    
+    // Then filter by search term if provided
+    if (!searchTerm.trim()) return activeConversations;
     
     const searchLower = searchTerm.toLowerCase();
-    return conversations.filter(conv => 
+    return activeConversations.filter(conv => 
       conv.subject?.toLowerCase().includes(searchLower) ||
       conv.patient_name?.toLowerCase().includes(searchLower) ||
       conv.doctor_name?.toLowerCase().includes(searchLower) ||
@@ -703,10 +755,11 @@ export default function NewChat() {
     
     if (isCurrentUserPatient) {
       // Current user is patient, show doctor info
-      const doctorName = conversation.doctor_name || 
-                        (conversation.doctor_first_name && conversation.doctor_last_name 
-                          ? `${conversation.doctor_first_name} ${conversation.doctor_last_name}` 
-                          : "Healthcare Provider");
+      let doctorName = conversation.doctor_name || "Healthcare Provider";
+
+      // Remove 'null' or 'undefined' from the name string
+      doctorName = doctorName.replace(/\b(null|undefined)\b/gi, '').replace(/ +/g, ' ').trim();
+      if (!doctorName) doctorName = "Healthcare Provider";
 
       return {
         name: doctorName,
@@ -715,10 +768,20 @@ export default function NewChat() {
       };
     } else {
       // Current user is doctor/staff/admin, show patient info
-      const patientName = conversation.patient_name || 
-                         (conversation.patient_first_name && conversation.patient_last_name 
-                           ? `${conversation.patient_first_name} ${conversation.patient_last_name}` 
-                           : "Patient");
+      let patientName =
+        conversation.patient_name ||
+        conversation.full_name ||
+        ((conversation.patient_first_name && conversation.patient_last_name)
+          ? `${conversation.patient_first_name} ${conversation.patient_last_name}`
+          : null) ||
+        ((conversation.first_name && conversation.last_name)
+          ? `${conversation.first_name} ${conversation.last_name}`
+          : null) ||
+        conversation.username ||
+        "Patient";
+
+      patientName = patientName.replace(/\b(null|undefined)\b/gi, '').replace(/ +/g, ' ').trim();
+      if (!patientName) patientName = "Patient";
 
       return {
         name: patientName,

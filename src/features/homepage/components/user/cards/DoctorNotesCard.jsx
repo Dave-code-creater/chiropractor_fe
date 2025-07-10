@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { NotebookPen, AlertCircle, Eye } from "lucide-react";
+import { ClipboardCheck, AlertCircle, Eye } from "lucide-react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -17,25 +17,26 @@ export default function DoctorNotesCard() {
 
   // Instead, show a placeholder message
   return (
-    <Card className="w-full h-full border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <NotebookPen className="w-4 h-4 text-primary" />
+    <Card className="w-full h-[400px] border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm flex flex-col">
+      <CardHeader className="pb-3 flex-shrink-0">
+        <CardTitle className="text-sm sm:text-base font-semibold text-foreground flex items-center gap-2">
+          <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+            <ClipboardCheck className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
           </div>
-          Doctor Notes
+          <span className="hidden sm:inline">Doctor Notes & Treatment Plans</span>
+          <span className="sm:hidden">Doctor Notes</span>
         </CardTitle>
       </CardHeader>
-      <ScrollArea className="max-h-[300px] h-full">
-        <CardContent className="h-full flex flex-col items-center justify-center text-center py-12">
-          <div className="p-4 rounded-full bg-muted/50 mb-4">
-            <NotebookPen className="w-8 h-8 text-muted-foreground" />
+      <ScrollArea className="flex-1">
+        <CardContent className="p-3 sm:p-6 flex flex-col items-center justify-center text-center py-8 sm:py-12">
+          <div className="p-3 sm:p-4 rounded-full bg-muted/50 mb-3 sm:mb-4">
+            <ClipboardCheck className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
           </div>
-          <p className="text-sm text-muted-foreground">
-            Doctor notes are not available in this build.
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            No doctor notes available yet.
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            This section will show recent notes from your healthcare team in the future.
+            Doctor notes and treatment plans will appear here after your appointments.
           </p>
         </CardContent>
       </ScrollArea>

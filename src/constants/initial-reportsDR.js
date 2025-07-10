@@ -23,7 +23,7 @@ const PATIENT_INFO_DR = [
           { id: "lastName", label: "Last", type: "text", placeholder: "Doe" },
         ],
       },
-      { id: "ssn", label: "SSN", type: "text", placeholder: "123-45-6789" },
+      { id: "ssn", label: "SSN", type: "ssn", placeholder: "123-45-6789" },
       {
         id: "dobGender",
         label: "Date of Birth, Age & Gender",

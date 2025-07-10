@@ -4,31 +4,6 @@ import { createSelector } from "@reduxjs/toolkit";
 // Base selector
 const selectAuth = (state) => state.auth;
 
-// Memoized selectors
-export const selectCurrentUser = createSelector(
-  [selectAuth],
-  (auth) => ({
-    name: auth.username,
-    email: auth.email,
-    role: auth.role
-  })
-);
-
-export const selectUserId = createSelector(
-  [selectAuth],
-  (auth) => auth.userID
-);
-
-export const selectUserRole = createSelector(
-  [selectAuth],
-  (auth) => auth.role
-);
-
-export const selectIsAuthenticated = createSelector(
-  [selectAuth],
-  (auth) => auth.isAuthenticated
-);
-
 const initialState = {
   // Authentication tokens
   accessToken: null,
@@ -37,11 +12,32 @@ const initialState = {
   loading: false,
   error: null,
   
-  // Minimal user identity for quick access (no duplication)
+  // Complete user data (consolidated from entities.user)
   userID: null,
   role: null,
   email: null,
-  username: null
+  username: null,
+  
+  // User profile data
+  profile: {
+    firstName: null,
+    lastName: null,
+    fullName: null,
+    dateOfBirth: null,
+    gender: null,
+    marriageStatus: null,
+    race: null,
+    phoneNumber: null,
+    isVerified: false,
+    phoneVerified: false,
+  },
+  
+  // User preferences
+  preferences: {
+    theme: "light",
+    notifications: true,
+    language: "en",
+  },
 };
 
 const authSlice = createSlice({
@@ -61,7 +57,27 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.loading = false;
         state.error = null;
+        
+        // Update profile data if available
+        if (user.first_name) state.profile.firstName = user.first_name;
+        if (user.last_name) state.profile.lastName = user.last_name;
+        if (user.full_name) state.profile.fullName = user.full_name;
+        if (user.phone_number) state.profile.phoneNumber = user.phone_number;
+        if (user.date_of_birth) state.profile.dateOfBirth = user.date_of_birth;
+        if (user.gender) state.profile.gender = user.gender;
+        if (user.marriage_status) state.profile.marriageStatus = user.marriage_status;
+        if (user.race) state.profile.race = user.race;
+        if (user.is_verified !== undefined) state.profile.isVerified = user.is_verified;
+        if (user.phone_verified !== undefined) state.profile.phoneVerified = user.phone_verified;
       }
+    },
+
+    updateUserProfile: (state, action) => {
+      state.profile = { ...state.profile, ...action.payload };
+    },
+
+    updateUserPreferences: (state, action) => {
+      state.preferences = { ...state.preferences, ...action.payload };
     },
 
     updateAuthIdentity: (state, action) => {
@@ -119,112 +135,149 @@ const authSlice = createSlice({
 
 export const {
   setCredentials,
+  updateUserProfile,
+  updateUserPreferences,
   updateAuthIdentity,
   logOut,
   clearError,
   setLoading,
 } = authSlice.actions;
 
-// Auth-focused selectors (minimal data only)
-export const selectAuthLoading = (state) => state?.auth?.loading ?? false;
-export const selectAuthError = (state) => state?.auth?.error ?? null;
+// Memoized selectors
+export const selectCurrentUser = createSelector(
+  [selectAuth],
+  (auth) => ({
+    id: auth.userID,
+    name: auth.username,
+    email: auth.email,
+    role: auth.role,
+    firstName: auth.profile.firstName,
+    lastName: auth.profile.lastName,
+    fullName: auth.profile.fullName,
+    phoneNumber: auth.profile.phoneNumber,
+  })
+);
 
-// Combined selectors that access both auth and user entities
-export const selectUserProfile = (state) => 
-  state?.entities?.user?.profile ?? null;
+export const selectUserId = createSelector(
+  [selectAuth],
+  (auth) => auth.userID
+);
 
-export const selectUserDetails = (state) => 
-  state?.entities?.user?.details ?? null;
+export const selectUserRole = createSelector(
+  [selectAuth],
+  (auth) => auth.role
+);
 
-export const selectUserPreferences = (state) => 
-  state?.entities?.user?.preferences ?? { theme: "light", notifications: true, language: "en" };
+export const selectIsAuthenticated = createSelector(
+  [selectAuth],
+  (auth) => auth.isAuthenticated
+);
 
-// Enhanced display name selector using combined data
-export const selectUserDisplayName = (state) => {
-  const role = state?.auth?.role;
-  const profile = state?.entities?.user?.profile;
-  const details = state?.entities?.user?.details;
-  const authEmail = state?.auth?.email;
-  const authUsername = state?.auth?.username;
+export const selectUserProfile = createSelector(
+  [selectAuth],
+  (auth) => auth.profile
+);
 
-  if (!role) return "Welcome Back";
+export const selectUserPreferences = createSelector(
+  [selectAuth],
+  (auth) => auth.preferences
+);
 
-  // Check profile data first (most detailed)
-  if (profile?.full_name && profile.full_name !== 'undefined undefined') {
-    return role === "admin" || role === "doctor" 
-      ? `Dr. ${profile.full_name}` 
-      : profile.full_name;
+// Enhanced display name selector
+export const selectUserDisplayName = createSelector(
+  [selectAuth],
+  (auth) => {
+    const { role, profile, username, email } = auth;
+    
+    if (!role) return "Welcome Back";
+
+    // Check profile data first (most detailed)
+    if (profile.fullName && profile.fullName !== 'undefined undefined') {
+      return role === "admin" || role === "doctor" 
+        ? `Dr. ${profile.fullName}` 
+        : profile.fullName;
+    }
+
+    // Check for first/last name
+    if (profile.firstName && profile.lastName) {
+      const fullName = `${profile.firstName} ${profile.lastName}`;
+      return role === "admin" || role === "doctor" 
+        ? `Dr. ${fullName}` 
+        : fullName;
+    }
+
+    // Fallback to username or email
+    if (username) {
+      return role === "admin" || role === "doctor" 
+        ? `Dr. ${username}` 
+        : username;
+    }
+
+    if (email) {
+      const emailName = email.split("@")[0];
+      return role === "admin" || role === "doctor" 
+        ? `Dr. ${emailName}` 
+        : emailName;
+    }
+
+    return "Welcome Back";
   }
-
-  // Check details for first/last name
-  if (details?.first_name && details?.last_name) {
-    const fullName = `${details.first_name} ${details.last_name}`;
-    return role === "admin" || role === "doctor" 
-      ? `Dr. ${fullName}` 
-      : fullName;
-  }
-
-  // Fallback to auth username or email
-  if (authUsername) {
-    return role === "admin" || role === "doctor" 
-      ? `Dr. ${authUsername}` 
-      : authUsername;
-  }
-
-  if (authEmail) {
-    const emailName = authEmail.split("@")[0];
-    return role === "admin" || role === "doctor" 
-      ? `Dr. ${emailName}` 
-      : emailName;
-  }
-
-  return "Welcome Back";
-};
+);
 
 // User initials selector
-export const selectUserInitials = (state) => {
-  const profile = state?.entities?.user?.profile;
-  const details = state?.entities?.user?.details;
-  const authUsername = state?.auth?.username;
-  const authEmail = state?.auth?.email;
-  
-  if (profile?.full_name && profile.full_name !== 'undefined undefined') {
-    const names = profile.full_name.split(' ').filter(n => n && n !== 'undefined');
-    if (names.length >= 2) {
-      return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+export const selectUserInitials = createSelector(
+  [selectAuth],
+  (auth) => {
+    const { profile, username, email } = auth;
+    
+    if (profile.fullName && profile.fullName !== 'undefined undefined') {
+      const names = profile.fullName.split(' ').filter(n => n && n !== 'undefined');
+      if (names.length >= 2) {
+        return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
+      }
+      if (names.length === 1) {
+        return names[0].substring(0, 2).toUpperCase();
+      }
     }
-    if (names.length === 1) {
-      return names[0].substring(0, 2).toUpperCase();
+    
+    if (profile.firstName && profile.lastName) {
+      return `${profile.firstName[0]}${profile.lastName[0]}`.toUpperCase();
     }
+    
+    if (username) {
+      return username.substring(0, 2).toUpperCase();
+    }
+    
+    if (email) {
+      return email.substring(0, 2).toUpperCase();
+    }
+    
+    return "U";
   }
-  
-  if (details?.first_name && details?.last_name) {
-    return `${details.first_name[0]}${details.last_name[0]}`.toUpperCase();
-  }
-  
-  if (authUsername) {
-    return authUsername.substring(0, 2).toUpperCase();
-  }
-  
-  if (authEmail) {
-    return authEmail.substring(0, 2).toUpperCase();
-  }
-  
-  return "U";
-};
+);
 
-// Role display selector
+// Additional selectors
+export const selectAuthLoading = (state) => state?.auth?.loading ?? false;
+export const selectAuthError = (state) => state?.auth?.error ?? null;
+export const selectUserEmail = (state) => state?.auth?.email;
+export const selectUserPhoneNumber = (state) => state?.auth?.profile?.phoneNumber;
+export const selectUserVerificationStatus = (state) => ({
+  isVerified: state?.auth?.profile?.isVerified ?? false,
+  phoneVerified: state?.auth?.profile?.phoneVerified ?? false,
+});
+
 export const selectUserRoleDisplay = (state) => {
   const role = state?.auth?.role;
+  if (!role) return "User";
   
   const roleMap = {
-    admin: { text: "Administrator", variant: "default", icon: "👑" },
-    doctor: { text: "Doctor", variant: "secondary", icon: "👩‍⚕️" },
-    staff: { text: "Staff", variant: "outline", icon: "👔" },
-    patient: { text: "Patient", variant: "outline", icon: "👤" },
+    patient: "Patient",
+    doctor: "Doctor", 
+    admin: "Administrator",
+    staff: "Staff"
   };
   
-  return roleMap[role] || { text: "User", variant: "outline", icon: "👤" };
+  return roleMap[role] || role;
 };
 
 export default authSlice.reducer;

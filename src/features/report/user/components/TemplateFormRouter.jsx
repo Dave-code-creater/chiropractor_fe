@@ -17,55 +17,89 @@ const NotImplemented = ({ formType, onBack }) => (
 );
 
 const TemplateFormRouter = ({
-  selectedTemplate,
+  selectedTemplate = {
+    id: 'unknown',
+    name: 'Untitled Report',
+    formType: 'InitialReportForm',
+    incidentType: 'general',
+    folder: 'New Report',
+    description: ''
+  },
   onSubmit,
   onBack,
   onDelete,
   initialData = {},
   isPatientView = false,
 }) => {
+  // Comprehensive null checks
+  if (!selectedTemplate) {
+    return (
+      <div className="p-8 text-center">
+        <h2 className="text-xl font-bold mb-2">No Template Selected</h2>
+        <p className="mb-4">Please select a template to continue.</p>
+        {onBack && (
+          <button className="btn btn-outline" onClick={onBack}>Back</button>
+        )}
+      </div>
+    );
+  }
+
+  // Ensure initialData is an object
+  const safeInitialData = initialData || {};
+  
+  // Ensure all required template properties have default values with extra safety
+  const template = {
+    id: (selectedTemplate && selectedTemplate.id) || 'unknown',
+    name: (selectedTemplate && selectedTemplate.name) || 'Untitled Report',
+    formType: (selectedTemplate && selectedTemplate.formType) || 'InitialReportForm',
+    incidentType: (selectedTemplate && selectedTemplate.incidentType) || 'general',
+    folder: (selectedTemplate && selectedTemplate.folder) || 'New Report',
+    description: (selectedTemplate && selectedTemplate.description) || ''
+  };
+
   // If it's a blank report or no specific form type, show the full InitialReportForm
   if (
-    !selectedTemplate?.formType ||
-    selectedTemplate.formType === "InitialReportForm"
+    !template.formType ||
+    template.formType === "InitialReportForm"
   ) {
     return (
       <InitialReportForm
         onSubmit={onSubmit}
-        initialData={initialData}
+        initialData={safeInitialData}
         onBack={onBack}
         onDelete={onDelete}
         isPatientView={isPatientView}
+        incidentType={template.incidentType}
       />
     );
   }
 
-  // Common props for all form components
+  // Common props for all form components with extra safety
   const commonProps = {
-    initialData: initialData,
+    initialData: safeInitialData,
     onSubmit: (data) => {
       // Add template metadata to the submitted data
       const submissionData = {
-        ...data,
+        ...(data || {}),
         templateInfo: {
-          id: selectedTemplate.id,
-          name: selectedTemplate.name,
-          folder: selectedTemplate.folder,
-          formType: selectedTemplate.formType,
+          id: template.id || 'unknown',
+          name: template.name || 'Untitled Report',
+          folder: template.folder || 'New Report',
+          formType: template.formType || 'InitialReportForm',
         },
       };
-      onSubmit(submissionData);
+      onSubmit && onSubmit(submissionData);
     },
-    onBack,
-    reportName: initialData.name || selectedTemplate.name,
+    onBack: onBack || (() => {}),
+    reportName: (safeInitialData && safeInitialData.name) || template.name || 'Untitled Report',
     setReportName: () => {}, // Individual forms don't need to edit report name
     editingName: false,
     setEditingName: () => {},
-    isPatientView,
+    isPatientView: isPatientView || false,
   };
 
   // Route to the specific form component based on formType
-  switch (selectedTemplate.formType) {
+  switch (template.formType) {
     // Legacy/old keys
     case "PatientIntakeForm":
     case "patient_info":
@@ -80,7 +114,7 @@ const TemplateFormRouter = ({
         <PainEvaluationForm
           {...commonProps}
           painEvaluations={
-            initialData.painEvaluations || [{ painMap: {}, formData: {} }]
+            (safeInitialData && safeInitialData.painEvaluations) || [{ painMap: {}, formData: {} }]
           }
           setPainEvaluations={() => {}}
           isLast={true}
@@ -109,7 +143,7 @@ const TemplateFormRouter = ({
       return <NotImplemented formType="workers_comp" onBack={onBack} />;
     default:
       // Fallback to placeholder if formType is not recognized
-      return <NotImplemented formType={selectedTemplate.formType} onBack={onBack} />;
+      return <NotImplemented formType={template.formType || 'unknown'} onBack={onBack} />;
   }
 };
 

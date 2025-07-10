@@ -11,7 +11,6 @@ import {
   REGISTER,
 } from "redux-persist";
 import authReducer from "../state/data/authSlice";
-import userReducer from "../state/data/userSlice";
 import entitiesReducer from "../state/data/entitiesSlice";
 import settingsReducer from "../state/data/settingsSlice";
 import uiStateReducer from "../state/data/uiStateSlice";
@@ -27,14 +26,14 @@ import loadingReducer from "../state/ui/loadingSlice";
 import uiErrorsReducer from "../state/ui/errorsSlice";
 import notificationsReducer from "../state/ui/notificationsSlice";
 import modalsReducer from "../state/ui/modalsSlice";
-import { authApi } from "../services/authApi";
-import { reportApi } from "../services/reportApi";
-import { blogApi } from "../services/blogApi";
-import { appointmentApi } from "../services/appointmentApi";
-import { chatApi } from "../services/chatApi";
-import { clinicalNotesApi, vitalsApi } from "../api";
-import { profileApi } from "../services/profileApi";
-import { userApi } from "../services/userApi";
+import { authApi } from "../api/services/authApi";
+import { reportApi } from "../api/services/reportApi";
+import { blogApi } from "../api/services/blogApi";
+import { appointmentApi } from "../api/services/appointmentApi";
+import { chatApi } from "../api/services/chatApi";
+import { clinicalNotesApi, vitalsApi, doctorScheduleApi } from "../api";
+import { profileApi } from "../api/services/profileApi";
+import { userApi } from "../api/services/userApi";
 
 // Enhanced persist config for better performance
 const persistConfig = {
@@ -52,11 +51,11 @@ const persistConfig = {
   },
 };
 
-// Separate persist config for auth
+// Enhanced persist config for auth - now includes user profile data
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["accessToken", "refreshToken"], // Only persist tokens
+  whitelist: ["accessToken", "refreshToken", "userID", "role", "email", "username", "profile", "preferences"], // Include user data
   version: 1,
   migrate: (state) => {
     return Promise.resolve(state);
@@ -67,11 +66,7 @@ const rootReducer = combineReducers({
   auth: persistReducer(authPersistConfig, authReducer),
   settings: settingsReducer,
   uiState: uiStateReducer,
-  entities: combineReducers({
-    user: userReducer,
-    posts: entitiesReducer.posts || { byId: {}, allIds: [] },
-    comments: entitiesReducer.comments || { byId: {}, allIds: [] },
-  }),
+  entities: entitiesReducer,
   forms: combineReducers({
     loginForm: loginFormReducer,
     registerForm: registerFormReducer,
@@ -93,6 +88,7 @@ const rootReducer = combineReducers({
   [chatApi.reducerPath]: chatApi.reducer,
   [clinicalNotesApi.reducerPath]: clinicalNotesApi.reducer,
   [vitalsApi.reducerPath]: vitalsApi.reducer,
+  [doctorScheduleApi.reducerPath]: doctorScheduleApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 });
@@ -120,6 +116,7 @@ export const store = configureStore({
       chatApi.middleware,
       clinicalNotesApi.middleware,
       vitalsApi.middleware,
+      doctorScheduleApi.middleware,
       profileApi.middleware,
       userApi.middleware
     );

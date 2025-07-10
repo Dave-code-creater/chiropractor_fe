@@ -54,8 +54,8 @@ import {
   Zap,
   XCircle,
 } from "lucide-react";
-import { useGetAppointmentsQuery } from "@/services/appointmentApi";
-import { useGetBlogPostsQuery } from "@/services/blogApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
+import { useGetBlogPostsQuery } from "@/api/services/blogApi";
 
 const BulkOperationsManager = () => {
   const [selectedOperation, setSelectedOperation] = useState("");

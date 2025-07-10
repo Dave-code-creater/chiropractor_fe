@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth, CACHE_TIMES } from "./baseApi";
+import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 
 export const reportApi = createApi({
   reducerPath: "reportApi",
@@ -125,6 +125,30 @@ export const reportApi = createApi({
       invalidatesTags: (result, error, { incidentId }) => [
         { type: "IncidentNotes", id: incidentId },
         { type: "Incidents", id: incidentId },
+      ],
+    }),
+
+    // 1.8 Get Complete Incident Form Data (all sub-forms)
+    getCompleteIncidentForms: builder.query({
+      query: (incidentId) => ({
+        url: `incidents/${incidentId}/forms/complete`,
+        method: "GET",
+      }),
+      providesTags: (result, error, incidentId) => [
+        { type: "IncidentForms", id: incidentId },
+        { type: "Incidents", id: incidentId },
+      ],
+    }),
+
+    // 1.9 Get specific form data for an incident
+    getIncidentForm: builder.query({
+      query: ({ incidentId, formType }) => ({
+        url: `incidents/${incidentId}/forms/${formType}`,
+        method: "GET",
+      }),
+      providesTags: (result, error, { incidentId, formType }) => [
+        { type: "IncidentForms", id: `${incidentId}-${formType}` },
+        { type: "IncidentForms", id: incidentId },
       ],
     }),
 
@@ -259,6 +283,8 @@ export const {
   useSaveIncidentFormMutation,
   useUpdateIncidentFormMutation,
   useAddIncidentNoteMutation,
+  useGetCompleteIncidentFormsQuery,
+  // useGetIncidentFormQuery, // Temporarily commented out to debug
   
   // Legacy report hooks
   useCreatePatientIntakeReportMutation,
@@ -271,6 +297,9 @@ export const {
   useGetReportSummaryQuery,
 } = reportApi;
 
+// Export this separately to avoid duplicate declaration error
+export const { useGetIncidentFormQuery } = reportApi;
+
 // ===== LEGACY COMPATIBILITY EXPORTS =====
 
 // Legacy exports for backward compatibility
@@ -278,65 +307,142 @@ export const useGetInitialReportQuery = () => ({ data: null, isLoading: false, e
 export const useGetHealthConditionsQuery = () => ({ data: [], isLoading: false, error: null });
 
 // Legacy mutation hooks for backward compatibility
-export const useSubmitPatientIntakeMutation = () => [
-  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
-  { isLoading: false, error: null }
-];
+export const useSubmitPatientIntakeMutation = () => {
+  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
+  return [
+    async (data) => {
+      try {
+        const result = await createPatientIntakeReport(data).unwrap();
+        return { data: result };
+      } catch (error) {
+        console.error("Mutation error:", error);
+        throw error;
+      }
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useUpdatePatientIntakeMutation = () => [
-  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ reportId: id, data }) }),
-  { isLoading: false, error: null }
-];
+export const useUpdatePatientIntakeMutation = () => {
+  const [updateReport] = useUpdateReportMutation();
+  return [
+    async ({ id, data }) => {
+      const result = await updateReport({ reportId: id, data }).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useSubmitInsuranceDetailsMutation = () => [
-  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
-  { isLoading: false, error: null }
-];
+export const useSubmitInsuranceDetailsMutation = () => {
+  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
+  return [
+    async (data) => {
+      const result = await createPatientIntakeReport(data).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useUpdateInsuranceDetailsMutation = () => [
-  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ reportId: id, data }) }),
-  { isLoading: false, error: null }
-];
+export const useUpdateInsuranceDetailsMutation = () => {
+  const [updateReport] = useUpdateReportMutation();
+  return [
+    async ({ id, data }) => {
+      const result = await updateReport({ reportId: id, data }).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useSubmitPainDescriptionMutation = () => [
-  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
-  { isLoading: false, error: null }
-];
+export const useSubmitPainDescriptionMutation = () => {
+  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
+  return [
+    async (data) => {
+      const result = await createPatientIntakeReport(data).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useUpdatePainDescriptionMutation = () => [
-  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ reportId: id, data }) }),
-  { isLoading: false, error: null }
-];
+export const useUpdatePainDescriptionMutation = () => {
+  const [updateReport] = useUpdateReportMutation();
+  return [
+    async ({ id, data }) => {
+      const result = await updateReport({ reportId: id, data }).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useSubmitDetailsDescriptionMutation = () => [
-  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
-  { isLoading: false, error: null }
-];
+export const useSubmitDetailsDescriptionMutation = () => {
+  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
+  return [
+    async (data) => {
+      const result = await createPatientIntakeReport(data).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useUpdateDetailsDescriptionMutation = () => [
-  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ reportId: id, data }) }),
-  { isLoading: false, error: null }
-];
+export const useUpdateDetailsDescriptionMutation = () => {
+  const [updateReport] = useUpdateReportMutation();
+  return [
+    async ({ id, data }) => {
+      const result = await updateReport({ reportId: id, data }).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useSubmitWorkImpactMutation = () => [
-  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
-  { isLoading: false, error: null }
-];
+export const useSubmitWorkImpactMutation = () => {
+  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
+  return [
+    async (data) => {
+      const result = await createPatientIntakeReport(data).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useUpdateWorkImpactMutation = () => [
-  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ reportId: id, data }) }),
-  { isLoading: false, error: null }
-];
+export const useUpdateWorkImpactMutation = () => {
+  const [updateReport] = useUpdateReportMutation();
+  return [
+    async ({ id, data }) => {
+      const result = await updateReport({ reportId: id, data }).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useSubmitHealthConditionMutation = () => [
-  async (data) => ({ data: await reportApi.endpoints.createPatientIntakeReport.initiate(data) }),
-  { isLoading: false, error: null }
-];
+export const useSubmitHealthConditionMutation = () => {
+  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
+  return [
+    async (data) => {
+      const result = await createPatientIntakeReport(data).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
-export const useUpdateHealthConditionMutation = () => [
-  async ({ id, data }) => ({ data: await reportApi.endpoints.updateReport.initiate({ reportId: id, data }) }),
-  { isLoading: false, error: null }
-];
+export const useUpdateHealthConditionMutation = () => {
+  const [updateReport] = useUpdateReportMutation();
+  return [
+    async ({ id, data }) => {
+      const result = await updateReport({ reportId: id, data }).unwrap();
+      return { data: result };
+    },
+    { isLoading: false, error: null }
+  ];
+};
 
 // Additional legacy hooks for Report.jsx
 export const useGetAllReportsQuery = useGetReportsQuery;
@@ -389,4 +495,3 @@ export const useCreateIncidentFolderMutation = useCreateIncidentMutation;
 export const useUpdatePatientReportMutation = useUpdateIncidentMutation;
 export const useCreateIncidentFormMutation = useSaveIncidentFormMutation;
 export const useAddReportNotesMutation = useAddIncidentNoteMutation;
-export const useGetIncidentFormQuery = useGetIncidentByIdQuery;

@@ -14,7 +14,7 @@ import { Calendar, Clock, User, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
 // Import API service for quick scheduling
-import { useCreateQuickAppointmentMutation } from "@/services/appointmentApi";
+import { useCreateQuickAppointmentMutation } from "@/api/services/appointmentApi";
 
 export default function QuickScheduler() {
   const [formData, setFormData] = useState({

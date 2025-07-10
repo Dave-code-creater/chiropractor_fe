@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "./baseApi";
+import { baseQueryWithReauth } from "../core/baseApi";
 
 export const chatApi = createApi({
   reducerPath: "chatApi",
@@ -89,7 +89,7 @@ export const chatApi = createApi({
         if (params.limit) queryParams.append("limit", params.limit.toString());
         if (params.offset) queryParams.append("offset", params.offset.toString());
 
-        return `chat/conversations/${conversationId}/messages?${queryParams}`;
+        return `chat/conversations/${conversationId}/messages`;
       },
       transformResponse: (response) => {
         if (response?.success && response?.data) {
@@ -161,7 +161,6 @@ export const {
   useGetAvailableUsersQuery,
   useCreateConversationMutation,
   useGetConversationsQuery,
-  useGetConversationQuery,
   useGetMessagesQuery,
   useSendMessageMutation,
   useUpdateConversationStatusMutation,

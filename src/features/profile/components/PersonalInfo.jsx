@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 // Import API service for profile updates
-import { useUpdateProfileMutation } from "@/services/profileApi";
+import { useUpdateProfileMutation } from "@/api/services/profileApi";
 
 export default function PersonalInfo() {
   const [firstName, setFirstName] = React.useState("");

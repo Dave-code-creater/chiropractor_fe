@@ -1,8 +1,8 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { AlertTriangle, AlertCircle, Eye } from "lucide-react";
-import { useGetPatientReportsQuery } from "@/services/reportApi";
+import { FileText, AlertCircle, Eye, Car, Briefcase, Activity, Heart } from "lucide-react";
+import { useGetPatientReportsQuery } from "@/api/services/reportApi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
@@ -28,7 +28,48 @@ export default function ConditionsCard() {
     }
   );
 
-
+  // Mock data to show multiple concurrent medical reports
+  const mockMedicalReports = [
+    {
+      id: "report-001",
+      title: "Car Accident Medical Report",
+      type: "Accident Report",
+      incidentType: "car_accident",
+      date: "2024-01-15",
+      status: "active",
+      priority: "high",
+      summary: "Motor vehicle accident resulting in lower back and neck injuries",
+      findings: ["Lumbar strain", "Cervical sprain", "Soft tissue damage"],
+      doctor: "Dr. Dieu Phan",
+      facility: "Downtown Chiropractic Clinic"
+    },
+    {
+      id: "report-002", 
+      title: "Work Injury Assessment",
+      type: "Occupational Health Report",
+      incidentType: "work_injury",
+      date: "2024-01-12",
+      status: "active",
+      priority: "medium",
+      summary: "Repetitive strain injury from prolonged computer work",
+      findings: ["Cervical strain", "Tension headaches", "Postural dysfunction"],
+      doctor: "Dr. Sarah Wilson",
+      facility: "Workplace Health Center"
+    },
+    {
+      id: "report-003",
+      title: "Chronic Pain Evaluation",
+      type: "Pain Management Report",
+      incidentType: "general_pain",
+      date: "2024-01-05",
+      status: "ongoing",
+      priority: "routine",
+      summary: "Comprehensive evaluation of chronic lower back pain",
+      findings: ["Disc degeneration", "Muscle weakness", "Chronic inflammation"],
+      doctor: "Dr. Michael Chen",
+      facility: "Pain Management Specialists"
+    }
+  ];
 
   // Extract conditions from API response
   const conditions = React.useMemo(() => {
@@ -122,85 +163,113 @@ export default function ConditionsCard() {
     }
   };
 
+  const getIncidentIcon = (incidentType) => {
+    switch (incidentType) {
+      case 'car_accident':
+        return Car;
+      case 'work_injury':
+        return Briefcase;
+      case 'sports_injury':
+        return Activity;
+      case 'general_pain':
+        return Heart;
+      default:
+        return FileText;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'active':
+        return 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400';
+      case 'ongoing':
+        return 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400';
+      case 'completed':
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
+      default:
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
+    }
+  };
+
+  const getPriorityColor = (priority) => {
+    switch (priority?.toLowerCase()) {
+      case 'high':
+      case 'urgent':
+        return 'bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400';
+      case 'low':
+      case 'routine':
+        return 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400';
+      default:
+        return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
+    }
+  };
+
   return (
-    <Card className="w-full h-full border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <AlertTriangle className="w-4 h-4 text-primary" />
+    <Card className="h-[400px] border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm flex flex-col">
+      <CardHeader className="pb-3 flex-shrink-0">
+        <CardTitle className="text-sm sm:text-base font-semibold text-foreground flex items-center gap-2">
+          <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+            <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
           </div>
-          Conditions
+          <span className="hidden sm:inline">Medical Conditions</span>
+          <span className="sm:hidden">Conditions</span>
         </CardTitle>
       </CardHeader>
-      <ScrollArea className="max-h-[300px] h-full">
-        <CardContent className="h-full">
+      
+      <ScrollArea className="flex-1">
+        <CardContent className="p-3 sm:p-6">
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex items-center justify-center py-6 sm:py-8">
+              <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="p-4 rounded-full bg-red-50 mb-4">
-                <AlertCircle className="w-8 h-8 text-red-500" />
+            <div className="flex flex-col items-center justify-center h-full text-center py-8 sm:py-12">
+              <div className="p-3 sm:p-4 rounded-full bg-red-50 mb-3 sm:mb-4">
+                <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
               </div>
-              <p className="text-sm text-muted-foreground">
-                Unable to load conditions
-              </p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Please try again later
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                Unable to load medical conditions
               </p>
             </div>
           ) : conditions.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {conditions.map((condition) => (
-                <div
-                  key={condition.id}
-                  className="p-4 rounded-lg bg-background/50 border border-border/50 hover:bg-background/70 transition-colors"
-                >
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-2">
-                      <h4 className="font-medium text-foreground text-sm">
-                        {condition.name}
-                      </h4>
-                      <span className="text-xs text-muted-foreground whitespace-nowrap">
-                        {new Date(condition.dateReported).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric"
-                        })}
-                      </span>
-                    </div>
-                    
-                    {condition.description && (
-                      <p className="text-sm text-muted-foreground leading-relaxed">
-                        {condition.description.length > 100 
-                          ? condition.description.substring(0, 100) + '...'
-                          : condition.description
-                        }
-                      </p>
-                    )}
-                    
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-muted-foreground">
-                        Severity:
-                      </span>
-                      <span className={`text-xs px-2 py-1 rounded-full ${getSeverityColor(condition.severity)}`}>
-                        {condition.severity}
-                      </span>
+                <div key={condition.id} className="p-3 sm:p-4 rounded-lg border border-border/50 bg-background/50">
+                  <div className="flex items-start justify-between gap-2 sm:gap-3">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                        <h3 className="font-medium text-sm sm:text-base truncate">
+                          {condition.name}
+                        </h3>
+                        <span className={`px-1.5 py-0.5 rounded-full text-xs ${getSeverityColor(condition.severity)}`}>
+                          {condition.severity}
+                        </span>
+                      </div>
+                      {condition.description && (
+                        <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2">
+                          {condition.description}
+                        </p>
+                      )}
+                      <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground">
+                        <span>Reported: {new Date(condition.dateReported).toLocaleDateString()}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="p-4 rounded-full bg-muted/50 mb-4">
-                <AlertTriangle className="w-8 h-8 text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center h-full text-center py-8 sm:py-12">
+              <div className="p-3 sm:p-4 rounded-full bg-muted/50 mb-3 sm:mb-4">
+                <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground">
-                No conditions recorded.
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                No medical conditions recorded.
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                Complete your health report to track conditions
+                Your health conditions will appear here after medical reports are submitted.
               </p>
             </div>
           )}

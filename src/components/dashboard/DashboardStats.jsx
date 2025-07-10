@@ -41,9 +41,9 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { useGetAppointmentsQuery } from "@/services/appointmentApi";
-import { useGetPatientsQuery } from "@/services/userApi";
-import { useGetReportsQuery } from "@/services/reportApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
+import { useGetPatientsQuery } from "@/api/services/userApi";
+import { useGetReportsQuery } from "@/api/services/reportApi";
 
 const DashboardStats = ({ userRole = "admin" }) => {
   const [timeRange, setTimeRange] = useState("7d");

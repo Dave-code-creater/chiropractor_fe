@@ -2,9 +2,10 @@ import React, { useState, useMemo } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, AlertCircle } from "lucide-react";
-import { useGetUserAppointmentsQuery } from "@/services/appointmentApi";
+import { useGetUserAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
 import CompactAppointmentCard from "@/components/CompactAppointmentCard";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function AppointmentsCard() {
   const [rescheduling, setRescheduling] = useState(false);
@@ -62,32 +63,33 @@ export default function AppointmentsCard() {
   }, [data]);
 
   return (
-    <Card className="h-full border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm flex flex-col">
+    <Card className="h-[400px] border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm flex flex-col">
       <CardHeader className="pb-3 flex-shrink-0">
-        <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <CalendarDays className="w-4 h-4 text-primary" />
+        <CardTitle className="text-sm sm:text-base font-semibold text-foreground flex items-center gap-2">
+          <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+            <CalendarDays className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
           </div>
-          Upcoming Appointment
+          <span className="hidden sm:inline">Upcoming Appointment</span>
+          <span className="sm:hidden">Appointments</span>
           {appointments.length > 1 && (
-            <span className="ml-auto text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+            <span className="ml-auto text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
               {appointments.length}
             </span>
           )}
         </CardTitle>
       </CardHeader>
       {!rescheduling ? (
-        <CardContent className="flex-1 flex flex-col overflow-hidden">
+        <CardContent className="flex-1 flex flex-col p-3 sm:p-6 overflow-hidden">
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex items-center justify-center py-6 sm:py-8">
+              <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="p-4 rounded-full bg-red-50 mb-4">
-                <AlertCircle className="w-8 h-8 text-red-500" />
+            <div className="flex flex-col items-center justify-center h-full text-center py-8 sm:py-12">
+              <div className="p-3 sm:p-4 rounded-full bg-red-50 mb-3 sm:mb-4">
+                <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Unable to load appointments
               </p>
               <p className="text-xs text-muted-foreground mt-1">
@@ -95,35 +97,37 @@ export default function AppointmentsCard() {
               </p>
             </div>
           ) : appointments.length > 0 ? (
-            <div className="space-y-4 overflow-y-auto flex-1 pr-2 -mr-2">
-              {appointments.map((appt) => (
-                <CompactAppointmentCard 
-                  key={appt.id || appt.date} 
-                  appointment={appt} 
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="p-4 rounded-full bg-muted/50 mb-4">
-                <CalendarDays className="w-8 h-8 text-muted-foreground" />
+            <ScrollArea className="flex-1">
+              <div className="space-y-3 sm:space-y-4 pr-2">
+                {appointments.map((appt) => (
+                  <CompactAppointmentCard 
+                    key={appt.id || appt.date} 
+                    appointment={appt} 
+                  />
+                ))}
               </div>
-              <p className="text-sm text-muted-foreground">
+            </ScrollArea>
+          ) : (
+            <div className="flex flex-col items-center justify-center h-full text-center py-8 sm:py-12">
+              <div className="p-3 sm:p-4 rounded-full bg-muted/50 mb-3 sm:mb-4">
+                <CalendarDays className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
+              </div>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 No upcoming appointments.
               </p>
             </div>
           )}
         </CardContent>
       ) : (
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-3 sm:p-6">
           <Calendar />
           <div className="flex justify-between">
-            <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <button className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors">
               Cancel
             </button>
             <button
               onClick={() => setRescheduling(false)}
-              className="text-sm text-primary hover:text-primary/80 transition-colors"
+              className="text-xs sm:text-sm text-primary hover:text-primary/80 transition-colors"
             >
               Back
             </button>

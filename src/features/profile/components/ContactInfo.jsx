@@ -15,12 +15,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
+import FormattedInput from "../../../components/forms/FormattedInput";
 
 // Import API service for contact updates
-import { useUpdateContactInfoMutation } from "@/services/profileApi";
+import { useUpdateContactInfoMutation } from "@/api/services/profileApi";
 
 function ContactInfo() {
-  const [areaCode, setAreaCode] = React.useState("");
   const [phoneNumber, setPhoneNumber] = React.useState("");
   const [homeAddress, setHomeAddress] = React.useState("");
   const [state, setState] = React.useState("");
@@ -28,7 +28,6 @@ function ContactInfo() {
   const [zipCode, setZipCode] = React.useState("");
   const [emergencyName, setEmergencyName] = React.useState("");
   const [emergencyRelation, setEmergencyRelation] = React.useState("");
-  const [emergencyPhoneCode, setEmergencyPhoneCode] = React.useState("");
   const [emergencyPhone, setEmergencyPhone] = React.useState("");
 
   // API mutation hook
@@ -39,7 +38,7 @@ function ContactInfo() {
     
     // Transform to snake_case format for backend
     const contactData = {
-      phone_number: `${areaCode}${phoneNumber}`,
+      phone_number: phoneNumber,
       home_address: homeAddress,
       city: city,
       state: state,
@@ -47,7 +46,7 @@ function ContactInfo() {
       emergency_contact: {
         name: emergencyName,
         relationship: emergencyRelation,
-        phone_number: `${emergencyPhoneCode}${emergencyPhone}`,
+        phone_number: emergencyPhone,
       },
     };
 
@@ -97,24 +96,12 @@ function ContactInfo() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Phone Number
               </label>
-              <div className="flex gap-2">
-                <Select value={areaCode} onValueChange={setAreaCode}>
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Select" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="720">+1 (720)</SelectItem>
-                    <SelectItem value="303">+1 (303)</SelectItem>
-                    <SelectItem value="970">+1 (970)</SelectItem>
-                  </SelectContent>
-                </Select>
-                <input
-                  type="tel"
-                  className="flex-1 border rounded-md px-3 py-2 text-sm"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                />
-              </div>
+              <FormattedInput
+                type="phone"
+                value={phoneNumber}
+                onChange={setPhoneNumber}
+                className="w-full"
+              />
             </div>
             <div className="md:col-span-2">
               <TooltipProvider>
@@ -148,27 +135,12 @@ function ContactInfo() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Phone Number
                   </label>
-                  <div className="flex flex-col sm:flex-row gap-2">
-                    <Select
-                      value={emergencyPhoneCode}
-                      onValueChange={setEmergencyPhoneCode}
-                    >
-                      <SelectTrigger className="sm:w-[120px] w-full">
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="720">+1 (720)</SelectItem>
-                        <SelectItem value="303">+1 (303)</SelectItem>
-                        <SelectItem value="970">+1 (970)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <input
-                      type="tel"
-                      className="flex-1 border rounded-md px-3 py-2 text-sm"
-                      value={emergencyPhone}
-                      onChange={(e) => setEmergencyPhone(e.target.value)}
-                    />
-                  </div>
+                  <FormattedInput
+                    type="phone"
+                    value={emergencyPhone}
+                    onChange={setEmergencyPhone}
+                    className="w-full"
+                  />
                 </div>
               </div>
             </div>

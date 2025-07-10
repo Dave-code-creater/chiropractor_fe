@@ -9,21 +9,31 @@ import { Link } from "react-router-dom";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 flex flex-col p-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto w-full grid-rows-[400px_400px] md:grid-rows-[400px_400px]">
-        <Link to="appointments" className="md:col-span-1 group h-full">
+    <div className="w-full space-y-4 sm:space-y-6">
+      {/* Mobile-first grid layout */}
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Appointments Card - Full width on mobile, 1/2 on tablet, 1/3 on desktop */}
+        <Link to="appointments" className="group h-full sm:col-span-1">
           <AppointmentsCard />
         </Link>
-        <Link to="notes" className="md:col-span-2 group h-full">
+        
+        {/* Doctor Notes Card - Full width on mobile, 1/2 on tablet, 2/3 on desktop */}
+        <Link to="reports" className="group h-full sm:col-span-2 lg:col-span-2">
           <DoctorNotesCard />
         </Link>
-        <Link to="reports" className="md:col-span-1 group h-full">
+        
+        {/* Medical Records Card - Full width on mobile, 1/2 on tablet, 1/3 on desktop */}
+        <Link to="medical-records" className="group h-full sm:col-span-1">
           <ConditionsCard />
         </Link>
-        <Link to="chat" className="md:col-span-1 group h-full">
+        
+        {/* Chat Card - Full width on mobile, 1/2 on tablet, 1/3 on desktop */}
+        <Link to="chat" className="group h-full sm:col-span-1">
           <MessagesCard />
         </Link>
-        <Link to="blog" className="md:col-span-1 group h-full">
+        
+        {/* Blog Card - Full width on mobile, 1/2 on tablet, 1/3 on desktop */}
+        <Link to="blog" className="group h-full sm:col-span-1">
           <BlogCard />
         </Link>
       </div>

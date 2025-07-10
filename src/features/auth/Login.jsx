@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useLoginMutation } from "../../services/authApi";
+import { useLoginMutation } from "../../api/services/authApi";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { validateEmail, validatePassword } from "../../components/forms/FormUtils";
+import PasswordInput from "../../components/forms/PasswordInput";
 import {
   setEmailError,
   clearEmailError,
@@ -11,6 +12,7 @@ import {
 } from "../../state/forms/loginFormSlice";
 import { useAuthReady } from "../../hooks/useAuthReady";
 import { toast } from "sonner";
+import { selectUserId, selectUserRole } from "../../state/data/authSlice";
 
 // Role-based redirect paths
 const ROLE_REDIRECTS = {
@@ -23,7 +25,9 @@ const ROLE_REDIRECTS = {
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isReady, isAuthenticated, userID, role } = useAuthReady();
+  const { isReady, isAuthenticated, role } = useAuthReady();
+  const userID = useSelector(selectUserId);
+  const userRole = useSelector(selectUserRole);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginMutation, { isLoading }] = useLoginMutation();
@@ -49,32 +53,17 @@ export default function Login() {
     }
   };
 
+  // Handle already authenticated users
   useEffect(() => {
-    if (!isReady || !isAuthenticated || !userID || !role) {
-      return; // Don't redirect if we don't have all required data
+    if (isReady && isAuthenticated && userID && userRole) {
+      // Use setTimeout to prevent navigation during render
+      const timer = setTimeout(() => {
+        navigate(`/dashboard/${userRole.toLowerCase()}/${userID}`, { replace: true });
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
-
-    // Get the redirect function for the user's role
-    const getRedirectPath = ROLE_REDIRECTS[role.toLowerCase()];
-    
-    if (!getRedirectPath) {
-      console.error(`Unknown role: ${role}`);
-      toast.error("Login successful but role configuration is invalid");
-      return;
-    }
-
-    // Determine final redirect path
-    const redirectPath = location.state?.from?.pathname || getRedirectPath(userID);
-
-    // Validate the redirect path
-    if (!redirectPath.startsWith('/dashboard')) {
-      console.warn(`Invalid redirect path: ${redirectPath}`);
-      navigate(getRedirectPath(userID), { replace: true });
-      return;
-    }
-
-    navigate(redirectPath, { replace: true });
-  }, [isReady, isAuthenticated, navigate, userID, role, location.state]);
+  }, [isReady, isAuthenticated, userID, userRole, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -89,20 +78,20 @@ export default function Login() {
     }
     
     try {
-      const result = await loginMutation({ email, password }).unwrap();
+      const response = await loginMutation({ email, password }).unwrap();
       
-      // The API returns { token, refreshToken, user } directly
-      if (!result?.user?.role) {
-        throw new Error("Invalid response from server");
+      // Validate response
+      if (!response?.user?.id || !response?.user?.role) {
+        console.error('Invalid login response:', response);
+        toast.error('Login failed: Invalid user data');
+        return;
       }
 
-      // Success toast - use first_name from the response if available
-      toast.success(`Welcome back${result.user.first_name ? `, ${result.user.first_name}` : ''}! (Role: ${result.user.role})`);
-      
+      // Navigate to the appropriate dashboard
+      navigate(`/dashboard/${response.user.role.toLowerCase()}/${response.user.id}`);
     } catch (error) {
-      console.error('Login failed:', error);
-      const errorMessage = error.data?.message || error.error || 'Invalid email or password';
-      toast.error(errorMessage);
+      console.error('Login error:', error);
+      toast.error(error?.data?.message || 'Login failed');
     }
   };
 
@@ -178,17 +167,17 @@ export default function Login() {
                 </Link>
               </div>
             </div>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              autoComplete="current-password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              onBlur={handlePwBlur}
-              className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
-            />
+            <div className="mt-2">
+              <PasswordInput
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onBlur={handlePwBlur}
+                placeholder="Enter your password"
+                className="block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
+                required
+              />
+            </div>
             {pwError && <p className="text-red-500 text-sm mt-1">{pwError}</p>}
           </div>
 

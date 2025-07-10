@@ -1,10 +1,13 @@
 import { Outlet } from "react-router-dom";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { SiteHeader } from "@/components/site-header";
+import AppSidebar from "@/components/sidebar/Sidebar";
+import Footer from "@/layouts/Footer";
 
 export default function HomePageLayout() {
   return (
     <SidebarProvider>
+      <AppSidebar />
       <SidebarInset>
         <SiteHeader />
         <div className="flex flex-1 flex-col">
@@ -12,6 +15,7 @@ export default function HomePageLayout() {
             <Outlet />
           </div>
         </div>
+        <Footer />
       </SidebarInset>
     </SidebarProvider>
   );

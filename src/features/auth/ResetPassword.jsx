@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  useResetPasswordMutation,
   useVerifyResetTokenQuery,
-} from "../../services/authApi";
+} from "../../api/services/authApi";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
 import { renderPwRegister, validatePassword } from "../../components/forms/FormUtils";
+import PasswordInput from "../../components/forms/PasswordInput";
 import {
   setPasswordError,
   clearPasswordError,
@@ -25,6 +25,7 @@ import {
   EyeOff,
   ArrowLeft,
 } from "lucide-react";
+import { useResetPasswordMutation } from "../../api/services/authApi";
 
 export default function ResetPassword() {
   const [searchParams] = useSearchParams();
@@ -34,8 +35,6 @@ export default function ResetPassword() {
 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isResetSuccessful, setIsResetSuccessful] = useState(false);
 
   const pwError = useSelector(
@@ -218,34 +217,19 @@ export default function ResetPassword() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="password">New Password</Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onBlur={handlePasswordBlur}
-                    placeholder="••••••••"
-                    className={
-                      pwError
-                        ? "border-red-500 focus:border-red-500 pr-10"
-                        : "pr-10"
-                    }
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
-                    )}
-                  </button>
-                </div>
+                <PasswordInput
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onBlur={handlePasswordBlur}
+                  placeholder="Enter new password"
+                  className={
+                    pwError
+                      ? "border-red-500 focus:border-red-500"
+                      : ""
+                  }
+                  required
+                />
                 {pwError && (
                   <p className="text-sm text-red-600 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />
@@ -266,34 +250,19 @@ export default function ResetPassword() {
 
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    onBlur={handleConfirmPasswordBlur}
-                    placeholder="••••••••"
-                    className={
-                      confirmpwError
-                        ? "border-red-500 focus:border-red-500 pr-10"
-                        : "pr-10"
-                    }
-                  />
-                  <button
-                    type="button"
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-400" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-400" />
-                    )}
-                  </button>
-                </div>
+                <PasswordInput
+                  id="confirmPassword"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  onBlur={handleConfirmPasswordBlur}
+                  placeholder="Confirm new password"
+                  className={
+                    confirmpwError
+                      ? "border-red-500 focus:border-red-500"
+                      : ""
+                  }
+                  required
+                />
                 {confirmpwError && (
                   <p className="text-sm text-red-600 flex items-center gap-1">
                     <AlertCircle className="w-4 h-4" />

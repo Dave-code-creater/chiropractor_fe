@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Inbox, MessageCircle, User, Stethoscope, AlertCircle, ExternalLink, ChevronRight } from "lucide-react";
-import { useGetConversationsQuery } from "@/services/chatApi";
+import { useGetConversationsQuery } from "@/api/services/chatApi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -59,7 +59,11 @@ export default function MessagesCard() {
     return [];
   };
 
-  const conversations = useMemo(() => extractDataFromResponse(conversationsData), [conversationsData]);
+  const conversations = useMemo(() => {
+    const allConversations = extractDataFromResponse(conversationsData);
+    // Filter to only show active conversations
+    return allConversations.filter(conv => conv.status === 'active');
+  }, [conversationsData]);
 
   // Get current user role (same as NewChat component)
   const userRole = useSelector((state) => state?.auth?.role) || 'patient';
@@ -127,33 +131,34 @@ export default function MessagesCard() {
   }, [conversations]);
 
   return (
-    <Card className="w-full h-full border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <MessageCircle className="w-4 h-4 text-primary" />
+    <Card className="h-[400px] border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm flex flex-col">
+      <CardHeader className="pb-3 flex-shrink-0">
+        <CardTitle className="text-sm sm:text-base font-semibold text-foreground flex items-center gap-2">
+          <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+            <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
           </div>
-          Recent Messages
+          <span className="hidden sm:inline">Recent Messages</span>
+          <span className="sm:hidden">Messages</span>
           {sortedConversations.length > 0 && (
-            <Badge variant="secondary" className="ml-2">
+            <Badge variant="secondary" className="ml-2 text-xs">
               {sortedConversations.length}
             </Badge>
           )}
         </CardTitle>
       </CardHeader>
 
-      <ScrollArea className="h-full max-h-[300px]">
-        <CardContent className="h-full">
+      <ScrollArea className="flex-1">
+        <CardContent className="p-3 sm:p-6">
           {isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            <div className="flex items-center justify-center py-6 sm:py-8">
+              <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
             </div>
           ) : error ? (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="p-4 rounded-full bg-red-50 mb-4">
-                <AlertCircle className="w-8 h-8 text-red-500" />
+            <div className="flex flex-col items-center justify-center h-full text-center py-8 sm:py-12">
+              <div className="p-3 sm:p-4 rounded-full bg-red-50 mb-3 sm:mb-4">
+                <AlertCircle className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Unable to load messages
               </p>
               <p className="text-xs text-muted-foreground mt-1">
@@ -161,7 +166,7 @@ export default function MessagesCard() {
               </p>
             </div>
           ) : sortedConversations.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               {sortedConversations.slice(0, 5).map((conversation) => {
                 const participant = getParticipantInfo(conversation);
                 const lastMessage = conversation.last_message;
@@ -170,27 +175,27 @@ export default function MessagesCard() {
                 return (
                   <div
                     key={conversation.id || conversation.conversation_id}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-background/50 border border-border/50 hover:bg-background/70 hover:border-primary/30 transition-all duration-200 cursor-pointer group"
+                    className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50 hover:bg-background/70 hover:border-primary/30 transition-all duration-200 cursor-pointer group"
                   >
-                    <Avatar className="h-10 w-10 flex-shrink-0">
+                    <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
                       <AvatarImage src={participant.avatar} />
                       <AvatarFallback className="text-xs bg-gradient-to-br from-primary/20 to-primary/10 text-primary">
                         {participant.type === "doctor" ? (
-                          <Stethoscope className="h-4 w-4" />
+                          <Stethoscope className="h-3 w-3 sm:h-4 sm:w-4" />
                         ) : (
-                          <User className="h-4 w-4" />
+                          <User className="h-3 w-3 sm:h-4 sm:w-4" />
                         )}
                       </AvatarFallback>
                     </Avatar>
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className="text-sm font-medium text-foreground truncate">
+                        <p className="text-xs sm:text-sm font-medium text-foreground truncate">
                           {participant.name}
                         </p>
                         <div className="flex items-center gap-1 flex-shrink-0">
                           {participant.status === "online" && (
-                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-green-500 rounded-full"></div>
                           )}
                           <span className="text-xs text-muted-foreground">
                             {formatMessageTime(conversation.last_message_at || conversation.updated_at)}
@@ -198,57 +203,38 @@ export default function MessagesCard() {
                         </div>
                       </div>
 
-                      <p className="text-xs font-medium text-foreground/80 mt-1 truncate">
-                        {conversation.subject}
-                      </p>
-                      
-                      <div className="flex items-center gap-2 mt-1">
-                        <Badge 
-                          variant={participant.type === "doctor" ? "default" : "secondary"} 
-                          className="text-xs px-2 py-0"
-                        >
-                          {participant.type === "doctor" ? "Doctor" : "Patient"}
-                        </Badge>
-                        {unreadCount > 0 && (
-                          <Badge variant="destructive" className="text-xs px-2 py-0">
-                            {unreadCount}
-                          </Badge>
-                        )}
-                      </div>
-                      
                       {lastMessage && (
-                        <p className="text-xs text-muted-foreground mt-1 truncate">
-                          {lastMessage}
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate mt-1">
+                          {lastMessage.length > 40 
+                            ? lastMessage.substring(0, 40) + '...'
+                            : lastMessage
+                          }
                         </p>
                       )}
-                    </div>
-                    
-                    <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+
+                      {unreadCount > 0 && (
+                        <div className="flex items-center justify-between mt-1">
+                          <Badge variant="secondary" className="text-xs px-1.5 py-0.5 h-5">
+                            {unreadCount} new
+                          </Badge>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center h-full text-center py-12">
-              <div className="p-4 rounded-full bg-muted/50 mb-4">
-                <Inbox className="w-8 h-8 text-muted-foreground" />
+            <div className="flex flex-col items-center justify-center h-full text-center py-8 sm:py-12">
+              <div className="p-3 sm:p-4 rounded-full bg-muted/50 mb-3 sm:mb-4">
+                <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-muted-foreground" />
               </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                No messages yet
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                No recent messages.
               </p>
-              <p className="text-xs text-muted-foreground mb-4">
-                Start a conversation with your healthcare team
+              <p className="text-xs text-muted-foreground mt-1">
+                Start a conversation with your healthcare provider.
               </p>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="text-xs"
-              >
-                <MessageCircle className="w-3 h-3 mr-1" />
-                Start Conversation
-              </Button>
             </div>
           )}
         </CardContent>

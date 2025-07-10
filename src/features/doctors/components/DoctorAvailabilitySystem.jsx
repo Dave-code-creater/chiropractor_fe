@@ -52,6 +52,7 @@ import {
   TrendingUp,
   Users,
   FileText,
+  Loader2,
 } from "lucide-react";
 import {
   format,
@@ -62,6 +63,16 @@ import {
   parseISO,
   isWithinInterval,
 } from "date-fns";
+import {
+  useGetDoctorProfilesQuery,
+  useGetAllDoctorsScheduleQuery,
+  useGetTimeOffRequestsQuery,
+  useCreateTimeOffRequestMutation,
+  useUpdateDoctorWorkingHoursMutation,
+  useGetScheduleStatisticsQuery,
+  useGetDoctorConflictsQuery,
+} from "@/api/services/doctorScheduleApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 
 const DoctorAvailabilitySystem = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -70,152 +81,121 @@ const DoctorAvailabilitySystem = () => {
   const [showConflicts, setShowConflicts] = useState(true);
   const [editingSchedule, setEditingSchedule] = useState(null);
 
-  // Sample doctors data
-  const [doctors] = useState([
-    {
-      id: "DOC-001",
-      firstName: "Sarah",
-      lastName: "Johnson",
-      email: "sarah.johnson@clinic.com",
-      phone: "+1-555-0101",
-      specialization: "Chiropractic Medicine",
-      licenseNumber: "CHR-12345",
-      avatar: null,
-      status: "active",
-      workingHours: {
-        monday: { start: "08:00", end: "17:00", enabled: true },
-        tuesday: { start: "08:00", end: "17:00", enabled: true },
-        wednesday: { start: "08:00", end: "17:00", enabled: true },
-        thursday: { start: "08:00", end: "17:00", enabled: true },
-        friday: { start: "08:00", end: "17:00", enabled: true },
-        saturday: { start: "09:00", end: "13:00", enabled: true },
-        sunday: { start: "00:00", end: "00:00", enabled: false },
-      },
-      appointmentTypes: [
-        { type: "Initial Consultation", duration: 60, color: "#3B82F6" },
-        { type: "Follow-up Visit", duration: 30, color: "#10B981" },
-        { type: "Chiropractic Adjustment", duration: 30, color: "#F59E0B" },
-        { type: "Physical Therapy", duration: 45, color: "#8B5CF6" },
-      ],
-      preferences: {
-        bufferTime: 15, // minutes between appointments
-        maxAppointmentsPerDay: 16,
-        allowDoubleBooking: false,
-        autoConfirmAppointments: true,
-      },
-    },
-    {
-      id: "DOC-002",
-      firstName: "Michael",
-      lastName: "Smith",
-      email: "michael.smith@clinic.com",
-      phone: "+1-555-0102",
-      specialization: "Sports Medicine",
-      licenseNumber: "CHR-67890",
-      avatar: null,
-      status: "active",
-      workingHours: {
-        monday: { start: "09:00", end: "18:00", enabled: true },
-        tuesday: { start: "09:00", end: "18:00", enabled: true },
-        wednesday: { start: "09:00", end: "18:00", enabled: true },
-        thursday: { start: "09:00", end: "18:00", enabled: true },
-        friday: { start: "09:00", end: "16:00", enabled: true },
-        saturday: { start: "00:00", end: "00:00", enabled: false },
-        sunday: { start: "00:00", end: "00:00", enabled: false },
-      },
-      appointmentTypes: [
-        { type: "Sports Injury Consultation", duration: 45, color: "#EF4444" },
-        { type: "Rehabilitation Session", duration: 60, color: "#06B6D4" },
-        { type: "Performance Assessment", duration: 90, color: "#84CC16" },
-      ],
-      preferences: {
-        bufferTime: 10,
-        maxAppointmentsPerDay: 12,
-        allowDoubleBooking: false,
-        autoConfirmAppointments: false,
-      },
-    },
-  ]);
+  // Calculate date range for queries
+  const dateRange = useMemo(() => {
+    const start = startOfWeek(selectedDate);
+    const end = endOfWeek(selectedDate);
+    return {
+      startDate: format(start, "yyyy-MM-dd"),
+      endDate: format(end, "yyyy-MM-dd"),
+    };
+  }, [selectedDate]);
 
-  // Sample appointments data
-  const [appointments, setAppointments] = useState([
-    {
-      id: "APT-001",
-      doctorId: "DOC-001",
-      patientId: "PAT-001",
-      patientName: "John Smith",
-      date: "2025-01-22",
-      startTime: "09:00",
-      endTime: "10:00",
-      type: "Initial Consultation",
-      status: "confirmed",
-      notes: "First visit for back pain assessment",
-      color: "#3B82F6",
-    },
-    {
-      id: "APT-002",
-      doctorId: "DOC-001",
-      patientId: "PAT-002",
-      patientName: "Sarah Wilson",
-      date: "2025-01-22",
-      startTime: "10:30",
-      endTime: "11:00",
-      type: "Follow-up Visit",
-      status: "scheduled",
-      notes: "Progress check",
-      color: "#10B981",
-    },
-    {
-      id: "APT-003",
-      doctorId: "DOC-002",
-      patientId: "PAT-003",
-      patientName: "Mike Johnson",
-      date: "2025-01-22",
-      startTime: "14:00",
-      endTime: "15:30",
-      type: "Rehabilitation Session",
-      status: "confirmed",
-      notes: "Knee rehabilitation",
-      color: "#06B6D4",
-    },
-  ]);
+  // API Queries
+  const {
+    data: doctorsData,
+    isLoading: doctorsLoading,
+    error: doctorsError,
+  } = useGetDoctorProfilesQuery();
 
-  // Sample time-off requests
-  const [timeOffRequests, setTimeOffRequests] = useState([
+  const {
+    data: scheduleData,
+    isLoading: scheduleLoading,
+    error: scheduleError,
+  } = useGetAllDoctorsScheduleQuery({
+    ...dateRange,
+    doctorIds: selectedDoctor !== "all" ? [selectedDoctor] : [],
+  });
+
+  const {
+    data: appointmentsData,
+    isLoading: appointmentsLoading,
+    error: appointmentsError,
+  } = useGetAppointmentsQuery({
+    doctor_id: selectedDoctor !== "all" ? selectedDoctor : undefined,
+  });
+
+  const {
+    data: timeOffData,
+    isLoading: timeOffLoading,
+    error: timeOffError,
+  } = useGetTimeOffRequestsQuery({
+    doctor_id: selectedDoctor !== "all" ? selectedDoctor : undefined,
+    start_date: dateRange.startDate,
+    end_date: dateRange.endDate,
+  });
+
+  const {
+    data: statisticsData,
+    isLoading: statisticsLoading,
+  } = useGetScheduleStatisticsQuery({
+    doctor_id: selectedDoctor !== "all" ? selectedDoctor : undefined,
+    ...dateRange,
+  });
+
+  const {
+    data: conflictsData,
+    isLoading: conflictsLoading,
+  } = useGetDoctorConflictsQuery(
     {
-      id: "TO-001",
-      doctorId: "DOC-001",
-      startDate: "2025-01-25",
-      endDate: "2025-01-26",
-      reason: "Medical Conference",
-      status: "approved",
-      type: "conference",
+      doctorId: selectedDoctor,
+      ...dateRange,
     },
     {
-      id: "TO-002",
-      doctorId: "DOC-002",
-      startDate: "2025-01-30",
-      endDate: "2025-01-30",
-      reason: "Personal Day",
-      status: "pending",
-      type: "personal",
-    },
-  ]);
+      skip: selectedDoctor === "all",
+    }
+  );
+
+  // Mutations
+  const [createTimeOffRequest] = useCreateTimeOffRequestMutation();
+  const [updateWorkingHours] = useUpdateDoctorWorkingHoursMutation();
+
+  // Transform API data
+  const doctors = useMemo(() => {
+    if (!doctorsData) return [];
+    return doctorsData.data || doctorsData || [];
+  }, [doctorsData]);
+
+  const appointments = useMemo(() => {
+    if (!appointmentsData) return [];
+    return appointmentsData.data || appointmentsData || [];
+  }, [appointmentsData]);
+
+  const timeOffRequests = useMemo(() => {
+    if (!timeOffData) return [];
+    return timeOffData.data || timeOffData || [];
+  }, [timeOffData]);
+
+  const statistics = useMemo(() => {
+    if (!statisticsData) {
+      return {
+        totalDoctors: doctors.length,
+        activeDoctors: doctors.filter((doc) => doc.status === "active").length,
+        todayAppointments: 0,
+        availableSlots: 0,
+        conflicts: 0,
+      };
+    }
+    return statisticsData.data || statisticsData;
+  }, [statisticsData, doctors]);
 
   // Generate time slots for a doctor on a specific date
   const generateTimeSlots = useCallback(
     (doctor, date) => {
+      if (!doctor?.working_hours && !doctor?.workingHours) return [];
+      
+      const workingHours = doctor.working_hours || doctor.workingHours;
       const dayName = format(date, "EEEE").toLowerCase();
-      const workingHours = doctor.workingHours[dayName];
+      const dayHours = workingHours[dayName];
 
-      if (!workingHours.enabled) return [];
+      if (!dayHours?.enabled) return [];
 
       const slots = [];
       const startTime = parseISO(
-        `${format(date, "yyyy-MM-dd")}T${workingHours.start}:00`,
+        `${format(date, "yyyy-MM-dd")}T${dayHours.start}:00`,
       );
       const endTime = parseISO(
-        `${format(date, "yyyy-MM-dd")}T${workingHours.end}:00`,
+        `${format(date, "yyyy-MM-dd")}T${dayHours.end}:00`,
       );
 
       let currentTime = startTime;
@@ -226,20 +206,20 @@ const DoctorAvailabilitySystem = () => {
         // Check if this slot conflicts with existing appointments
         const conflict = appointments.find(
           (apt) =>
-            apt.doctorId === doctor.id &&
-            apt.date === format(date, "yyyy-MM-dd") &&
-            apt.startTime <= format(currentTime, "HH:mm") &&
-            apt.endTime > format(currentTime, "HH:mm"),
+            apt.doctor_id === doctor.id &&
+            apt.appointment_date === format(date, "yyyy-MM-dd") &&
+            apt.appointment_time <= format(currentTime, "HH:mm") &&
+            apt.appointment_time + apt.duration_minutes > format(currentTime, "HH:mm"),
         );
 
         // Check if this slot conflicts with time-off
         const timeOff = timeOffRequests.find(
           (to) =>
-            to.doctorId === doctor.id &&
+            to.doctor_id === doctor.id &&
             to.status === "approved" &&
             isWithinInterval(date, {
-              start: parseISO(to.startDate),
-              end: parseISO(to.endDate),
+              start: parseISO(to.start_date),
+              end: parseISO(to.end_date),
             }),
         );
 
@@ -271,75 +251,76 @@ const DoctorAvailabilitySystem = () => {
     return Array.from({ length: 7 }, (_, i) => addDays(start, i));
   }, [selectedDate]);
 
-  // Statistics calculation
-  const statistics = useMemo(() => {
-    const today = format(new Date(), "yyyy-MM-dd");
-    const todayAppointments = appointments.filter((apt) => apt.date === today);
-
-    return {
-      totalDoctors: doctors.length,
-      activeDoctors: doctors.filter((doc) => doc.status === "active").length,
-      todayAppointments: todayAppointments.length,
-      availableSlots: filteredDoctors.reduce((total, doctor) => {
-        const slots = generateTimeSlots(doctor, new Date());
-        return total + slots.filter((slot) => slot.available).length;
-      }, 0),
-      conflicts: appointments.filter((apt) => {
-        // Check for overlapping appointments
-        return appointments.some(
-          (otherApt) =>
-            otherApt.id !== apt.id &&
-            otherApt.doctorId === apt.doctorId &&
-            otherApt.date === apt.date &&
-            apt.startTime < otherApt.endTime &&
-            apt.endTime > otherApt.startTime,
-        );
-      }).length,
-    };
-  }, [doctors, appointments, filteredDoctors, generateTimeSlots]);
-
-  const handleScheduleUpdate = (doctorId, updates) => {
-    // Update doctor schedule logic here
-    toast.success("Schedule updated successfully");
+  const handleScheduleUpdate = async (doctorId, updates) => {
+    try {
+      await updateWorkingHours({ doctorId, workingHours: updates }).unwrap();
+      toast.success("Schedule updated successfully");
+    } catch (error) {
+      toast.error("Failed to update schedule");
+    }
   };
 
-  const handleTimeOffRequest = (request) => {
-    setTimeOffRequests((prev) => [
-      ...prev,
-      { ...request, id: `TO-${Date.now()}`, status: "pending" },
-    ]);
-    toast.success("Time-off request submitted");
+  const handleTimeOffRequest = async (request) => {
+    try {
+      await createTimeOffRequest(request).unwrap();
+      toast.success("Time-off request submitted");
+    } catch (error) {
+      toast.error("Failed to submit time-off request");
+    }
   };
+
+  // Loading state
+  if (doctorsLoading || scheduleLoading || appointmentsLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">Loading doctor availability...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (doctorsError || scheduleError || appointmentsError) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Alert className="max-w-md">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Error Loading Data</AlertTitle>
+          <AlertDescription>
+            Unable to load doctor availability information. Please try again.
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   const DoctorCard = ({ doctor }) => (
-    <Card className="mb-4">
+    <Card className="h-full">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Avatar className="h-12 w-12">
-              <AvatarImage src={doctor.avatar} />
+              <AvatarImage src={doctor.avatar || doctor.profile_image} />
               <AvatarFallback className="bg-blue-100 text-blue-600">
-                {doctor.firstName[0]}
-                {doctor.lastName[0]}
+                {doctor.first_name?.[0] || doctor.firstName?.[0]}
+                {doctor.last_name?.[0] || doctor.lastName?.[0]}
               </AvatarFallback>
             </Avatar>
             <div>
               <CardTitle className="text-lg">
-                Dr. {doctor.firstName} {doctor.lastName}
+                Dr. {doctor.first_name || doctor.firstName}{" "}
+                {doctor.last_name || doctor.lastName}
               </CardTitle>
-              <CardDescription>{doctor.specialization}</CardDescription>
+              <CardDescription>
+                {doctor.specialization || doctor.specializations?.primary}
+              </CardDescription>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <Badge
-              variant={doctor.status === "active" ? "default" : "secondary"}
-            >
-              {doctor.status}
-            </Badge>
-            <Button variant="outline" size="sm">
-              <Settings className="h-4 w-4" />
-            </Button>
-          </div>
+          <Badge variant={doctor.status === "active" ? "default" : "secondary"}>
+            {doctor.status}
+          </Badge>
         </div>
       </CardHeader>
       <CardContent>
@@ -347,7 +328,7 @@ const DoctorAvailabilitySystem = () => {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div className="flex items-center space-x-2">
               <Phone className="h-4 w-4 text-gray-500" />
-              <span>{doctor.phone}</span>
+              <span>{doctor.phone || doctor.phone_number}</span>
             </div>
             <div className="flex items-center space-x-2">
               <Mail className="h-4 w-4 text-gray-500" />
@@ -391,15 +372,16 @@ const DoctorAvailabilitySystem = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={doctor.avatar} />
+                  <AvatarImage src={doctor.avatar || doctor.profile_image} />
                   <AvatarFallback className="bg-blue-100 text-blue-600">
-                    {doctor.firstName[0]}
-                    {doctor.lastName[0]}
+                    {doctor.first_name?.[0] || doctor.firstName?.[0]}
+                    {doctor.last_name?.[0] || doctor.lastName?.[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div>
                   <h3 className="font-medium">
-                    Dr. {doctor.firstName} {doctor.lastName}
+                    Dr. {doctor.first_name || doctor.firstName}{" "}
+                    {doctor.last_name || doctor.lastName}
                   </h3>
                   <p className="text-sm text-gray-600">
                     {doctor.specialization}
@@ -452,7 +434,7 @@ const DoctorAvailabilitySystem = () => {
                           {slot.time}
                           {slot.appointment && (
                             <div className="truncate">
-                              {slot.appointment.patientName}
+                              {slot.appointment.patient_name}
                             </div>
                           )}
                         </div>
@@ -481,7 +463,7 @@ const DoctorAvailabilitySystem = () => {
         {filteredDoctors.map((doctor) => {
           const daySlots = generateTimeSlots(doctor, selectedDate);
           const dayAppointments = appointments.filter(
-            (apt) => apt.doctorId === doctor.id && apt.date === selectedDateStr,
+            (apt) => apt.doctor_id === doctor.id && apt.appointment_date === selectedDateStr,
           );
 
           return (
@@ -490,15 +472,16 @@ const DoctorAvailabilitySystem = () => {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-10 w-10">
-                      <AvatarImage src={doctor.avatar} />
+                      <AvatarImage src={doctor.avatar || doctor.profile_image} />
                       <AvatarFallback className="bg-blue-100 text-blue-600">
-                        {doctor.firstName[0]}
-                        {doctor.lastName[0]}
+                        {doctor.first_name?.[0] || doctor.firstName?.[0]}
+                        {doctor.last_name?.[0] || doctor.lastName?.[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <CardTitle className="text-lg">
-                        Dr. {doctor.firstName} {doctor.lastName}
+                        Dr. {doctor.first_name || doctor.firstName}{" "}
+                        {doctor.last_name || doctor.lastName}
                       </CardTitle>
                       <CardDescription>
                         {format(selectedDate, "EEEE, MMMM d, yyyy")}
@@ -536,7 +519,7 @@ const DoctorAvailabilitySystem = () => {
                             {slot.appointment && (
                               <div>
                                 <div className="font-medium">
-                                  {slot.appointment.patientName}
+                                  {slot.appointment.patient_name}
                                 </div>
                                 <div className="text-sm text-gray-600">
                                   {slot.appointment.type}
@@ -557,27 +540,9 @@ const DoctorAvailabilitySystem = () => {
                               <div className="text-green-600">Available</div>
                             )}
                           </div>
-                          <div className="flex items-center space-x-2">
-                            {slot.appointment && (
-                              <Badge
-                                variant={
-                                  slot.appointment.status === "confirmed"
-                                    ? "default"
-                                    : slot.appointment.status === "scheduled"
-                                      ? "secondary"
-                                      : "outline"
-                                }
-                              >
-                                {slot.appointment.status}
-                              </Badge>
-                            )}
-                            {slot.available && (
-                              <Button size="sm" variant="outline">
-                                <Plus className="h-4 w-4 mr-1" />
-                                Book
-                              </Button>
-                            )}
-                          </div>
+                          <Button variant="ghost" size="sm">
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
                         </div>
                       </div>
                     ))}
@@ -592,16 +557,14 @@ const DoctorAvailabilitySystem = () => {
   };
 
   const ConflictAlert = ({ conflicts }) => {
-    if (conflicts.length === 0) return null;
+    if (!conflicts || conflicts.length === 0) return null;
 
     return (
-      <Alert className="border-red-200 bg-red-50">
+      <Alert className="mb-4">
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>Schedule Conflicts Detected</AlertTitle>
         <AlertDescription>
-          {conflicts.length} scheduling conflict
-          {conflicts.length !== 1 ? "s" : ""} found. Please review and resolve
-          overlapping appointments.
+          {conflicts.length} scheduling conflict(s) found. Please review and resolve.
         </AlertDescription>
       </Alert>
     );
@@ -701,8 +664,8 @@ const DoctorAvailabilitySystem = () => {
       </div>
 
       {/* Conflicts Alert */}
-      {showConflicts && statistics.conflicts > 0 && (
-        <ConflictAlert conflicts={[]} />
+      {showConflicts && conflictsData && (
+        <ConflictAlert conflicts={conflictsData.data || conflictsData} />
       )}
 
       {/* Controls */}
@@ -718,7 +681,8 @@ const DoctorAvailabilitySystem = () => {
                   <SelectItem value="all">All Doctors</SelectItem>
                   {doctors.map((doctor) => (
                     <SelectItem key={doctor.id} value={doctor.id}>
-                      Dr. {doctor.firstName} {doctor.lastName}
+                      Dr. {doctor.first_name || doctor.firstName}{" "}
+                      {doctor.last_name || doctor.lastName}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -754,41 +718,21 @@ const DoctorAvailabilitySystem = () => {
       </Card>
 
       {/* Schedule Views */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Doctors</CardTitle>
-              <CardDescription>
-                {filteredDoctors.length} doctor
-                {filteredDoctors.length !== 1 ? "s" : ""} shown
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-0">
-              <ScrollArea className="h-[600px]">
-                <div className="p-4">
-                  {filteredDoctors.map((doctor) => (
-                    <DoctorCard key={doctor.id} doctor={doctor} />
-                  ))}
-                </div>
-              </ScrollArea>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="lg:col-span-3">
-          {viewMode === "week" && <WeekView />}
-          {viewMode === "day" && <DayView />}
-          {viewMode === "month" && (
-            <Card>
-              <CardContent className="p-8 text-center">
-                <CalendarIcon className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Month view coming soon</p>
-              </CardContent>
-            </Card>
-          )}
-        </div>
-      </div>
+      <Tabs value={viewMode} onValueChange={setViewMode}>
+        <TabsContent value="week" className="mt-0">
+          <WeekView />
+        </TabsContent>
+        <TabsContent value="day" className="mt-0">
+          <DayView />
+        </TabsContent>
+        <TabsContent value="month" className="mt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredDoctors.map((doctor) => (
+              <DoctorCard key={doctor.id} doctor={doctor} />
+            ))}
+          </div>
+        </TabsContent>
+      </Tabs>
 
       {/* Time Off Requests */}
       <Card>
@@ -804,7 +748,7 @@ const DoctorAvailabilitySystem = () => {
         <CardContent>
           <div className="space-y-3">
             {timeOffRequests.map((request) => {
-              const doctor = doctors.find((d) => d.id === request.doctorId);
+              const doctor = doctors.find((d) => d.id === request.doctor_id);
               return (
                 <div
                   key={request.id}
@@ -812,18 +756,19 @@ const DoctorAvailabilitySystem = () => {
                 >
                   <div className="flex items-center space-x-3">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={doctor?.avatar} />
+                      <AvatarImage src={doctor?.avatar || doctor?.profile_image} />
                       <AvatarFallback className="bg-blue-100 text-blue-600 text-sm">
-                        {doctor?.firstName[0]}
-                        {doctor?.lastName[0]}
+                        {doctor?.first_name?.[0] || doctor?.firstName?.[0]}
+                        {doctor?.last_name?.[0] || doctor?.lastName?.[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="font-medium">
-                        Dr. {doctor?.firstName} {doctor?.lastName}
+                        Dr. {doctor?.first_name || doctor?.firstName}{" "}
+                        {doctor?.last_name || doctor?.lastName}
                       </div>
                       <div className="text-sm text-gray-600">
-                        {request.startDate} - {request.endDate} •{" "}
+                        {request.start_date} - {request.end_date} •{" "}
                         {request.reason}
                       </div>
                     </div>

@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import FormattedInput from "@/components/forms/FormattedInput";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,41 +21,54 @@ export default function PatientIntakeForm({
   editingName,
   setEditingName,
 }) {
+  // Set default report name immediately when component loads
+  useEffect(() => {
+    if (!reportName || reportName === "Untitled Report") {
+      const currentDate = new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      setReportName(`Patient Intake - ${currentDate}`);
+    }
+  }, []); // Empty dependency array means this runs once when component mounts
+
   const [formData, setFormData] = useState({
-    firstName: initialData.firstName || "",
-    middleName: initialData.middleName || "",
-    lastName: initialData.lastName || "",
+    first_name: initialData.first_name || "",
+    middle_name: initialData.middle_name || "",
+    last_name: initialData.last_name || "",
     ssn: initialData.ssn || "",
-    dob: initialData.dob || "",
+    date_of_birth: initialData.date_of_birth || "",
     gender: initialData.gender || "",
-    status: initialData.status || "",
+    marital_status: initialData.marital_status || "",
     race: initialData.race || "",
-    street: initialData.street || "",
+    address: initialData.address || "",
     city: initialData.city || "",
     state: initialData.state || "",
-    zip: initialData.zip || "",
-    homePhone: initialData.homePhone || "",
-    employer: initialData.employer || "",
-    occupation: initialData.occupation || "",
-    workAddress: initialData.workAddress || "",
-    workPhone: initialData.workPhone || "",
-    spousePhone: initialData.spousePhone || "",
-    contact1: initialData.contact1 || "",
-    contact1Phone: initialData.contact1Phone || "",
-    contact1Relationship: initialData.contact1Relationship || "",
+    zip_code: initialData.zip_code || "",
+    home_phone: initialData.home_phone || "",
+    cell_phone: initialData.cell_phone || "",
+    emergency_contact_name: initialData.emergency_contact_name || "",
+    emergency_contact_phone: initialData.emergency_contact_phone || "",
+    emergency_contact_relationship: initialData.emergency_contact_relationship || ""
   });
+
   const [errors, setErrors] = useState({});
 
   const requiredFields = {
-    firstName: "First Name",
-    lastName: "Last Name",
-    dob: "Date of Birth",
+    first_name: "First Name",
+    last_name: "Last Name",
+    date_of_birth: "Date of Birth",
     gender: "Gender",
-    street: "Street",
+    marital_status: "Marital Status",
+    address: "Street Address",
     city: "City",
     state: "State",
-    zip: "Zip",
-    homePhone: "Home Phone",
+    zip_code: "ZIP Code",
+    home_phone: "Home Phone",
+    emergency_contact_name: "Emergency Contact Name",
+    emergency_contact_phone: "Emergency Contact Phone",
+    emergency_contact_relationship: "Emergency Contact Relationship"
   };
 
   const handleChange = (field, value) => {
@@ -63,24 +77,56 @@ export default function PatientIntakeForm({
 
   const validate = () => {
     const errs = {};
+    
+    // Required field validation
     Object.entries(requiredFields).forEach(([field, label]) => {
       if (!formData[field] || String(formData[field]).trim() === "") {
         errs[field] = `${label} is required`;
       }
     });
-    if (formData.ssn && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn)) {
-      errs.ssn = "Invalid SSN format";
+
+    // Name length validations
+    if (formData.first_name && (formData.first_name.length < 2 || formData.first_name.length > 50)) {
+      errs.first_name = "First name must be between 2 and 50 characters";
     }
-    Object.keys(formData)
-      .filter((k) => k.toLowerCase().includes("phone"))
-      .forEach((field) => {
-        if (
-          formData[field] &&
-          !/^(?:\(\d{3}\)|\d{3})[-.\s]?\d{3}[-.\s]?\d{4}$/.test(formData[field])
-        ) {
-          errs[field] = "Invalid phone number";
-        }
-      });
+    if (formData.last_name && (formData.last_name.length < 2 || formData.last_name.length > 50)) {
+      errs.last_name = "Last name must be between 2 and 50 characters";
+    }
+    if (formData.middle_name && formData.middle_name.length > 50) {
+      errs.middle_name = "Middle name must not exceed 50 characters";
+    }
+
+    // State validation
+    if (formData.state && formData.state.length !== 2) {
+      errs.state = "State must be a 2-letter code";
+    }
+
+    // Phone number validations
+    const phoneFields = ['home_phone', 'cell_phone', 'emergency_contact_phone'];
+    phoneFields.forEach(field => {
+      if (formData[field] && !/^\d{10}$/.test(formData[field].replace(/\D/g, ''))) {
+        errs[field] = "Please enter a valid 10-digit phone number";
+      }
+    });
+
+    // SSN validation (if provided)
+    if (formData.ssn && !/^\d{3}-\d{2}-\d{4}$/.test(formData.ssn)) {
+      errs.ssn = "Please enter SSN in format: XXX-XX-XXXX";
+    }
+
+    // ZIP code validation
+    if (formData.zip_code && !/^\d{5}(-\d{4})?$/.test(formData.zip_code)) {
+      errs.zip_code = "Please enter a valid ZIP code (5 or 9 digits)";
+    }
+
+    // Emergency contact validations
+    if (formData.emergency_contact_name && formData.emergency_contact_name.length > 100) {
+      errs.emergency_contact_name = "Emergency contact name must not exceed 100 characters";
+    }
+    if (formData.emergency_contact_relationship && formData.emergency_contact_relationship.length > 50) {
+      errs.emergency_contact_relationship = "Relationship must not exceed 50 characters";
+    }
+
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -88,9 +134,17 @@ export default function PatientIntakeForm({
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validate()) {
-      onSubmit(formData);
+      onSubmit({
+        ...formData,
+        name: reportName // Use the current report name
+      });
     }
   };
+
+  // Check if all required fields are filled
+  const isFormComplete = Object.entries(requiredFields).every(
+    ([field]) => formData[field] && String(formData[field]).trim() !== ""
+  );
 
   return (
     <form onSubmit={handleSubmit}>
@@ -113,9 +167,10 @@ export default function PatientIntakeForm({
           ) : (
             <CardTitle
               onClick={() => setEditingName(true)}
-              className="cursor-pointer"
+              className="cursor-pointer hover:text-primary"
             >
               {reportName || "Untitled Report"}
+              <span className="ml-2 text-xs text-muted-foreground">(click to edit)</span>
             </CardTitle>
           )}
           <p className="text-sm text-muted-foreground mt-1">
@@ -123,6 +178,25 @@ export default function PatientIntakeForm({
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
+          {/* Show completion message when all required fields are filled */}
+          {isFormComplete && (
+            <div className="bg-green-50 border border-green-200 rounded-md p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-green-700">
+                    Patient information completed! Click 'Submit Report' to proceed.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Show error summary when there are validation errors */}
           {Object.keys(errors).length > 0 && (
             <div className="text-red-500 text-sm">
               <p>Please fill out these required fields:</p>
@@ -133,67 +207,77 @@ export default function PatientIntakeForm({
               </ul>
             </div>
           )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="firstName">First Name</Label>
+              <Label htmlFor="first_name">First Name*</Label>
               <Input
-                id="firstName"
-                value={formData.firstName}
-                onChange={(e) => handleChange("firstName", e.target.value)}
+                id="first_name"
+                value={formData.first_name}
+                onChange={(e) => handleChange("first_name", e.target.value)}
+                className={errors.first_name ? "border-red-500" : ""}
               />
-              {errors.firstName && (
-                <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+              {errors.first_name && (
+                <p className="text-red-500 text-sm mt-1">{errors.first_name}</p>
               )}
             </div>
             <div>
-              <Label htmlFor="middleName">Middle Name</Label>
+              <Label htmlFor="middle_name">Middle Name</Label>
               <Input
-                id="middleName"
-                value={formData.middleName}
-                onChange={(e) => handleChange("middleName", e.target.value)}
+                id="middle_name"
+                value={formData.middle_name}
+                onChange={(e) => handleChange("middle_name", e.target.value)}
+                className={errors.middle_name ? "border-red-500" : ""}
               />
+              {errors.middle_name && (
+                <p className="text-red-500 text-sm mt-1">{errors.middle_name}</p>
+              )}
             </div>
             <div>
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label htmlFor="last_name">Last Name*</Label>
               <Input
-                id="lastName"
-                value={formData.lastName}
-                onChange={(e) => handleChange("lastName", e.target.value)}
+                id="last_name"
+                value={formData.last_name}
+                onChange={(e) => handleChange("last_name", e.target.value)}
+                className={errors.last_name ? "border-red-500" : ""}
               />
-              {errors.lastName && (
-                <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+              {errors.last_name && (
+                <p className="text-red-500 text-sm mt-1">{errors.last_name}</p>
               )}
             </div>
             <div>
               <Label htmlFor="ssn">SSN</Label>
-              <Input
+              <FormattedInput
+                type="ssn"
                 id="ssn"
                 value={formData.ssn}
-                onChange={(e) => handleChange("ssn", e.target.value)}
+                onChange={(value) => handleChange("ssn", value)}
+                className={errors.ssn ? "border-red-500" : ""}
               />
               {errors.ssn && (
                 <p className="text-red-500 text-sm mt-1">{errors.ssn}</p>
               )}
             </div>
             <div>
-              <Label htmlFor="dob">Date of Birth</Label>
+              <Label htmlFor="date_of_birth">Date of Birth*</Label>
               <Input
-                id="dob"
+                id="date_of_birth"
                 type="date"
-                value={formData.dob}
-                onChange={(e) => handleChange("dob", e.target.value)}
+                value={formData.date_of_birth}
+                onChange={(e) => handleChange("date_of_birth", e.target.value)}
+                className={errors.date_of_birth ? "border-red-500" : ""}
               />
-              {errors.dob && (
-                <p className="text-red-500 text-sm mt-1">{errors.dob}</p>
+              {errors.date_of_birth && (
+                <p className="text-red-500 text-sm mt-1">{errors.date_of_birth}</p>
               )}
             </div>
             <div>
-              <Label>Gender</Label>
+              <Label>Gender*</Label>
               <Select
                 value={formData.gender}
                 onValueChange={(val) => handleChange("gender", val)}
               >
-                <SelectTrigger>
+                <SelectTrigger className={errors.gender ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -207,12 +291,12 @@ export default function PatientIntakeForm({
               )}
             </div>
             <div>
-              <Label>Status</Label>
+              <Label>Marital Status*</Label>
               <Select
-                value={formData.status}
-                onValueChange={(val) => handleChange("status", val)}
+                value={formData.marital_status}
+                onValueChange={(val) => handleChange("marital_status", val)}
               >
-                <SelectTrigger>
+                <SelectTrigger className={errors.marital_status ? "border-red-500" : ""}>
                   <SelectValue placeholder="Select" />
                 </SelectTrigger>
                 <SelectContent>
@@ -223,6 +307,9 @@ export default function PatientIntakeForm({
                   ))}
                 </SelectContent>
               </Select>
+              {errors.marital_status && (
+                <p className="text-red-500 text-sm mt-1">{errors.marital_status}</p>
+              )}
             </div>
             <div>
               <Label>Race/Ethnicity</Label>
@@ -252,105 +339,78 @@ export default function PatientIntakeForm({
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="street">Street</Label>
+                <Label htmlFor="address">Street*</Label>
                 <Input
-                  id="street"
-                  value={formData.street}
-                  onChange={(e) => handleChange("street", e.target.value)}
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => handleChange("address", e.target.value)}
+                  className={errors.address ? "border-red-500" : ""}
                 />
-                {errors.street && (
-                  <p className="text-red-500 text-sm mt-1">{errors.street}</p>
+                {errors.address && (
+                  <p className="text-red-500 text-sm mt-1">{errors.address}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor="city">City</Label>
+                <Label htmlFor="city">City*</Label>
                 <Input
                   id="city"
                   value={formData.city}
                   onChange={(e) => handleChange("city", e.target.value)}
+                  className={errors.city ? "border-red-500" : ""}
                 />
                 {errors.city && (
                   <p className="text-red-500 text-sm mt-1">{errors.city}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor="state">State</Label>
+                <Label htmlFor="state">State*</Label>
                 <Input
                   id="state"
                   value={formData.state}
                   onChange={(e) => handleChange("state", e.target.value)}
+                  maxLength={2}
+                  className={errors.state ? "border-red-500" : ""}
                 />
                 {errors.state && (
                   <p className="text-red-500 text-sm mt-1">{errors.state}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor="zip">Zip</Label>
+                <Label htmlFor="zip_code">ZIP Code*</Label>
                 <Input
-                  id="zip"
-                  value={formData.zip}
-                  onChange={(e) => handleChange("zip", e.target.value)}
+                  id="zip_code"
+                  value={formData.zip_code}
+                  onChange={(e) => handleChange("zip_code", e.target.value)}
+                  className={errors.zip_code ? "border-red-500" : ""}
                 />
-                {errors.zip && (
-                  <p className="text-red-500 text-sm mt-1">{errors.zip}</p>
+                {errors.zip_code && (
+                  <p className="text-red-500 text-sm mt-1">{errors.zip_code}</p>
                 )}
               </div>
-              <div className="md:col-span-2">
-                <Label htmlFor="homePhone">Home Phone</Label>
-                <Input
-                  id="homePhone"
-                  value={formData.homePhone}
-                  onChange={(e) => handleChange("homePhone", e.target.value)}
+              <div>
+                <Label htmlFor="home_phone">Home Phone*</Label>
+                <FormattedInput
+                  type="phone"
+                  id="home_phone"
+                  value={formData.home_phone}
+                  onChange={(value) => handleChange("home_phone", value)}
+                  className={errors.home_phone ? "border-red-500" : ""}
                 />
-                {errors.homePhone && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.homePhone}
-                  </p>
+                {errors.home_phone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.home_phone}</p>
                 )}
               </div>
-            </div>
-          </fieldset>
-
-          <fieldset className="border rounded-md p-4 space-y-4">
-            <legend className="text-sm font-medium text-muted-foreground px-2">
-              Employment &amp; Occupation
-            </legend>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="employer">Patient Employed By</Label>
-                <Input
-                  id="employer"
-                  value={formData.employer}
-                  onChange={(e) => handleChange("employer", e.target.value)}
+                <Label htmlFor="cell_phone">Cell Phone</Label>
+                <FormattedInput
+                  type="phone"
+                  id="cell_phone"
+                  value={formData.cell_phone}
+                  onChange={(value) => handleChange("cell_phone", value)}
+                  className={errors.cell_phone ? "border-red-500" : ""}
                 />
-              </div>
-              <div>
-                <Label htmlFor="occupation">Occupation</Label>
-                <Input
-                  id="occupation"
-                  value={formData.occupation}
-                  onChange={(e) => handleChange("occupation", e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="workAddress">Work Address</Label>
-                <Input
-                  id="workAddress"
-                  value={formData.workAddress}
-                  onChange={(e) => handleChange("workAddress", e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="workPhone">Work Phone</Label>
-                <Input
-                  id="workPhone"
-                  value={formData.workPhone}
-                  onChange={(e) => handleChange("workPhone", e.target.value)}
-                />
-                {errors.workPhone && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.workPhone}
-                  </p>
+                {errors.cell_phone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.cell_phone}</p>
                 )}
               </div>
             </div>
@@ -358,57 +418,41 @@ export default function PatientIntakeForm({
 
           <fieldset className="border rounded-md p-4 space-y-4">
             <legend className="text-sm font-medium text-muted-foreground px-2">
-              Emergency &amp; Spouse
+              Emergency Contact Information
             </legend>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="spousePhone">Spouse Phone</Label>
+                <Label htmlFor="emergency_contact_name">Emergency Contact*</Label>
                 <Input
-                  id="spousePhone"
-                  value={formData.spousePhone}
-                  onChange={(e) => handleChange("spousePhone", e.target.value)}
+                  id="emergency_contact_name"
+                  value={formData.emergency_contact_name}
+                  onChange={(e) => handleChange("emergency_contact_name", e.target.value)}
+                  className={errors.emergency_contact_name ? "border-red-500" : ""}
                 />
-                {errors.spousePhone && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.spousePhone}
-                  </p>
+                {errors.emergency_contact_name && (
+                  <p className="text-red-500 text-sm mt-1">{errors.emergency_contact_name}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor="contact1">Emergency Contact</Label>
-                <Input
-                  id="contact1"
-                  value={formData.contact1}
-                  onChange={(e) => handleChange("contact1", e.target.value)}
+                <Label htmlFor="emergency_contact_phone">Contact Phone*</Label>
+                <FormattedInput
+                  type="phone"
+                  id="emergency_contact_phone"
+                  value={formData.emergency_contact_phone}
+                  onChange={(value) => handleChange("emergency_contact_phone", value)}
+                  className={errors.emergency_contact_phone ? "border-red-500" : ""}
                 />
-                {errors.contact1 && (
-                  <p className="text-red-500 text-sm mt-1">{errors.contact1}</p>
+                {errors.emergency_contact_phone && (
+                  <p className="text-red-500 text-sm mt-1">{errors.emergency_contact_phone}</p>
                 )}
               </div>
               <div>
-                <Label htmlFor="contact1Phone">Contact Phone</Label>
-                <Input
-                  id="contact1Phone"
-                  value={formData.contact1Phone}
-                  onChange={(e) =>
-                    handleChange("contact1Phone", e.target.value)
-                  }
-                />
-                {errors.contact1Phone && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.contact1Phone}
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label>Relationship</Label>
+                <Label>Relationship*</Label>
                 <Select
-                  value={formData.contact1Relationship}
-                  onValueChange={(val) =>
-                    handleChange("contact1Relationship", val)
-                  }
+                  value={formData.emergency_contact_relationship}
+                  onValueChange={(val) => handleChange("emergency_contact_relationship", val)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={errors.emergency_contact_relationship ? "border-red-500" : ""}>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
@@ -426,19 +470,29 @@ export default function PatientIntakeForm({
                     ))}
                   </SelectContent>
                 </Select>
+                {errors.emergency_contact_relationship && (
+                  <p className="text-red-500 text-sm mt-1">{errors.emergency_contact_relationship}</p>
+                )}
               </div>
             </div>
           </fieldset>
+
           <div className="flex justify-between pt-4">
             {onBack && (
               <Button type="button" variant="outline" onClick={onBack}>
                 Previous
               </Button>
             )}
-            <Button type="submit">Next</Button>
+            <Button 
+              type="submit"
+              className={isFormComplete ? "bg-green-600 hover:bg-green-700" : ""}
+            >
+              Submit Report
+            </Button>
           </div>
         </CardContent>
       </Card>
     </form>
   );
 }
+

@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Clock, User, Stethoscope, Eye, Users, AlertCircle } from "lucide-react";
-import { useGetConversationsQuery } from "@/services/chatApi";
-import { useGetDoctorsQuery } from "@/services/appointmentApi";
+import { useGetConversationsQuery } from "@/api/services/chatApi";
+import { useGetDoctorsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { selectUserId, selectUserRole } from "../../state/data/authSlice";
@@ -21,7 +21,10 @@ export default function RecentChatMessages({
   const userId = useSelector(selectUserId);
   const userRole = useSelector(selectUserRole);
   const { data: conversationsData, isLoading, error } = useGetConversationsQuery(
-    { limit: limit * 2 },
+    { 
+      limit: limit * 2,
+      status: 'active'
+    },
     {
       // Prevent constant refetching on error
       refetchOnMountOrArgChange: false,
@@ -43,23 +46,20 @@ export default function RecentChatMessages({
   const conversations = useMemo(() => {
     if (!conversationsData) return [];
     
+    let conversationsArray = [];
+    
     if (Array.isArray(conversationsData)) {
-      return conversationsData;
+      conversationsArray = conversationsData;
+    } else if (conversationsData.metadata && Array.isArray(conversationsData.metadata.conversations)) {
+      conversationsArray = conversationsData.metadata.conversations;
+    } else if (conversationsData.metadata && Array.isArray(conversationsData.metadata)) {
+      conversationsArray = conversationsData.metadata;
+    } else if (conversationsData.conversations && Array.isArray(conversationsData.conversations)) {
+      conversationsArray = conversationsData.conversations;
     }
     
-    if (conversationsData.metadata && Array.isArray(conversationsData.metadata.conversations)) {
-      return conversationsData.metadata.conversations;
-    }
-    
-    if (conversationsData.metadata && Array.isArray(conversationsData.metadata)) {
-      return conversationsData.metadata;
-    }
-    
-    if (conversationsData.conversations && Array.isArray(conversationsData.conversations)) {
-      return conversationsData.conversations;
-    }
-    
-    return [];
+    // Filter to only show active conversations
+    return conversationsArray.filter(conv => conv.status === 'active');
   }, [conversationsData]);
 
   // Get available doctors for name resolution

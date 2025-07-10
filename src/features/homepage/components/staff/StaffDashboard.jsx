@@ -21,7 +21,7 @@ import {
   ClipboardList,
   PhoneCall,
 } from "lucide-react";
-import { useGetAppointmentsQuery } from "@/services/appointmentApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import RecentChatMessages from "@/components/dashboard/RecentChatMessages";
 import QuickScheduler from "../../../appointments/components/QuickScheduler";
 import { Link } from "react-router-dom";
