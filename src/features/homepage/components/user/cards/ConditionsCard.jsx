@@ -2,22 +2,20 @@ import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText, AlertCircle, Eye, Car, Briefcase, Activity, Heart } from "lucide-react";
-import { useGetPatientReportsQuery } from "@/api/services/reportApi";
+import { useGetIncidentsQuery } from "@/api/services/reportApi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
 export default function ConditionsCard() {
   const user = useSelector((state) => state?.auth);
   
-  // Get patient reports to extract health conditions
+  // Get user incidents to extract health conditions
   const { 
-    data: reportsData, 
+    data: incidentsData, 
     isLoading, 
     error 
-  } = useGetPatientReportsQuery(
+  } = useGetIncidentsQuery(
     { 
-      patientId: user?.userID,
-      type: 'health-condition',
       limit: 10 
     },
     { 
@@ -71,68 +69,76 @@ export default function ConditionsCard() {
     }
   ];
 
-  // Extract conditions from API response
+  // Extract conditions from incident data
   const conditions = React.useMemo(() => {
-    if (!reportsData) return [];
+    if (!incidentsData) return [];
     
-    let rawReports = [];
-    if (reportsData?.data?.reports && Array.isArray(reportsData.data.reports)) {
-      rawReports = reportsData.data.reports;
-    } else if (Array.isArray(reportsData)) {
-      rawReports = reportsData;
-    } else if (reportsData.reports && Array.isArray(reportsData.reports)) {
-      rawReports = reportsData.reports;
+    let rawIncidents = [];
+    if (incidentsData?.data && Array.isArray(incidentsData.data)) {
+      rawIncidents = incidentsData.data;
+    } else if (Array.isArray(incidentsData)) {
+      rawIncidents = incidentsData;
     }
 
-    // Extract health conditions from reports
+    // Extract health conditions from incidents
     const extractedConditions = [];
     
-    rawReports.forEach(report => {
-      if (report.data) {
-        // Try to extract conditions from various report structures
-        const reportData = typeof report.data === 'string' ? JSON.parse(report.data) : report.data;
-        
-        // Check for health conditions in different formats
-        if (reportData.healthConditions && Array.isArray(reportData.healthConditions)) {
-          reportData.healthConditions.forEach(condition => {
-            extractedConditions.push({
-              id: `${report.id}-${condition.name || condition.title || Math.random()}`,
-              name: condition.name || condition.title || condition.condition,
-              description: condition.description || condition.details,
-              severity: condition.severity || condition.level || 'medium',
-              dateReported: report.created_at || report.createdAt,
-              reportId: report.id
-            });
-          });
-        }
-        
-        // Check for pain conditions
-        if (reportData.painConditions && Array.isArray(reportData.painConditions)) {
-          reportData.painConditions.forEach(condition => {
-            extractedConditions.push({
-              id: `${report.id}-pain-${condition.location || Math.random()}`,
-              name: `${condition.location} Pain` || 'Pain Condition',
-              description: condition.description || `Pain in ${condition.location}`,
-              severity: condition.intensity === 'severe' ? 'high' : condition.intensity === 'mild' ? 'low' : 'medium',
-              dateReported: report.created_at || report.createdAt,
-              reportId: report.id
-            });
-          });
-        }
-
-        // Check for medical history
-        if (reportData.medicalHistory && Array.isArray(reportData.medicalHistory)) {
-          reportData.medicalHistory.forEach(condition => {
-            extractedConditions.push({
-              id: `${report.id}-history-${condition.name || Math.random()}`,
-              name: condition.name || condition.condition,
-              description: condition.description || condition.notes,
-              severity: 'medium',
-              dateReported: report.created_at || report.createdAt,
-              reportId: report.id
-            });
-          });
-        }
+    rawIncidents.forEach(incident => {
+      if (incident.forms && Array.isArray(incident.forms)) {
+        incident.forms.forEach(form => {
+          if (form.form_type === 'medical_history' && form.form_data) {
+            const formData = typeof form.form_data === 'string' ? JSON.parse(form.form_data) : form.form_data;
+            
+            // Extract medical conditions
+            if (formData.medical_conditions && Array.isArray(formData.medical_conditions)) {
+              formData.medical_conditions.forEach(condition => {
+                extractedConditions.push({
+                  id: `${incident.id}-${form.id}-${condition.name || Math.random()}`,
+                  name: condition.name || condition.condition,
+                  description: condition.description || condition.details,
+                  severity: condition.severity || 'medium',
+                  dateReported: incident.created_at || incident.createdAt,
+                  incidentId: incident.id,
+                  incidentType: incident.incident_type
+                });
+              });
+            }
+            
+            // Extract chronic conditions
+            if (formData.chronic_conditions && Array.isArray(formData.chronic_conditions)) {
+              formData.chronic_conditions.forEach(condition => {
+                extractedConditions.push({
+                  id: `${incident.id}-${form.id}-chronic-${condition.name || Math.random()}`,
+                  name: condition.name || condition.condition,
+                  description: condition.description || 'Chronic condition',
+                  severity: 'medium',
+                  dateReported: incident.created_at || incident.createdAt,
+                  incidentId: incident.id,
+                  incidentType: incident.incident_type
+                });
+              });
+            }
+          }
+          
+          // Extract pain conditions from pain assessment forms
+          if (form.form_type === 'pain_assessment' && form.form_data) {
+            const formData = typeof form.form_data === 'string' ? JSON.parse(form.form_data) : form.form_data;
+            
+            if (formData.pain_locations && Array.isArray(formData.pain_locations)) {
+              formData.pain_locations.forEach(location => {
+                extractedConditions.push({
+                  id: `${incident.id}-${form.id}-pain-${location.area || Math.random()}`,
+                  name: `${location.area || 'Unknown'} Pain`,
+                  description: `Pain in ${location.area} - Level ${location.intensity || 'Unknown'}`,
+                  severity: location.intensity >= 7 ? 'high' : location.intensity >= 4 ? 'medium' : 'low',
+                  dateReported: incident.created_at || incident.createdAt,
+                  incidentId: incident.id,
+                  incidentType: incident.incident_type
+                });
+              });
+            }
+          }
+        });
       }
     });
 
@@ -145,7 +151,7 @@ export default function ConditionsCard() {
       .slice(0, 5);
 
     return uniqueConditions;
-  }, [reportsData]);
+  }, [incidentsData]);
 
   const getSeverityColor = (severity) => {
     switch (severity?.toLowerCase()) {

@@ -65,4 +65,43 @@ export {
   useApproveTimeOffRequestMutation,
   useGetDoctorConflictsQuery,
   useGetScheduleStatisticsQuery,
-} from './services/doctorScheduleApi'; 
+} from './services/doctorScheduleApi';
+
+// Report/Incident API exports
+export {
+  reportApi,
+  useCreateIncidentMutation,
+  useGetIncidentsQuery,
+  useGetIncidentByIdQuery,
+  useUpdateIncidentMutation,
+  useDeleteIncidentMutation,
+  useSaveIncidentFormMutation,
+  useUpdateIncidentFormMutation,
+  useAddIncidentNoteMutation,
+  useGetCompleteIncidentFormsQuery,
+  useSubmitIncidentFormsMutation,
+  useGetIncidentFormQuery,
+  // Simple form submission hooks
+  useSubmitPatientInfoFormMutation,
+  useSubmitHealthInsuranceFormMutation,
+  useSubmitPainDescriptionFormNewMutation,
+  useSubmitPainAssessmentFormNewMutation,
+  useSubmitMedicalHistoryFormNewMutation,
+  useSubmitLifestyleImpactFormNewMutation,
+} from './services/reportApi';
+
+// Chat API exports
+export {
+  chatApi,
+  useCreateConversationMutation,
+  useGetConversationUsersQuery,
+  useGetConversationsQuery,
+  useGetConversationQuery,
+  useUpdateConversationStatusMutation,
+  useDeleteConversationMutation,
+  useGetMessagesQuery,
+  useSendMessageMutation,
+  usePollForNewMessagesQuery,
+  useGetMessageStatusQuery,
+  useGetAvailableUsersQuery,
+} from './services/chatApi'; 

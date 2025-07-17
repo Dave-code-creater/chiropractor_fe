@@ -135,35 +135,7 @@ const GlobalSearch = ({ onResultSelect, userRole = "admin" }) => {
       },
     ],
     clinicalNotes: [
-      {
-        id: "NOTE-001",
-        type: "clinical-note",
-        title: "Progress Note - John Smith",
-        subtitle: "Created 3 days ago",
-        description:
-          "Patient showing significant improvement in lower back mobility",
-        status: "completed",
-        priority: "normal",
-        tags: ["progress", "improvement"],
-        lastUpdated: new Date("2025-01-16"),
-        assignedTo: "Dr. Johnson",
-        painLevel: "3/10",
-        treatmentType: "Chiropractic Adjustment",
-      },
-      {
-        id: "NOTE-002",
-        type: "clinical-note",
-        title: "Initial Assessment - Sarah Johnson",
-        subtitle: "Created 1 week ago",
-        description: "Comprehensive evaluation for chronic headaches",
-        status: "completed",
-        priority: "high",
-        tags: ["initial", "headache"],
-        lastUpdated: new Date("2025-01-12"),
-        assignedTo: "Dr. Smith",
-        painLevel: "7/10",
-        treatmentType: "Initial Consultation",
-      },
+      // Clinical notes will be loaded from API
     ],
     reports: [
       {

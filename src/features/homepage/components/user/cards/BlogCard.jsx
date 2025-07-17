@@ -4,15 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { BookText, Clock, Eye, ArrowRight } from "lucide-react";
-import { useGetBlogPostsQuery } from "@/api/services/blogApi";
+import { useGetPublicBlogPostsQuery } from "@/api/services/blogApi";
 
 export default function BlogCard() {
-  const { data, isLoading } = useGetBlogPostsQuery({
-    status: "published",
+  const { data, isLoading } = useGetPublicBlogPostsQuery({
     limit: 5,
   });
 
-  const posts = data?.posts || [];
+  const posts = data?.data?.posts || [];
 
   // Format date
   const formatDate = (dateString) => {

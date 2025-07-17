@@ -10,29 +10,11 @@ export const chatApi = createApi({
   refetchOnFocus: true,
   refetchOnReconnect: true,
   endpoints: (builder) => ({
-    // Get staff, admin and doctors for chat (role-based filtering)
-    getAvailableUsers: builder.query({
-      query: (params = {}) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.search) queryParams.append("search", params.search);
-        if (params.role) queryParams.append("role", params.role);
-        if (params.limit) queryParams.append("limit", params.limit.toString());
-        if (params.offset) queryParams.append("offset", params.offset.toString());
+    // ===============================================
+    // CONVERSATION ROUTES
+    // ===============================================
 
-        return `chat/staff-admin-doctors?${queryParams}`;
-      },
-      transformResponse: (response) => {
-        // Handle the new API response format
-        if (response?.success && response?.data) {
-          return response.data;
-        }
-        return response;
-      },
-      providesTags: ["AvailableUsers"],
-    }),
-
-    // Create a new conversation (role-based restrictions enforced by backend)
+    // Create a new conversation
     createConversation: builder.mutation({
       query: (data) => ({
         url: "chat/conversations",
@@ -48,23 +30,50 @@ export const chatApi = createApi({
       invalidatesTags: ["Conversations"],
     }),
 
-    // Get user's conversations
-    getConversations: builder.query({
+    // Get available users for creating conversations
+    getConversationUsers: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
         
-        if (params.status) queryParams.append("status", params.status);
-        if (params.conversation_type) queryParams.append("conversation_type", params.conversation_type);
-        if (params.limit) queryParams.append("limit", params.limit.toString());
-        if (params.offset) queryParams.append("offset", params.offset.toString());
+        if (params.role) queryParams.append("role", params.role);
+        if (params.search_term) queryParams.append("search_term", params.search_term);
+        if (params.per_page) queryParams.append("per_page", params.per_page.toString());
+        if (params.page) queryParams.append("page", params.page.toString());
 
-        return `chat/conversations?${queryParams}`;
+        const queryString = queryParams.toString();
+        return `chat/conversations/users${queryString ? `?${queryString}` : ''}`;
       },
       transformResponse: (response) => {
         if (response?.success && response?.data) {
           return response.data;
         }
         return response;
+      },
+      providesTags: ["AvailableUsers"],
+    }),
+
+    // Get user's conversations
+    getConversations: builder.query({
+      query: (params = {}) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params.page) queryParams.append("page", params.page.toString());
+        if (params.per_page) queryParams.append("per_page", params.per_page.toString());
+        if (params.status) queryParams.append("status", params.status);
+
+        const queryString = queryParams.toString();
+        return `chat/conversations${queryString ? `?${queryString}` : ''}`;
+      },
+      transformResponse: (response) => {
+        if (!response?.success) {
+          return { conversations: [] };
+        }
+
+        if (!response?.data?.conversations) {
+          return { conversations: [] };
+        }
+
+        return response.data;
       },
       providesTags: ["Conversations"],
     }),
@@ -81,47 +90,7 @@ export const chatApi = createApi({
       providesTags: (result, error, id) => [{ type: "Conversations", id }],
     }),
 
-    // Get messages for a specific conversation
-    getMessages: builder.query({
-      query: ({ conversationId, ...params }) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.limit) queryParams.append("limit", params.limit.toString());
-        if (params.offset) queryParams.append("offset", params.offset.toString());
-
-        return `chat/conversations/${conversationId}/messages`;
-      },
-      transformResponse: (response) => {
-        if (response?.success && response?.data) {
-          return response.data;
-        }
-        return response;
-      },
-      providesTags: (result, error, { conversationId }) => [
-        { type: "Messages", id: conversationId },
-      ],
-    }),
-
-    // Send a message
-    sendMessage: builder.mutation({
-      query: (data) => ({
-        url: "chat/messages",
-        method: "POST",
-        body: data,
-      }),
-      transformResponse: (response) => {
-        if (response?.success && response?.data) {
-          return response.data;
-        }
-        return response;
-      },
-      invalidatesTags: (result, error, { conversation_id }) => [
-        { type: "Messages", id: conversation_id },
-        "Conversations",
-      ],
-    }),
-
-    // Update conversation status (Doctors/Staff/Admin only)
+    // Update conversation status
     updateConversationStatus: builder.mutation({
       query: ({ conversationId, status }) => ({
         url: `chat/conversations/${conversationId}/status`,
@@ -140,7 +109,7 @@ export const chatApi = createApi({
       ],
     }),
 
-    // Delete conversation (if supported)
+    // Delete conversation
     deleteConversation: builder.mutation({
       query: (conversationId) => ({
         url: `chat/conversations/${conversationId}`,
@@ -154,21 +123,151 @@ export const chatApi = createApi({
       },
       invalidatesTags: ["Conversations"],
     }),
+
+    // ===============================================
+    // MESSAGE ROUTES
+    // ===============================================
+
+    // Get messages for a conversation (fallback for initial load)
+    getMessages: builder.query({
+      query: ({ conversationId, ...params }) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params.page) queryParams.append("page", params.page.toString());
+        if (params.per_page) queryParams.append("per_page", params.per_page.toString());
+        if (params.sort_order) queryParams.append("sort_order", params.sort_order);
+
+        const queryString = queryParams.toString();
+        return `chat/conversations/${conversationId}/messages${queryString ? `?${queryString}` : ''}`;
+      },
+      transformResponse: (response) => {
+        if (!response?.success) {
+          return { messages: [] };
+        }
+
+        if (response?.data?.messages) {
+          return response.data;
+        } else if (response?.data && Array.isArray(response.data)) {
+          return { messages: response.data };
+        } else {
+          return { messages: [] };
+        }
+      },
+      providesTags: (result, error, { conversationId }) => [
+        { type: "Messages", id: conversationId },
+      ],
+    }),
+
+    // Send message to a conversation (Long-Polling compatible)
+    sendMessage: builder.mutation({
+      query: ({ conversationId, content, message_type = "text" }) => ({
+        url: `chat/conversations/${conversationId}/messages`,
+        method: "POST",
+        body: { content, message_type },
+      }),
+      transformResponse: (response) => {
+        if (response?.success && response?.data) {
+          return response.data;
+        }
+        return response;
+      },
+      invalidatesTags: (result, error, { conversationId }) => [
+        { type: "Messages", id: conversationId },
+        "Conversations",
+      ],
+    }),
+
+    // ===============================================
+    // LONG-POLLING AND REAL-TIME MESSAGING
+    // ===============================================
+
+    // Long-polling endpoint to get new messages (replaces regular GET messages)
+    pollForNewMessages: builder.query({
+      query: ({ conversationId, last_message_timestamp, timeout_seconds = 30, max_messages = 50 }) => {
+        const queryParams = new URLSearchParams();
+        
+        if (last_message_timestamp) queryParams.append("last_message_timestamp", last_message_timestamp);
+        if (timeout_seconds) queryParams.append("timeout_seconds", timeout_seconds.toString());
+        if (max_messages) queryParams.append("max_messages", max_messages.toString());
+
+        const queryString = queryParams.toString();
+        return `chat/conversations/${conversationId}/poll${queryString ? `?${queryString}` : ''}`;
+      },
+      transformResponse: (response) => {
+        if (response?.success && response?.data) {
+          return response.data;
+        }
+        return response;
+      },
+      // Don't cache polling requests - always fetch fresh
+      keepUnusedDataFor: 0,
+      // Disable automatic refetching for polling
+      refetchOnMountOrArgChange: false,
+      refetchOnFocus: false,
+      refetchOnReconnect: false,
+    }),
+
+    // Get message status and delivery info
+    getMessageStatus: builder.query({
+      query: ({ conversationId, messageId }) => 
+        `chat/conversations/${conversationId}/messages/${messageId}/status`,
+      transformResponse: (response) => {
+        if (response?.success && response?.data) {
+          return response.data;
+        }
+        return response;
+      },
+      // Cache message status for a short time
+      keepUnusedDataFor: 30,
+    }),
+
+    // ===============================================
+    // LEGACY USER ROUTES
+    // ===============================================
+
+    // Get available users (legacy endpoint)
+    getAvailableUsers: builder.query({
+      query: (params = {}) => {
+        const queryParams = new URLSearchParams();
+        
+        if (params.role) queryParams.append("role", params.role);
+        if (params.search_term) queryParams.append("search_term", params.search_term);
+        if (params.per_page) queryParams.append("per_page", params.per_page.toString());
+        if (params.page) queryParams.append("page", params.page.toString());
+
+        const queryString = queryParams.toString();
+        return `chat/users${queryString ? `?${queryString}` : ''}`;
+      },
+      transformResponse: (response) => {
+        if (response?.success && response?.data) {
+          return response.data;
+        }
+        return response;
+      },
+      providesTags: ["AvailableUsers"],
+    }),
   }),
 });
 
 export const {
-  useGetAvailableUsersQuery,
+  // Conversation hooks
   useCreateConversationMutation,
+  useGetConversationUsersQuery,
   useGetConversationsQuery,
-  useGetMessagesQuery,
-  useSendMessageMutation,
+  useGetConversationQuery,
   useUpdateConversationStatusMutation,
   useDeleteConversationMutation,
+  
+  // Message hooks
+  useGetMessagesQuery,
+  useSendMessageMutation,
+  
+  // Polling hooks
+  usePollForNewMessagesQuery,
+  useGetMessageStatusQuery,
+  
+  // Legacy hooks
+  useGetAvailableUsersQuery,
 } = chatApi;
 
-// Legacy compatibility exports for components that might still use old hook names
-export const useCreateDoctorPatientChatMutation = useCreateConversationMutation;
-
-// Export the API for store configuration
 export default chatApi;

@@ -58,61 +58,61 @@ export const userApi = createApi({
 
     // Clinical Notes
     addClinicalNotes: builder.mutation({
-      query: ({ patientId, ...data }) => ({
-        url: `users/patients/${patientId}/clinical-notes`,
+      query: ({ patient_id, ...data }) => ({
+        url: `users/patients/${patient_id}/clinical-notes`,
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, { patientId }) => [
-        { type: "ClinicalNotes", id: patientId },
-        { type: "Patients", id: patientId },
+      invalidatesTags: (result, error, { patient_id }) => [
+        { type: "ClinicalNotes", id: patient_id },
+        { type: "Patients", id: patient_id },
       ],
     }),
 
     getClinicalNotes: builder.query({
-      query: ({ patientId, ...params }) => {
+      query: ({ patient_id, ...params }) => {
         const queryParams = new URLSearchParams();
         
         if (params.date_from) queryParams.append("date_from", params.date_from);
         if (params.date_to) queryParams.append("date_to", params.date_to);
 
         return {
-          url: `users/patients/${patientId}/clinical-notes?${queryParams}`,
+          url: `users/patients/${patient_id}/clinical-notes?${queryParams}`,
           method: "GET",
         };
       },
-      providesTags: (result, error, { patientId }) => [
-        { type: "ClinicalNotes", id: patientId },
+      providesTags: (result, error, { patient_id }) => [
+        { type: "ClinicalNotes", id: patient_id },
       ],
     }),
 
     // Vitals
     recordVitals: builder.mutation({
-      query: ({ patientId, ...data }) => ({
-        url: `users/patients/${patientId}/vitals`,
+      query: ({ patient_id, ...data }) => ({
+        url: `users/patients/${patient_id}/vitals`,
         method: "POST",
         body: data,
       }),
-      invalidatesTags: (result, error, { patientId }) => [
-        { type: "Vitals", id: patientId },
-        { type: "Patients", id: patientId },
+      invalidatesTags: (result, error, { patient_id }) => [
+        { type: "Vitals", id: patient_id },
+        { type: "Patients", id: patient_id },
       ],
     }),
 
     getVitalsHistory: builder.query({
-      query: ({ patientId, ...params }) => {
+      query: ({ patient_id, ...params }) => {
         const queryParams = new URLSearchParams();
         
         if (params.date_from) queryParams.append("date_from", params.date_from);
         if (params.limit) queryParams.append("limit", params.limit.toString());
 
         return {
-          url: `users/patients/${patientId}/vitals?${queryParams}`,
+          url: `users/patients/${patient_id}/vitals?${queryParams}`,
           method: "GET",
         };
       },
-      providesTags: (result, error, { patientId }) => [
-        { type: "Vitals", id: patientId },
+      providesTags: (result, error, { patient_id }) => [
+        { type: "Vitals", id: patient_id },
       ],
     }),
   }),

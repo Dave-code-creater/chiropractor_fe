@@ -25,7 +25,11 @@ import HomePage from "../features/homepage/components/user/HomePage";
 import Setting from "../features/setting/components/Setting";
 import Blog from "../features/blog/components/user/Blog";
 import BlogPost from "../features/blog/components/user/BlogPost";
-import NewChat from "../features/chat/components/NewChat";
+import BlogRouter from "../features/blog/BlogRouter";
+import BlogManagement from "../features/blog/components/doctor/BlogManagement";
+import BlogEditor from "../features/blog/components/doctor/BlogEditor";
+import BlogReader from "../features/blog/components/BlogReader";
+import ChatRouter from "../features/chat/ChatRouter";
 import Profile from "../features/profile/components/Profile";
 import Report from "../features/report/user/Report";
 import Notes from "../features/notes/components/Notes";
@@ -38,7 +42,6 @@ import TermOfService from "../pages/TermOfService";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import AppointmentManagement from "../features/appointments/components/AppointmentManagement";
 import PatientManagement from "../features/patients/components/PatientManagement";
-import QuickScheduler from "../features/appointments/components/QuickScheduler";
 import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
 
 import { getRouteStatus, RouteStatus } from "../config/routes";
@@ -75,6 +78,10 @@ const AppRoutes = () => {
         <Route path="/faq" element={<RouteWrapper element={FAQ} />} />
         <Route path="/terms-of-service" element={<RouteWrapper element={TermOfService} />} />
         <Route path="/privacy-policy" element={<RouteWrapper element={PrivacyPolicy} />} />
+        
+        {/* Public Blog Routes - WordPress-like */}
+        <Route path="/blog" element={<RouteWrapper element={BlogReader} />} />
+        <Route path="/blog/:slug" element={<RouteWrapper element={BlogReader} />} />
       </Route>
 
       {/* Auth routes - separate layout */}
@@ -93,7 +100,6 @@ const AppRoutes = () => {
             <Route path="/dashboard/patient/:id">
               <Route index element={<HomePage />} />
               <Route path="appointments" element={<PatientAppointments />} />
-              <Route path="appointments/book" element={<QuickScheduler />} />
               <Route path="reports" element={<Report />} />
               <Route path="notes" element={<Notes />} />
               <Route path="reports" element={<Report />} />
@@ -101,7 +107,7 @@ const AppRoutes = () => {
               <Route path="settings" element={<Setting />} />
               <Route path="blog" element={<Blog />} />
               <Route path="blog/:slug" element={<BlogPost />} />
-              <Route path="chat" element={<NewChat />} />
+              <Route path="chat/*" element={<ChatRouter />} />
               <Route path="medical-records" element={<Report />} />
             </Route>
           </Route>
@@ -117,11 +123,15 @@ const AppRoutes = () => {
               <Route path="appointments" element={<AppointmentManagement />} />
               <Route path="patients" element={<PatientManagement />} />
               <Route path="notes" element={<Notes />} />
-              <Route path="reports" element={<Report />} />
-              <Route path="medical-records" element={<Report />} />
-              <Route path="chat" element={<NewChat />} />
+              <Route path="reports" element={<PatientManagement />} />
+              <Route path="medical-records" element={<PatientManagement />} />
+              <Route path="chat/*" element={<ChatRouter />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Setting />} />
+              <Route path="blog/*" element={<BlogRouter />} />
+              <Route path="blog/management" element={<BlogManagement />} />
+              <Route path="blog/editor" element={<BlogEditor />} />
+              <Route path="blog/editor/:postId" element={<BlogEditor />} />
             </Route>
           </Route>
         </Route>
@@ -138,7 +148,7 @@ const AppRoutes = () => {
               <Route path="notes" element={<Notes />} />
               <Route path="reports" element={<Report />} />
               <Route path="medical-records" element={<Report />} />
-              <Route path="chat" element={<NewChat />} />
+              <Route path="chat/*" element={<ChatRouter />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Setting />} />
             </Route>
@@ -158,6 +168,7 @@ const AppRoutes = () => {
               <Route path="reports" element={<Report />} />
               <Route path="doctors" element={<PatientManagement />} />
               <Route path="staff" element={<PatientManagement />} />
+              <Route path="chat/*" element={<ChatRouter />} />
               <Route path="settings" element={<Setting />} />
             </Route>
           </Route>

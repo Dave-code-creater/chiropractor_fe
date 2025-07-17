@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -16,7 +15,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 
-export function RenderBlog({ posts }) {
+const RenderBlog = ({ posts }) => {
   // build category list
   const categories = useMemo(() => {
     const cats = new Set(posts.map((p) => p.category));
@@ -50,14 +49,13 @@ export function RenderBlog({ posts }) {
       {/* grid of cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {filtered.map((post) => (
-          <Link key={post.id} href={`/blog/${post.slug}`} className="group">
+          <Link key={post.id} to={`/blog/${post.slug}`} className="group">
             <Card className="overflow-hidden">
               <div className="relative w-full h-48 bg-gray-100 group-hover:opacity-90 transition">
-                <Image
+                <img
                   src={post.imageUrl}
                   alt={post.title}
-                  fill
-                  className="object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
               <CardHeader className="px-4 pt-4">
@@ -72,4 +70,6 @@ export function RenderBlog({ posts }) {
       </div>
     </div>
   );
-}
+};
+
+export default RenderBlog;

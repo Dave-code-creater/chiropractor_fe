@@ -21,9 +21,8 @@ import {
   ClipboardList,
   PhoneCall,
 } from "lucide-react";
-import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
+import { useGetUserAppointmentsQuery } from "@/api/services/appointmentApi";
 import RecentChatMessages from "@/components/dashboard/RecentChatMessages";
-import QuickScheduler from "../../../appointments/components/QuickScheduler";
 import { Link } from "react-router-dom";
 import { selectCurrentUser, selectUserId } from "../../../../state/data/authSlice";
 
@@ -37,32 +36,39 @@ export default function StaffDashboard() {
     data: appointmentsData,
     isLoading,
     error,
-  } = useGetAppointmentsQuery();
+  } = useGetUserAppointmentsQuery({
+    status_not: 'cancelled', // Exclude cancelled appointments
+    limit: 100,
+  });
 
-  // Ensure appointments is always an array with comprehensive checks
+  // Process appointments data - same logic as other appointment components
   const appointments = React.useMemo(() => {
-    if (isLoading || error) return [];
+    if (isLoading || error || !appointmentsData) return [];
 
-    let allAppointments = [];
-    if (Array.isArray(appointmentsData?.metadata)) {
-      allAppointments = appointmentsData.metadata;
-    } else if (Array.isArray(appointmentsData)) {
-      allAppointments = appointmentsData;
-    } else {
-      allAppointments = [];
+    // Based on your API structure: { data: { appointments: [...] } }
+    if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
+      return appointmentsData.data.appointments;
+    }
+    
+    // Fallback: Handle if data is directly in data array
+    if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
+      return appointmentsData.data;
+    }
+    
+    // Fallback: Handle if appointments are at root level
+    if (Array.isArray(appointmentsData)) {
+      return appointmentsData;
     }
 
-    // Filter out canceled appointments from staff overview
-    return allAppointments.filter(apt => 
-      !apt.is_cancel && !apt.is_cancelled && apt.status !== 'cancelled'
-    );
+    return [];
   }, [appointmentsData, isLoading, error]);
 
   // Filter appointments for today
   const today = new Date().toISOString().split("T")[0];
-  const todayAppointments = appointments.filter(
-    (apt) => apt.date === today || apt.datetime?.startsWith(today),
-  );
+  const todayAppointments = appointments.filter(apt => {
+    const appointmentDate = (apt.appointment_date || apt.date || apt.datetime)?.split('T')[0];
+    return appointmentDate === today;
+  });
 
   const pendingAppointments = appointments.filter(
     (apt) => apt.status === "pending" || apt.status === "requested",
@@ -297,9 +303,8 @@ export default function StaffDashboard() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="schedule">Quick Schedule</TabsTrigger>
             <TabsTrigger value="appointments">Appointments</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
           </TabsList>
@@ -382,10 +387,6 @@ export default function StaffDashboard() {
                 </Card>
               </div>
             </div>
-          </TabsContent>
-
-          <TabsContent value="schedule" className="space-y-6">
-            <QuickScheduler />
           </TabsContent>
 
           <TabsContent value="appointments" className="space-y-6">

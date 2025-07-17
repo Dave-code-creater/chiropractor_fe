@@ -23,7 +23,7 @@ export default function DateSelector({
   const { data: availabilityData, isLoading: isLoadingAvailability, error: availabilityError } =
     useGetDoctorAvailabilityQuery(
       {
-        doctorId: bookingData.doctor,
+        doctor_id: bookingData.doctor,
         date: selectedDate?.toISOString().split("T")[0],
       },
       {

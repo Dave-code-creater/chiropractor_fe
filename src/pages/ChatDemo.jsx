@@ -251,7 +251,7 @@ export default function ChatDemo() {
                   </div>
                   <div className="flex items-center justify-between p-2 bg-muted rounded">
                     <span className="font-medium">API Base URL</span>
-                    <Badge variant="outline">http://localhost:3000/v1/api/2025</Badge>
+                    <Badge variant="outline">http://localhost:3000/api/v1/2025</Badge>
                   </div>
                 </div>
               </CardContent>

@@ -116,7 +116,6 @@ export default function QuickScheduler() {
         });
       }
     } catch (error) {
-      console.error("Quick scheduling error:", error);
       toast.error(
         error.data?.message ||
         "Failed to schedule appointment. Please try again."

@@ -166,75 +166,7 @@ const mockPatients = [
   },
 ];
 
-// Mock clinical notes data
-const mockClinicalNotes = {
-  "pt-001": [
-    {
-      id: "note-001",
-      date: "2024-01-15",
-      type: "Progress Note",
-      chiefComplaint: "Lower back pain, improved since last visit",
-      objectiveFindings:
-        "ROM: Flexion 80°, Extension 25°, Lateral flexion 30° bilaterally. Palpation reveals decreased muscle tension in lumbar paraspinals.",
-      assessment:
-        "Acute lumbar strain showing significant improvement. Patient reports 50% reduction in pain levels.",
-      treatment:
-        "Spinal manipulation L3-L5, soft tissue therapy to lumbar paraspinals, therapeutic exercises",
-      plan: "Continue current treatment plan. Add core strengthening exercises. Follow-up in 1 week. Patient education on proper lifting mechanics.",
-      doctorId: "dr-001",
-      doctorName: "Dr. Dieu Phan",
-      duration: "30 minutes",
-      status: "completed",
-      painLevel: "3/10",
-      functionalStatus:
-        "Improved - able to perform daily activities with minimal discomfort",
-    },
-    {
-      id: "note-002",
-      date: "2024-01-08",
-      type: "Initial Assessment",
-      chiefComplaint:
-        "Acute lower back pain following lifting incident at work 2 days ago",
-      objectiveFindings:
-        "Antalgic gait, limited lumbar flexion (40°), positive SLR test at 45° on right. Muscle spasm palpable in L3-L5 paraspinals.",
-      assessment:
-        "Acute lumbar strain with muscle spasm secondary to improper lifting mechanics. No neurological deficits noted.",
-      treatment:
-        "Initial spinal adjustment L4-L5, ice therapy application, patient education on proper lifting techniques",
-      plan: "Return in 3-4 days for follow-up. Ice application 15-20 minutes every 2 hours for first 48 hours. Avoid heavy lifting >10 lbs. Gradual return to normal activities as tolerated.",
-      doctorId: "dr-001",
-      doctorName: "Dr. Dieu Phan",
-      duration: "45 minutes",
-      status: "completed",
-      painLevel: "7/10",
-      functionalStatus:
-        "Significantly limited - difficulty with bending, lifting, prolonged sitting",
-    },
-  ],
-  "pt-002": [
-    {
-      id: "note-003",
-      date: "2024-01-10",
-      type: "Follow-up",
-      chiefComplaint:
-        "Persistent neck pain and tension headaches, ongoing for 3 weeks",
-      objectiveFindings:
-        "Cervical ROM: Flexion 35°, Extension 40°, Rotation 60° bilaterally. Palpable trigger points in upper trapezius and suboccipital muscles.",
-      assessment:
-        "Cervical spine dysfunction with associated tension-type headaches. Forward head posture noted, likely contributing to symptoms.",
-      treatment:
-        "Cervical manipulation C2-C4, trigger point therapy to upper trapezius, postural correction exercises demonstrated",
-      plan: "Continue treatment 2x/week for 2 weeks. Ergonomic workplace assessment recommended. Stress management techniques discussed. Home exercise program for postural strengthening.",
-      doctorId: "dr-001",
-      doctorName: "Dr. Dieu Phan",
-      duration: "35 minutes",
-      status: "completed",
-      painLevel: "5/10",
-      functionalStatus:
-        "Moderately limited - headaches affecting work concentration",
-    },
-  ],
-};
+// Clinical notes will be loaded from API
 
 export default function PatientCaseManagement() {
   const [selectedPatient, setSelectedPatient] = useState(null);
@@ -256,7 +188,7 @@ export default function PatientCaseManagement() {
 
   // API hooks
   const { data: clinicalNotes = [], isLoading: notesLoading } = useGetClinicalNotesQuery(
-    selectedPatient?.id ? { patientId: selectedPatient.id } : undefined,
+    selectedPatient?.id ? { patient_id: selectedPatient.id } : undefined,
     { skip: !selectedPatient?.id }
   );
   const [createClinicalNote, { isLoading: isCreating }] = useCreateClinicalNoteMutation();
@@ -1045,7 +977,7 @@ export default function PatientCaseManagement() {
         {/* Patient List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPatients.map((patient) => {
-            const patientNotes = mockClinicalNotes[patient.id] || [];
+            const patientNotes = []; // Will be loaded from API when patient is selected
             const lastNote = patientNotes[0];
 
             return (

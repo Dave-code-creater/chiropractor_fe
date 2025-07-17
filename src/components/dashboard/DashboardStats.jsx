@@ -41,23 +41,41 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
+import { useGetUserAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useGetPatientsQuery } from "@/api/services/userApi";
-import { useGetReportsQuery } from "@/api/services/reportApi";
+import { useGetIncidentsQuery } from "@/api/services/reportApi";
 
 const DashboardStats = ({ userRole = "admin" }) => {
   const [timeRange, setTimeRange] = useState("7d");
   
-  // Fetch data from APIs
-  const { data: appointmentsData, isLoading: isLoadingAppointments } = useGetAppointmentsQuery();
+  // Fetch data from APIs - using the same API as appointment components
+  const { data: appointmentsData, isLoading: isLoadingAppointments } = useGetUserAppointmentsQuery({
+    status_not: 'cancelled',
+    limit: 100
+  });
   const { data: patientsData, isLoading: isLoadingPatients } = useGetPatientsQuery();
-  const { data: reportsData, isLoading: isLoadingReports } = useGetReportsQuery();
+  const { data: incidentsData, isLoading: isLoadingIncidents } = useGetIncidentsQuery();
 
-  // Process appointments data
+  // Process appointments data - same logic as other appointment components
   const appointments = useMemo(() => {
     if (!appointmentsData) return [];
-    return Array.isArray(appointmentsData?.metadata) ? appointmentsData.metadata :
-           Array.isArray(appointmentsData) ? appointmentsData : [];
+    
+    // Based on your API structure: { data: { appointments: [...] } }
+    if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
+      return appointmentsData.data.appointments;
+    }
+    
+    // Fallback: Handle if data is directly in data array
+    if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
+      return appointmentsData.data;
+    }
+    
+    // Fallback: Handle if appointments are at root level
+    if (Array.isArray(appointmentsData)) {
+      return appointmentsData;
+    }
+    
+    return [];
   }, [appointmentsData]);
 
   // Process patients data
@@ -67,24 +85,25 @@ const DashboardStats = ({ userRole = "admin" }) => {
            Array.isArray(patientsData) ? patientsData : [];
   }, [patientsData]);
 
-  // Process reports data
-  const reports = useMemo(() => {
-    if (!reportsData) return [];
-    return Array.isArray(reportsData?.metadata) ? reportsData.metadata :
-           Array.isArray(reportsData) ? reportsData : [];
-  }, [reportsData]);
+  // Process incidents data
+  const incidents = useMemo(() => {
+    if (!incidentsData) return [];
+    return Array.isArray(incidentsData?.data) ? incidentsData.data :
+           Array.isArray(incidentsData) ? incidentsData : [];
+  }, [incidentsData]);
 
   // Calculate stats from real data
   const stats = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
     const thisMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
 
-    const todayAppointments = appointments.filter(apt => 
-      apt.date === today || apt.datetime?.startsWith(today)
-    );
+    const todayAppointments = appointments.filter(apt => {
+      const aptDate = (apt.appointment_date || apt.date || apt.datetime)?.split('T')[0];
+      return aptDate === today;
+    });
 
     const thisMonthAppointments = appointments.filter(apt => {
-      const aptDate = apt.date || apt.datetime?.split('T')[0];
+      const aptDate = (apt.appointment_date || apt.date || apt.datetime)?.split('T')[0];
       return aptDate?.startsWith(thisMonth);
     });
 
@@ -113,7 +132,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
       appointments: {
         today: todayAppointments.length,
         thisWeek: appointments.filter(apt => {
-          const aptDate = new Date(apt.date || apt.datetime);
+          const aptDate = new Date(apt.appointment_date || apt.date || apt.datetime);
           const weekStart = new Date();
           weekStart.setDate(weekStart.getDate() - weekStart.getDay());
           return aptDate >= weekStart;
@@ -130,7 +149,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
       revenue: {
         today: calculateRevenue(todayAppointments),
         thisWeek: calculateRevenue(appointments.filter(apt => {
-          const aptDate = new Date(apt.date || apt.datetime);
+          const aptDate = new Date(apt.appointment_date || apt.date || apt.datetime);
           const weekStart = new Date();
           weekStart.setDate(weekStart.getDate() - weekStart.getDay());
           return aptDate >= weekStart;
@@ -141,13 +160,13 @@ const DashboardStats = ({ userRole = "admin" }) => {
         completion: 0, // Calculate based on target
       },
       clinical: {
-        notesToday: reports.filter(r => {
-          const reportDate = new Date(r.created_at || r.createdAt);
-          return reportDate.toISOString().split('T')[0] === today;
+        notesToday: incidents.filter(i => {
+          const incidentDate = new Date(i.created_at || i.createdAt);
+          return incidentDate.toISOString().split('T')[0] === today;
         }).length,
-        avgPainReduction: calculateAveragePainReduction(reports),
-        treatmentSuccess: calculateTreatmentSuccess(reports),
-        patientSatisfaction: calculatePatientSatisfaction(reports),
+        avgPainReduction: calculateAveragePainReduction(incidents),
+        treatmentSuccess: calculateTreatmentSuccess(incidents),
+        patientSatisfaction: calculatePatientSatisfaction(incidents),
       },
       system: {
         activeUsers: 0, // This should come from a real-time service
@@ -156,37 +175,61 @@ const DashboardStats = ({ userRole = "admin" }) => {
         uptime: 99.9,
       },
     };
-  }, [appointments, patients, reports]);
+  }, [appointments, patients, incidents]);
 
   // Helper functions for clinical metrics
-  const calculateAveragePainReduction = (reports) => {
-    const reportsWithPain = reports.filter(r => 
-      r.pain_before && r.pain_after
-    );
-    if (!reportsWithPain.length) return 0;
+  const calculateAveragePainReduction = (incidents) => {
+    const incidentsWithPain = incidents.filter(i => {
+      if (!i.forms) return false;
+      const painForms = i.forms.filter(f => f.form_type === 'pain_assessment');
+      return painForms.some(f => f.form_data?.pain_before && f.form_data?.pain_after);
+    });
     
-    const totalReduction = reportsWithPain.reduce((sum, r) => 
-      sum + (r.pain_before - r.pain_after), 0
-    );
-    return (totalReduction / reportsWithPain.length).toFixed(1);
+    if (!incidentsWithPain.length) return 0;
+    
+    const totalReduction = incidentsWithPain.reduce((sum, i) => {
+      const painForms = i.forms.filter(f => f.form_type === 'pain_assessment');
+      const reduction = painForms.reduce((formSum, f) => {
+        const data = typeof f.form_data === 'string' ? JSON.parse(f.form_data) : f.form_data;
+        return formSum + (data.pain_before - data.pain_after || 0);
+      }, 0);
+      return sum + reduction;
+    }, 0);
+    
+    return (totalReduction / incidentsWithPain.length).toFixed(1);
   };
 
-  const calculateTreatmentSuccess = (reports) => {
-    if (!reports.length) return 0;
-    const successfulTreatments = reports.filter(r => 
-      r.outcome === "successful" || r.outcome === "improved"
+  const calculateTreatmentSuccess = (incidents) => {
+    if (!incidents.length) return 0;
+    const successfulTreatments = incidents.filter(i => 
+      i.status === "completed" || i.status === "resolved"
     ).length;
-    return ((successfulTreatments / reports.length) * 100).toFixed(1);
+    return ((successfulTreatments / incidents.length) * 100).toFixed(1);
   };
 
-  const calculatePatientSatisfaction = (reports) => {
-    const reportsWithSatisfaction = reports.filter(r => r.satisfaction_rating);
-    if (!reportsWithSatisfaction.length) return 0;
+  const calculatePatientSatisfaction = (incidents) => {
+    const incidentsWithSatisfaction = incidents.filter(i => {
+      return i.forms && i.forms.some(f => {
+        const data = typeof f.form_data === 'string' ? JSON.parse(f.form_data) : f.form_data;
+        return data && data.satisfaction_rating;
+      });
+    });
     
-    const totalSatisfaction = reportsWithSatisfaction.reduce((sum, r) => 
-      sum + r.satisfaction_rating, 0
-    );
-    return (totalSatisfaction / reportsWithSatisfaction.length).toFixed(1);
+    if (!incidentsWithSatisfaction.length) return 0;
+    
+    const totalSatisfaction = incidentsWithSatisfaction.reduce((sum, i) => {
+      const satisfactionForms = i.forms.filter(f => {
+        const data = typeof f.form_data === 'string' ? JSON.parse(f.form_data) : f.form_data;
+        return data && data.satisfaction_rating;
+      });
+      const incidentSatisfaction = satisfactionForms.reduce((formSum, f) => {
+        const data = typeof f.form_data === 'string' ? JSON.parse(f.form_data) : f.form_data;
+        return formSum + (data.satisfaction_rating || 0);
+      }, 0);
+      return sum + incidentSatisfaction;
+    }, 0);
+    
+    return (totalSatisfaction / incidentsWithSatisfaction.length).toFixed(1);
   };
 
   // Generate chart data from real data
@@ -194,8 +237,8 @@ const DashboardStats = ({ userRole = "admin" }) => {
     patientTrends: generatePatientTrends(patients),
     appointmentTrends: generateAppointmentTrends(appointments),
     revenueTrends: generateRevenueTrends(appointments),
-    treatmentOutcomes: generateTreatmentOutcomes(reports),
-  }), [patients, appointments, reports]);
+    treatmentOutcomes: generateTreatmentOutcomes(incidents),
+  }), [patients, appointments, incidents]);
 
   // Helper functions for chart data
   function generatePatientTrends(patients) {
@@ -217,7 +260,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
     const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return days.map(day => {
       const dayAppointments = appointments.filter(apt => {
-        const aptDate = new Date(apt.date || apt.datetime);
+        const aptDate = new Date(apt.appointment_date || apt.date || apt.datetime);
         return aptDate.toLocaleString('en-US', { weekday: 'short' }) === day;
       });
       return {
@@ -236,7 +279,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
     return months.map(month => {
       const monthRevenue = appointments
         .filter(apt => {
-          const aptDate = new Date(apt.date || apt.datetime);
+          const aptDate = new Date(apt.appointment_date || apt.date || apt.datetime);
           return aptDate.toLocaleString('en-US', { month: 'short' }) === month;
         })
         .reduce((sum, apt) => sum + (apt.fee || 0), 0);
@@ -248,7 +291,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
     });
   }
 
-  function generateTreatmentOutcomes(reports) {
+  function generateTreatmentOutcomes(incidents) {
     const outcomes = [
       { name: 'Excellent', color: '#10B981' },
       { name: 'Good', color: '#3B82F6' },
@@ -256,35 +299,29 @@ const DashboardStats = ({ userRole = "admin" }) => {
       { name: 'Poor', color: '#EF4444' },
     ];
     
-    const totalReports = reports.length;
-    if (!totalReports) return outcomes.map(o => ({ ...o, value: 0 }));
+    const totalIncidents = incidents.length;
+    if (!totalIncidents) return outcomes.map(o => ({ ...o, value: 0 }));
 
-    return outcomes.map(outcome => ({
-      ...outcome,
-      value: Math.round(
-        (reports.filter(r => 
-          r.outcome?.toLowerCase() === outcome.name.toLowerCase()
-        ).length / totalReports) * 100
-      ),
-    }));
+    return outcomes.map(outcome => {
+      const matchingIncidents = incidents.filter(i => {
+        // Check incident status
+        if (i.status === 'completed' || i.status === 'resolved') {
+          return outcome.name === 'Excellent' || outcome.name === 'Good';
+        } else if (i.status === 'in_progress') {
+          return outcome.name === 'Fair';
+        } else {
+          return outcome.name === 'Poor';
+        }
+      });
+      
+      return {
+        ...outcome,
+        value: Math.round((matchingIncidents.length / totalIncidents) * 100),
+      };
+    });
   }
 
-  // Real-time data simulation
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setStats((prev) => ({
-        ...prev,
-        system: {
-          ...prev.system,
-          activeUsers:
-            prev.system.activeUsers + Math.floor(Math.random() * 3 - 1),
-          responseTime: 200 + Math.floor(Math.random() * 100),
-        },
-      }));
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
+  // Real-time data simulation (removed setStats since stats is computed from useMemo)
 
   const StatCard = ({
     title,

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
-  useGetBlogPostsQuery,
+  useGetPublicBlogPostsQuery,
   useGetCategoriesQuery,
 } from "@/api/services/blogApi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -43,19 +43,16 @@ export default function Blog() {
     data: postsData,
     isLoading: postsLoading,
     error: postsError,
-  } = useGetBlogPostsQuery({
+  } = useGetPublicBlogPostsQuery({
     category: selectedCategory === "all" ? undefined : selectedCategory,
     search: searchTerm || undefined,
-    status: "published",
   });
 
   const { data: categoriesData, isLoading: categoriesLoading } =
     useGetCategoriesQuery();
 
   // Extract data from API response
-  // The transformResponse function in blogApi returns the metadata directly
-  // So postsData is already the metadata object containing posts
-  const posts = postsData?.posts || [];
+  const posts = postsData?.data?.posts || [];
   const categories = categoriesData?.categories || [];
 
   // Sort posts

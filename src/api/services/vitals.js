@@ -7,30 +7,30 @@ export const vitalsApi = createBaseApi({
   endpoints: (builder) => ({
     // Get all vitals
     getVitals: builder.query({
-      query: ({ page = 1, limit = 20, patientId, dateFrom, dateTo } = {}) => ({
+      query: ({ page = 1, limit = 20, patient_id, date_from, date_to } = {}) => ({
         url: API_ENDPOINTS.VITALS.BASE,
-        params: { page, limit, patientId, dateFrom, dateTo },
+        params: { page, limit, patient_id, date_from, date_to },
       }),
       providesTags: ["Vitals"],
     }),
 
     // Get vitals by patient
     getVitalsByPatient: builder.query({
-      query: ({ patientId, page = 1, limit = 20, dateFrom, dateTo } = {}) => ({
-        url: API_ENDPOINTS.VITALS.BY_PATIENT(patientId),
-        params: { page, limit, dateFrom, dateTo },
+      query: ({ patient_id, page = 1, limit = 20, date_from, date_to } = {}) => ({
+        url: API_ENDPOINTS.VITALS.BY_PATIENT(patient_id),
+        params: { page, limit, date_from, date_to },
       }),
-      providesTags: (result, error, { patientId }) => [
-        { type: "PatientVitals", id: patientId },
+      providesTags: (result, error, { patient_id }) => [
+        { type: "PatientVitals", id: patient_id },
         "Vitals",
       ],
     }),
 
     // Get latest vitals for patient
     getLatestVitals: builder.query({
-      query: (patientId) => API_ENDPOINTS.VITALS.LATEST(patientId),
-      providesTags: (result, error, patientId) => [
-        { type: "PatientVitals", id: patientId },
+      query: (patient_id) => API_ENDPOINTS.VITALS.LATEST(patient_id),
+      providesTags: (result, error, patient_id) => [
+        { type: "PatientVitals", id: patient_id },
         { type: "Vitals", id: "LATEST" },
       ],
     }),
@@ -55,7 +55,7 @@ export const vitalsApi = createBaseApi({
       }),
       invalidatesTags: (result, error, vitalData) => [
         "Vitals",
-        { type: "PatientVitals", id: vitalData.patientId },
+        { type: "PatientVitals", id: vitalData.patient_id },
         { type: "Vitals", id: "LATEST" },
         "VitalsTrend",
       ],
@@ -68,9 +68,9 @@ export const vitalsApi = createBaseApi({
         method: "PUT",
         body: vitalData,
       }),
-      invalidatesTags: (result, error, { vitalId, patientId }) => [
+      invalidatesTags: (result, error, { vitalId, patient_id }) => [
         { type: "Vitals", id: vitalId },
-        { type: "PatientVitals", id: patientId },
+        { type: "PatientVitals", id: patient_id },
         "VitalsTrend",
       ],
     }),
@@ -86,28 +86,28 @@ export const vitalsApi = createBaseApi({
 
     // Get vitals trends for patient
     getVitalsTrends: builder.query({
-      query: ({ patientId, period = "30d", vitalTypes = [] }) => ({
+      query: ({ patient_id, period = "30d", vitalTypes = [] }) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/trends`,
-        params: { patientId, period, vitalTypes: vitalTypes.join(",") },
+        params: { patient_id, period, vitalTypes: vitalTypes.join(",") },
       }),
-      providesTags: (result, error, { patientId }) => [
-        { type: "VitalsTrend", id: patientId },
+      providesTags: (result, error, { patient_id }) => [
+        { type: "VitalsTrend", id: patient_id },
       ],
     }),
 
     // Bulk create vitals
     createBulkVitals: builder.mutation({
-      query: ({ patientId, vitalsArray }) => ({
+      query: ({ patient_id, vitalsArray }) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/bulk`,
         method: "POST",
         body: {
-          patientId,
+          patient_id,
           vitals: vitalsArray,
         },
       }),
-      invalidatesTags: (result, error, { patientId }) => [
+      invalidatesTags: (result, error, { patient_id }) => [
         "Vitals",
-        { type: "PatientVitals", id: patientId },
+        { type: "PatientVitals", id: patient_id },
         { type: "Vitals", id: "LATEST" },
         "VitalsTrend",
       ],
@@ -115,12 +115,12 @@ export const vitalsApi = createBaseApi({
 
     // Get vitals summary for patient
     getVitalsSummary: builder.query({
-      query: ({ patientId, period = "30d" }) => ({
+      query: ({ patient_id, period = "30d" }) => ({
         url: `${API_ENDPOINTS.VITALS.BASE}/summary`,
-        params: { patientId, period },
+        params: { patient_id, period },
       }),
-      providesTags: (result, error, { patientId }) => [
-        { type: "PatientVitals", id: patientId },
+      providesTags: (result, error, { patient_id }) => [
+        { type: "PatientVitals", id: patient_id },
         "VitalsTrend",
       ],
     }),

@@ -2,9 +2,9 @@
 export const API_CONFIG = {
   // Environment-specific base URLs
   URLS: {
-    development: 'http://localhost:3000/v1/api/2025',
-    production: 'https://drdieuphanchiropractor.com/v1/api/2025',
-    staging: 'http://staging.drdieuphanchiropractor.com/v1/api/2025',
+    development: 'http://localhost:3000/api/v1/2025',
+    production: 'https://drdieuphanchiropractor.com/api/v1/2025',
+    staging: 'http://staging.drdieuphanchiropractor.com/api/v1/2025',
   },
 
   // Request configuration

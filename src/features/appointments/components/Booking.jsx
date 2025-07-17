@@ -166,10 +166,8 @@ export default function DoctorBooking() {
         doctor_id: bookingData.doctor,
         appointment_date: formattedDate,
         appointment_time: formattedTime,
-        reason_for_visit: bookingData.reason || "Chiropractic consultation",
+        reason_for_visit: bookingData.reason,
         additional_notes: bookingData.notes || "",
-        duration_minutes: 30,
-        type: "consultation",
         status: "pending",
         // Include location information
         location: selectedLocation.label,
@@ -194,8 +192,6 @@ export default function DoctorBooking() {
         setActiveTab("doctor"); // Reset to first step
       }
     } catch (error) {
-      console.error("Booking error:", error);
-
       // Handle specific API errors
       if (error.status === 409) {
         toast.error("This time slot is already booked. Please select a different time.");

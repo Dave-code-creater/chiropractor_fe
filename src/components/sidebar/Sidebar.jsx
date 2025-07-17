@@ -51,21 +51,32 @@ const AppSidebar = () => {
   const getUserDisplayName = () => {
     if (!currentUser) return "Welcome Back";
 
+    let displayName = "";
+
     if (userRole === "admin" || userRole === "doctor") {
-      return currentUser.firstName && currentUser.lastName
-        ? `Dr. ${currentUser.firstName} ${currentUser.lastName}`
-        : currentUser.name
-        ? `Dr. ${currentUser.name}`
-        : "Dr. Admin";
+      if (currentUser.firstName && currentUser.lastName) {
+        displayName = `${currentUser.firstName} ${currentUser.lastName}`;
+      } else if (currentUser.name) {
+        displayName = `${currentUser.name}`;
+      } else {
+        displayName = "Dr. Admin";
+      }
+    } else {
+      if (currentUser.firstName && currentUser.lastName) {
+        displayName = `${currentUser.firstName} ${currentUser.lastName}`;
+      } else if (currentUser.name) {
+        displayName = currentUser.name;
+      } else {
+        displayName = currentUser.email ? currentUser.email.split("@")[0] : "Welcome Back";
+      }
     }
 
-    return currentUser.firstName && currentUser.lastName
-      ? `${currentUser.firstName} ${currentUser.lastName}`
-      : currentUser.name
-      ? currentUser.name
-      : currentUser.email
-      ? currentUser.email.split("@")[0]
-      : "Welcome Back";
+    // If name is longer than 10 characters, truncate it
+    if (displayName.length > 10) {
+      return `${displayName.substring(0, 10)}...`;
+    }
+
+    return displayName;
   };
 
   const getUserInitials = () => {
@@ -108,7 +119,7 @@ const AppSidebar = () => {
       <Sidebar variant="sidebar" collapsible={isMobile ? "offcanvas" : "none"}>
         <SidebarHeader className="p-4 sm:p-6 border-b bg-gradient-to-br from-card to-muted/20">
           <div className="flex items-start gap-3 sm:gap-4">
-            <div className="relative">
+            <div className="relative flex-shrink-0">
               <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-lg">
                 <AvatarImage
                   src={currentUser?.profileImage}
@@ -120,21 +131,23 @@ const AppSidebar = () => {
               </Avatar>
               <div className="absolute -bottom-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 bg-green-500 border-2 border-background rounded-full"></div>
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-1 sm:mb-2">
-                <h2 className="text-sm sm:text-lg font-semibold truncate">
-                  {getUserDisplayName()}
-                </h2>
-                <Badge
-                  variant="secondary"
-                  className="ml-2 bg-primary/5 text-primary border-primary/20 text-xs sm:text-sm"
-                >
-                  {userRole?.charAt(0).toUpperCase() + userRole?.slice(1)}
-                </Badge>
+            <div className="flex-1 min-w-0 max-w-[calc(100%-4rem)]">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2 min-w-0">
+                  <h2 className="text-sm sm:text-lg font-semibold leading-tight overflow-hidden text-ellipsis whitespace-nowrap max-w-full">
+                    {getUserDisplayName()}
+                  </h2>
+                  <Badge
+                    variant="secondary"
+                    className="flex-shrink-0 bg-primary/5 text-primary border-primary/20 text-xs sm:text-sm whitespace-nowrap"
+                  >
+                    {userRole?.charAt(0).toUpperCase() + userRole?.slice(1)}
+                  </Badge>
+                </div>
+                <p className="text-xs sm:text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
+                  {currentUser?.email}
+                </p>
               </div>
-              <p className="text-xs sm:text-sm text-muted-foreground truncate">
-                {currentUser?.email}
-              </p>
             </div>
           </div>
         </SidebarHeader>
@@ -157,14 +170,14 @@ const AppSidebar = () => {
                           <Link
                             to={item.path}
                             className={cn(
-                              "flex items-center w-full gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-colors text-sm sm:text-base",
+                              "flex items-center w-full gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-colors text-sm sm:text-base group",
                               location.pathname === item.path 
                                 ? "bg-primary/10 text-primary border border-primary/20" 
                                 : "hover:bg-accent"
                             )}
                           >
                             {item.icon && <item.icon className="h-4 w-4 flex-shrink-0" />}
-                            <span className="font-medium truncate">{item.name}</span>
+                            <span className="font-medium truncate flex-1 min-w-0">{item.name}</span>
                           </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>

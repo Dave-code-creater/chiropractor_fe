@@ -201,7 +201,12 @@ export default function PainChartSection({
   const handleBodyClick = (part) => {
     const field = partMap[part];
     if (!field) return;
-    setPendingLevel(painMap[field] || 1);
+    // Handle both old number format and new object format
+    const existingData = painMap[field];
+    const currentLevel = existingData && typeof existingData === 'object' 
+      ? existingData['pain-level'] 
+      : existingData || 1;
+    setPendingLevel(currentLevel);
     setopenFieldId(field);
   };
 
@@ -219,9 +224,21 @@ export default function PainChartSection({
   const closeDialog = () => setopenFieldId(null);
   const saveDialog = () => {
     if (!openFieldId) return;
+    
+    // Get the current body part's data (including any changes made in the dialog)
+    const currentData = painMap[openFieldId] || {};
+    
+    // Create the final body part data with the updated pain level
+    const bodyPartData = {
+      ...currentData,
+      "pain-level": pendingLevel,
+      "selected-at": currentData["selected-at"] || new Date().toISOString(),
+      "body-part": openFieldId
+    };
+    
     setPainMap((prev) => ({
       ...prev,
-      [openFieldId]: pendingLevel,
+      [openFieldId]: bodyPartData,
     }));
     setopenFieldId(null);
   };
@@ -238,12 +255,54 @@ export default function PainChartSection({
 
   const newrenderQuestion = (question) => {
     const commonFieldsetClasses = "border rounded-md p-4 space-y-4";
+    
+    // Get current body part's specific data
+    const currentBodyPartData = painMap[openFieldId] || {};
+    
+    // Create body-part specific formData
+    const bodyPartFormData = {
+      [question.id]: question.id === 'painType' ? currentBodyPartData['pain-types'] || [] :
+                    question.id === 'painLevel' ? currentBodyPartData['pain-severity'] || [] :
+                    question.id === 'painTiming' ? currentBodyPartData['pain-timing'] || "" :
+                    question.id === 'painChanges' ? currentBodyPartData['pain-changes'] || "" :
+                    question.id === 'radiatingPain' ? currentBodyPartData['radiating-pain'] || "" :
+                    currentBodyPartData[question.id] || (question.type === 'checkbox' ? [] : "")
+    };
+    
+    // Create body-part specific setFormData function
+    const setBodyPartFormData = (updater) => {
+      setPainMap((prev) => {
+        const updated = typeof updater === 'function' ? updater(bodyPartFormData) : updater;
+        const newBodyPartData = { ...currentBodyPartData };
+        
+        // Map the question data back to our body part structure
+        if (question.id === 'painType') {
+          newBodyPartData['pain-types'] = updated[question.id];
+        } else if (question.id === 'painLevel') {
+          newBodyPartData['pain-severity'] = updated[question.id];
+        } else if (question.id === 'painTiming') {
+          newBodyPartData['pain-timing'] = updated[question.id];
+        } else if (question.id === 'painChanges') {
+          newBodyPartData['pain-changes'] = updated[question.id];
+        } else if (question.id === 'radiatingPain') {
+          newBodyPartData['radiating-pain'] = updated[question.id];
+        } else {
+          newBodyPartData[question.id] = updated[question.id];
+        }
+        
+        return {
+          ...prev,
+          [openFieldId]: newBodyPartData
+        };
+      });
+    };
+    
     if (question.type === "group") {
       return (
         <RenderQuesFuncs
           question={question}
-          formData={formData}
-          setFormData={setFormData}
+          formData={bodyPartFormData}
+          setFormData={setBodyPartFormData}
           commonFieldsetClasses={commonFieldsetClasses}
         />
       );
@@ -251,8 +310,8 @@ export default function PainChartSection({
       return (
         <RenderTextAreaQues
           question={question}
-          formData={formData}
-          setFormData={setFormData}
+          formData={bodyPartFormData}
+          setFormData={setBodyPartFormData}
           commonFieldsetClasses={commonFieldsetClasses}
         />
       );
@@ -260,8 +319,8 @@ export default function PainChartSection({
       return (
         <RenderRadioQues
           question={question}
-          formData={formData}
-          setFormData={setFormData}
+          formData={bodyPartFormData}
+          setFormData={setBodyPartFormData}
           commonFieldsetClasses={commonFieldsetClasses}
         />
       );
@@ -269,8 +328,8 @@ export default function PainChartSection({
       return (
         <RenderCheckboxQues
           question={question}
-          formData={formData}
-          setFormData={setFormData}
+          formData={bodyPartFormData}
+          setFormData={setBodyPartFormData}
           commonFieldsetClasses={commonFieldsetClasses}
         />
       );
@@ -278,8 +337,8 @@ export default function PainChartSection({
       return (
         <RenderOtherQues
           question={question}
-          formData={formData}
-          setFormData={setFormData}
+          formData={bodyPartFormData}
+          setFormData={setBodyPartFormData}
           commonFieldsetClasses={commonFieldsetClasses}
         />
       );
@@ -304,7 +363,8 @@ export default function PainChartSection({
       <div className="flex flex-wrap justify-center gap-4 mt-6">
         {painFields
           .filter(
-            (field) => painMap[field.id] !== undefined && painMap[field.id] > 0,
+            (field) => painMap[field.id] !== undefined && 
+            (typeof painMap[field.id] === 'object' ? painMap[field.id]['pain-level'] > 0 : painMap[field.id] > 0),
           )
           .map((field) => (
             <div key={field.id} className="text-center">
@@ -314,14 +374,19 @@ export default function PainChartSection({
                 size="sm"
                 variant="outline"
                 onClick={() => {
-                  setPendingLevel(painMap[field.id] || 1);
+                  const existingData = painMap[field.id];
+                  const currentLevel = existingData && typeof existingData === 'object' 
+                    ? existingData['pain-level'] 
+                    : existingData || 1;
+                  setPendingLevel(currentLevel);
                   setopenFieldId(field.id);
                 }}
               >
-                {typeof painMap[field.id] === "number"
-                  ? painMap[field.id]
-                  : "0"}{" "}
-                / 10
+                {(() => {
+                  const data = painMap[field.id];
+                  const level = data && typeof data === 'object' ? data['pain-level'] : data;
+                  return typeof level === "number" ? level : "0";
+                })()} / 10
               </Button>
             </div>
           ))}

@@ -17,31 +17,16 @@ export const API_ENDPOINTS = {
     PATIENTS: "/users/patients",
   },
 
-  // Reports & Forms
-  REPORTS: {
-    BASE: "/reports",
-    TEMPLATES: "/templates",
-    PATIENT_INTAKE: (reportId) => `/reports/${reportId}/patient-intake`,
-    INSURANCE_DETAILS: (reportId) => `/reports/${reportId}/insurance-details`,
-    PAIN_EVALUATION: (reportId) => `/reports/${reportId}/pain-evaluation`,
-    DETAILED_DESCRIPTION: (reportId) =>
-      `/reports/${reportId}/detailed-description`,
-    WORK_IMPACT: (reportId) => `/reports/${reportId}/work-impact`,
-    HEALTH_CONDITIONS: (reportId) => `/reports/${reportId}/health-conditions`,
-  },
+  // Deprecated: REPORTS section removed - now using INCIDENTS system
 
-  // Clinical Notes
-  CLINICAL_NOTES: {
-    BASE: "/clinical-notes",
-    BY_PATIENT: (patientId) => `/clinical-notes/patient/${patientId}`,
-    SOAP: "/clinical-notes/soap",
-  },
+  // Incidents & Forms
+  INCIDENTS: {
+    BASE: "/incidents",
+    FORMS: (incidentId) => `/incidents/${incidentId}/`,
+    SUBMIT_FORMS: (incidentId) => `/incidents/${incidentId}/submit-forms`,
+    COMPLETE_FORMS: (incidentId) => `/incidents/${incidentId}/forms/complete`,
+    NOTES: (incidentId) => `/incidents/${incidentId}/notes`,
 
-  // Vitals
-  VITALS: {
-    BASE: "/vitals",
-    BY_PATIENT: (patientId) => `/vitals/patient/${patientId}`,
-    LATEST: (patientId) => `/vitals/patient/${patientId}/latest`,
   },
 
   // Appointments
@@ -54,7 +39,11 @@ export const API_ENDPOINTS = {
   // Chat
   CHAT: {
     BASE: "/chat",
-    MESSAGES: (chatId) => `/chat/${chatId}/messages`,
+    CONVERSATIONS: "/chat/conversations",
+    CONVERSATION_MESSAGES: (conversationId) => `/chat/conversations/${conversationId}/messages`,
+    CONVERSATION_USERS: "/chat/conversations/users",
+    SEND_MESSAGE: "/chat/messages",
+    AVAILABLE_USERS: "/chat/staff-admin-doctors",
   },
 
   // Blog

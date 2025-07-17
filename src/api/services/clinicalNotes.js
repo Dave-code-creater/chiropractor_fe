@@ -10,22 +10,22 @@ export const clinicalNotesApi = createBaseApi({
       query: ({
         page = 1,
         limit = 20,
-        patientId,
+        patient_id,
         type,
-        dateFrom,
-        dateTo,
+        date_from,
+        date_to,
       } = {}) => ({
         url: API_ENDPOINTS.CLINICAL_NOTES.BASE,
-        params: { page, limit, patientId, type, dateFrom, dateTo },
+        params: { page, limit, patient_id, type, date_from, date_to },
       }),
       providesTags: ["ClinicalNote"],
     }),
 
     // Get clinical notes by patient
     getClinicalNotesByPatient: builder.query({
-      query: (patientId) => API_ENDPOINTS.CLINICAL_NOTES.BY_PATIENT(patientId),
-      providesTags: (result, error, patientId) => [
-        { type: "PatientNotes", id: patientId },
+      query: (patient_id) => API_ENDPOINTS.CLINICAL_NOTES.BY_PATIENT(patient_id),
+      providesTags: (result, error, patient_id) => [
+        { type: "PatientNotes", id: patient_id },
         "ClinicalNote",
       ],
     }),
@@ -97,18 +97,18 @@ export const clinicalNotesApi = createBaseApi({
     }),
 
     getSOAPNotes: builder.query({
-      query: ({ patientId, page = 1, limit = 20 } = {}) => ({
+      query: ({ patient_id, page = 1, limit = 20 } = {}) => ({
         url: API_ENDPOINTS.CLINICAL_NOTES.SOAP,
-        params: { patientId, page, limit },
+        params: { patient_id, page, limit },
       }),
       providesTags: ["SOAPNote"],
     }),
 
     // Search clinical notes
     searchClinicalNotes: builder.query({
-      query: ({ query, patientId, type, page = 1, limit = 20 }) => ({
+      query: ({ query, patient_id, type, page = 1, limit = 20 }) => ({
         url: `${API_ENDPOINTS.CLINICAL_NOTES.BASE}/search`,
-        params: { query, patientId, type, page, limit },
+        params: { query, patient_id, type, page, limit },
       }),
       providesTags: ["ClinicalNote"],
     }),

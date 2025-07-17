@@ -104,7 +104,7 @@ const DoctorAvailabilitySystem = () => {
     error: scheduleError,
   } = useGetAllDoctorsScheduleQuery({
     ...dateRange,
-    doctorIds: selectedDoctor !== "all" ? [selectedDoctor] : [],
+    doctor_ids: selectedDoctor !== "all" ? [selectedDoctor] : [],
   });
 
   const {
@@ -138,8 +138,9 @@ const DoctorAvailabilitySystem = () => {
     isLoading: conflictsLoading,
   } = useGetDoctorConflictsQuery(
     {
-      doctorId: selectedDoctor,
-      ...dateRange,
+      doctor_id: selectedDoctor,
+      start_date: dateRange.startDate,
+      end_date: dateRange.endDate,
     },
     {
       skip: selectedDoctor === "all",
@@ -251,9 +252,9 @@ const DoctorAvailabilitySystem = () => {
     return Array.from({ length: 7 }, (_, i) => addDays(start, i));
   }, [selectedDate]);
 
-  const handleScheduleUpdate = async (doctorId, updates) => {
+  const handleScheduleUpdate = async (doctor_id, updates) => {
     try {
-      await updateWorkingHours({ doctorId, workingHours: updates }).unwrap();
+      await updateWorkingHours({ doctor_id, workingHours: updates }).unwrap();
       toast.success("Schedule updated successfully");
     } catch (error) {
       toast.error("Failed to update schedule");

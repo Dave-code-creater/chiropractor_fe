@@ -31,77 +31,77 @@ export const doctorScheduleApi = createApi({
 
     // Get specific doctor profile
     getDoctorProfile: builder.query({
-      query: (doctorId) => ({
-        url: `doctors/${doctorId}/profile`,
+      query: (doctor_id) => ({
+        url: `doctors/${doctor_id}/profile`,
         method: "GET",
       }),
-      providesTags: (result, error, doctorId) => [
-        { type: "DoctorProfiles", id: doctorId },
+      providesTags: (result, error, doctor_id) => [
+        { type: "DoctorProfiles", id: doctor_id },
       ],
     }),
 
     // Update doctor profile
     updateDoctorProfile: builder.mutation({
-      query: ({ doctorId, ...data }) => ({
-        url: `doctors/${doctorId}/profile`,
+      query: ({ doctor_id, ...data }) => ({
+        url: `doctors/${doctor_id}/profile`,
         method: "PUT",
         body: data,
       }),
-      invalidatesTags: (result, error, { doctorId }) => [
-        { type: "DoctorProfiles", id: doctorId },
+      invalidatesTags: (result, error, { doctor_id }) => [
+        { type: "DoctorProfiles", id: doctor_id },
         "DoctorProfiles",
       ],
     }),
 
     // Get doctor working hours
     getDoctorWorkingHours: builder.query({
-      query: (doctorId) => ({
-        url: `doctors/${doctorId}/working-hours`,
+      query: (doctor_id) => ({
+        url: `doctors/${doctor_id}/working-hours`,
         method: "GET",
       }),
-      providesTags: (result, error, doctorId) => [
-        { type: "WorkingHours", id: doctorId },
+      providesTags: (result, error, doctor_id) => [
+        { type: "WorkingHours", id: doctor_id },
       ],
     }),
 
     // Update doctor working hours
     updateDoctorWorkingHours: builder.mutation({
-      query: ({ doctorId, workingHours }) => ({
-        url: `doctors/${doctorId}/working-hours`,
+      query: ({ doctor_id, workingHours }) => ({
+        url: `doctors/${doctor_id}/working-hours`,
         method: "PUT",
         body: { working_hours: workingHours },
       }),
-      invalidatesTags: (result, error, { doctorId }) => [
-        { type: "WorkingHours", id: doctorId },
-        { type: "DoctorProfiles", id: doctorId },
+      invalidatesTags: (result, error, { doctor_id }) => [
+        { type: "WorkingHours", id: doctor_id },
+        { type: "DoctorProfiles", id: doctor_id },
         "DoctorSchedule",
       ],
     }),
 
     // Get doctor schedule for a date range
     getDoctorSchedule: builder.query({
-      query: ({ doctorId, startDate, endDate }) => {
+      query: ({ doctor_id, start_date, end_date }) => {
         const queryParams = new URLSearchParams();
-        if (startDate) queryParams.append("start_date", startDate);
-        if (endDate) queryParams.append("end_date", endDate);
+        if (start_date) queryParams.append("start_date", start_date);
+        if (end_date) queryParams.append("end_date", end_date);
 
         return {
-          url: `doctors/${doctorId}/schedule?${queryParams}`,
+          url: `doctors/${doctor_id}/schedule?${queryParams}`,
           method: "GET",
         };
       },
-      providesTags: (result, error, { doctorId }) => [
-        { type: "DoctorSchedule", id: doctorId },
+      providesTags: (result, error, { doctor_id }) => [
+        { type: "DoctorSchedule", id: doctor_id },
       ],
     }),
 
     // Get all doctors schedules for a date range
     getAllDoctorsSchedule: builder.query({
-      query: ({ startDate, endDate, doctorIds = [] }) => {
+      query: ({ start_date, end_date, doctor_ids = [] }) => {
         const queryParams = new URLSearchParams();
-        if (startDate) queryParams.append("start_date", startDate);
-        if (endDate) queryParams.append("end_date", endDate);
-        if (doctorIds.length > 0) queryParams.append("doctor_ids", doctorIds.join(","));
+        if (start_date) queryParams.append("start_date", start_date);
+        if (end_date) queryParams.append("end_date", end_date);
+        if (doctor_ids.length > 0) queryParams.append("doctor_ids", doctor_ids.join(","));
 
         return {
           url: `doctors/schedule?${queryParams}`,
@@ -180,18 +180,18 @@ export const doctorScheduleApi = createApi({
 
     // Get doctor availability conflicts
     getDoctorConflicts: builder.query({
-      query: ({ doctorId, startDate, endDate }) => {
+      query: ({ doctor_id, start_date, end_date }) => {
         const queryParams = new URLSearchParams();
-        if (startDate) queryParams.append("start_date", startDate);
-        if (endDate) queryParams.append("end_date", endDate);
+        if (start_date) queryParams.append("start_date", start_date);
+        if (end_date) queryParams.append("end_date", end_date);
 
         return {
-          url: `doctors/${doctorId}/conflicts?${queryParams}`,
+          url: `doctors/${doctor_id}/conflicts?${queryParams}`,
           method: "GET",
         };
       },
-      providesTags: (result, error, { doctorId }) => [
-        { type: "DoctorSchedule", id: doctorId },
+      providesTags: (result, error, { doctor_id }) => [
+        { type: "DoctorSchedule", id: doctor_id },
       ],
     }),
 

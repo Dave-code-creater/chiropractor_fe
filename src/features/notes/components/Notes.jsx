@@ -39,6 +39,8 @@ import {
   Car,
   Briefcase,
   Heart,
+  Eye,
+  FileCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
@@ -54,6 +56,8 @@ import {
   useGetSOAPNotesQuery,
   useSearchClinicalNotesQuery,
   useGetNoteTemplatesQuery,
+  useGetIncidentsQuery,
+  useGetIncidentByIdQuery,
 } from "@/api";
 
 // Mock patient data for doctor view
@@ -92,234 +96,490 @@ const mockPatients = [
   // ... other mock patients
 ];
 
-// Mock clinical notes data for doctor view
-const mockClinicalNotes = {
-  "pt-001": [
-    {
-      id: "note-001",
-      date: "2024-01-15",
-      type: "Progress Note",
-      chiefComplaint: "Lower back pain, improved since last visit",
-      assessment: "Patient reports 50% improvement in lower back pain. Range of motion has increased significantly.",
-      treatment: "Spinal manipulation L3-L5, soft tissue therapy, therapeutic exercises",
-      plan: "Continue current treatment plan. Add core strengthening exercises. Follow-up in 1 week.",
-      doctorId: "dr-001",
-      doctorName: "Dr. Dieu Phan",
-      duration: "30 minutes",
-      status: "completed",
-    },
-    {
-      id: "note-002",
-      date: "2024-01-08",
-      type: "Initial Assessment",
-      chiefComplaint: "Acute lower back pain following lifting incident",
-      assessment: "Acute lumbar strain with muscle spasm. Limited range of motion. Pain level 7/10.",
-      treatment: "Initial spinal adjustment, ice therapy, patient education on proper lifting techniques",
-      plan: "Return in 3-4 days. Ice 15-20 minutes every 2 hours. Avoid heavy lifting.",
-      doctorId: "dr-001",
-      doctorName: "Dr. Dieu Phan",
-      duration: "45 minutes",
-      status: "completed",
-    },
-  ],
-  "pt-002": [
-    {
-      id: "note-003",
-      date: "2024-01-10",
-      type: "Follow-up",
-      chiefComplaint: "Persistent neck pain and headaches",
-      assessment: "Cervical spine dysfunction with associated tension headaches. Muscle tension in upper trapezius.",
-      treatment: "Cervical manipulation C2-C4, trigger point therapy, postural correction exercises",
-      plan: "Continue treatment 2x/week for 2 weeks. Ergonomic workplace assessment recommended.",
-      doctorId: "dr-001",
-      doctorName: "Dr. Dieu Phan",
-      duration: "35 minutes",
-      status: "completed",
-    },
-  ],
-};
+// Initial Report Display Component
+const InitialReportDisplay = ({ incident: basicIncident }) => {
+  const [expanded, setExpanded] = useState(false);
+  
+  // Fetch detailed incident data when expanded
+  const { 
+    data: detailedIncidentData,
+    isLoading: isLoadingDetails,
+    error: detailsError
+  } = useGetIncidentByIdQuery(basicIncident?.id, { 
+    skip: !basicIncident?.id || !expanded 
+  });
 
-// Mock clinical notes data for patient view - organized by cases
-const mockPatientCases = [
-  {
-    id: "case-001",
-    title: "Lower Back Injury - Car Accident",
-    incidentType: "car_accident",
-    incidentDate: "2024-01-03",
-    status: "active",
-    priority: "high",
-    description: "Motor vehicle accident resulting in lower back injury",
-    primaryCondition: "Lumbar Strain",
-    secondaryConditions: ["Muscle Spasm", "Limited Mobility"],
-    doctorName: "Dr. Dieu Phan",
-    specialty: "Chiropractic",
-    startDate: "2024-01-03",
-    estimatedDuration: "6-8 weeks",
-    progress: 65, // percentage
-    nextAppointment: "2024-01-22",
-    notes: [
-      {
-        id: "note-001",
-        date: "2024-01-15",
-        type: "Progress Note",
-        doctorName: "Dr. Dieu Phan",
-        specialty: "Chiropractic",
-        visitType: "Follow-up",
-        chiefComplaint: "Lower back pain improvement",
-        assessment: "Significant improvement in lower back pain. Range of motion has increased by 60%. Patient reports pain level decreased from 7/10 to 3/10.",
-        treatment: "Spinal manipulation L3-L5, soft tissue therapy, therapeutic exercises",
-        plan: "Continue current treatment plan. Add core strengthening exercises. Follow-up in 1 week.",
-        recommendations: [
-          "Continue prescribed exercises daily",
-          "Apply ice for 15-20 minutes after exercise",
-          "Maintain proper posture during work",
-          "Avoid heavy lifting over 20 lbs"
-        ],
-        nextAppointment: "2024-01-22",
-        duration: "30 minutes",
-        status: "completed",
-        priority: "routine",
-      },
-      {
-        id: "note-002",
-        date: "2024-01-08",
-        type: "Initial Assessment",
-        doctorName: "Dr. Dieu Phan",
-        specialty: "Chiropractic",
-        visitType: "New Patient",
-        chiefComplaint: "Acute lower back pain following car accident",
-        assessment: "Acute lumbar strain with muscle spasm. Limited range of motion. Pain level 7/10. MRI shows no disc herniation.",
-        treatment: "Initial spinal adjustment, ice therapy, patient education on proper lifting techniques",
-        plan: "Return in 3-4 days. Ice 15-20 minutes every 2 hours. Avoid heavy lifting for 2 weeks.",
-        recommendations: [
-          "Rest and avoid aggravating activities",
-          "Ice therapy every 2 hours",
-          "Gentle stretching as tolerated",
-          "Return to work with lifting restrictions"
-        ],
-        nextAppointment: "2024-01-12",
-        duration: "45 minutes",
-        status: "completed",
-        priority: "urgent",
-      },
-      {
-        id: "note-003",
-        date: "2024-01-03",
-        type: "Treatment Plan",
-        doctorName: "Dr. Dieu Phan",
-        specialty: "Chiropractic",
-        visitType: "Consultation",
-        chiefComplaint: "Car accident lower back injury treatment planning",
-        assessment: "Comprehensive evaluation completed. Developing treatment strategy for car accident injuries.",
-        treatment: "Treatment plan established for 6-week program",
-        plan: "6-week treatment program: 2x/week visits, exercise therapy, lifestyle modifications",
-        recommendations: [
-          "Attend all scheduled appointments",
-          "Complete home exercise program",
-          "Ergonomic workplace assessment",
-          "Follow up with insurance adjuster"
-        ],
-        treatmentGoals: [
-          "Reduce pain from 7/10 to 2/10",
-          "Improve range of motion by 80%",
-          "Return to normal activities",
-          "Prevent chronic pain development"
-        ],
-        timeline: "6 weeks",
-        duration: "60 minutes",
-        status: "active",
-        priority: "high",
-      }
-    ]
-  },
-  {
-    id: "case-002",
-    title: "Neck Strain - Work Injury",
-    incidentType: "work_injury",
-    incidentDate: "2024-01-10",
-    status: "active",
-    priority: "medium",
-    description: "Repetitive strain injury from computer work",
-    primaryCondition: "Cervical Strain",
-    secondaryConditions: ["Tension Headaches", "Shoulder Tension"],
-    doctorName: "Dr. Sarah Wilson",
-    specialty: "Physical Therapy",
-    startDate: "2024-01-12",
-    estimatedDuration: "4-6 weeks",
-    progress: 30, // percentage
-    nextAppointment: "2024-01-20",
-    notes: [
-      {
-        id: "note-004",
-        date: "2024-01-12",
-        type: "Initial Assessment",
-        doctorName: "Dr. Sarah Wilson",
-        specialty: "Physical Therapy",
-        visitType: "New Patient",
-        chiefComplaint: "Neck pain and headaches from work-related repetitive strain",
-        assessment: "Cervical spine dysfunction with forward head posture. Muscle tension in upper trapezius and suboccipital muscles. Tension-type headaches.",
-        treatment: "Postural assessment, manual therapy, ergonomic education",
-        plan: "4-week treatment program focusing on posture correction and strengthening",
-        recommendations: [
-          "Ergonomic workstation setup",
-          "Take breaks every 30 minutes",
-          "Neck stretches throughout the day",
-          "Heat therapy for muscle tension"
-        ],
-        treatmentGoals: [
-          "Eliminate tension headaches",
-          "Improve neck range of motion",
-          "Correct forward head posture",
-          "Return to work without restrictions"
-        ],
-        timeline: "4 weeks",
-        duration: "45 minutes",
-        status: "completed",
-        priority: "medium",
-      }
-    ]
-  },
-  {
-    id: "case-003",
-    title: "Chronic Pain Management",
-    incidentType: "general_pain",
-    incidentDate: "2023-12-01",
-    status: "ongoing",
-    priority: "routine",
-    description: "Long-term management of chronic lower back pain",
-    primaryCondition: "Chronic Lower Back Pain",
-    secondaryConditions: ["Disc Degeneration", "Muscle Weakness"],
-    doctorName: "Dr. Michael Chen",
-    specialty: "Pain Management",
-    startDate: "2023-12-01",
-    estimatedDuration: "Ongoing",
-    progress: 75, // percentage
-    nextAppointment: "2024-01-25",
-    notes: [
-      {
-        id: "note-005",
-        date: "2024-01-05",
-        type: "Progress Note",
-        doctorName: "Dr. Michael Chen",
-        specialty: "Pain Management",
-        visitType: "Follow-up",
-        chiefComplaint: "Chronic pain management review",
-        assessment: "Good progress with current pain management strategy. Patient reports improved function and reduced pain episodes.",
-        treatment: "Medication adjustment, continued exercise therapy",
-        plan: "Continue current regimen with monthly follow-ups",
-        recommendations: [
-          "Maintain regular exercise routine",
-          "Continue prescribed medications",
-          "Stress management techniques",
-          "Monitor pain levels daily"
-        ],
-        duration: "30 minutes",
-        status: "completed",
-        priority: "routine",
-      }
-    ]
-  }
-];
+  if (!basicIncident) return null;
+
+  // Use detailed data if available, otherwise use basic data
+  const incident = detailedIncidentData?.data || basicIncident;
+
+  const forms = incident.forms || [];
+  const getFormData = (formType) => {
+    const form = forms.find(f => f.form_type === formType);
+    return form?.form_data || {};
+  };
+
+  const patientInfo = getFormData('patient_info');
+  const medicalHistory = getFormData('medical_history');
+  const painAssessment = getFormData('pain_assessment');
+  const painDescription = getFormData('pain_description');
+  const healthInsurance = getFormData('health_insurance');
+  const lifestyleImpact = getFormData('lifestyle_impact');
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
+  const getIncidentIcon = (incidentType) => {
+    switch (incidentType) {
+      case 'car_accident':
+        return Car;
+      case 'work_injury':
+        return Briefcase;
+      case 'sports_injury':
+        return Activity;
+      case 'general_pain':
+        return Heart;
+      default:
+        return FileCheck;
+    }
+  };
+
+  const Icon = getIncidentIcon(incident.incident_type);
+
+  return (
+    <Card className="border-l-4 border-l-blue-500">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-blue-100">
+              <Icon className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg">Initial Report</h3>
+              <p className="text-sm text-muted-foreground">
+                {incident.patient_name && `${incident.patient_name} • `}
+                {formatDate(incident.incident_date)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {incident.title}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge className="bg-blue-100 text-blue-800">
+              {incident.incident_type?.replace('_', ' ').toUpperCase()}
+            </Badge>
+            <Badge variant="outline" className="bg-green-100 text-green-800">
+              {incident.status?.toUpperCase()}
+            </Badge>
+            {incident.forms && incident.forms.length > 0 && (
+              <Badge variant="secondary">
+                {incident.completed_forms || incident.forms.length} forms
+              </Badge>
+            )}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setExpanded(!expanded)}
+            >
+              {expanded ? (
+                <>
+                  <ChevronDown className="w-4 h-4 mr-1" />
+                  Hide Details
+                </>
+              ) : (
+                <>
+                  <ChevronRight className="w-4 h-4 mr-1" />
+                  View Details ({forms.length} forms)
+                </>
+              )}
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+
+      {expanded && (
+        <CardContent>
+          {isLoadingDetails && (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-sm text-muted-foreground">Loading detailed report...</p>
+            </div>
+          )}
+          
+          {detailsError && (
+            <div className="text-center py-8">
+              <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-4" />
+              <p className="text-sm text-red-600">Failed to load detailed report</p>
+            </div>
+          )}
+
+          {!isLoadingDetails && !detailsError && (
+            <Tabs defaultValue="patient-info" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
+              {patientInfo && Object.keys(patientInfo).length > 0 && (
+                <TabsTrigger value="patient-info">Patient Info</TabsTrigger>
+              )}
+              {medicalHistory && Object.keys(medicalHistory).length > 0 && (
+                <TabsTrigger value="medical-history">Medical History</TabsTrigger>
+              )}
+              {(painAssessment && Object.keys(painAssessment).length > 0) && (
+                <TabsTrigger value="pain-assessment">Pain Assessment</TabsTrigger>
+              )}
+              {painDescription && Object.keys(painDescription).length > 0 && (
+                <TabsTrigger value="pain-description">Pain Description</TabsTrigger>
+              )}
+              {healthInsurance && Object.keys(healthInsurance).length > 0 && (
+                <TabsTrigger value="insurance">Insurance</TabsTrigger>
+              )}
+              {lifestyleImpact && Object.keys(lifestyleImpact).length > 0 && (
+                <TabsTrigger value="lifestyle">Lifestyle</TabsTrigger>
+              )}
+            </TabsList>
+
+            {/* Patient Information Tab */}
+            {patientInfo && Object.keys(patientInfo).length > 0 && (
+              <TabsContent value="patient-info" className="space-y-4">
+                <h4 className="font-semibold text-primary flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Patient Information
+                </h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+                  {patientInfo.first_name && (
+                    <div>
+                      <strong>Name:</strong> {patientInfo.first_name} {patientInfo.middle_name} {patientInfo.last_name}
+                    </div>
+                  )}
+                  {patientInfo.date_of_birth && (
+                    <div>
+                      <strong>Date of Birth:</strong> {formatDate(patientInfo.date_of_birth)}
+                    </div>
+                  )}
+                  {patientInfo.gender && (
+                    <div>
+                      <strong>Gender:</strong> {patientInfo.gender}
+                    </div>
+                  )}
+                  {patientInfo.marital_status && (
+                    <div>
+                      <strong>Marital Status:</strong> {patientInfo.marital_status}
+                    </div>
+                  )}
+                  {patientInfo.home_phone && (
+                    <div>
+                      <strong>Phone:</strong> {patientInfo.home_phone}
+                    </div>
+                  )}
+                  {patientInfo.cell_phone && (
+                    <div>
+                      <strong>Cell:</strong> {patientInfo.cell_phone}
+                    </div>
+                  )}
+                  {patientInfo.address && (
+                    <div className="md:col-span-2">
+                      <strong>Address:</strong> {patientInfo.address}, {patientInfo.city}, {patientInfo.state} {patientInfo.zip_code}
+                    </div>
+                  )}
+                  {patientInfo.emergency_contact_name && (
+                    <div className="md:col-span-2">
+                      <strong>Emergency Contact:</strong> {patientInfo.emergency_contact_name} ({patientInfo.emergency_contact_relationship}) - {patientInfo.emergency_contact_phone}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            )}
+
+            {/* Medical History Tab */}
+            {medicalHistory && Object.keys(medicalHistory).length > 0 && (
+              <TabsContent value="medical-history" className="space-y-4">
+                <h4 className="font-semibold text-primary flex items-center gap-2">
+                  <Activity className="w-4 h-4" />
+                  Medical History
+                </h4>
+                <div className="space-y-3 text-sm">
+                  {medicalHistory.hasCondition && (
+                    <div>
+                      <strong>Pre-existing Conditions:</strong> {medicalHistory.hasCondition === 'yes' ? 'Yes' : 'No'}
+                      {medicalHistory.conditionDetails && (
+                        <div className="mt-1 p-2 bg-muted/50 rounded">
+                          {medicalHistory.conditionDetails}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {medicalHistory.hasSurgicalHistory && (
+                    <div>
+                      <strong>Surgical History:</strong> {medicalHistory.hasSurgicalHistory === 'yes' ? 'Yes' : 'No'}
+                      {medicalHistory.surgicalHistoryDetails && (
+                        <div className="mt-1 p-2 bg-muted/50 rounded">
+                          {medicalHistory.surgicalHistoryDetails}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {medicalHistory.medication && (
+                    <div>
+                      <strong>Current Medications:</strong> {medicalHistory.medication === 'yes' ? 'Yes' : 'No'}
+                      {medicalHistory.medicationNames && (
+                        <div className="mt-1 p-2 bg-muted/50 rounded">
+                          {medicalHistory.medicationNames}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {medicalHistory.currentlyWorking && (
+                    <div>
+                      <strong>Employment Status:</strong> {medicalHistory.currentlyWorking === 'yes' ? 'Currently Working' : 'Not Working'}
+                      {medicalHistory.jobDescription && (
+                        <div className="mt-1 p-2 bg-muted/50 rounded">
+                          <strong>Job:</strong> {medicalHistory.jobDescription} <br />
+                          <strong>Hours:</strong> {medicalHistory.workHoursPerDay} hrs/day, {medicalHistory.workDaysPerWeek} days/week
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            )}
+
+            {/* Pain Assessment Tab */}
+            {painAssessment && Object.keys(painAssessment).length > 0 && (
+              <TabsContent value="pain-assessment" className="space-y-4">
+                <h4 className="font-semibold text-primary flex items-center gap-2">
+                  <Heart className="w-4 h-4" />
+                  Pain Assessment
+                </h4>
+                <div className="space-y-3 text-sm">
+                  {painAssessment.painType && Array.isArray(painAssessment.painType) && painAssessment.painType.length > 0 && (
+                    <div>
+                      <strong>Pain Type:</strong> {painAssessment.painType.join(', ')}
+                    </div>
+                  )}
+                  {painAssessment.painLevel && Array.isArray(painAssessment.painLevel) && painAssessment.painLevel.length > 0 && (
+                    <div>
+                      <strong>Pain Level:</strong> {painAssessment.painLevel.join(', ')}
+                    </div>
+                  )}
+                  {painAssessment.painTiming && (
+                    <div>
+                      <strong>Pain Timing:</strong> {painAssessment.painTiming}
+                    </div>
+                  )}
+                  {painAssessment.painChanges && (
+                    <div>
+                      <strong>Pain Changes:</strong> {painAssessment.painChanges}
+                    </div>
+                  )}
+                  {painAssessment.painTriggers && Array.isArray(painAssessment.painTriggers) && painAssessment.painTriggers.length > 0 && (
+                    <div>
+                      <strong>Pain Triggers:</strong> {painAssessment.painTriggers.join(', ')}
+                    </div>
+                  )}
+                  {painAssessment.radiatingPain && (
+                    <div>
+                      <strong>Radiating Pain:</strong> {painAssessment.radiatingPain === 'yes' ? 'Yes' : 'No'}
+                    </div>
+                  )}
+                  {painAssessment.painMap && Object.keys(painAssessment.painMap).length > 0 && (
+                    <div>
+                      <strong>Pain Map:</strong>
+                      <div className="mt-1 space-y-3">
+                        {Object.entries(painAssessment.painMap).map(([area, data]) => (
+                          <div key={area} className="p-3 bg-muted/50 rounded-lg">
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="font-medium">{area.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
+                              <Badge variant="outline">Level {data['pain-level'] || data.level}/10</Badge>
+                            </div>
+                            {data['pain-types'] && Array.isArray(data['pain-types']) && (
+                              <div className="text-sm mb-1">
+                                <strong>Types:</strong> {data['pain-types'].join(', ')}
+                              </div>
+                            )}
+                            {data['pain-timing'] && (
+                              <div className="text-sm mb-1">
+                                <strong>Timing:</strong> {data['pain-timing']}
+                              </div>
+                            )}
+                            {data['pain-changes'] && (
+                              <div className="text-sm mb-1">
+                                <strong>Changes:</strong> {data['pain-changes']}
+                              </div>
+                            )}
+                            {data['painTriggers'] && Array.isArray(data['painTriggers']) && (
+                              <div className="text-sm mb-1">
+                                <strong>Triggers:</strong> {data['painTriggers'].join(', ')}
+                              </div>
+                            )}
+                            {data['pain-severity'] && Array.isArray(data['pain-severity']) && (
+                              <div className="text-sm mb-1">
+                                <strong>Severity:</strong> {data['pain-severity'].join(', ')}
+                              </div>
+                            )}
+                            {data['radiating-pain'] && (
+                              <div className="text-sm">
+                                <strong>Radiating:</strong> {data['radiating-pain']}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            )}
+
+            {/* Pain Description Tab */}
+            {painDescription && Object.keys(painDescription).length > 0 && (
+              <TabsContent value="pain-description" className="space-y-4">
+                <h4 className="font-semibold text-primary flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Pain Description
+                </h4>
+                <div className="space-y-3 text-sm">
+                  {painDescription.symptomDetails && (
+                    <div>
+                      <strong>Symptom Details:</strong>
+                      <div className="mt-1 p-2 bg-muted/50 rounded">
+                        {painDescription.symptomDetails}
+                      </div>
+                    </div>
+                  )}
+                  {painDescription.mainComplaints && (
+                    <div>
+                      <strong>Main Complaints:</strong>
+                      <div className="mt-1 p-2 bg-muted/50 rounded">
+                        {painDescription.mainComplaints}
+                      </div>
+                    </div>
+                  )}
+                  {painDescription.previousHealthcare && (
+                    <div>
+                      <strong>Previous Healthcare:</strong>
+                      <div className="mt-1 p-2 bg-muted/50 rounded">
+                        {painDescription.previousHealthcare}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            )}
+
+            {/* Insurance Tab */}
+            {healthInsurance && Object.keys(healthInsurance).length > 0 && (
+              <TabsContent value="insurance" className="space-y-4">
+                <h4 className="font-semibold text-primary flex items-center gap-2">
+                  <ClipboardCheck className="w-4 h-4" />
+                  Insurance & Accident Details
+                </h4>
+                <div className="space-y-3 text-sm">
+                  {healthInsurance.insuranceType && (
+                    <div>
+                      <strong>Insurance Type:</strong> {healthInsurance.insuranceType}
+                    </div>
+                  )}
+                  {healthInsurance.covered && (
+                    <div>
+                      <strong>Covered:</strong> {healthInsurance.covered === 'yes' ? 'Yes' : 'No'}
+                    </div>
+                  )}
+                  {healthInsurance.accidentDate && (
+                    <div>
+                      <strong>Accident Date:</strong> {formatDate(healthInsurance.accidentDate)}
+                    </div>
+                  )}
+                  {healthInsurance.accidentDescription && (
+                    <div>
+                      <strong>Accident Description:</strong>
+                      <div className="mt-1 p-2 bg-muted/50 rounded">
+                        {healthInsurance.accidentDescription}
+                      </div>
+                    </div>
+                  )}
+                  {healthInsurance.lostWorkYesNo && (
+                    <div>
+                      <strong>Lost Work:</strong> {healthInsurance.lostWorkYesNo === 'yes' ? 'Yes' : 'No'}
+                      {healthInsurance.lostWorkDates && (
+                        <div className="mt-1">
+                          <strong>Dates:</strong> {healthInsurance.lostWorkDates}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            )}
+
+            {/* Lifestyle Tab */}
+            {lifestyleImpact && Object.keys(lifestyleImpact).length > 0 && (
+              <TabsContent value="lifestyle" className="space-y-4">
+                <h4 className="font-semibold text-primary flex items-center gap-2">
+                  <Activity className="w-4 h-4" />
+                  Lifestyle Impact
+                </h4>
+                <div className="space-y-3 text-sm">
+                  {lifestyleImpact.workType && (
+                    <div>
+                      <strong>Work Type:</strong> {lifestyleImpact.workType}
+                    </div>
+                  )}
+                  {lifestyleImpact.workStress && (
+                    <div>
+                      <strong>Work Stress Level:</strong> {lifestyleImpact.workStress}
+                    </div>
+                  )}
+                  {lifestyleImpact.smoking && (
+                    <div>
+                      <strong>Smoking:</strong> {lifestyleImpact.smoking}
+                      {lifestyleImpact.smokingDetails && (
+                        <div className="mt-1 text-muted-foreground">
+                          {lifestyleImpact.smokingDetails}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {lifestyleImpact.drinking && (
+                    <div>
+                      <strong>Drinking:</strong> {lifestyleImpact.drinking}
+                      {lifestyleImpact.drinkingDetails && (
+                        <div className="mt-1 text-muted-foreground">
+                          {lifestyleImpact.drinkingDetails}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {lifestyleImpact.exercise && (
+                    <div>
+                      <strong>Exercise:</strong> {lifestyleImpact.exercise}
+                      {lifestyleImpact.exerciseDetails && (
+                        <div className="mt-1 text-muted-foreground">
+                          {lifestyleImpact.exerciseDetails}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {lifestyleImpact.sleepQuality && (
+                    <div>
+                      <strong>Sleep Quality:</strong> {lifestyleImpact.sleepQuality}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            )}
+          </Tabs>
+          )}
+        </CardContent>
+      )}
+    </Card>
+  );
+};
 
 // Patient Notes Component for patient view
 const PatientNotesView = ({ userRole, userId }) => {
@@ -330,52 +590,27 @@ const PatientNotesView = ({ userRole, userId }) => {
   const [selectedCase, setSelectedCase] = useState(null);
   const [expandedCases, setExpandedCases] = useState({});
 
-  // Get all notes from all cases
+  // Fetch user's incidents (initial reports)
+  const { 
+    data: userIncidents, 
+    isLoading: isLoadingIncidents 
+  } = useGetIncidentsQuery(userId, { skip: !userId });
+
+  // Get all notes from all cases (currently empty - will be populated from clinical notes API)
   const allNotes = useMemo(() => {
-    const notes = [];
-    mockPatientCases.forEach(patientCase => {
-      patientCase.notes.forEach(note => {
-        notes.push({
-          ...note,
-          caseId: patientCase.id,
-          caseTitle: patientCase.title,
-          caseStatus: patientCase.status,
-          casePriority: patientCase.priority,
-          incidentType: patientCase.incidentType
-        });
-      });
-    });
-    return notes;
+    // This will be populated when we integrate with clinical notes API
+    return [];
   }, []);
 
+  // Process incidents data
+  const incidents = useMemo(() => {
+    if (!userIncidents?.data) return [];
+    return Array.isArray(userIncidents.data) ? userIncidents.data : [];
+  }, [userIncidents]);
+
   const filteredCases = useMemo(() => {
-    let filtered = mockPatientCases;
-
-    if (searchTerm) {
-      filtered = filtered.filter(patientCase =>
-        patientCase.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patientCase.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patientCase.primaryCondition.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patientCase.doctorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        patientCase.notes.some(note =>
-          note.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          note.chiefComplaint.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          note.assessment.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      );
-    }
-
-    if (filterStatus !== "all") {
-      filtered = filtered.filter(patientCase => patientCase.status === filterStatus);
-    }
-
-    if (filterType !== "all") {
-      filtered = filtered.filter(patientCase => 
-        patientCase.notes.some(note => note.type.toLowerCase().includes(filterType.toLowerCase()))
-      );
-    }
-
-    return filtered.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+    // Currently empty - will be populated when we integrate with clinical cases API
+    return [];
   }, [searchTerm, filterType, filterStatus]);
 
   const filteredNotes = useMemo(() => {
@@ -690,7 +925,20 @@ const PatientNotesView = ({ userRole, userId }) => {
         </Card>
 
         {/* Cases Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-lg bg-blue-100">
+                  <FileCheck className="w-4 h-4 text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{incidents.length}</p>
+                  <p className="text-sm text-muted-foreground">Initial Reports</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
@@ -698,7 +946,7 @@ const PatientNotesView = ({ userRole, userId }) => {
                   <Activity className="w-4 h-4 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{mockPatientCases.filter(c => c.status === 'active').length}</p>
+                  <p className="text-2xl font-bold">0</p>
                   <p className="text-sm text-muted-foreground">Active Cases</p>
                 </div>
               </div>
@@ -707,8 +955,8 @@ const PatientNotesView = ({ userRole, userId }) => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-blue-100">
-                  <ClipboardCheck className="w-4 h-4 text-blue-600" />
+                <div className="p-2 rounded-lg bg-purple-100">
+                  <ClipboardCheck className="w-4 h-4 text-purple-600" />
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{allNotes.length}</p>
@@ -720,17 +968,54 @@ const PatientNotesView = ({ userRole, userId }) => {
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-purple-100">
-                  <Calendar className="w-4 h-4 text-purple-600" />
+                <div className="p-2 rounded-lg bg-orange-100">
+                  <Calendar className="w-4 h-4 text-orange-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold">{mockPatientCases.filter(c => c.nextAppointment).length}</p>
+                  <p className="text-2xl font-bold">0</p>
                   <p className="text-sm text-muted-foreground">Upcoming Appointments</p>
                 </div>
               </div>
             </CardContent>
           </Card>
         </div>
+
+        {/* Initial Reports Section */}
+        {incidents && incidents.length > 0 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold">My Initial Reports</h2>
+            {incidents.map((incident) => (
+              <InitialReportDisplay key={incident.id} incident={incident} />
+            ))}
+          </div>
+        )}
+
+        {/* Loading state for incidents */}
+        {isLoadingIncidents && (
+          <Card>
+            <CardContent className="text-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <h3 className="text-lg font-semibold text-muted-foreground">
+                Loading Initial Reports...
+              </h3>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Empty state for initial reports */}
+        {!isLoadingIncidents && incidents.length === 0 && (
+          <Card>
+            <CardContent className="text-center py-12">
+              <FileCheck className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-muted-foreground">
+                No Initial Reports Found
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Your initial patient reports will appear here after you submit the patient information forms.
+              </p>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Cases List */}
         {filteredCases.length > 0 ? (
@@ -968,14 +1253,14 @@ export default function Notes() {
   const handleAddNote = async () => {
     try {
       const noteData = {
-        patientId: selectedPatient.id,
+        patient_id: selectedPatient.id,
         type: newNote.type,
         chiefComplaint: newNote.chiefComplaint,
         assessment: newNote.assessment,
         treatment: newNote.treatment,
         plan: newNote.plan,
         duration: newNote.duration,
-        doctorId: "dr-001", // This should come from auth state
+        doctor_id: "dr-001", // This should come from auth state
         doctorName: "Dr. Dieu Phan", // This should come from auth state
         status: "completed",
       };
@@ -1099,7 +1384,7 @@ export default function Notes() {
         {/* Patient List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPatients.map((patient) => {
-            const patientNotes = mockClinicalNotes[patient.id] || [];
+            const patientNotes = []; // Will be loaded from API when patient is selected
             const lastNote = patientNotes[0];
 
             return (

@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import {
   useGetAvailableUsersQuery,
   useGetConversationsQuery,
+  useGetMessagesQuery,
   useSendMessageMutation,
   useCreateConversationMutation,
   useUpdateConversationStatusMutation,
@@ -238,37 +239,30 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     const validation = validateConversationData(formData);
     
     if (!validation.isValid) {
-      console.log('❌ Validation failed:', validation.errorMessage);
       toast.error(validation.errorMessage);
       return;
     }
 
     // Find selected user to validate role restrictions
     const selectedUser = availableUsers.find(user => user.id.toString() === formData.target_user_id.toString());
-    console.log('🎯 Selected User:', selectedUser);
     
     if (!selectedUser) {
-      console.log('❌ No valid user selected');
       toast.error("Please select a valid user");
       return;
     }
 
     // Get the target user's role (handle both 'role' and 'type' properties)
     const targetUserRole = selectedUser.role || selectedUser.type;
-    console.log('🎭 Target User Role:', targetUserRole, 'from properties:', { role: selectedUser.role, type: selectedUser.type });
-
+    
     // Client-side role validation (redundant with server-side but provides better UX)
     const canStart = canStartConversation(currentUserRole, targetUserRole);
-    console.log('🔐 Can start conversation:', canStart);
     
     if (!canStart) {
       const errorMessage = getRoleRestrictionError(currentUserRole, targetUserRole);
-      console.log('❌ Role restriction:', errorMessage);
       toast.error(errorMessage);
       return;
     }
 
-    console.log('✅ All validations passed, calling onSubmit');
     onSubmit(formData);
     resetForm();
   };
@@ -538,14 +532,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
               onClick={handleSubmit} 
               disabled={isCreating || !formData.target_user_id || !formData.subject}
               className="flex-1"
-              onMouseEnter={() => {
-                console.log('🔍 Button hover - disabled state:', {
-                  isCreating,
-                  noTargetUser: !formData.target_user_id,
-                  noSubject: !formData.subject,
-                  totalDisabled: isCreating || !formData.target_user_id || !formData.subject
-                });
-              }}
             >
               {isCreating ? "Creating..." : "Start Conversation"}
             </Button>
@@ -584,9 +570,9 @@ export default function NewChat() {
     data: messagesData, 
     isLoading: messagesLoading, 
     refetch: refetchMessages 
-  } = useGetConversationsQuery(
-    selectedConversation?.conversation_id ? { conversationId: selectedConversation.conversation_id } : undefined,
-    { skip: !selectedConversation?.id }
+  } = useGetMessagesQuery(
+    selectedConversation?.conversation_id ? { conversation_id: selectedConversation.conversation_id } : undefined,
+    { skip: !selectedConversation?.conversation_id }
   );
 
   // Mutation hooks
@@ -597,7 +583,23 @@ export default function NewChat() {
 
   // Data extraction with memoization
   const conversations = useMemo(() => extractDataFromResponse(conversationsData), [conversationsData]);
-  const messages = useMemo(() => extractDataFromResponse(messagesData), [messagesData]);
+  const messages = useMemo(() => {
+    let messageList = [];
+    
+    // Handle the specific format from /chat/conversations/{id}/messages
+    if (messagesData?.data?.messages) {
+      messageList = [...messagesData.data.messages];
+    } else {
+      messageList = [...extractDataFromResponse(messagesData)];
+    }
+    
+    // Sort messages by sent_at timestamp - oldest first (proper chat order)
+    return messageList.sort((a, b) => {
+      const timeA = new Date(a.sent_at || a.created_at || a.timestamp);
+      const timeB = new Date(b.sent_at || b.created_at || b.timestamp);
+      return timeA - timeB; // Oldest first
+    });
+  }, [messagesData]);
   const isBackendAvailable = !conversationsError || conversationsError?.status !== 404;
 
   // Auto-scroll to bottom when new messages arrive
@@ -626,7 +628,6 @@ export default function NewChat() {
       await refetchMessages();
       await refetchConversations(); // Update conversation list with new last message
     } catch (error) {
-      console.error('Failed to send message:', error);
       if (error?.data?.error_code === '4031' || error?.data?.error_code === '4032') {
         toast.error(error.data.message || "You are not authorized to send messages in this conversation");
       } else {
@@ -636,19 +637,13 @@ export default function NewChat() {
   };
 
   const handleCreateConversation = async (formData) => {
-    console.log('🌐 Creating conversation with data:', formData);
-    console.log('🔗 Backend available:', isBackendAvailable);
-    
     if (!isBackendAvailable) {
-      console.log('❌ Backend not available');
       toast.error("Chat service is currently unavailable.");
       return;
     }
 
     try {
-      console.log('📡 Making API call to create conversation...');
       const result = await createConversation(formData).unwrap();
-      console.log('✅ API call successful:', result);
       
       toast.success("Conversation created successfully!");
       setShowNewConversationModal(false);
@@ -660,8 +655,6 @@ export default function NewChat() {
       } else if (result) {
         newConversation = result;
       }
-      console.log('💬 New conversation object:', result);
-      console.log('💬 New conversation object:', newConversation);
       
       // Set as selected conversation if we have valid data
       if (newConversation?.id) {
@@ -670,15 +663,7 @@ export default function NewChat() {
       
       // Refresh conversations list
       await refetchConversations();
-      
     } catch (error) {
-      console.error('❌ Failed to create conversation:', error);
-      console.error('📋 Error details:', {
-        status: error?.status,
-        data: error?.data,
-        message: error?.message
-      });
-      
       // Handle specific role-based errors
       if (error?.data?.error_code === '4031') {
         toast.error(error.data.message || "You are not authorized to start conversations with this user type");
@@ -692,35 +677,33 @@ export default function NewChat() {
     }
   };
 
-  const handleDeleteConversation = async (conversationId) => {
+  const handleDeleteConversation = async (conversation_id) => {
     if (!confirm("Are you sure you want to delete this conversation?")) return;
 
     try {
-      await deleteConversation(conversationId).unwrap();
+      await deleteConversation(conversation_id).unwrap();
       toast.success("Conversation deleted successfully!");
       
-      if (selectedConversation?.id === conversationId) {
+      if (selectedConversation?.id === conversation_id) {
         setSelectedConversation(null);
       }
       refetchConversations();
     } catch (error) {
-      console.error('Failed to delete conversation:', error);
       toast.error("Failed to delete conversation.");
     }
   };
 
-  const handleUpdateStatus = async (conversationId, status) => {
+  const handleUpdateStatus = async (conversation_id, status) => {
     if (!canUpdateConversationStatus(userRole)) {
       toast.error("You are not authorized to update conversation status");
       return;
     }
 
     try {
-      await updateConversationStatus({ conversationId, status }).unwrap();
+      await updateConversationStatus({ conversation_id, status }).unwrap();
       toast.success(`Conversation ${status === 'closed' ? 'closed' : 'updated'} successfully!`);
       refetchConversations();
     } catch (error) {
-      console.error('Failed to update conversation status:', error);
       toast.error("Failed to update conversation status.");
     }
   };

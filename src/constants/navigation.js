@@ -27,9 +27,9 @@ const coreNavigation = {
       },
       {
         name: "Blogs",
-        path: "blog",
+        path: "blog/management", // Updated path for blog management
         icon: FileText,
-        description: "View your recommended blogs",
+        description: "Manage and create blog posts",
       },
       {
         name: "Messages",
@@ -82,6 +82,31 @@ const buildPath = (basePath, role, userId) => {
 export const getNavigationByRole = (role, userId) => {
   // All users get the same navigation structure now
   const navigation = { ...coreNavigation };
+
+  // Customize blog path based on role
+  if (role === 'doctor') {
+    navigation.main.items = navigation.main.items.map(item => {
+      if (item.name === 'Blogs') {
+        return {
+          ...item,
+          path: 'blog/management',
+          description: 'Manage and create blog posts'
+        };
+      }
+      return item;
+    });
+  } else {
+    navigation.main.items = navigation.main.items.map(item => {
+      if (item.name === 'Blogs') {
+        return {
+          ...item,
+          path: 'blog',
+          description: 'View your recommended blogs'
+        };
+      }
+      return item;
+    });
+  }
 
   // Build proper paths for all navigation items
   const navigationWithPaths = {};

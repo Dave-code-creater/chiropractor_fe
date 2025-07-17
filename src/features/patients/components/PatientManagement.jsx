@@ -1,15 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DataTable } from "@/components/data-table";
 import {
   Search,
   Plus,
-  Filter,
   MoreHorizontal,
   Phone,
   Mail,
@@ -17,11 +15,11 @@ import {
   FileText,
   Edit,
   Eye,
-  AlertCircle,
   CheckCircle,
   Clock,
   Users,
   TrendingUp,
+  Loader2,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -29,86 +27,76 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Mock patient data
-const mockPatients = [
-  {
-    id: "pt-001",
-    firstName: "Sarah",
-    lastName: "Johnson",
-    email: "sarah.johnson@email.com",
-    phone: "(555) 123-4567",
-    dateOfBirth: "1985-03-15",
-    lastVisit: "2024-01-15",
-    nextAppointment: "2024-01-22",
-    status: "active",
-    condition: "Lower Back Pain",
-    doctor: "Dr. Dieu Phan",
-    totalVisits: 8,
-    insurance: "Blue Cross Blue Shield",
-    emergencyContact: "John Johnson - (555) 987-6543",
-  },
-  {
-    id: "pt-002",
-    firstName: "Michael",
-    lastName: "Chen",
-    email: "m.chen@email.com",
-    phone: "(555) 234-5678",
-    dateOfBirth: "1978-11-22",
-    lastVisit: "2024-01-10",
-    nextAppointment: null,
-    status: "inactive",
-    condition: "Neck Pain",
-    doctor: "Dr. Dieu Phan",
-    totalVisits: 12,
-    insurance: "Aetna",
-    emergencyContact: "Lisa Chen - (555) 876-5432",
-  },
-  {
-    id: "pt-003",
-    firstName: "Emma",
-    lastName: "Davis",
-    email: "emma.davis@email.com",
-    phone: "(555) 345-6789",
-    dateOfBirth: "1992-07-08",
-    lastVisit: "2024-01-18",
-    nextAppointment: "2024-01-25",
-    status: "active",
-    condition: "Sports Injury",
-    doctor: "Dr. Dieu Phan",
-    totalVisits: 5,
-    insurance: "United Healthcare",
-    emergencyContact: "Robert Davis - (555) 765-4321",
-  },
-  {
-    id: "pt-004",
-    firstName: "James",
-    lastName: "Wilson",
-    email: "james.wilson@email.com",
-    phone: "(555) 456-7890",
-    dateOfBirth: "1965-12-03",
-    lastVisit: "2024-01-12",
-    nextAppointment: "2024-01-24",
-    status: "active",
-    condition: "Chronic Pain",
-    doctor: "Dr. Dieu Phan",
-    totalVisits: 15,
-    insurance: "Medicare",
-    emergencyContact: "Mary Wilson - (555) 654-3210",
-  },
-];
+import { useGetPatientsQuery } from "@/api/services/userApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
+import { useSelector } from "react-redux";
+import { selectUserId } from "@/state/data/authSlice";
 
 export default function PatientManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("all");
   const [selectedPatient, setSelectedPatient] = useState(null);
+  const doctorId = useSelector(selectUserId);
 
-  const filteredPatients = mockPatients.filter((patient) => {
+  // Fetch real data from API
+  const { data: patientsData, isLoading: isLoadingPatients, error: patientsError } = useGetPatientsQuery();
+  const { data: appointmentsData, isLoading: isLoadingAppointments } = useGetAppointmentsQuery({ 
+    doctor_id: doctorId 
+  });
+
+  // Process patients data
+  const patients = useMemo(() => {
+    if (isLoadingPatients || !patientsData) return [];
+    if (Array.isArray(patientsData?.data)) return patientsData.data;
+    if (Array.isArray(patientsData)) return patientsData;
+    return [];
+  }, [patientsData, isLoadingPatients]);
+
+  // Process appointments data to get patient visit info
+  const appointments = useMemo(() => {
+    if (isLoadingAppointments || !appointmentsData) return [];
+    if (Array.isArray(appointmentsData?.data)) return appointmentsData.data;
+    if (Array.isArray(appointmentsData)) return appointmentsData;
+    return [];
+  }, [appointmentsData, isLoadingAppointments]);
+
+  // Enhanced patients with appointment data
+  const enhancedPatients = useMemo(() => {
+    return patients.map(patient => {
+      const patientAppointments = appointments.filter(apt => apt.patient_id === patient.id);
+      const completedAppointments = patientAppointments.filter(apt => apt.status === 'completed');
+      const upcomingAppointments = patientAppointments.filter(apt => 
+        apt.status === 'scheduled' || apt.status === 'confirmed'
+      );
+      
+      const lastVisit = completedAppointments.length > 0 
+        ? completedAppointments.sort((a, b) => new Date(b.date || b.datetime) - new Date(a.date || a.datetime))[0]
+        : null;
+      
+      const nextAppointment = upcomingAppointments.length > 0
+        ? upcomingAppointments.sort((a, b) => new Date(a.date || a.datetime) - new Date(b.date || b.datetime))[0]
+        : null;
+
+      return {
+        ...patient,
+        status: patient.status || 'active',
+        condition: patient.primaryCondition || patient.condition || 'General Care',
+        totalVisits: completedAppointments.length,
+        lastVisit: lastVisit ? (lastVisit.date || lastVisit.datetime) : null,
+        nextAppointment: nextAppointment ? (nextAppointment.date || nextAppointment.datetime) : null,
+        phone: patient.phone || patient.phoneNumber || 'N/A',
+        insurance: patient.insurance || 'Not specified',
+        emergencyContact: patient.emergencyContact || 'Not provided'
+      };
+    });
+  }, [patients, appointments]);
+
+  const filteredPatients = enhancedPatients.filter((patient) => {
     const matchesSearch =
-      patient.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      patient.condition.toLowerCase().includes(searchTerm.toLowerCase());
+      patient.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      patient.condition?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       selectedStatus === "all" || patient.status === selectedStatus;
@@ -266,31 +254,31 @@ export default function PatientManagement() {
   const stats = [
     {
       title: "Total Patients",
-      value: mockPatients.length,
+      value: enhancedPatients.length,
       icon: Users,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
     },
     {
       title: "Active Patients",
-      value: mockPatients.filter((p) => p.status === "active").length,
+      value: enhancedPatients.filter((p) => p.status === "active").length,
       icon: CheckCircle,
       color: "text-green-600",
       bgColor: "bg-green-50",
     },
     {
       title: "Upcoming Appointments",
-      value: mockPatients.filter((p) => p.nextAppointment).length,
+      value: enhancedPatients.filter((p) => p.nextAppointment).length,
       icon: Calendar,
       color: "text-orange-600",
       bgColor: "bg-orange-50",
     },
     {
       title: "Average Visits",
-      value: Math.round(
-        mockPatients.reduce((sum, p) => sum + p.totalVisits, 0) /
-          mockPatients.length,
-      ),
+      value: enhancedPatients.length > 0 ? Math.round(
+        enhancedPatients.reduce((sum, p) => sum + p.totalVisits, 0) /
+          enhancedPatients.length,
+      ) : 0,
       icon: TrendingUp,
       color: "text-purple-600",
       bgColor: "bg-purple-50",
@@ -393,7 +381,26 @@ export default function PatientManagement() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <DataTable columns={patientColumns} data={filteredPatients} />
+            {isLoadingPatients ? (
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="w-8 h-8 animate-spin" />
+                <span className="ml-2">Loading patients...</span>
+              </div>
+            ) : patientsError ? (
+              <div className="text-center py-8">
+                <p className="text-red-600">Error loading patients: {patientsError.message}</p>
+                <Button onClick={() => window.location.reload()} className="mt-4">
+                  Retry
+                </Button>
+              </div>
+            ) : filteredPatients.length === 0 ? (
+              <div className="text-center py-8">
+                <Users className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground">No patients found</p>
+              </div>
+            ) : (
+              <DataTable columns={patientColumns} data={filteredPatients} />
+            )}
           </CardContent>
         </Card>
 

@@ -3,19 +3,18 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DataTable } from "@/components/data-table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { 
-  useGetAppointmentsQuery, 
+  useGetUserAppointmentsQuery,
   useUpdateAppointmentMutation, 
   useCreateAppointmentMutation,
-  useDeleteAppointmentMutation,
-  useGetDoctorsQuery
+  useDeleteAppointmentMutation
 } from '@/api/services/appointmentApi';
 import { useGetPatientsQuery } from '@/api/services/userApi';
 import { useSelector } from 'react-redux';
@@ -34,53 +33,42 @@ import {
   Phone,
   Mail,
   Filter,
-  MoreHorizontal,
-  Download,
-  RefreshCw
+  RefreshCw,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format } from 'date-fns';
+import { format, isToday, isPast, isFuture } from 'date-fns';
 
 const DoctorAppointments = () => {
   const currentUserId = useSelector(selectUserId);
   const userRole = useSelector(selectUserRole);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedAppointments, setSelectedAppointments] = useState([]);
   const [activeTab, setActiveTab] = useState('today');
   
+  // Reset page when tab or search changes
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab, searchTerm, statusFilter]);
+  const [selectedUserId, setSelectedUserId] = useState(''); // Placeholder for user selection
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  
   // Modal states
   const [createModal, setCreateModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, appointment: null });
-  const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, appointment: null });
 
-  // Query parameters based on role and tab
-  const queryParams = useMemo(() => {
-    const params = {};
-    
-    if (userRole === 'doctor') {
-      params.doctor_id = currentUserId;
-    }
-    
-    if (activeTab === 'today') {
-      params.date = selectedDate;
-    } else if (activeTab === 'upcoming') {
-      params.date_from = new Date().toISOString().split('T')[0];
-    } else if (activeTab === 'past') {
-      params.date_to = new Date().toISOString().split('T')[0];
-    }
-    
-    if (statusFilter !== 'all') {
-      params.status = statusFilter;
-    }
-    
-    return params;
-  }, [userRole, currentUserId, activeTab, selectedDate, statusFilter]);
+  // API queries - using the same API as patient appointments
+  const { data: appointmentsData, isLoading, error, refetch } = useGetUserAppointmentsQuery({
+    status_not: 'cancelled', // Exclude cancelled appointments like patient view
+    limit: 100
+  });
 
-  // API queries
-  const { data: appointmentsData, isLoading, error, refetch } = useGetAppointmentsQuery(queryParams);
-  const { data: doctorsData } = useGetDoctorsQuery();
   const { data: patientsData } = useGetPatientsQuery();
 
   // Mutations
@@ -88,78 +76,136 @@ const DoctorAppointments = () => {
   const [createAppointment] = useCreateAppointmentMutation();
   const [deleteAppointment] = useDeleteAppointmentMutation();
 
-  // Process data
+  // Process appointments data - same logic as PatientAppointments
   const appointments = useMemo(() => {
     if (!appointmentsData) return [];
-    return Array.isArray(appointmentsData?.metadata) ? appointmentsData.metadata :
-           Array.isArray(appointmentsData?.data) ? appointmentsData.data :
-           Array.isArray(appointmentsData) ? appointmentsData : [];
+    
+    // Based on your API structure: { data: { appointments: [...] } }
+    if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
+      return appointmentsData.data.appointments;
+    }
+    
+    // Fallback: Handle if data is directly in data array
+    if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
+      return appointmentsData.data;
+    }
+    
+    // Fallback: Handle if appointments are at root level
+    if (Array.isArray(appointmentsData)) {
+      return appointmentsData;
+    }
+    
+    return [];
   }, [appointmentsData]);
-
-  const doctors = useMemo(() => {
-    if (!doctorsData) return [];
-    return Array.isArray(doctorsData?.metadata) ? doctorsData.metadata :
-           Array.isArray(doctorsData?.data) ? doctorsData.data :
-           Array.isArray(doctorsData) ? doctorsData : [];
-  }, [doctorsData]);
 
   const patients = useMemo(() => {
     if (!patientsData) return [];
-    return Array.isArray(patientsData?.metadata) ? patientsData.metadata :
-           Array.isArray(patientsData?.data) ? patientsData.data :
+    return Array.isArray(patientsData?.data) ? patientsData.data :
            Array.isArray(patientsData) ? patientsData : [];
   }, [patientsData]);
 
+  // Categorize appointments - same logic as PatientAppointments
+  const categorizedAppointments = useMemo(() => {
+    const result = {
+      today: appointments.filter(apt => {
+        const appointmentDate = new Date(apt.appointment_date || apt.date || apt.datetime);
+        const isItToday = isToday(appointmentDate);
+        const hasValidStatus = ['pending', 'confirmed', 'scheduled'].includes(apt.status);
+        return isItToday && hasValidStatus;
+      }),
+      upcoming: appointments.filter(apt => {
+        const appointmentDate = new Date(apt.appointment_date || apt.date || apt.datetime);
+        const isItFuture = isFuture(appointmentDate);
+        const hasValidStatus = ['pending', 'confirmed', 'scheduled'].includes(apt.status);
+        return isItFuture && hasValidStatus;
+      }),
+      past: appointments.filter(apt => {
+        const appointmentDate = new Date(apt.appointment_date || apt.date || apt.datetime);
+        const isItPast = isPast(appointmentDate);
+        const isPastStatus = ['completed', 'cancelled'].includes(apt.status);
+        return isItPast || isPastStatus;
+      }),
+      all: appointments
+    };
+    
+    return result;
+  }, [appointments]);
+
   // Filter appointments
   const filteredAppointments = useMemo(() => {
-    return appointments.filter(apt => {
-      const matchesSearch = 
-        apt.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        apt.patient_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        apt.type?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        apt.reason_for_visit?.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      return matchesSearch;
-    });
-  }, [appointments, searchTerm]);
-
-  // Calculate stats
-  const stats = useMemo(() => {
-    const todayAppointments = appointments.filter(apt => 
-      new Date(apt.appointment_date).toDateString() === new Date().toDateString()
-    );
+    const currentAppointments = categorizedAppointments[activeTab] || [];
     
+    const filtered = currentAppointments.filter(apt => {
+      // If no search term, include all appointments
+      if (!searchTerm.trim()) {
+        const matchesStatus = statusFilter === 'all' || apt.status === statusFilter;
+        return matchesStatus;
+      }
+      
+      // If there's a search term, try to match against available fields
+      const matchesSearch = 
+        apt.patient?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.patient?.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.patient?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.reason_for_visit?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        apt.status?.toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || apt.status === statusFilter;
+      
+      return matchesSearch && matchesStatus;
+    });
+    
+    return filtered;
+  }, [categorizedAppointments, activeTab, searchTerm, statusFilter]);
+
+  // Pagination logic
+  const paginatedAppointments = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return filteredAppointments.slice(startIndex, endIndex);
+  }, [filteredAppointments, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+
+  // Calculate stats - same logic as PatientAppointments
+  const stats = useMemo(() => {
+    const todayAppointments = categorizedAppointments.today.length;
+    const upcomingAppointments = categorizedAppointments.upcoming.length;
+    const completedAppointments = appointments.filter(apt => apt.status === 'completed').length;
+    const totalPatients = new Set(appointments.map(apt => apt.patient?.id).filter(Boolean)).size;
+
     return [
       {
         title: "Today's Appointments",
-        value: todayAppointments.length,
+        value: todayAppointments,
         icon: Calendar,
         color: "text-blue-600",
         bgColor: "bg-blue-50"
       },
       {
-        title: "Pending Reviews",
-        value: appointments.filter(apt => apt.status === "completed" && !apt.reviewed).length,
+        title: "Upcoming",
+        value: upcomingAppointments,
         icon: Clock,
-        color: "text-yellow-600",
-        bgColor: "bg-yellow-50"
+        color: "text-orange-600",
+        bgColor: "bg-orange-50"
       },
       {
-        title: "Completed Today",
-        value: todayAppointments.filter(apt => apt.status === "completed").length,
+        title: "Completed",
+        value: completedAppointments,
         icon: CheckCircle,
         color: "text-green-600",
         bgColor: "bg-green-50"
       },
       {
         title: "Total Patients",
-        value: new Set(appointments.map(apt => apt.patient_id)).size,
-        icon: TrendingUp,
+        value: totalPatients,
+        icon: User,
         color: "text-purple-600",
         bgColor: "bg-purple-50"
       }
     ];
-  }, [appointments]);
+  }, [categorizedAppointments, appointments]);
 
   // Handle actions
   const handleStatusUpdate = async (appointmentId, newStatus) => {
@@ -183,7 +229,6 @@ const DoctorAppointments = () => {
     }
 
     try {
-      // Since we don't have bulk update API yet, we'll update them one by one
       await Promise.all(
         selectedAppointments.map(id => 
           updateAppointment({ id, status }).unwrap()
@@ -211,146 +256,42 @@ const DoctorAppointments = () => {
     }
   };
 
-  // Table columns
-  const columns = [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
-    {
-      accessorKey: "appointment_time",
-      header: "Time",
-      cell: ({ row }) => {
-        const time = row.original.appointment_time;
-        return time ? format(new Date(`2000-01-01T${time}`), 'h:mm a') : 'TBD';
-      }
-    },
-    {
-      accessorKey: "patient_name",
-      header: "Patient",
-      cell: ({ row }) => {
-        const appointment = row.original;
-        return (
-          <div className="space-y-1">
-            <div className="font-medium">{appointment.patient_name || 'Unknown Patient'}</div>
-            <div className="text-sm text-muted-foreground">
-              {appointment.patient_email || appointment.patient_phone}
-            </div>
-          </div>
-        );
-      }
-    },
-    {
-      accessorKey: "type",
-      header: "Type",
-      cell: ({ row }) => (
-        <Badge variant="outline">
-          {row.original.type || 'Consultation'}
-        </Badge>
-      )
-    },
-    {
-      accessorKey: "reason_for_visit",
-      header: "Reason",
-      cell: ({ row }) => (
-        <div className="max-w-[200px] truncate" title={row.original.reason_for_visit}>
-          {row.original.reason_for_visit || 'Not specified'}
-        </div>
-      )
-    },
-    {
-      accessorKey: "status",
-      header: "Status",
-      cell: ({ row }) => {
-        const status = row.original.status;
-        const getStatusColor = (status) => {
-          switch (status) {
-            case "confirmed": return "bg-green-100 text-green-800";
-            case "pending": return "bg-yellow-100 text-yellow-800";
-            case "completed": return "bg-blue-100 text-blue-800";
-            case "cancelled": return "bg-red-100 text-red-800";
-            default: return "bg-gray-100 text-gray-800";
-          }
-        };
-        return <Badge className={getStatusColor(status)}>{status}</Badge>;
-      }
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const appointment = row.original;
-        return (
-          <div className="flex items-center gap-2">
-            {appointment.status === "pending" && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handleStatusUpdate(appointment.id, "confirmed")}
-              >
-                <CheckCircle className="w-4 h-4 mr-1" />
-                Confirm
-              </Button>
-            )}
-            {appointment.status !== "completed" && (
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={() => handleStatusUpdate(appointment.id, "completed")}
-              >
-                <CheckCircle className="w-4 h-4 mr-1" />
-                Complete
-              </Button>
-            )}
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setEditModal({ isOpen: true, appointment })}
-            >
-              <Edit className="w-4 h-4 mr-1" />
-              Edit
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => handleDeleteAppointment(appointment.id)}
-            >
-              <Trash2 className="w-4 h-4 mr-1" />
-              Delete
-            </Button>
-          </div>
-        );
-      }
-    }
-  ];
+  // Format time - same as PatientAppointments
+  const formatTime = (time) => {
+    if (!time) return 'TBD';
+    const [hours, minutes] = time.split(':');
+    const hour = parseInt(hours);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm}`;
+  };
 
-  // Create/Edit Appointment Form
+  // Get status color - same as PatientAppointments
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'confirmed': return 'bg-green-100 text-green-800';
+      case 'pending': return 'bg-yellow-100 text-yellow-800';
+      case 'completed': return 'bg-blue-100 text-blue-800';
+      case 'cancelled': return 'bg-red-100 text-red-800';
+      case 'scheduled': return 'bg-cyan-100 text-cyan-800';
+      case 'reschedule_requested': return 'bg-purple-100 text-purple-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Table columns
+
+
+  // Create/Edit Appointment Form - simplified version
   const AppointmentForm = ({ appointment, onClose, onSave }) => {
     const [formData, setFormData] = useState({
-      patient_id: appointment?.patient_id || '',
-      doctor_id: appointment?.doctor_id || currentUserId,
-      appointment_date: appointment?.appointment_date || selectedDate,
+      patient_id: appointment?.patient?.id || '',
+      appointment_date: appointment?.appointment_date || new Date().toISOString().split('T')[0],
       appointment_time: appointment?.appointment_time || '',
-      type: appointment?.type || 'consultation',
       reason_for_visit: appointment?.reason_for_visit || '',
-      duration_minutes: appointment?.duration_minutes || 30,
+      location: appointment?.location || 'Colorado (Denver)',
       status: appointment?.status || 'pending',
-      notes: appointment?.notes || ''
+      additional_notes: appointment?.additional_notes || ''
     });
 
     const handleSubmit = async (e) => {
@@ -390,23 +331,19 @@ const DoctorAppointments = () => {
             </Select>
           </div>
 
-          {userRole === 'admin' && (
-            <div className="space-y-2">
-              <Label htmlFor="doctor">Doctor</Label>
-              <Select value={formData.doctor_id} onValueChange={(value) => setFormData({...formData, doctor_id: value})}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select doctor" />
-                </SelectTrigger>
-                <SelectContent>
-                  {doctors.map((doctor) => (
-                    <SelectItem key={doctor.id} value={doctor.id}>
-                      Dr. {doctor.first_name} {doctor.last_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="location">Location</Label>
+            <Select value={formData.location} onValueChange={(value) => setFormData({...formData, location: value})}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select location" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Colorado (Denver)">Colorado (Denver)</SelectItem>
+                <SelectItem value="Main Clinic">Main Clinic</SelectItem>
+                <SelectItem value="Downtown Branch">Downtown Branch</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -431,35 +368,6 @@ const DoctorAppointments = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="type">Type</Label>
-            <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="consultation">Consultation</SelectItem>
-                <SelectItem value="follow-up">Follow-up</SelectItem>
-                <SelectItem value="treatment">Treatment</SelectItem>
-                <SelectItem value="emergency">Emergency</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="duration">Duration (minutes)</Label>
-            <Input
-              type="number"
-              value={formData.duration_minutes}
-              onChange={(e) => setFormData({...formData, duration_minutes: parseInt(e.target.value)})}
-              min="15"
-              max="180"
-              step="15"
-            />
-          </div>
-        </div>
-
         <div className="space-y-2">
           <Label htmlFor="reason">Reason for Visit</Label>
           <Input
@@ -470,10 +378,10 @@ const DoctorAppointments = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes</Label>
+          <Label htmlFor="notes">Additional Notes</Label>
           <Textarea
-            value={formData.notes}
-            onChange={(e) => setFormData({...formData, notes: e.target.value})}
+            value={formData.additional_notes}
+            onChange={(e) => setFormData({...formData, additional_notes: e.target.value})}
             placeholder="Additional notes or instructions"
             rows={3}
           />
@@ -490,6 +398,17 @@ const DoctorAppointments = () => {
       </form>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading appointments...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -508,6 +427,36 @@ const DoctorAppointments = () => {
           </Button>
         </div>
       </div>
+
+      {/* User Selection Placeholder */}
+      {userRole === 'admin' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>User Selection</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <Label htmlFor="user-select">Select User to View Appointments For:</Label>
+                <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a user (doctor/patient) to view their appointments" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">All Users</SelectItem>
+                    {/* This would be populated with actual users from API */}
+                    <SelectItem value="placeholder-doctor-1">Dr. John Doe</SelectItem>
+                    <SelectItem value="placeholder-patient-1">Patient Jane Smith</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button variant="outline" disabled>
+                Apply Filter
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -534,10 +483,18 @@ const DoctorAppointments = () => {
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="today">Today</TabsTrigger>
-          <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-          <TabsTrigger value="past">Past</TabsTrigger>
-          <TabsTrigger value="all">All</TabsTrigger>
+          <TabsTrigger value="today">
+            Today ({categorizedAppointments.today.length})
+          </TabsTrigger>
+          <TabsTrigger value="upcoming">
+            Upcoming ({categorizedAppointments.upcoming.length})
+          </TabsTrigger>
+          <TabsTrigger value="past">
+            Past ({categorizedAppointments.past.length})
+          </TabsTrigger>
+          <TabsTrigger value="all">
+            All ({categorizedAppointments.all.length})
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value={activeTab} className="space-y-4">
@@ -562,9 +519,9 @@ const DoctorAppointments = () => {
                       <Button 
                         variant="outline" 
                         size="sm"
-                        onClick={() => handleBulkStatusUpdate('cancelled')}
+                        onClick={() => handleBulkStatusUpdate('completed')}
                       >
-                        Cancel All
+                        Complete All
                       </Button>
                     </div>
                   )}
@@ -588,29 +545,164 @@ const DoctorAppointments = () => {
                     <SelectItem value="all">All Status</SelectItem>
                     <SelectItem value="pending">Pending</SelectItem>
                     <SelectItem value="confirmed">Confirmed</SelectItem>
+                    <SelectItem value="scheduled">Scheduled</SelectItem>
                     <SelectItem value="completed">Completed</SelectItem>
                     <SelectItem value="cancelled">Cancelled</SelectItem>
                   </SelectContent>
                 </Select>
-                {activeTab === 'today' && (
-                  <Input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => setSelectedDate(e.target.value)}
-                    className="w-auto"
-                  />
-                )}
               </div>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                columns={columns} 
-                data={filteredAppointments}
-                onRowSelectionChange={setSelectedAppointments}
-              />
-            </CardContent>
-          </Card>
-        </TabsContent>
+              {filteredAppointments.length === 0 ? (
+                <div className="text-center py-8">
+                  <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+                  <p className="text-muted-foreground">No appointments found</p>
+                </div>
+              ) : (
+                <>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                                                     <TableHead className="w-[50px]">
+                             <Checkbox
+                               checked={paginatedAppointments.length > 0 && paginatedAppointments.every(apt => selectedAppointments.includes(apt.id))}
+                               onCheckedChange={(checked) => {
+                                 if (checked) {
+                                   // Select all appointments on current page
+                                   const newSelected = [...selectedAppointments, ...paginatedAppointments.map(apt => apt.id).filter(id => !selectedAppointments.includes(id))];
+                                   setSelectedAppointments(newSelected);
+                                 } else {
+                                   // Deselect all appointments on current page
+                                   const pageIds = paginatedAppointments.map(apt => apt.id);
+                                   setSelectedAppointments(selectedAppointments.filter(id => !pageIds.includes(id)));
+                                 }
+                               }}
+                             />
+                           </TableHead>
+                          <TableHead>Patient</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Time</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                                                 {paginatedAppointments.map((appointment) => {
+                          const patient = appointment.patient;
+                          const isSelected = selectedAppointments.includes(appointment.id);
+                          const canCancel = ['pending', 'confirmed', 'scheduled'].includes(appointment.status);
+                          
+                          return (
+                            <TableRow key={appointment.id} className={isSelected ? "bg-muted/50" : ""}>
+                              <TableCell>
+                                <Checkbox
+                                  checked={isSelected}
+                                  onCheckedChange={(checked) => {
+                                    if (checked) {
+                                      setSelectedAppointments([...selectedAppointments, appointment.id]);
+                                    } else {
+                                      setSelectedAppointments(selectedAppointments.filter(id => id !== appointment.id));
+                                    }
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell>
+                                <div className="space-y-1">
+                                  <div className="font-medium">
+                                    {patient ? `${patient.first_name} ${patient.last_name}` : 'Unknown Patient'}
+                                  </div>
+                                  <div className="text-sm text-muted-foreground">
+                                    {patient?.email || patient?.phone || 'No contact info'}
+                                  </div>
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge className={getStatusColor(appointment.status)}>
+                                  {appointment.status}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                {appointment.appointment_date ? 
+                                  format(new Date(appointment.appointment_date), 'MMM d, yyyy') : 
+                                  'Not set'
+                                }
+                              </TableCell>
+                              <TableCell>
+                                {appointment.appointment_time ? formatTime(appointment.appointment_time) : 'TBD'}
+                              </TableCell>
+                              <TableCell>
+                                <div className="flex items-center gap-2">
+                                  {canCancel && (
+                                    <Button 
+                                      variant="outline" 
+                                      size="sm"
+                                      onClick={() => handleStatusUpdate(appointment.id, "cancelled")}
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                      <XCircle className="w-4 h-4 mr-1" />
+                                      Cancel
+                                    </Button>
+                                  )}
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                                             </TableBody>
+                     </Table>
+                   </div>
+                   
+                   {/* Pagination Controls */}
+                   {totalPages > 1 && (
+                     <div className="flex items-center justify-between mt-4">
+                       <div className="text-sm text-muted-foreground">
+                         Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAppointments.length)} of {filteredAppointments.length} appointments
+                       </div>
+                       <div className="flex items-center space-x-2">
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => setCurrentPage(1)}
+                           disabled={currentPage === 1}
+                         >
+                           <ChevronsLeft className="h-4 w-4" />
+                         </Button>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => setCurrentPage(currentPage - 1)}
+                           disabled={currentPage === 1}
+                         >
+                           <ChevronLeft className="h-4 w-4" />
+                         </Button>
+                         <span className="text-sm">
+                           Page {currentPage} of {totalPages}
+                         </span>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => setCurrentPage(currentPage + 1)}
+                           disabled={currentPage === totalPages}
+                         >
+                           <ChevronRight className="h-4 w-4" />
+                         </Button>
+                         <Button
+                           variant="outline"
+                           size="sm"
+                           onClick={() => setCurrentPage(totalPages)}
+                           disabled={currentPage === totalPages}
+                         >
+                           <ChevronsRight className="h-4 w-4" />
+                         </Button>
+                       </div>
+                     </div>
+                   )}
+                 </>
+               )}
+             </CardContent>
+           </Card>
+         </TabsContent>
       </Tabs>
 
       {/* Create Appointment Modal */}

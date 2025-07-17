@@ -4,6 +4,7 @@ import { selectUserRole } from "@/state/data/authSlice";
 import DoctorAppointments from "./components/doctor/DoctorAppointments";
 import PatientAppointments from "./components/patient/PatientAppointments";
 import StaffAppointments from "./components/staff/StaffAppointments";
+import AdminAppointments from "./components/admin/AdminAppointments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
 
@@ -24,8 +25,10 @@ export default function Appointments() {
 
   // Render appropriate component based on role
   switch (userRole) {
-    case "doctor":
     case "admin":
+      return <AdminAppointments />;
+    
+    case "doctor":
       return <DoctorAppointments />;
     
     case "staff":

@@ -9,162 +9,46 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, Trash2 as TrashIcon, CheckCircle, Circle } from "lucide-react";
 
-import PatientIntakeForm from "./forms/PatientIntakeForm";
-import InsuranceDetailsForm from "./forms/InsuranceDetailsForm";
-import PainEvaluationForm from "./forms/PainEvaluationForm";
-import DetailedDescriptionForm from "./forms/DetailedDescriptionForm";
-import WorkImpactForm from "./forms/WorkImpactForm";
-import HealthConditionForm from "./forms/HealthConditionForm";
+import UnifiedPatientForm from "./UnifiedPatientForm";
 import {
-  useSubmitPatientIntakeMutation,
-  useUpdatePatientIntakeMutation,
-  useSubmitInsuranceDetailsMutation,
-  useUpdateInsuranceDetailsMutation,
-  useSubmitPainDescriptionMutation,
-  useUpdatePainDescriptionMutation,
-  useSubmitDetailsDescriptionMutation,
-  useUpdateDetailsDescriptionMutation,
-  useSubmitWorkImpactMutation,
-  useUpdateWorkImpactMutation,
-  useSubmitHealthConditionMutation,
-  useUpdateHealthConditionMutation,
-  useGetInitialReportQuery,
+  useSubmitPatientInfoFormMutation,
+  useSubmitHealthInsuranceFormMutation,
+  useSubmitPainDescriptionFormNewMutation,
+  useSubmitPainAssessmentFormNewMutation,
+  useSubmitMedicalHistoryFormNewMutation,
+  useSubmitLifestyleImpactFormNewMutation,
 } from "@/api/services/reportApi";
 
 // Define form configurations based on incident type
 const getFormsByIncidentType = (incidentType) => {
+  // All incident types now use the unified form
   const baseConfig = {
     car_accident: [
       {
-        key: "patientIntake",
-        title: "Patient Information",
-        Component: PatientIntakeForm,
+        key: "unified_form",
+        title: "Complete Accident & Patient Information",
+        Component: UnifiedPatientForm,
         required: true,
-        description: "Just your basic contact information to get started"
-      },
-      {
-        key: "insuranceDetails",
-        title: "Accident & Auto Insurance",
-        Component: InsuranceDetailsForm,
-        required: false,
-        description: "Optional: Insurance details can help with your claim"
-      },
-      {
-        key: "detailsDescriptions",
-        title: "Accident Details",
-        Component: DetailedDescriptionForm,
-        required: false,
-        description: "Optional: Share details about the accident when you're ready"
-      },
-      {
-        key: "painDescriptions",
-        title: "Pain & Symptom Assessment",
-        Component: PainEvaluationForm,
-        required: false,
-        description: "Optional: Help us understand your current symptoms"
-      },
-      {
-        key: "healthConditions",
-        title: "Medical History",
-        Component: HealthConditionForm,
-        required: false,
-        description: "Optional: Previous medical information can improve your care"
-      },
-      {
-        key: "workImpact",
-        title: "Work Impact",
-        Component: WorkImpactForm,
-        required: false,
-        description: "Optional: How the injury affects your daily work"
-      },
+        description: "All patient and accident details in one comprehensive form"
+      }
     ],
     work_injury: [
       {
-        key: "patientIntake",
-        title: "Patient Information",
-        Component: PatientIntakeForm,
+        key: "unified_form",
+        title: "Complete Work Injury & Patient Information",
+        Component: UnifiedPatientForm,
         required: true,
-        description: "Just your basic contact information to get started"
-      },
-      {
-        key: "detailsDescriptions",
-        title: "Work Incident Details",
-        Component: DetailedDescriptionForm,
-        required: false,
-        description: "Optional: Details about what happened at work"
-      },
-      {
-        key: "painDescriptions",
-        title: "Pain & Symptom Assessment",
-        Component: PainEvaluationForm,
-        required: false,
-        description: "Optional: Help us understand your current symptoms"
-      },
-      {
-        key: "workImpact",
-        title: "Work Status & Restrictions",
-        Component: WorkImpactForm,
-        required: false,
-        description: "Optional: How the injury affects your work ability"
-      },
-      {
-        key: "healthConditions",
-        title: "Medical History",
-        Component: HealthConditionForm,
-        required: false,
-        description: "Optional: Previous medical information can improve your care"
-      },
-      {
-        key: "insuranceDetails",
-        title: "Workers' Compensation",
-        Component: InsuranceDetailsForm,
-        required: false,
-        description: "Optional: Workers' compensation information"
-      },
+        description: "All patient and work injury details in one comprehensive form"
+      }
     ],
     general_pain: [
       {
-        key: "patientIntake",
-        title: "Patient Information",
-        Component: PatientIntakeForm,
+        key: "unified_form",
+        title: "Complete Patient Information",
+        Component: UnifiedPatientForm,
         required: true,
-        description: "Just your basic contact information to get started"
-      },
-      {
-        key: "detailsDescriptions",
-        title: "Pain Description",
-        Component: DetailedDescriptionForm,
-        required: false,
-        description: "Optional: Tell us about your pain when you're comfortable"
-      },
-      {
-        key: "painDescriptions",
-        title: "Pain Assessment",
-        Component: PainEvaluationForm,
-        required: false,
-        description: "Optional: Help us understand your pain levels"
-      },
-      {
-        key: "healthConditions",
-        title: "Medical History",
-        Component: HealthConditionForm,
-        required: false,
-        description: "Optional: Previous medical information can improve your care"
-      },
-      {
-        key: "insuranceDetails",
-        title: "Health Insurance",
-        Component: InsuranceDetailsForm,
-        required: false,
-        description: "Optional: Insurance information for your care"
-      },
-      {
-        key: "workImpact",
-        title: "Lifestyle Impact",
-        Component: WorkImpactForm,
-        required: false,
-        description: "Optional: How pain affects your daily activities"
-      },
+        description: "All patient details in one comprehensive form"
+      }
     ],
   };
 
@@ -178,6 +62,7 @@ export default function InitialReportForm({
   onDelete,
   isPatientView = false,
   incidentType = "general_pain",
+  incidentId = null, // Add incidentId prop
 }) {
   const forms = getFormsByIncidentType(incidentType);
   
@@ -196,122 +81,102 @@ export default function InitialReportForm({
   const [reportName, setReportName] = useState(initialData.name || "");
   const [editingName, setEditingName] = useState(false);
 
-  const [submitPatientIntake] = useSubmitPatientIntakeMutation();
-  const [updatePatientIntake] = useUpdatePatientIntakeMutation();
-  const [submitInsuranceDetails] = useSubmitInsuranceDetailsMutation();
-  const [updateInsuranceDetails] = useUpdateInsuranceDetailsMutation();
-  const [submitPainDescription] = useSubmitPainDescriptionMutation();
-  const [updatePainDescription] = useUpdatePainDescriptionMutation();
-  const [submitDetailsDescription] = useSubmitDetailsDescriptionMutation();
-  const [updateDetailsDescription] = useUpdateDetailsDescriptionMutation();
-  const [submitWorkImpact] = useSubmitWorkImpactMutation();
-  const [updateWorkImpact] = useUpdateWorkImpactMutation();
-  const [submitHealthCondition] = useSubmitHealthConditionMutation();
-  const [updateHealthCondition] = useUpdateHealthConditionMutation();
-  const { data: fetchedData } = useGetInitialReportQuery();
+  const [saveIncidentForm] = useSaveIncidentFormMutation();
 
   useEffect(() => {
-    if (fetchedData) {
+    if (initialData) {
       setSectionsData({
-        patientIntake: fetchedData.patientIntake || {},
-        insuranceDetails: fetchedData.insuranceDetails || {},
-        painDescriptions: fetchedData.painDescriptions || [
+        patientIntake: initialData.patientIntake || {},
+        insuranceDetails: initialData.insuranceDetails || {},
+        painDescriptions: initialData.painEvaluations || [
           { painMap: {}, formData: {} },
         ],
-        detailsDescriptions: fetchedData.detailsDescriptions || {},
-        workImpact: fetchedData.workImpact || {},
-        healthConditions: fetchedData.healthConditions || {},
+        detailsDescriptions: initialData.detailsDescriptions || {},
+        workImpact: initialData.workImpact || {},
+        healthConditions: initialData.healthConditions || {},
       });
-      if (fetchedData.name) setReportName(fetchedData.name);
+      if (initialData.name) setReportName(initialData.name);
     }
-  }, [fetchedData]);
-
-  const submitters = [
-    submitPatientIntake,
-    submitInsuranceDetails,
-    submitPainDescription,
-    submitDetailsDescription,
-    submitWorkImpact,
-    submitHealthCondition,
-  ];
-
-  const updaters = [
-    updatePatientIntake,
-    updateInsuranceDetails,
-    updatePainDescription,
-    updateDetailsDescription,
-    updateWorkImpact,
-    updateHealthCondition,
-  ];
+  }, [initialData]);
 
   const handleSectionSubmit = async (data) => {
     const { key } = forms[currentSectionIndex];
     const isLast = currentSectionIndex === forms.length - 1;
 
-    // Update sections data with new data
-    const updatedSectionsData = {
-      ...sectionsData,
-      [key]: { ...(sectionsData[key] || {}), ...data },
-    };
-    setSectionsData(updatedSectionsData);
+    console.log('🚀 Individual Form Submission:', {
+      sectionKey: key,
+      formData: data,
+      incidentId: incidentId,
+      isLastSection: isLast
+    });
 
-    // Mark section as completed
+    // Mark section as completed immediately
     setCompletedSections(prev => new Set([...prev, currentSectionIndex]));
 
     try {
-      const existing = sectionsData[key];
-      const hasId = existing && (existing.id || existing._id);
-      
-      // If this is the patient intake form and we're creating a new report,
-      // ensure we have a proper name before submission
-      if (key === "patientIntake" && !hasId) {
-        const currentDate = new Date().toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric'
-        });
-        
-        const patientName = [data.firstName, data.middleName, data.lastName]
-          .filter(Boolean)
-          .join(' ');
-          
-        const defaultReportName = `Patient Intake - ${patientName} - ${currentDate}`;
-        
-        if (!reportName || reportName === "Untitled Report") {
-          setReportName(defaultReportName);
-        }
+      // Always use incident-based API for individual form submissions
+      if (!incidentId) {
+        throw new Error("No incident ID provided - cannot submit form");
       }
 
-      const payload = key === "painDescriptions" 
-        ? { painEvaluations: data, name: reportName }
-        : { ...data, name: reportName };
+      // Prepare form data for this specific section
+      const formData = {
+        ...data,
+        section: key,
+        form_name: forms[currentSectionIndex].title
+      };
 
-      // Get the appropriate mutation function
-      const mutationIndex = forms.findIndex(form => form.key === key);
-      if (mutationIndex === -1) {
-        throw new Error(`No mutation found for section ${key}`);
-      }
+      console.log('📤 Submitting Single Form to Server:', {
+        incidentId: incidentId,
+        formType: key,
+        formData: formData,
+        endpoint: `POST /incidents/${incidentId}/forms`
+      });
 
-      if (hasId) {
-        await updaters[mutationIndex]({
-          id: existing.id || existing._id,
-          data: payload,
-        });
-      } else {
-        await submitters[mutationIndex](payload);
-      }
-      
+      // Submit this individual form to the incident
+      const response = await saveIncidentForm({
+        incidentId: incidentId,
+        formType: key,
+        formData: formData,
+        isCompleted: true,
+        isRequired: forms[currentSectionIndex].required || false
+      }).unwrap();
+
+      console.log('✅ Individual Form Submitted Successfully:', {
+        formType: key,
+        response: response
+      });
+
+      // Update local sections data for UI purposes
+      setSectionsData(prev => ({
+        ...prev,
+        [key]: { ...data, submitted: true, submission_id: response?.data?.id }
+      }));
+
+      // Move to next section or finish
       if (isLast) {
-        onSubmit({ 
-          ...updatedSectionsData, 
-          [key]: data, 
-          name: reportName || defaultReportName 
+        console.log('🏁 All Forms Completed - Calling onSubmit');
+        onSubmit({
+          message: 'All forms submitted successfully',
+          incidentId: incidentId,
+          completedSections: Array.from(completedSections)
         });
       } else {
+        console.log('➡️ Moving to next form section');
         setCurrentSectionIndex((i) => i + 1);
       }
+
     } catch (err) {
-      console.error("Error in handleSectionSubmit:", err);
+      console.error("❌ Error submitting individual form:", err);
+      
+      // Remove from completed sections on error
+      setCompletedSections(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(currentSectionIndex);
+        return newSet;
+      });
+      
+      throw err;
     }
   };
 
@@ -530,23 +395,16 @@ export default function InitialReportForm({
         </div>
 
         <Component
-          initialData={sectionsData[forms[currentSectionIndex].key]}
-          onSubmit={handleSectionSubmit}
-          onBack={
-            currentSectionIndex > 0
-              ? () => setCurrentSectionIndex((i) => i - 1)
-              : null
-          }
-          isLast={currentSectionIndex === forms.length - 1}
-          painEvaluations={painEvaluations}
-          setPainEvaluations={(val) =>
-            setSectionsData((prev) => ({ ...prev, painDescriptions: val }))
-          }
-          reportName={reportName}
-          setReportName={setReportName}
-          editingName={editingName}
-          setEditingName={setEditingName}
-          isPatientView={isPatientView}
+          userIncidents={incidentId ? [{ id: incidentId }] : []}
+          onComplete={(data) => {
+            // Handle unified form completion
+            const finalData = {
+              ...data,
+              name: reportName,
+            };
+            onSubmit(finalData);
+          }}
+          onBack={onBack}
         />
       </div>
     </div>

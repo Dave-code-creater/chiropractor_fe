@@ -10,13 +10,13 @@ import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 
 export default function AdminDashboard() {
   const [currentHour, setCurrentHour] = useState("");
-  const { data, isLoading } = useGetAppointmentsQuery();
+  const { data, isLoading } = useGetAppointmentsQuery({
+    status_not: 'cancelled', // Exclude cancelled appointments
+  });
   
-  // Filter out canceled appointments from admin overview
+  // Extract appointments from the correct API response structure
   const allAppointments = data?.metadata ?? data ?? [];
-  const appointments = allAppointments.filter(apt => 
-    !apt.is_cancel && !apt.is_cancelled && apt.status !== 'cancelled'
-  );
+  const appointments = allAppointments;
   
   const rows = appointments.map((a) => ({
     id: a.id,

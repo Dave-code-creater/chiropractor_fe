@@ -189,7 +189,6 @@ const StaffAppointments = () => {
       toast.success(`Appointment ${newStatus} successfully`);
       refetch();
     } catch (error) {
-      console.error('Update appointment error:', error);
       toast.error('Failed to update appointment status');
     }
   };
@@ -211,7 +210,6 @@ const StaffAppointments = () => {
       setSelectedAppointments([]);
       refetch();
     } catch (error) {
-      console.error('Bulk update error:', error);
       toast.error('Failed to update appointments');
     }
   };
@@ -224,7 +222,6 @@ const StaffAppointments = () => {
       toast.success('Appointment deleted successfully');
       refetch();
     } catch (error) {
-      console.error('Delete appointment error:', error);
       toast.error('Failed to delete appointment');
     }
   };
@@ -451,7 +448,6 @@ const StaffAppointments = () => {
         onClose();
         refetch();
       } catch (error) {
-        console.error('Save appointment error:', error);
         toast.error('Failed to save appointment');
       }
     };

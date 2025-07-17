@@ -23,17 +23,25 @@ import {
   Activity,
   RefreshCw,
   AlertCircle,
+  Send,
+  CheckCircle2,
 } from "lucide-react";
 import { toast } from "sonner";
 
 import {
-  useGetCompleteIncidentFormsQuery,
   useGetIncidentByIdQuery,
   useGetIncidentFormQuery,
   useUpdateIncidentFormMutation,
 } from "@/api/services/reportApi";
 
-import TemplateFormRouter from "./TemplateFormRouter";
+// Import the new helper functions
+import { 
+  useIncidentSubmission, 
+  checkSubmissionReadiness, 
+  getFormConfigForIncidentType 
+} from "@/utils/incidentFormHelpers";
+
+import UnifiedPatientForm from "./UnifiedPatientForm";
 
 // Define form configurations based on incident type (same as InitialReportForm)
 const getFormsByIncidentType = (incidentType) => {
@@ -292,12 +300,13 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
     refetch: refetchIncident,
   } = useGetIncidentByIdQuery(incidentId);
 
-  const {
-    data: formsData,
-    isLoading: isLoadingForms,
-    error: formsError,
-    refetch: refetchForms,
-  } = useGetCompleteIncidentFormsQuery(incidentId);
+  // Remove duplicate call - forms data comes with incident data
+  // const {
+  //   data: formsData,
+  //   isLoading: isLoadingForms,
+  //   error: formsError,
+  //   refetch: refetchForms,
+  // } = useGetCompleteIncidentFormsQuery(incidentId);
 
   // Individual form query (only fetch when needed)
   const {
@@ -312,9 +321,12 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
 
   const [updateIncidentForm] = useUpdateIncidentFormMutation();
 
+  // New: Use the incident submission hook
+  const { submitForFinalProcessing, isSubmitting, submissionError } = useIncidentSubmission();
+
   // Process data
   const incident = incidentData?.data || incidentData;
-  const forms = formsData?.data || formsData || [];
+  const forms = incident?.forms || [];
   const formsByType = useMemo(() => {
     const formMap = {};
     forms.forEach(form => {
@@ -326,6 +338,34 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
   const formConfigs = useMemo(() => {
     return getFormsByIncidentType(incident?.incident_type || 'general_pain');
   }, [incident?.incident_type]);
+
+  // New: Check submission readiness
+  const submissionStatus = useMemo(() => {
+    if (!incident || !forms.length || !formConfigs.length) {
+      return { canSubmit: false, completionPercentage: 0 };
+    }
+    return checkSubmissionReadiness(incident, forms, formConfigs);
+  }, [incident, forms, formConfigs]);
+
+  // Calculate completion stats for backward compatibility
+  const completionStats = useMemo(() => {
+    const total = formConfigs.length;
+    const completed = formConfigs.filter(config => 
+      formsByType[config.key]?.is_completed
+    ).length;
+    const inProgress = formConfigs.filter(config => 
+      formsByType[config.key] && !formsByType[config.key].is_completed
+    ).length;
+    const notStarted = total - completed - inProgress;
+    
+    return {
+      total,
+      completed,
+      inProgress,
+      notStarted,
+      percentage: total > 0 ? Math.round((completed / total) * 100) : 0
+    };
+  }, [formConfigs, formsByType]);
 
   // Handle individual form data loading
   useEffect(() => {
@@ -360,26 +400,6 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
       setFetchingFormType(null);
     }
   }, [individualFormError, isLoadingIndividualForm, fetchingFormType]);
-
-  // Calculate completion stats
-  const completionStats = useMemo(() => {
-    const total = formConfigs.length;
-    const completed = formConfigs.filter(config => 
-      formsByType[config.key]?.is_completed
-    ).length;
-    const inProgress = formConfigs.filter(config => 
-      formsByType[config.key] && !formsByType[config.key].is_completed
-    ).length;
-    const notStarted = total - completed - inProgress;
-    
-    return {
-      total,
-      completed,
-      inProgress,
-      notStarted,
-      percentage: total > 0 ? Math.round((completed / total) * 100) : 0
-    };
-  }, [formConfigs, formsByType]);
 
   // Handlers
   const handleViewForm = async (formConfig, formData) => {
@@ -449,20 +469,26 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
   const handleFormSubmit = async (formData) => {
     if (!selectedForm) return;
 
+    console.log('📝 Submitting Form:', {
+      incidentId: incidentId,
+      formType: selectedForm.config.key,
+      formData: formData
+    });
+
     try {
-      await updateIncidentForm({
+      const response = await updateIncidentForm({
         incidentId: incidentId,
         formType: selectedForm.config.key,
         formData: formData,
         isCompleted: true,
       }).unwrap();
 
+      console.log('✅ Form Update Response:', response);
       toast.success("Form updated successfully!");
       setSelectedForm(null);
-      refetchForms();
       refetchIncident();
     } catch (error) {
-      console.error("Failed to update form:", error);
+      console.error("❌ Failed to update form:", error);
       toast.error("Failed to update form. Please try again.");
     }
   };
@@ -474,8 +500,46 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
     setIntendedViewMode(false); // Clear intended mode
   };
 
+  // New: Handle final submission
+  const handleFinalSubmission = async () => {
+    if (!submissionStatus.canSubmit) {
+      console.warn('⚠️ Cannot submit - missing required forms:', submissionStatus.missingRequired);
+      toast.error(`Please complete all required forms first. Missing: ${submissionStatus.missingRequired.join(', ')}`);
+      return;
+    }
+
+    console.log('🚀 Starting Final Submission Process:', {
+      incidentId: incidentId,
+      incident: incident,
+      forms: forms,
+      submissionStatus: submissionStatus
+    });
+
+    const processingOptions = {
+      auto_categorize: true,
+      extract_key_data: true,
+      generate_summary: true,
+      create_clinical_notes: true,
+      notify_providers: false // Set based on user preference
+    };
+
+    console.log('⚙️ Processing Options:', processingOptions);
+
+    const result = await submitForFinalProcessing(incidentId, incident, forms, processingOptions);
+
+    console.log('📤 Final Submission Result:', result);
+
+    if (result.success) {
+      toast.success(result.message);
+      refetchIncident();
+    } else {
+      console.error('❌ Final Submission Failed:', result.message);
+      toast.error(result.message);
+    }
+  };
+
   // Loading state
-  if (isLoadingIncident || isLoadingForms) {
+  if (isLoadingIncident) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
@@ -499,7 +563,7 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
   }
 
   // Error state
-  if (incidentError || formsError) {
+  if (incidentError) {
     return (
       <div className="text-center py-12">
         <AlertCircle className="h-12 w-12 mx-auto mb-4 text-red-500" />
@@ -507,7 +571,7 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
         <p className="text-muted-foreground mb-4">
           There was an error loading your incident forms.
         </p>
-        <Button onClick={() => { refetchIncident(); refetchForms(); }} variant="outline">
+        <Button onClick={() => { refetchIncident(); }} variant="outline">
           <RefreshCw className="h-4 w-4 mr-2" />
           Try Again
         </Button>
@@ -564,15 +628,15 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
       );
     }
 
-    // Edit mode - show editable form
+    // Edit mode - show editable form using unified form
     return (
-      <TemplateFormRouter
-        selectedTemplate={template}
-        onSubmit={handleFormSubmit}
-        initialData={selectedForm.data?.form_data || {}}
+      <UnifiedPatientForm
+        userId={incident?.user_id}
+        onComplete={() => {
+          // Mark form as completed and go back to overview
+          handleFormBack();
+        }}
         onBack={handleFormBack}
-        isPatientView={true}
-        incidentId={incidentId}
       />
     );
   }
@@ -595,10 +659,47 @@ export default function ViewEditIncidentForms({ incidentId, onBack }) {
               </p>
             </div>
           </div>
-          <Badge variant="outline" className="px-4 py-2">
-            {completionStats.percentage}% Complete
-          </Badge>
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="px-4 py-2">
+              {submissionStatus.completionPercentage}% Complete
+            </Badge>
+            
+            {/* New: Final Submission Button */}
+            {submissionStatus.canSubmit && (
+              <Button 
+                onClick={handleFinalSubmission}
+                disabled={isSubmitting}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {isSubmitting ? (
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4 mr-2" />
+                )}
+                Submit for Processing
+              </Button>
+            )}
+          </div>
         </div>
+
+        {/* New: Submission Status Alert */}
+        {!submissionStatus.canSubmit && submissionStatus.missingRequired.length > 0 && (
+          <Alert className="mt-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Complete these required forms to submit for processing: {submissionStatus.missingRequired.join(', ')}
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {submissionStatus.canSubmit && (
+          <Alert className="mt-4 border-green-200 bg-green-50">
+            <CheckCircle2 className="h-4 w-4 text-green-600" />
+            <AlertDescription className="text-green-800">
+              All required forms are complete! Ready to submit for final processing.
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
 
       {/* Content */}

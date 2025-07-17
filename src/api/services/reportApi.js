@@ -4,7 +4,7 @@ import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 export const reportApi = createApi({
   reducerPath: "reportApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Reports", "PatientReports", "DoctorReports", "Incidents", "IncidentForms", "IncidentNotes"],
+  tagTypes: ["Incidents", "IncidentForms", "IncidentNotes"],
   keepUnusedDataFor: CACHE_TIMES.SHORT,
   refetchOnMountOrArgChange: 30,
   refetchOnFocus: true,
@@ -131,7 +131,7 @@ export const reportApi = createApi({
     // 1.8 Get Complete Incident Form Data (all sub-forms)
     getCompleteIncidentForms: builder.query({
       query: (incidentId) => ({
-        url: `incidents/${incidentId}/forms/complete`,
+        url: `incidents/${incidentId}`,
         method: "GET",
       }),
       providesTags: (result, error, incidentId) => [
@@ -152,129 +152,114 @@ export const reportApi = createApi({
       ],
     }),
 
-    // ===== LEGACY REPORT ENDPOINTS (MAINTAINED FOR BACKWARD COMPATIBILITY) =====
-
-    // 2.1 Create Patient-Intake Report
-    createPatientIntakeReport: builder.mutation({
-      query: (data) => ({
-        url: "reports/patient-intake",
+    // 1.10 Submit Complete Forms for Processing (breaks down into smaller components)
+    submitIncidentForms: builder.mutation({
+      query: ({ incidentId, allFormsData, processOptions = {} }) => ({
+        url: `incidents/${incidentId}/submit-forms`,
         method: "POST",
-        body: data,
+        body: {
+          forms_data: allFormsData,
+          processing_options: {
+            auto_categorize: true,
+            extract_key_data: true,
+            generate_summary: true,
+            ...processOptions
+          }
+        },
       }),
-      invalidatesTags: ["Reports", "PatientReports"],
+      invalidatesTags: (result, error, { incidentId }) => [
+        { type: "IncidentForms", id: incidentId },
+        { type: "Incidents", id: incidentId },
+        { type: "IncidentNotes", id: incidentId },
+      ],
     }),
 
-    // 2.2 Create Doctor-Initial Report
-    createDoctorInitialReport: builder.mutation({
-      query: (data) => ({
-        url: "reports/doctor-initial",
+    // ===== SIMPLE FORM SUBMISSION ENDPOINTS (NEW) =====
+
+    // Submit Patient Info Form
+    submitPatientInfoForm: builder.mutation({
+      query: ({ incidentId, formData }) => ({
+        url: `incidents/${incidentId}/patient-info`,
         method: "POST",
-        body: data,
+        body: formData,
       }),
-      invalidatesTags: ["Reports", "DoctorReports"],
-    }),
-
-    // 2.3 Get All Reports
-    getReports: builder.query({
-      query: (params = {}) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.patient_id) queryParams.append("patient_id", params.patient_id.toString());
-        if (params.doctor_id) queryParams.append("doctor_id", params.doctor_id.toString());
-        if (params.report_type) queryParams.append("report_type", params.report_type);
-        if (params.status) queryParams.append("status", params.status);
-        if (params.date_from) queryParams.append("date_from", params.date_from);
-        if (params.date_to) queryParams.append("date_to", params.date_to);
-        if (params.page) queryParams.append("page", params.page.toString());
-        if (params.limit) queryParams.append("limit", params.limit.toString());
-
-        const queryString = queryParams.toString();
-        return {
-          url: `reports${queryString ? `?${queryString}` : ''}`,
-          method: "GET",
-        };
-      },
-      providesTags: ["Reports"],
-      keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-    }),
-
-    // 2.4 Get Report by ID
-    getReportById: builder.query({
-      query: (reportId) => ({
-        url: `reports/${reportId}`,
-        method: "GET",
-      }),
-      providesTags: (result, error, reportId) => [{ type: "Reports", id: reportId }],
-    }),
-
-    // 2.5 Update Report
-    updateReport: builder.mutation({
-      query: ({ reportId, data }) => ({
-        url: `reports/${reportId}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: (result, error, { reportId }) => [
-        { type: "Reports", id: reportId },
+      invalidatesTags: (result, error, { incidentId }) => [
+        { type: "IncidentForms", id: incidentId },
+        { type: "Incidents", id: incidentId },
       ],
     }),
 
-    // 2.6 Patient-Scoped Reports
-    getPatientReports: builder.query({
-      query: ({ patientId, ...params }) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.type) queryParams.append("type", params.type);
-        if (params.date_from) queryParams.append("date_from", params.date_from);
-        if (params.date_to) queryParams.append("date_to", params.date_to);
-        if (params.page) queryParams.append("page", params.page.toString());
-        if (params.limit) queryParams.append("limit", params.limit.toString());
-
-        const queryString = queryParams.toString();
-        return {
-          url: `reports/patient/${patientId}${queryString ? `?${queryString}` : ''}`,
-          method: "GET",
-        };
-      },
-      providesTags: (result, error, { patientId }) => [
-        { type: "PatientReports", id: patientId },
-      ],
-    }),
-
-    // 2.7 Doctor-Scoped Reports
-    getDoctorReports: builder.query({
-      query: ({ doctorId, ...params }) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.date_from) queryParams.append("date_from", params.date_from);
-        if (params.date_to) queryParams.append("date_to", params.date_to);
-        if (params.page) queryParams.append("page", params.page.toString());
-        if (params.limit) queryParams.append("limit", params.limit.toString());
-
-        const queryString = queryParams.toString();
-        return {
-          url: `reports/doctor/${doctorId}${queryString ? `?${queryString}` : ''}`,
-          method: "GET",
-        };
-      },
-      providesTags: (result, error, { doctorId }) => [
-        { type: "DoctorReports", id: doctorId },
-      ],
-    }),
-
-    // 2.8 Generate Summary
-    getReportSummary: builder.query({
-      query: (reportId) => ({
-        url: `reports/${reportId}/summary`,
-        method: "GET",
+    // Submit Health Insurance Form
+    submitHealthInsuranceForm: builder.mutation({
+      query: ({ incidentId, formData }) => ({
+        url: `incidents/${incidentId}/health-insurance`,
+        method: "POST",
+        body: formData,
       }),
-      providesTags: (result, error, reportId) => [{ type: "Reports", id: reportId }],
+      invalidatesTags: (result, error, { incidentId }) => [
+        { type: "IncidentForms", id: incidentId },
+        { type: "Incidents", id: incidentId },
+      ],
     }),
+
+    // Submit Pain Description Form
+    submitPainDescriptionFormNew: builder.mutation({
+      query: ({ incidentId, formData }) => ({
+        url: `incidents/${incidentId}/pain-description-form`,
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: (result, error, { incidentId }) => [
+        { type: "IncidentForms", id: incidentId },
+        { type: "Incidents", id: incidentId },
+      ],
+    }),
+
+    // Submit Pain Assessment Form
+    submitPainAssessmentFormNew: builder.mutation({
+      query: ({ incidentId, formData }) => ({
+        url: `incidents/${incidentId}/pain-assessment-form`,
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: (result, error, { incidentId }) => [
+        { type: "IncidentForms", id: incidentId },
+        { type: "Incidents", id: incidentId },
+      ],
+    }),
+
+    // Submit Medical History Form
+    submitMedicalHistoryFormNew: builder.mutation({
+      query: ({ incidentId, formData }) => ({
+        url: `incidents/${incidentId}/medical-history-form`,
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: (result, error, { incidentId }) => [
+        { type: "IncidentForms", id: incidentId },
+        { type: "Incidents", id: incidentId },
+      ],
+    }),
+
+    // Submit Lifestyle Impact Form
+    submitLifestyleImpactFormNew: builder.mutation({
+      query: ({ incidentId, formData }) => ({
+        url: `incidents/${incidentId}/lifestyle-impact-form`,
+        method: "POST",
+        body: formData,
+      }),
+      invalidatesTags: (result, error, { incidentId }) => [
+        { type: "IncidentForms", id: incidentId },
+        { type: "Incidents", id: incidentId },
+      ],
+    }),
+
+
   }),
 });
 
 export const {
-  // New incident-based hooks
+  // Incident-based hooks
   useCreateIncidentMutation,
   useGetIncidentsQuery,
   useGetIncidentByIdQuery,
@@ -284,214 +269,16 @@ export const {
   useUpdateIncidentFormMutation,
   useAddIncidentNoteMutation,
   useGetCompleteIncidentFormsQuery,
-  // useGetIncidentFormQuery, // Temporarily commented out to debug
+  useSubmitIncidentFormsMutation,
+  useGetIncidentFormQuery,
   
-  // Legacy report hooks
-  useCreatePatientIntakeReportMutation,
-  useCreateDoctorInitialReportMutation,
-  useGetReportsQuery,
-  useGetReportByIdQuery,
-  useUpdateReportMutation,
-  useGetPatientReportsQuery,
-  useGetDoctorReportsQuery,
-  useGetReportSummaryQuery,
+  // Simple form submission hooks
+  useSubmitPatientInfoFormMutation,
+  useSubmitHealthInsuranceFormMutation,
+  useSubmitPainDescriptionFormNewMutation,
+  useSubmitPainAssessmentFormNewMutation,
+  useSubmitMedicalHistoryFormNewMutation,
+  useSubmitLifestyleImpactFormNewMutation,
 } = reportApi;
 
-// Export this separately to avoid duplicate declaration error
-export const { useGetIncidentFormQuery } = reportApi;
 
-// ===== LEGACY COMPATIBILITY EXPORTS =====
-
-// Legacy exports for backward compatibility
-export const useGetInitialReportQuery = () => ({ data: null, isLoading: false, error: null });
-export const useGetHealthConditionsQuery = () => ({ data: [], isLoading: false, error: null });
-
-// Legacy mutation hooks for backward compatibility
-export const useSubmitPatientIntakeMutation = () => {
-  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
-  return [
-    async (data) => {
-      try {
-        const result = await createPatientIntakeReport(data).unwrap();
-        return { data: result };
-      } catch (error) {
-        console.error("Mutation error:", error);
-        throw error;
-      }
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useUpdatePatientIntakeMutation = () => {
-  const [updateReport] = useUpdateReportMutation();
-  return [
-    async ({ id, data }) => {
-      const result = await updateReport({ reportId: id, data }).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useSubmitInsuranceDetailsMutation = () => {
-  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
-  return [
-    async (data) => {
-      const result = await createPatientIntakeReport(data).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useUpdateInsuranceDetailsMutation = () => {
-  const [updateReport] = useUpdateReportMutation();
-  return [
-    async ({ id, data }) => {
-      const result = await updateReport({ reportId: id, data }).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useSubmitPainDescriptionMutation = () => {
-  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
-  return [
-    async (data) => {
-      const result = await createPatientIntakeReport(data).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useUpdatePainDescriptionMutation = () => {
-  const [updateReport] = useUpdateReportMutation();
-  return [
-    async ({ id, data }) => {
-      const result = await updateReport({ reportId: id, data }).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useSubmitDetailsDescriptionMutation = () => {
-  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
-  return [
-    async (data) => {
-      const result = await createPatientIntakeReport(data).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useUpdateDetailsDescriptionMutation = () => {
-  const [updateReport] = useUpdateReportMutation();
-  return [
-    async ({ id, data }) => {
-      const result = await updateReport({ reportId: id, data }).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useSubmitWorkImpactMutation = () => {
-  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
-  return [
-    async (data) => {
-      const result = await createPatientIntakeReport(data).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useUpdateWorkImpactMutation = () => {
-  const [updateReport] = useUpdateReportMutation();
-  return [
-    async ({ id, data }) => {
-      const result = await updateReport({ reportId: id, data }).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useSubmitHealthConditionMutation = () => {
-  const [createPatientIntakeReport] = useCreatePatientIntakeReportMutation();
-  return [
-    async (data) => {
-      const result = await createPatientIntakeReport(data).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-export const useUpdateHealthConditionMutation = () => {
-  const [updateReport] = useUpdateReportMutation();
-  return [
-    async ({ id, data }) => {
-      const result = await updateReport({ reportId: id, data }).unwrap();
-      return { data: result };
-    },
-    { isLoading: false, error: null }
-  ];
-};
-
-// Additional legacy hooks for Report.jsx
-export const useGetAllReportsQuery = useGetReportsQuery;
-export const useCreateReportMutation = useCreatePatientIntakeReportMutation;
-
-export const useDeleteReportMutation = () => [
-  async (id) => ({ data: { success: true, id } }),
-  { isLoading: false, error: null }
-];
-
-export const useDeletePatientIntakeMutation = () => [
-  async (id) => ({ data: { success: true, id } }),
-  { isLoading: false, error: null }
-];
-
-export const useDeleteInsuranceDetailsMutation = () => [
-  async (id) => ({ data: { success: true, id } }),
-  { isLoading: false, error: null }
-];
-
-export const useDeletePainDescriptionMutation = () => [
-  async (id) => ({ data: { success: true, id } }),
-  { isLoading: false, error: null }
-];
-
-export const useDeleteDetailsDescriptionMutation = () => [
-  async (id) => ({ data: { success: true, id } }),
-  { isLoading: false, error: null }
-];
-
-export const useDeleteRecoveryMutation = () => [
-  async (id) => ({ data: { success: true, id } }),
-  { isLoading: false, error: null }
-];
-
-export const useDeleteWorkImpactMutation = () => [
-  async (id) => ({ data: { success: true, id } }),
-  { isLoading: false, error: null }
-];
-
-export const useDeleteHealthConditionMutation = () => [
-  async (id) => ({ data: { success: true, id } }),
-  { isLoading: false, error: null }
-];
-
-// ===== NEW COMPATIBILITY HOOKS FOR INCIDENT SYSTEM =====
-
-// Alias for the new incident system to maintain compatibility
-export const useCreateIncidentFolderMutation = useCreateIncidentMutation;
-export const useUpdatePatientReportMutation = useUpdateIncidentMutation;
-export const useCreateIncidentFormMutation = useSaveIncidentFormMutation;
-export const useAddReportNotesMutation = useAddIncidentNoteMutation;

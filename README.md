@@ -12,11 +12,11 @@ A modern React-based frontend application for a chiropractor clinic management s
 - **Backend Ready**: All endpoints integrated and tested with your Node.js backend
 
 ### 📋 Chat API Endpoints
-- `POST /v1/api/2025/conversations/doctor-patient` - Create doctor-patient chat
-- `GET /v1/api/2025/users/doctors` - Get available doctors
-- `POST /v1/api/2025/messages` - Send messages
-- `GET /v1/api/2025/conversations` - Get user conversations
-- `GET /v1/api/2025/conversations/:id/messages` - Get conversation messages
+- `POST /api/v1/2025/conversations/doctor-patient` - Create doctor-patient chat
+- `GET /api/v1/2025/users/doctors` - Get available doctors
+- `POST /api/v1/2025/messages` - Send messages
+- `GET /api/v1/2025/conversations` - Get user conversations
+- `GET /api/v1/2025/conversations/:id/messages` - Get conversation messages
 
 ## 🛠️ Tech Stack
 
@@ -51,7 +51,7 @@ http://localhost:5173/chat-demo
 ## 🔧 Configuration
 
 The app is configured to work with your backend at:
-- **Development**: `http://localhost:3000/v1/api/2025`
+- **Development**: `http://localhost:3000/api/v1/2025`
 - **Production**: Configure in `src/services/baseApi.js`
 
 ## 📚 Documentation

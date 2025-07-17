@@ -11,7 +11,11 @@ export default function AppointmentsCard() {
   const [rescheduling, setRescheduling] = useState(false);
   const userID = useSelector((state) => state?.auth?.userID);
   const { data, isLoading, error } = useGetUserAppointmentsQuery(
-    { status: 'scheduled', limit: 10 }, // Get more appointments to account for filtering
+    { 
+      status_not: 'cancelled', // Exclude cancelled appointments
+      date_from: new Date().toISOString().split('T')[0], // Only upcoming appointments
+      limit: 10 
+    }, 
     { 
       skip: !userID,
       refetchOnMountOrArgChange: false,

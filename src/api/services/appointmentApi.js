@@ -1,6 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
-import { cacheUtils } from "../../utils/cache";
 
 export const appointmentApi = createApi({
   reducerPath: "appointmentApi",
@@ -29,12 +28,12 @@ export const appointmentApi = createApi({
     }),
 
     getDoctorAvailability: builder.query({
-      query: ({ doctorId, date }) => {
+      query: ({ doctor_id, date }) => {
         const queryParams = new URLSearchParams();
         if (date) queryParams.append("date", date);
 
         return {
-          url: `appointments/doctors/${doctorId}/availability?${queryParams}`,
+          url: `appointments/doctors/${doctor_id}/availability?${queryParams}`,
           method: "GET",
         };
       },
@@ -53,7 +52,6 @@ export const appointmentApi = createApi({
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          cacheUtils.appointments.clearAll();
         } catch (error) {
           console.error("Failed to create appointment:", error);
         }
@@ -66,11 +64,14 @@ export const appointmentApi = createApi({
         const queryParams = new URLSearchParams();
         
         if (params.status) queryParams.append("status", params.status);
+        if (params.status_not) queryParams.append("status_not", params.status_not);
+        if (params.date_from) queryParams.append("date_from", params.date_from);
+        if (params.date_to) queryParams.append("date_to", params.date_to);
         if (params.page) queryParams.append("page", params.page.toString());
         if (params.limit) queryParams.append("limit", params.limit.toString());
 
         return {
-          url: `appointments/`,
+          url: `appointments/?${queryParams}`,
           method: "GET",
         };
       },
@@ -80,16 +81,17 @@ export const appointmentApi = createApi({
 
     // Get patient's appointments by patient ID
     getPatientAppointments: builder.query({
-      query: ({ patientId, ...params }) => {
+      query: ({ patient_id, ...params }) => {
         const queryParams = new URLSearchParams();
         
         if (params.status) queryParams.append("status", params.status);
         if (params.date_from) queryParams.append("date_from", params.date_from);
+        if (params.date_to) queryParams.append("date_to", params.date_to);
         if (params.page) queryParams.append("page", params.page.toString());
         if (params.limit) queryParams.append("limit", params.limit.toString());
 
         return {
-          url: `appointments/patient/${patientId}?${queryParams}`,
+          url: `appointments/patient/${patient_id}?${queryParams}`,
           method: "GET",
         };
       },
@@ -103,7 +105,10 @@ export const appointmentApi = createApi({
         const queryParams = new URLSearchParams();
         
         if (params.status) queryParams.append("status", params.status);
+        if (params.status_not) queryParams.append("status_not", params.status_not);
         if (params.doctor_id) queryParams.append("doctor_id", params.doctor_id);
+        if (params.date_from) queryParams.append("date_from", params.date_from);
+        if (params.date_to) queryParams.append("date_to", params.date_to);
         if (params.page) queryParams.append("page", params.page.toString());
         if (params.limit) queryParams.append("limit", params.limit.toString());
 
@@ -137,7 +142,6 @@ export const appointmentApi = createApi({
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          cacheUtils.appointments.clearAll();
         } catch (error) {
           console.error("Failed to update appointment:", error);
         }
@@ -153,7 +157,6 @@ export const appointmentApi = createApi({
       async onQueryStarted(id, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          cacheUtils.appointments.clearAll();
         } catch (error) {
           console.error("Failed to delete appointment:", error);
         }
@@ -174,7 +177,6 @@ export const appointmentApi = createApi({
       async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          cacheUtils.appointments.clearAll();
         } catch (error) {
           console.error("Failed to reschedule appointment:", error);
         }
@@ -198,4 +200,4 @@ export const {
 } = appointmentApi;
 
 // Legacy compatibility exports
-export const useCreateQuickAppointmentMutation = useCreateAppointmentMutation;
+
