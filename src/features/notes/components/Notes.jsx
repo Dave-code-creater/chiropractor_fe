@@ -197,7 +197,7 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
               ) : (
                 <>
                   <ChevronRight className="w-4 h-4 mr-1" />
-                  View Details ({forms.length} forms)
+                  View Details
                 </>
               )}
             </Button>
