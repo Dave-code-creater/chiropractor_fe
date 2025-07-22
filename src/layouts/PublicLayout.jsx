@@ -6,12 +6,12 @@ import { Toaster } from "@/components/ui/sonner";
 
 const PublicLayout = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       {/* Public Navbar */}
       <PublicNavbar />
 
       {/* Main content area - no sidebar for public pages */}
-      <main className="min-h-[calc(100vh-4rem)]">
+      <main className="flex-1">
         <Outlet />
       </main>
 

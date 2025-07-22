@@ -8,8 +8,8 @@ const DefaultLayout = () => {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <main className="flex-1 p-3 sm:p-4 md:p-6 min-h-screen bg-background">
+      <SidebarInset className="min-h-screen flex flex-col">
+        <main className="flex-1 p-3 sm:p-4 md:p-6 bg-background">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>

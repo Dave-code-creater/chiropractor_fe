@@ -330,9 +330,8 @@ const AdvancedPatientManagement = () => {
 
   const PatientCard = ({ patient }) => (
     <Card
-      className={`cursor-pointer transition-all hover:shadow-md ${
-        selectedPatient?.id === patient.id ? "ring-2 ring-blue-500" : ""
-      }`}
+      className={`cursor-pointer transition-all hover:shadow-md ${selectedPatient?.id === patient.id ? "ring-2 ring-blue-500" : ""
+        }`}
       onClick={() => handlePatientSelect(patient)}
     >
       <CardHeader className="pb-3">
@@ -413,9 +412,8 @@ const AdvancedPatientManagement = () => {
 
   const PatientListItem = ({ patient }) => (
     <div
-      className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${
-        selectedPatient?.id === patient.id ? "bg-blue-50 border-blue-200" : ""
-      }`}
+      className={`p-4 border-b border-gray-200 cursor-pointer hover:bg-gray-50 ${selectedPatient?.id === patient.id ? "bg-blue-50 border-blue-200" : ""
+        }`}
       onClick={() => handlePatientSelect(patient)}
     >
       <div className="flex items-center justify-between">
@@ -1061,7 +1059,7 @@ const AdvancedPatientManagement = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

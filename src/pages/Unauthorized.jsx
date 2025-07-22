@@ -17,8 +17,7 @@ export default function Unauthorized() {
         return "/admin";
       case "doctor":
         return "/doctor";
-      case "staff":
-        return "/staff";
+      
       case "patient":
       default:
         return `/dashboard/${userID}`;

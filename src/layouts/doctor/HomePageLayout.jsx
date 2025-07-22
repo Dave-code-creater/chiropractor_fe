@@ -8,8 +8,8 @@ export default function DoctorHomePageLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
-        <div className="flex flex-1 flex-col">
+      <SidebarInset className="min-h-screen flex flex-col">
+        <div className="flex-1">
           <div className="@container/main flex flex-1 flex-col gap-2">
             <Outlet />
           </div>

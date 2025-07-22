@@ -9,7 +9,7 @@ export class AppointmentService {
     this.ROLES = {
       ADMIN: 'admin',
       DOCTOR: 'doctor',
-      STAFF: 'staff',
+    
       PATIENT: 'patient',
       USER: 'user'
     };
@@ -65,20 +65,7 @@ export class AppointmentService {
         canViewNotes: true,
         canExport: false
       },
-      [this.ROLES.STAFF]: {
-        canViewAll: true,
-        canCreate: true,
-        canEdit: true,
-        canDelete: false,
-        canChangeStatus: true,
-        canViewAnalytics: false,
-        canBulkUpdate: true,
-        canViewRevenue: false,
-        canManageSchedule: true,
-        canContactPatients: true,
-        canViewNotes: false,
-        canExport: true
-      },
+
       [this.ROLES.PATIENT]: {
         canViewAll: false, // Only own appointments
         canCreate: true,
@@ -149,17 +136,7 @@ export class AppointmentService {
       return actions;
     }
 
-    // Staff actions
-    if (userRole === this.ROLES.STAFF) {
-      actions.push('view', 'edit', 'changeStatus', 'contact');
-      if (appointment.status === this.APPOINTMENT_STATUSES.PENDING) {
-        actions.push('confirm', 'cancel');
-      }
-      if (appointment.status === this.APPOINTMENT_STATUSES.CONFIRMED) {
-        actions.push('complete', 'reschedule');
-      }
-      return actions;
-    }
+
 
     // Patient actions
     if (userRole === this.ROLES.PATIENT || userRole === this.ROLES.USER) {
@@ -335,7 +312,7 @@ export class AppointmentService {
    * Filter appointments based on user role and permissions
    */
   filterAppointmentsByRole(appointments, userRole, currentUserId) {
-    if (userRole === this.ROLES.ADMIN || userRole === this.ROLES.STAFF) {
+    if (userRole === this.ROLES.ADMIN) {
       return appointments; // Can see all appointments
     }
 
@@ -378,14 +355,7 @@ export class AppointmentService {
       ];
     }
 
-    if (userRole === this.ROLES.STAFF) {
-      return [
-        { key: 'today', label: 'Today', icon: 'Calendar' },
-        { key: 'pending', label: 'Pending', icon: 'Clock' },
-        { key: 'upcoming', label: 'Upcoming', icon: 'Calendar' },
-        { key: 'all', label: 'All', icon: 'FileText' }
-      ];
-    }
+
 
     if (userRole === this.ROLES.PATIENT || userRole === this.ROLES.USER) {
       return [
@@ -423,15 +393,7 @@ export class AppointmentService {
       ];
     }
 
-    if (userRole === this.ROLES.STAFF) {
-      return [
-        { key: 'today_schedule', label: "Today's Schedule", icon: 'Calendar' },
-        { key: 'pending_confirmations', label: 'Pending Confirmations', icon: 'Clock' },
-        { key: 'confirmed_today', label: 'Confirmed Today', icon: 'CheckCircle' },
-        { key: 'active_patients', label: 'Active Patients', icon: 'Users' },
-        { key: 'followup_calls', label: 'Follow-up Calls', icon: 'PhoneCall' }
-      ];
-    }
+
 
     if (userRole === this.ROLES.PATIENT || userRole === this.ROLES.USER) {
       return [

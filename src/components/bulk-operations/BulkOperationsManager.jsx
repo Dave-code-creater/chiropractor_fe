@@ -33,26 +33,21 @@ import {
   Mail,
   MessageSquare,
   Download,
-  Upload,
   Trash2,
   Edit,
-  Copy,
   Send,
   CheckCircle,
   AlertTriangle,
   X,
   Play,
   Pause,
-  RotateCcw,
   Filter,
-  Search,
   Settings,
   Clock,
   Activity,
   BarChart3,
   Target,
   Zap,
-  XCircle,
 } from "lucide-react";
 import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useGetBlogPostsQuery } from "@/api/services/blogApi";
@@ -162,13 +157,13 @@ const BulkOperationsManager = () => {
 
   // Get all records based on current tab
   const [currentTab, setCurrentTab] = useState("patients");
-  
+
   // Fetch data based on current tab
   const { data: appointmentsData, isLoading: appointmentsLoading } = useGetAppointmentsQuery(
     {},
     { skip: currentTab !== "appointments" }
   );
-  
+
   const { data: postsData, isLoading: postsLoading } = useGetBlogPostsQuery(
     { limit: 50 },
     { skip: currentTab !== "reports" }
@@ -335,23 +330,20 @@ const BulkOperationsManager = () => {
 
   const OperationCard = ({ operation }) => (
     <Card
-      className={`cursor-pointer transition-all hover:shadow-md ${
-        selectedOperation === operation.id ? "ring-2 ring-blue-500" : ""
-      } ${operation.dangerous ? "border-red-200" : ""}`}
+      className={`cursor-pointer transition-all hover:shadow-md ${selectedOperation === operation.id ? "ring-2 ring-blue-500" : ""
+        } ${operation.dangerous ? "border-red-200" : ""}`}
       onClick={() => setSelectedOperation(operation.id)}
     >
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div
-              className={`p-2 rounded-lg ${
-                operation.dangerous ? "bg-red-100" : "bg-blue-100"
-              }`}
+              className={`p-2 rounded-lg ${operation.dangerous ? "bg-red-100" : "bg-blue-100"
+                }`}
             >
               <operation.icon
-                className={`h-4 w-4 ${
-                  operation.dangerous ? "text-red-600" : "text-blue-600"
-                }`}
+                className={`h-4 w-4 ${operation.dangerous ? "text-red-600" : "text-blue-600"
+                  }`}
               />
             </div>
             <div>
@@ -658,11 +650,10 @@ const BulkOperationsManager = () => {
             {filteredData.map((item) => (
               <div
                 key={item.id}
-                className={`flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 ${
-                  selectedItems.includes(item.id)
+                className={`flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 ${selectedItems.includes(item.id)
                     ? "bg-blue-50 border-blue-200"
                     : ""
-                }`}
+                  }`}
               >
                 <div className="flex items-center space-x-3">
                   <Checkbox
@@ -686,8 +677,8 @@ const BulkOperationsManager = () => {
                 <Badge
                   variant={
                     item.status === "active" ||
-                    item.status === "completed" ||
-                    item.status === "confirmed"
+                      item.status === "completed" ||
+                      item.status === "confirmed"
                       ? "default"
                       : item.status === "pending" || item.status === "scheduled"
                         ? "secondary"

@@ -86,7 +86,7 @@ export default function MessagesCard() {
         status: "online"
       };
     } else {
-      // Current user is doctor/staff/admin, show patient info
+      // Current user is doctor/admin, show patient info
       const patientName = conversation.patient_name || 
                          (conversation.patient_first_name && conversation.patient_last_name 
                            ? `${conversation.patient_first_name} ${conversation.patient_last_name}` 

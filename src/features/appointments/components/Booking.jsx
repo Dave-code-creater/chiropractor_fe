@@ -161,7 +161,7 @@ export default function DoctorBooking() {
       // Use time as is (24-hour format HH:MM from time input)
       const formattedTime = bookingData.time;
       
-      // Format the appointment data to match backend expectation (same as staff/doctor components)
+      // Format the appointment data to match backend expectation (same as doctor components)
       const appointmentData = {
         doctor_id: bookingData.doctor,
         appointment_date: formattedDate,

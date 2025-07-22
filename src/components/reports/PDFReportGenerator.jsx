@@ -141,7 +141,7 @@ const PDFReportGenerator = () => {
         "patientMetrics",
         "appointmentStats",
         "revenueAnalysis",
-        "staffPerformance",
+
       ],
       format: "A4",
       orientation: "landscape",
@@ -278,9 +278,8 @@ const PDFReportGenerator = () => {
 
   const ReportTemplateCard = ({ template }) => (
     <Card
-      className={`cursor-pointer transition-all hover:shadow-md ${
-        selectedTemplate === template.id ? "ring-2 ring-blue-500" : ""
-      }`}
+      className={`cursor-pointer transition-all hover:shadow-md ${selectedTemplate === template.id ? "ring-2 ring-blue-500" : ""
+        }`}
       onClick={() => setSelectedTemplate(template.id)}
     >
       <CardHeader className="pb-3">
@@ -597,9 +596,8 @@ const PDFReportGenerator = () => {
             return (
               <div
                 key={report.id}
-                className={`p-4 border border-gray-200 rounded-lg hover:bg-gray-50 ${
-                  isSelected ? "bg-blue-50 border-blue-200" : ""
-                }`}
+                className={`p-4 border border-gray-200 rounded-lg hover:bg-gray-50 ${isSelected ? "bg-blue-50 border-blue-200" : ""
+                  }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -788,7 +786,7 @@ const PDFReportGenerator = () => {
           <TabsTrigger value="history">Report History</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="generate" className="space-y-6">
+        <TabsContent value="generate" className="space-y-6 pb-20">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-1">
               <Card>
@@ -819,7 +817,7 @@ const PDFReportGenerator = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="templates" className="space-y-6">
+        <TabsContent value="templates" className="space-y-6 pb-20">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-medium">Report Templates</h3>
             <Button>
@@ -879,7 +877,7 @@ const PDFReportGenerator = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-6">
+        <TabsContent value="history" className="space-y-6 pb-20">
           <ReportHistoryTable />
         </TabsContent>
       </Tabs>

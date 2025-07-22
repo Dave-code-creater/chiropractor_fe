@@ -3,7 +3,7 @@ export const API_CONFIG = {
   // Environment-specific base URLs
   URLS: {
     development: 'http://localhost:3000/api/v1/2025',
-    production: 'https://drdieuphanchiropractor.com/api/v1/2025',
+    production: 'https://api.drdieuphanchiropractor.com/api/v1/2025',
     staging: 'http://staging.drdieuphanchiropractor.com/api/v1/2025',
   },
 
@@ -35,11 +35,11 @@ export const getBaseUrl = () => {
   if (buildEnv && API_CONFIG.URLS[buildEnv]) {
     return API_CONFIG.URLS[buildEnv];
   }
-  
+
   // Fallback to runtime hostname detection
   const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const isStaging = window.location.hostname.includes('staging');
-  
+
   if (isDevelopment) return API_CONFIG.URLS.development;
   if (isStaging) return API_CONFIG.URLS.staging;
   return API_CONFIG.URLS.production;

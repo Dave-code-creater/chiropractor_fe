@@ -4,22 +4,22 @@ export { API_ENDPOINTS } from './config/endpoints';
 export { API_RESPONSE_TYPES, ApiError, handleApiResponse } from './config/errors';
 
 // Core exports
-export { 
-  createBaseApi, 
-  baseApi, 
-  baseQueryWithReauth, 
+export {
+  createBaseApi,
+  baseApi,
+  baseQueryWithReauth,
   CACHE_TIMES,
-  performanceTracker 
+  performanceTracker
 } from './core/baseApi';
-export { 
-  refreshTokens, 
-  startPeriodicTokenCheck, 
+export {
+  refreshTokens,
+  startPeriodicTokenCheck,
   stopPeriodicTokenCheck,
-  setLoggingOut 
+  setLoggingOut
 } from './core/tokenManager';
 
 // Service exports
-export { 
+export {
   clinicalNotesApi,
   useGetClinicalNotesQuery,
   useGetClinicalNotesByPatientQuery,
@@ -35,34 +35,12 @@ export {
 } from './services/clinicalNotes';
 
 export {
-  vitalsApi,
-  useGetVitalsQuery,
-  useGetVitalsByPatientQuery,
-  useGetLatestVitalsQuery,
-  useGetVitalQuery,
-  useCreateVitalMutation,
-  useUpdateVitalMutation,
-  useDeleteVitalMutation,
-  useGetVitalsTrendsQuery,
-  useCreateBulkVitalsMutation,
-  useGetVitalsSummaryQuery,
-  useGetVitalsReferenceRangesQuery,
-} from './services/vitals';
-
-export {
   doctorScheduleApi,
   useGetDoctorProfilesQuery,
-  useGetDoctorProfileQuery,
-  useUpdateDoctorProfileMutation,
-  useGetDoctorWorkingHoursQuery,
-  useUpdateDoctorWorkingHoursMutation,
-  useGetDoctorScheduleQuery,
   useGetAllDoctorsScheduleQuery,
   useGetTimeOffRequestsQuery,
   useCreateTimeOffRequestMutation,
-  useUpdateTimeOffRequestMutation,
-  useDeleteTimeOffRequestMutation,
-  useApproveTimeOffRequestMutation,
+  useUpdateDoctorWorkingHoursMutation,
   useGetDoctorConflictsQuery,
   useGetScheduleStatisticsQuery,
 } from './services/doctorScheduleApi';

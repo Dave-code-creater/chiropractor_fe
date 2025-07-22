@@ -31,7 +31,8 @@ import { reportApi } from "../api/services/reportApi";
 import { blogApi } from "../api/services/blogApi";
 import { appointmentApi } from "../api/services/appointmentApi";
 import { chatApi } from "../api/services/chatApi";
-import { clinicalNotesApi, vitalsApi, doctorScheduleApi } from "../api";
+import { notesApi } from "../api/services/notesApi";
+import { clinicalNotesApi, doctorScheduleApi } from "../api";
 import { profileApi } from "../api/services/profileApi";
 import { userApi } from "../api/services/userApi";
 
@@ -86,8 +87,8 @@ const rootReducer = combineReducers({
   [blogApi.reducerPath]: blogApi.reducer,
   [appointmentApi.reducerPath]: appointmentApi.reducer,
   [chatApi.reducerPath]: chatApi.reducer,
+  [notesApi.reducerPath]: notesApi.reducer,
   [clinicalNotesApi.reducerPath]: clinicalNotesApi.reducer,
-  [vitalsApi.reducerPath]: vitalsApi.reducer,
   [doctorScheduleApi.reducerPath]: doctorScheduleApi.reducer,
   [profileApi.reducerPath]: profileApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
@@ -114,8 +115,8 @@ export const store = configureStore({
       blogApi.middleware,
       appointmentApi.middleware,
       chatApi.middleware,
+      notesApi.middleware,
       clinicalNotesApi.middleware,
-      vitalsApi.middleware,
       doctorScheduleApi.middleware,
       profileApi.middleware,
       userApi.middleware

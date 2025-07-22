@@ -18,7 +18,6 @@ import { selectUserId, selectUserRole } from "../../state/data/authSlice";
 const ROLE_REDIRECTS = {
   admin: (id) => `/dashboard/admin/${id}`,
   doctor: (id) => `/dashboard/doctor/${id}`,
-  staff: (id) => `/dashboard/staff/${id}`,
   patient: (id) => `/dashboard/patient/${id}`,
 };
 
@@ -60,26 +59,26 @@ export default function Login() {
       const timer = setTimeout(() => {
         navigate(`/dashboard/${userRole.toLowerCase()}/${userID}`, { replace: true });
       }, 100);
-      
+
       return () => clearTimeout(timer);
     }
   }, [isReady, isAuthenticated, userID, userRole, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     // Clear any existing errors
     dispatch(clearEmailError());
     dispatch(clearPasswordError());
-    
+
     if (!email || !password) {
       toast.error("Please enter both email and password");
       return;
     }
-    
+
     try {
       const response = await loginMutation({ email, password }).unwrap();
-      
+
       // Validate response
       if (!response?.user?.id || !response?.user?.role) {
         console.error('Invalid login response:', response);

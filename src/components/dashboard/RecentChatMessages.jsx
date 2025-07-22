@@ -197,8 +197,7 @@ export default function RecentChatMessages({
         return <Stethoscope className="h-4 w-4" />;
       case "patient":
         return <User className="h-4 w-4" />;
-      case "staff":
-        return <Users className="h-4 w-4" />;
+
       default:
         return <User className="h-4 w-4" />;
     }
@@ -291,7 +290,7 @@ export default function RecentChatMessages({
                           >
                             {participant.type === "doctor" ? "Doctor" : 
                              participant.type === "patient" ? "Patient" : 
-                             "Staff"}
+                             "Admin"}
                           </Badge>
                           {unreadCount > 0 && (
                             <Badge variant="destructive" className="text-xs px-2 py-0">

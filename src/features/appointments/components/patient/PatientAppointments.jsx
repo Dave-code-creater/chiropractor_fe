@@ -508,7 +508,7 @@ export default function PatientAppointments() {
           <DialogHeader>
             <DialogTitle>Request Reschedule</DialogTitle>
             <DialogDescription>
-              Request to reschedule your appointment. Our staff will contact you to confirm a new time.
+              Request to reschedule your appointment. Our team will contact you to confirm a new time.
             </DialogDescription>
           </DialogHeader>
           

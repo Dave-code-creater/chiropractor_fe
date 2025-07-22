@@ -14,7 +14,7 @@ export const doctorScheduleApi = createApi({
     getDoctorProfiles: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.status) queryParams.append("status", params.status);
         if (params.specialization) queryParams.append("specialization", params.specialization);
         if (params.page) queryParams.append("page", params.page.toString());
@@ -115,7 +115,7 @@ export const doctorScheduleApi = createApi({
     getTimeOffRequests: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.doctor_id) queryParams.append("doctor_id", params.doctor_id);
         if (params.status) queryParams.append("status", params.status);
         if (params.start_date) queryParams.append("start_date", params.start_date);
@@ -199,7 +199,7 @@ export const doctorScheduleApi = createApi({
     getScheduleStatistics: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.doctor_id) queryParams.append("doctor_id", params.doctor_id);
         if (params.start_date) queryParams.append("start_date", params.start_date);
         if (params.end_date) queryParams.append("end_date", params.end_date);
@@ -216,17 +216,10 @@ export const doctorScheduleApi = createApi({
 
 export const {
   useGetDoctorProfilesQuery,
-  useGetDoctorProfileQuery,
-  useUpdateDoctorProfileMutation,
-  useGetDoctorWorkingHoursQuery,
-  useUpdateDoctorWorkingHoursMutation,
-  useGetDoctorScheduleQuery,
   useGetAllDoctorsScheduleQuery,
   useGetTimeOffRequestsQuery,
   useCreateTimeOffRequestMutation,
-  useUpdateTimeOffRequestMutation,
-  useDeleteTimeOffRequestMutation,
-  useApproveTimeOffRequestMutation,
+  useUpdateDoctorWorkingHoursMutation,
   useGetDoctorConflictsQuery,
   useGetScheduleStatisticsQuery,
 } = doctorScheduleApi; 

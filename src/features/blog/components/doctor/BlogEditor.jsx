@@ -114,14 +114,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
     }
   }, [initialPost]);
 
-  // Console log initial form state
-  useEffect(() => {
-    console.log("=== BLOG EDITOR INITIALIZED ===");
-    console.log("Initial Form Data:", formData);
-    console.log("Initial Post:", initialPost);
-    console.log("Available Categories:", BLOG_CATEGORIES);
-    console.log("=== END INITIALIZATION ===");
-  }, []);
+  // Initialize blog editor
 
   // Restore content when switching back from preview mode
   useEffect(() => {
@@ -223,11 +216,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
         ...prev,
             tags: [...prev.tags, ...newTags]
           };
-          console.log("Tags Added:", {
-            newTags,
-            allTags: updated.tags,
-            tagsCount: updated.tags.length
-          });
+
           return updated;
         });
       }
@@ -241,11 +230,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
       ...prev,
       tags: prev.tags.filter(tag => tag !== tagToRemove)
       };
-      console.log("Tag Removed:", {
-        removedTag: tagToRemove,
-        remainingTags: updated.tags,
-        tagsCount: updated.tags.length
-      });
+
       return updated;
     });
   };
@@ -259,11 +244,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
         ...prev,
           content: newContent
         };
-        console.log("Content Updated:", {
-          contentLength: newContent.length,
-          contentPreview: newContent.substring(0, 100) + "...",
-          fullFormData: updated
-        });
+
         return updated;
       });
     }
@@ -380,17 +361,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
         tags: formData.tags,
         content: blocks // content is now the blocks structure
       });
-      console.log("Complete Post Data:", postData);
-      console.log("📝 BLOCKS STRUCTURE:", JSON.stringify(blocks, null, 2));
-      console.log("Tags Array:", formData.tags);
-      console.log("Category Selected:", formData.category);
-      console.log("Available Categories:", BLOG_CATEGORIES);
-      console.log("Content HTML:", htmlContent);
-      console.log("Content Length:", htmlContent.length);
-      console.log("Blocks Count:", blocks.length);
-      console.log("Is Editing Existing Post:", !!initialPost?.id);
-      console.log("Initial Post Data:", initialPost);
-      console.log("=== END BLOG POST DATA ===");
+
 
       let result;
       if (initialPost?.id) {
@@ -401,7 +372,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
         toast.success("Blog post created successfully!");
       }
 
-      console.log("API Response:", result);
+
 
       if (onSave) {
         onSave(result);
@@ -469,11 +440,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
                   value={formData.title}
                   onChange={(e) => {
                     const newTitle = e.target.value;
-                    setFormData(prev => {
-                      const updated = { ...prev, title: newTitle };
-                      console.log("Title Updated:", { title: newTitle });
-                      return updated;
-                    });
+                    setFormData(prev => ({ ...prev, title: newTitle }));
                   }}
                   placeholder="Enter post title..."
                   className="text-xl font-semibold h-14"
@@ -637,11 +604,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
                   value={formData.excerpt}
                   onChange={(e) => {
                     const newExcerpt = e.target.value;
-                    setFormData(prev => {
-                      const updated = { ...prev, excerpt: newExcerpt };
-                      console.log("Excerpt Updated:", { excerpt: newExcerpt });
-                      return updated;
-                    });
+                    setFormData(prev => ({ ...prev, excerpt: newExcerpt }));
                   }}
                   placeholder="Brief description of the post..."
                   rows={4}
@@ -667,15 +630,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
                 value={formData.category}
                 onValueChange={(value) => {
                   const selectedCategory = BLOG_CATEGORIES.find(cat => cat.value === value);
-                  setFormData(prev => {
-                    const updated = { ...prev, category: value };
-                    console.log("Category Selected:", {
-                      categoryValue: value,
-                      categoryLabel: selectedCategory?.label,
-                      allCategories: BLOG_CATEGORIES
-                    });
-                    return updated;
-                  });
+                  setFormData(prev => ({ ...prev, category: value }));
                 }}
               >
                 <SelectTrigger className="h-12 text-base">

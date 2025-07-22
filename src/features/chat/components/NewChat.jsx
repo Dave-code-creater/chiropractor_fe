@@ -78,16 +78,16 @@ const extractDataFromResponse = (data) => {
     if (data.data.messages) return data.data.messages;
     if (data.data.users) return data.data.users;
     
-    // Handle role-filtered responses from chat/staff-admin-doctors endpoint
+    // Handle role-filtered responses from chat/admin-doctors endpoint
     if (data.data.doctors && Array.isArray(data.data.doctors)) return data.data.doctors;
-    if (data.data.staff && Array.isArray(data.data.staff)) return data.data.staff;
+
     if (data.data.admin && Array.isArray(data.data.admin)) return data.data.admin;
     
     // Handle combined response when role=all
-    if (data.data.doctors || data.data.staff || data.data.admin) {
+          if (data.data.doctors || data.data.admin) {
       const combined = [];
       if (data.data.doctors) combined.push(...data.data.doctors);
-      if (data.data.staff) combined.push(...data.data.staff);
+
       if (data.data.admin) combined.push(...data.data.admin);
       return combined;
     }
@@ -99,14 +99,14 @@ const extractDataFromResponse = (data) => {
   
   // Direct role-based arrays
   if (data.doctors && Array.isArray(data.doctors)) return data.doctors;
-  if (data.staff && Array.isArray(data.staff)) return data.staff;
+  
   if (data.admin && Array.isArray(data.admin)) return data.admin;
   
   // Combined response when role=all (top level)
-  if (data.doctors || data.staff || data.admin) {
+      if (data.doctors || data.admin) {
     const combined = [];
     if (data.doctors) combined.push(...data.doctors);
-    if (data.staff) combined.push(...data.staff);  
+      
     if (data.admin) combined.push(...data.admin);
     return combined;
   }
@@ -142,7 +142,7 @@ const getRoleDisplayName = (role) => {
   const roleMap = {
     'patient': 'Patient',
     'doctor': 'Doctor', 
-    'staff': 'Staff',
+
     'admin': 'Administrator'
   };
   return roleMap[role?.toLowerCase()] || role;
@@ -152,8 +152,7 @@ const getRoleIconComponent = (role) => {
   switch (role?.toLowerCase()) {
     case 'doctor':
       return <Stethoscope className="h-4 w-4" />;
-    case 'staff':
-      return <Users className="h-4 w-4" />;
+
     case 'admin':
       return <Shield className="h-4 w-4" />;
     case 'patient':
@@ -206,10 +205,10 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     
     // Filter users based on current user's role restrictions
     if (currentUserRole === 'patient') {
-      // Patients can only see doctors, staff, and admins
+      // Patients can only see doctors and admins
       return users.filter(user => {
         const userRole = user.role || user.type;
-        return ['doctor', 'staff', 'admin'].includes(userRole?.toLowerCase());
+        return ['doctor', 'admin'].includes(userRole?.toLowerCase());
       });
     }
     
@@ -278,7 +277,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   const roleFilterOptions = [
     { value: "all", label: "All Healthcare Professionals", icon: Users },
     { value: "doctor", label: "Doctors Only", icon: Stethoscope },
-    { value: "staff", label: "Staff Only", icon: Users },
+    
     { value: "admin", label: "Administrators Only", icon: Shield },
   ];
 
@@ -750,7 +749,7 @@ export default function NewChat() {
         avatar: null
       };
     } else {
-      // Current user is doctor/staff/admin, show patient info
+      // Current user is doctor/admin, show patient info
       let patientName =
         conversation.patient_name ||
         conversation.full_name ||

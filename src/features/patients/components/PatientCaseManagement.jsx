@@ -253,9 +253,9 @@ export default function PatientCaseManagement() {
 
       // Make API call to create clinical note
       await createClinicalNote(noteData).unwrap();
-      
+
       toast.success("Clinical note added successfully!");
-      
+
       // Reset form
       setNewNote({
         type: "Progress Note",
@@ -269,7 +269,7 @@ export default function PatientCaseManagement() {
         functionalStatus: "",
       });
       setIsAddingNote(false);
-      
+
     } catch (error) {
       console.error("Failed to add clinical note:", error);
       toast.error("Failed to add clinical note. Please try again.");
@@ -932,7 +932,7 @@ export default function PatientCaseManagement() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6 pb-20">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -983,7 +983,7 @@ export default function PatientCaseManagement() {
             return (
               <Card
                 key={patient.id}
-                className="hover:shadow-lg transition-shadow cursor-pointer"
+                className="hover:shadow-lg hover:border-primary/50 transition-all cursor-pointer group"
                 onClick={() => setSelectedPatient(patient)}
               >
                 <CardContent className="pt-6">
@@ -998,7 +998,7 @@ export default function PatientCaseManagement() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h3 className="font-semibold">
+                      <h3 className="font-semibold group-hover:text-primary transition-colors">
                         {patient.firstName} {patient.lastName}
                       </h3>
                       <p className="text-sm text-muted-foreground">
@@ -1035,9 +1035,9 @@ export default function PatientCaseManagement() {
                     <span className="text-xs text-muted-foreground">
                       {patient.totalVisits} total visits
                     </span>
-                    <Button size="sm" variant="outline">
-                      View Case
-                    </Button>
+                    <span className="text-xs text-primary/60 group-hover:text-primary font-medium">
+                      Click to view details →
+                    </span>
                   </div>
                 </CardContent>
               </Card>

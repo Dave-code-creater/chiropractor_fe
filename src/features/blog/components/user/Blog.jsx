@@ -1,5 +1,10 @@
 import React, { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import {
+  selectUserId,
+  selectUserRole,
+} from "@/state/data/authSlice";
 import {
   useGetPublicBlogPostsQuery,
   useGetCategoriesQuery,
@@ -37,6 +42,10 @@ export default function Blog() {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+
+  // Get user ID and role from Redux state
+  const userID = useSelector(selectUserId);
+  const userRole = useSelector(selectUserRole);
 
   // Fetch data
   const {
@@ -98,6 +107,11 @@ export default function Blog() {
   const getCategoryName = (categorySlug) => {
     const category = categories.find((cat) => cat.slug === categorySlug);
     return category?.name || categorySlug;
+  };
+
+  // Generate blog post URL based on user role
+  const getBlogPostUrl = (postSlug) => {
+    return `/dashboard/${userRole}/${userID}/blog/${postSlug}`;
   };
 
   // Featured post (latest)
@@ -296,183 +310,182 @@ export default function Blog() {
 
             {/* Featured Post */}
             {featuredPost && (
-              <Card className="mb-8 overflow-hidden border-0 shadow-xl bg-gradient-to-r from-card to-muted/20 hover:shadow-2xl transition-all duration-300">
-                <div className="md:flex">
-                  <div className="md:w-1/2 relative overflow-hidden">
-                    <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
-                      <BookOpen className="w-16 h-16 text-primary/30" />
+              <Link to={getBlogPostUrl(featuredPost.slug)} className="block">
+                <Card className="mb-8 overflow-hidden border-0 shadow-xl bg-gradient-to-r from-card to-muted/20 hover:shadow-2xl transition-all duration-300 cursor-pointer hover:scale-[1.01]">
+                  <div className="md:flex">
+                    <div className="md:w-1/2 relative overflow-hidden">
+                      <div className="aspect-video bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                        <BookOpen className="w-16 h-16 text-primary/30" />
+                      </div>
+                      <Badge
+                        className="absolute top-4 left-4"
+                        style={{
+                          backgroundColor: getCategoryColor(
+                            featuredPost.category,
+                          ),
+                        }}
+                      >
+                        Featured
+                      </Badge>
                     </div>
-                    <Badge
-                      className="absolute top-4 left-4"
-                      style={{
-                        backgroundColor: getCategoryColor(
-                          featuredPost.category,
-                        ),
-                      }}
-                    >
-                      Featured
-                    </Badge>
+                    <div className="p-6 md:w-1/2 flex flex-col justify-between">
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            style={{
+                              borderColor: getCategoryColor(
+                                featuredPost.category,
+                              ),
+                              color: getCategoryColor(featuredPost.category),
+                            }}
+                          >
+                            {getCategoryName(featuredPost.category)}
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">
+                            {formatDate(featuredPost.publishDate)}
+                          </span>
+                        </div>
+
+                        <h2 className="text-2xl md:text-3xl font-bold leading-tight group-hover:text-primary transition-colors">
+                          {featuredPost.title}
+                        </h2>
+
+                        <p className="text-muted-foreground leading-relaxed">
+                          {featuredPost.excerpt}
+                        </p>
+
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-1">
+                            <Clock className="w-4 h-4" />
+                            {featuredPost.readTime} min read
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Eye className="w-4 h-4" />
+                            {featuredPost.views?.toLocaleString() || 0}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Heart className="w-4 h-4" />
+                            {featuredPost.likes || 0}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between mt-6">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="w-10 h-10">
+                            <AvatarImage src={featuredPost.author?.avatar} />
+                            <AvatarFallback>
+                              {featuredPost.author?.name
+                                ?.split(" ")
+                                .map((n) => n[0])
+                                .join("") || "A"}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium text-sm">
+                              {featuredPost.author?.name}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Author
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-primary">
+                          <span className="text-sm font-medium">Read Article</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="p-6 md:w-1/2 flex flex-col justify-between">
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
-                        <Badge
-                          variant="outline"
-                          style={{
-                            borderColor: getCategoryColor(
-                              featuredPost.category,
-                            ),
-                            color: getCategoryColor(featuredPost.category),
-                          }}
-                        >
-                          {getCategoryName(featuredPost.category)}
-                        </Badge>
-                        <span className="text-sm text-muted-foreground">
-                          {formatDate(featuredPost.publishDate)}
-                        </span>
-                      </div>
-
-                      <h2 className="text-2xl md:text-3xl font-bold leading-tight">
-                        {featuredPost.title}
-                      </h2>
-
-                      <p className="text-muted-foreground leading-relaxed">
-                        {featuredPost.excerpt}
-                      </p>
-
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <Clock className="w-4 h-4" />
-                          {featuredPost.readTime} min read
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Eye className="w-4 h-4" />
-                          {featuredPost.views?.toLocaleString() || 0}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <Heart className="w-4 h-4" />
-                          {featuredPost.likes || 0}
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between mt-6">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-10 h-10">
-                          <AvatarImage src={featuredPost.author?.avatar} />
-                          <AvatarFallback>
-                            {featuredPost.author?.name
-                              ?.split(" ")
-                              .map((n) => n[0])
-                              .join("") || "A"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium text-sm">
-                            {featuredPost.author?.name}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            Author
-                          </p>
-                        </div>
-                      </div>
-
-                      <Button asChild>
-                        <Link to={`/blog/${featuredPost.slug}`}>
-                          Read Article
-                          <ArrowRight className="w-4 h-4 ml-2" />
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </Link>
             )}
 
             {/* Regular Posts Grid */}
             {regularPosts.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {regularPosts.map((post) => (
-                  <Card
-                    key={post.id}
-                    className="group overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
-                  >
-                    <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
-                      <BookOpen className="w-12 h-12 text-primary/30" />
-                      <Badge
-                        className="absolute top-3 left-3 text-xs"
-                        style={{
-                          backgroundColor: getCategoryColor(post.category),
-                        }}
-                      >
-                        {getCategoryName(post.category)}
-                      </Badge>
-                    </div>
-
-                    <CardContent className="p-5">
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <span>{formatDate(post.publishDate)}</span>
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-1">
-                              <Clock className="w-3 h-3" />
-                              {post.readTime}m
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <Eye className="w-3 h-3" />
-                              {post.views || 0}
-                            </div>
-                          </div>
-                        </div>
-
-                        <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
-                          {post.title}
-                        </h3>
-
-                        <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
-                          {post.excerpt}
-                        </p>
-
-                        <div className="flex flex-wrap gap-1">
-                          {post.tags?.slice(0, 3).map((tag) => (
-                            <Badge
-                              key={tag}
-                              variant="secondary"
-                              className="text-xs"
-                            >
-                              {tag}
-                            </Badge>
-                          ))}
-                        </div>
-
-                        <Separator />
-
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <Avatar className="w-6 h-6">
-                              <AvatarImage src={post.author?.avatar} />
-                              <AvatarFallback className="text-xs">
-                                {post.author?.name
-                                  ?.split(" ")
-                                  .map((n) => n[0])
-                                  .join("") || "A"}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="text-xs text-muted-foreground">
-                              {post.author?.name}
-                            </span>
-                          </div>
-
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link to={`/blog/${post.slug}`}>
-                              Read More
-                              <ArrowRight className="w-3 h-3 ml-1" />
-                            </Link>
-                          </Button>
-                        </div>
+                  <Link key={post.id} to={getBlogPostUrl(post.slug)} className="block">
+                    <Card
+                      className="group overflow-hidden border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer h-full"
+                    >
+                      <div className="aspect-video bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center relative overflow-hidden">
+                        <BookOpen className="w-12 h-12 text-primary/30" />
+                        <Badge
+                          className="absolute top-3 left-3 text-xs"
+                          style={{
+                            backgroundColor: getCategoryColor(post.category),
+                          }}
+                        >
+                          {getCategoryName(post.category)}
+                        </Badge>
                       </div>
-                    </CardContent>
-                  </Card>
+
+                      <CardContent className="p-5 flex flex-col h-full">
+                        <div className="space-y-3 flex-1">
+                          <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>{formatDate(post.publishDate)}</span>
+                            <div className="flex items-center gap-3">
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-3 h-3" />
+                                {post.readTime}m
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Eye className="w-3 h-3" />
+                                {post.views || 0}
+                              </div>
+                            </div>
+                          </div>
+
+                          <h3 className="font-semibold text-lg leading-tight line-clamp-2 group-hover:text-primary transition-colors">
+                            {post.title}
+                          </h3>
+
+                          <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed">
+                            {post.excerpt}
+                          </p>
+
+                          <div className="flex flex-wrap gap-1">
+                            {post.tags?.slice(0, 3).map((tag) => (
+                              <Badge
+                                key={tag}
+                                variant="secondary"
+                                className="text-xs"
+                              >
+                                {tag}
+                              </Badge>
+                            ))}
+                          </div>
+
+                          <Separator />
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Avatar className="w-6 h-6">
+                                <AvatarImage src={post.author?.avatar} />
+                                <AvatarFallback className="text-xs">
+                                  {post.author?.name
+                                    ?.split(" ")
+                                    .map((n) => n[0])
+                                    .join("") || "A"}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-xs text-muted-foreground">
+                                {post.author?.name}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center gap-1 text-primary group-hover:gap-2 transition-all">
+                              <span className="text-sm font-medium">Read More</span>
+                              <ArrowRight className="w-3 h-3" />
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 ))}
               </div>
             )}

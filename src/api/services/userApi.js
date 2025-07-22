@@ -23,7 +23,7 @@ export const userApi = createApi({
     getPatients: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.page) queryParams.append("page", params.page.toString());
         if (params.limit) queryParams.append("limit", params.limit.toString());
         if (params.search) queryParams.append("search", params.search);
@@ -72,7 +72,7 @@ export const userApi = createApi({
     getClinicalNotes: builder.query({
       query: ({ patient_id, ...params }) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.date_from) queryParams.append("date_from", params.date_from);
         if (params.date_to) queryParams.append("date_to", params.date_to);
 
@@ -85,36 +85,6 @@ export const userApi = createApi({
         { type: "ClinicalNotes", id: patient_id },
       ],
     }),
-
-    // Vitals
-    recordVitals: builder.mutation({
-      query: ({ patient_id, ...data }) => ({
-        url: `users/patients/${patient_id}/vitals`,
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: (result, error, { patient_id }) => [
-        { type: "Vitals", id: patient_id },
-        { type: "Patients", id: patient_id },
-      ],
-    }),
-
-    getVitalsHistory: builder.query({
-      query: ({ patient_id, ...params }) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.date_from) queryParams.append("date_from", params.date_from);
-        if (params.limit) queryParams.append("limit", params.limit.toString());
-
-        return {
-          url: `users/patients/${patient_id}/vitals?${queryParams}`,
-          method: "GET",
-        };
-      },
-      providesTags: (result, error, { patient_id }) => [
-        { type: "Vitals", id: patient_id },
-      ],
-    }),
   }),
 });
 
@@ -125,6 +95,4 @@ export const {
   useUpdatePatientMutation,
   useAddClinicalNotesMutation,
   useGetClinicalNotesQuery,
-  useRecordVitalsMutation,
-  useGetVitalsHistoryQuery,
 } = userApi; 

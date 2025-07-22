@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { selectUserRole } from '@/state/data/authSlice';
 import DoctorAppointments from './doctor/DoctorAppointments';
 import PatientAppointments from './patient/PatientAppointments';
-import StaffAppointments from './staff/StaffAppointments';
+
 
 const AppointmentManagement = () => {
   const userRole = useSelector(selectUserRole);
@@ -14,9 +14,8 @@ const AppointmentManagement = () => {
         return <DoctorAppointments />;
       case 'patient':
         return <PatientAppointments />;
-      case 'staff':
       case 'admin':
-        return <StaffAppointments />;
+        return <AdminAppointments />;
       default:
         return <div>Unauthorized Access</div>;
     }

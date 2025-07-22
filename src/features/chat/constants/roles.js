@@ -6,25 +6,21 @@
 export const CHAT_ROLES = {
   PATIENT: 'patient',
   DOCTOR: 'doctor', 
-  STAFF: 'staff',
   ADMIN: 'admin'
 };
 
 export const ROLE_ACCESS_RULES = {
   [CHAT_ROLES.PATIENT]: {
-    canChatWith: [CHAT_ROLES.DOCTOR, CHAT_ROLES.STAFF, CHAT_ROLES.ADMIN],
-    description: "Patients can only chat with doctors, staff, and admin"
+    canChatWith: [CHAT_ROLES.DOCTOR, CHAT_ROLES.ADMIN],
+    description: "Patients can only chat with doctors and admin"
   },
   [CHAT_ROLES.DOCTOR]: {
-    canChatWith: [CHAT_ROLES.PATIENT, CHAT_ROLES.DOCTOR, CHAT_ROLES.STAFF, CHAT_ROLES.ADMIN],
+    canChatWith: [CHAT_ROLES.PATIENT, CHAT_ROLES.DOCTOR, CHAT_ROLES.ADMIN],
     description: "Doctors can chat with patients and colleagues"
   },
-  [CHAT_ROLES.STAFF]: {
-    canChatWith: [CHAT_ROLES.PATIENT, CHAT_ROLES.DOCTOR, CHAT_ROLES.STAFF, CHAT_ROLES.ADMIN],
-    description: "Staff can chat with patients and colleagues"
-  },
+
   [CHAT_ROLES.ADMIN]: {
-    canChatWith: [CHAT_ROLES.PATIENT, CHAT_ROLES.DOCTOR, CHAT_ROLES.STAFF, CHAT_ROLES.ADMIN],
+    canChatWith: [CHAT_ROLES.PATIENT, CHAT_ROLES.DOCTOR, CHAT_ROLES.ADMIN],
     description: "Admin can chat with everyone (no restrictions)"
   }
 };
@@ -153,7 +149,7 @@ export const getRoleRestrictionError = (currentUserRole, targetUserRole) => {
   const normalizedTargetRole = targetUserRole?.toLowerCase();
 
   if (normalizedCurrentRole === CHAT_ROLES.PATIENT && normalizedTargetRole === CHAT_ROLES.PATIENT) {
-    return "Patients can only start conversations with doctors, staff, or administrators";
+    return "Patients can only start conversations with doctors or administrators";
   }
 
   return "You are not authorized to start a conversation with this user";
@@ -184,8 +180,7 @@ export const getRoleIcon = (role) => {
       return 'user';
     case CHAT_ROLES.DOCTOR:
       return 'stethoscope';
-    case CHAT_ROLES.STAFF:
-      return 'briefcase';
+
     case CHAT_ROLES.ADMIN:
       return 'shield';
     default:
@@ -198,5 +193,5 @@ export const getRoleIcon = (role) => {
  */
 export const canUpdateConversationStatus = (userRole) => {
   const normalizedRole = userRole?.toLowerCase();
-  return [CHAT_ROLES.DOCTOR, CHAT_ROLES.STAFF, CHAT_ROLES.ADMIN].includes(normalizedRole);
+  return [CHAT_ROLES.DOCTOR, CHAT_ROLES.ADMIN].includes(normalizedRole);
 }; 

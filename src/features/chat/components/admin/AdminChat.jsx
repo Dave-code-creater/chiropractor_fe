@@ -69,14 +69,14 @@ const AdminChat = () => {
     { id: "all", name: "All Users", icon: Shield },
     { id: "patient", name: "Patients", icon: UserPlus },
     { id: "doctor", name: "Doctors", icon: Shield },
-    { id: "staff", name: "Staff", icon: Shield },
+
   ];
 
   const getRoleBadgeColor = (role) => {
     const colors = {
       admin: "bg-red-100 text-red-800",
       doctor: "bg-blue-100 text-blue-800",
-      staff: "bg-green-100 text-green-800",
+  
       patient: "bg-yellow-100 text-yellow-800",
     };
     return colors[role] || "bg-gray-100 text-gray-800";

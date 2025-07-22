@@ -43,7 +43,7 @@ export const API_ENDPOINTS = {
     CONVERSATION_MESSAGES: (conversationId) => `/chat/conversations/${conversationId}/messages`,
     CONVERSATION_USERS: "/chat/conversations/users",
     SEND_MESSAGE: "/chat/messages",
-    AVAILABLE_USERS: "/chat/staff-admin-doctors",
+    AVAILABLE_USERS: "/chat/admin-doctors",
   },
 
   // Blog

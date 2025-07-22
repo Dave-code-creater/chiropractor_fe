@@ -31,7 +31,7 @@ export default function ChatDemo() {
     {
       icon: <Users className="h-6 w-6 text-green-600" />,
       title: "Multi-Participant Support",
-      description: "Chat with doctors, staff members, and administration",
+      description: "Chat with doctors and administration",
       endpoint: "GET /users/doctors",
       status: "implemented"
     },

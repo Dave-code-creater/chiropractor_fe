@@ -14,7 +14,7 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import HumanBody from "./HumanBody";
-import { 
+import {
   useCreateIncidentMutation,
   useSubmitPatientInfoFormMutation,
   useSubmitHealthInsuranceFormMutation,
@@ -55,7 +55,7 @@ export default function UnifiedPatientForm({
     emergency_contact_name: "",
     emergency_contact_phone: "",
     emergency_contact_relationship: "",
-    
+
     // Health Condition fields
     hasCondition: "",
     conditionDetails: "",
@@ -71,7 +71,7 @@ export default function UnifiedPatientForm({
     lastMenstrualPeriod: "",
     isPregnantNow: "",
     weeksPregnant: "",
-    
+
     // Pain Evaluation fields
     painType: [],
     painLevel: [],
@@ -79,12 +79,12 @@ export default function UnifiedPatientForm({
     painChanges: "",
     painTriggers: [],
     radiatingPain: "",
-    
+
     // Detailed Description fields
     symptomDetails: "",
     mainComplaints: "",
     previousHealthcare: "",
-    
+
     // Insurance/Accident fields
     typeCar: "",
     accidentDate: "",
@@ -105,13 +105,13 @@ export default function UnifiedPatientForm({
     childrenInfo: "",
     covered: "",
     insuranceType: "",
-    
+
     // Work Impact fields
     workActivities: [],
     lostWork: "",
     workType: "",
     workStress: "",
-    
+
     // Lifestyle fields
     smoking: "",
     smokingDetails: "",
@@ -170,7 +170,7 @@ export default function UnifiedPatientForm({
   const handleCheckboxChange = (field, option, checked) => {
     setFormData(prev => ({
       ...prev,
-      [field]: checked 
+      [field]: checked
         ? [...prev[field], option]
         : prev[field].filter(item => item !== option)
     }));
@@ -591,7 +591,7 @@ export default function UnifiedPatientForm({
                   setFormData={setFormData}
                 />
               </div>
-              
+
               {/* Selected Pain Areas - 1/3 width */}
               <div className="lg:col-span-1">
                 <Card>
@@ -606,18 +606,17 @@ export default function UnifiedPatientForm({
                     ) : (
                       <div className="space-y-3">
                         {Object.entries(painMap)
-                          .sort(([,a], [,b]) => b['pain-level'] - a['pain-level'])
+                          .sort(([, a], [, b]) => b['pain-level'] - a['pain-level'])
                           .map(([part, data]) => (
                             <div key={part} className="border rounded-lg p-3">
                               <div className="flex items-center justify-between mb-2">
                                 <h4 className="font-medium capitalize">
                                   {part.replace(/([A-Z])/g, ' $1').trim()}
                                 </h4>
-                                <span className={`px-2 py-1 rounded text-xs font-medium ${
-                                  data['pain-level'] <= 3 ? 'bg-yellow-100 text-yellow-800' :
-                                  data['pain-level'] <= 7 ? 'bg-orange-100 text-orange-800' :
-                                  'bg-red-100 text-red-800'
-                                }`}>
+                                <span className={`px-2 py-1 rounded text-xs font-medium ${data['pain-level'] <= 3 ? 'bg-yellow-100 text-yellow-800' :
+                                    data['pain-level'] <= 7 ? 'bg-orange-100 text-orange-800' :
+                                      'bg-red-100 text-red-800'
+                                  }`}>
                                   {data['pain-level'] <= 3 ? 'Mild' : data['pain-level'] <= 7 ? 'Moderate' : 'Severe'}
                                 </span>
                               </div>
@@ -653,7 +652,7 @@ export default function UnifiedPatientForm({
                           <p className="text-sm text-muted-foreground">
                             {Object.keys(painMap).length} areas affected
                           </p>
-                          
+
                         </div>
                       </div>
                     )}
@@ -1063,7 +1062,7 @@ export default function UnifiedPatientForm({
                   </Select>
                 </div>
               </div>
-              
+
               {(formData.smoking === "Daily" || formData.smoking === "Occasional") && (
                 <div>
                   <Label htmlFor="smokingDetails">Smoking Details</Label>
@@ -1281,14 +1280,14 @@ export default function UnifiedPatientForm({
         </Card>
 
         {/* Submit Button */}
-        <div className="flex justify-between pt-6">
+        <div className="flex justify-between pt-6 pb-20">
           {onBack && (
             <Button type="button" variant="outline" onClick={onBack}>
               Back
             </Button>
           )}
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             size="lg"
             disabled={isSubmitting}
             className="bg-green-600 hover:bg-green-700"

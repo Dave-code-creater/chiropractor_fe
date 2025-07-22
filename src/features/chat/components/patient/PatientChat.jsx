@@ -52,7 +52,7 @@ const getRoleDisplayName = (role) => {
   const roleNames = {
     patient: "Patient",
     doctor: "Doctor", 
-    staff: "Staff Member",
+
     admin: "Administrator"
   };
   return roleNames[role?.toLowerCase()] || role || "User";
@@ -100,10 +100,10 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     
     // Filter users based on current user's role restrictions
     if (currentUserRole === 'patient') {
-      // Patients can only see doctors, staff, and admins
+      // Patients can only see doctors and admins
       return users.filter(user => {
         const userRole = user.role || user.type;
-        return ['doctor', 'staff', 'admin'].includes(userRole?.toLowerCase());
+        return ['doctor', 'admin'].includes(userRole?.toLowerCase());
       });
     }
     
@@ -171,7 +171,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   const roleFilterOptions = [
     { value: "all", label: "All Healthcare Professionals", icon: Users },
     { value: "doctor", label: "Doctors Only", icon: Stethoscope },
-    { value: "staff", label: "Staff Only", icon: Users },
+    
     { value: "admin", label: "Administrators Only", icon: Shield },
   ];
 

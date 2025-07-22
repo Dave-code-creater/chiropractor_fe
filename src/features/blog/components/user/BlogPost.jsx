@@ -1,5 +1,10 @@
 import React from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import {
+  selectUserId,
+  selectUserRole,
+} from "@/state/data/authSlice";
 import { useGetBlogPostByIdQuery } from "@/api/services/blogApi";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,10 +28,17 @@ import { toast } from "sonner";
 export default function BlogPost() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const userID = useSelector(selectUserId);
+  const userRole = useSelector(selectUserRole);
 
   const { data: postData, isLoading, error } = useGetBlogPostByIdQuery(slug);
 
   const post = postData;
+
+  // Generate role-based blog list URL
+  const getBlogListUrl = () => {
+    return `/dashboard/${userRole}/${userID}/blog`;
+  };
 
   // Format date
   const formatDate = (dateString) => {
@@ -106,7 +118,7 @@ export default function BlogPost() {
           <div className="space-y-6">
             <Button
               variant="ghost"
-              onClick={() => navigate("/blog")}
+              onClick={() => navigate(getBlogListUrl())}
               className="gap-2"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -124,7 +136,7 @@ export default function BlogPost() {
                   removed.
                 </p>
                 <Button asChild>
-                  <Link to="/blog">Browse All Posts</Link>
+                  <Link to={`/dashboard/patient/${userID}/blog`}>Go to Blog</Link>
                 </Button>
               </div>
             </Card>
@@ -141,7 +153,7 @@ export default function BlogPost() {
           {/* Back Navigation */}
           <Button
             variant="ghost"
-            onClick={() => navigate("/blog")}
+            onClick={() => navigate(getBlogListUrl())}
             className="gap-2"
           >
             <ArrowLeft className="w-4 h-4" />

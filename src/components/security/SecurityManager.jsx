@@ -102,7 +102,7 @@ const SecurityManager = () => {
         location: "Los Angeles, CA",
         status: "success",
         riskLevel: "medium",
-        details: "Changed user role from Staff to Doctor",
+        details: "Changed user role to Doctor",
       },
       {
         id: "LOG-003",
@@ -135,7 +135,7 @@ const SecurityManager = () => {
       {
         id: "LOG-005",
         timestamp: "2025-01-19T10:10:00Z",
-        user: "Staff Member",
+        user: "Team Member",
         userId: "STF-001",
         action: "Data Export",
         resource: "Patient Database",
@@ -935,7 +935,7 @@ const SecurityManager = () => {
                     "User authentication and authorization",
                     "Data backup and recovery procedures",
                     "Incident response plan in place",
-                    "Staff security training completed",
+                    "Team security training completed",
                     "Business Associate Agreements signed",
                   ].map((item, index) => (
                     <div key={index} className="flex items-center space-x-2">

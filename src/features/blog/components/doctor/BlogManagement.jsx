@@ -107,12 +107,7 @@ const BlogManagement = () => {
   const posts = postsData?.data?.posts || [];
   const drafts = draftsData?.data?.posts || [];
 
-  // Debug logging for the new API structure
-  console.log("📊 Blog Management API Debug:");
-  console.log("Published posts data:", postsData);
-  console.log("Draft posts data:", draftsData);
-  console.log("Published posts count:", posts.length);
-  console.log("Draft posts count:", drafts.length);
+  // Blog management data processing
 
   const handleDelete = async () => {
     if (!deletePostId) return;

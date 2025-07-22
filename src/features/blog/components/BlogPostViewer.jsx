@@ -69,7 +69,7 @@ const BlogPostViewer = ({ post, onBack }) => {
           url: window.location.href,
         });
       } catch (err) {
-        console.log("Error sharing:", err);
+        // Error sharing handled silently
       }
     } else {
       // Fallback: copy to clipboard

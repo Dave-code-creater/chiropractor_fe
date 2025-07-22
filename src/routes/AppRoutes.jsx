@@ -1,27 +1,42 @@
+import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import ProtectRoute from "./ProtectRoute";
+import RouteProvider from "./RouteProvider";
 import DefaultLayout from "../layouts/DefaultLayout";
-import PublicLayout from "../layouts/PublicLayout";
-import HomePageLayout from "../layouts/user/HomePageLayout";
 import AdminHomePageLayout from "../layouts/admin/HomePageLayout";
 import DoctorHomePageLayout from "../layouts/doctor/HomePageLayout";
-import StaffHomePageLayout from "../layouts/staff/HomePageLayout";
-import RouteProvider from "./RouteProvider";
+import UserHomePageLayout from "../layouts/user/HomePageLayout";
+import PublicLayout from "../layouts/PublicLayout";
 
+// Public Pages
 import LandingPage from "../pages/LandingPage";
 import About from "../pages/About";
 import Contact from "../pages/Contact";
 import FAQ from "../pages/FAQ";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+import TermOfService from "../pages/TermOfService";
 import NotFound from "../pages/NotFound";
-import UnderDevelopment from "../pages/UnderDevelopment";
 import Unauthorized from "../pages/Unauthorized";
+import UnderDevelopment from "../pages/UnderDevelopment";
+import TutorialDemo from "../pages/TutorialDemo";
+import ChatDemo from "../pages/ChatDemo";
 
+// Auth Pages
 import Login from "../features/auth/Login";
 import Register from "../features/auth/Register";
 import ForgotPassword from "../features/auth/ForgotPassword";
 import ResetPassword from "../features/auth/ResetPassword";
 
+// Dashboard Components
+import AdminDashboard from "../features/homepage/components/admin/AdminDashboard";
+import DoctorDashboard from "../features/homepage/components/doctor/DoctorDashboard";
 import HomePage from "../features/homepage/components/user/HomePage";
+
+// Feature Components
+import Appointments from "../features/appointments/Appointments";
+import Report from "../features/report/user/Report";
+import Notes from "../features/notes/components/Notes";
+import Profile from "../features/profile/components/Profile";
 import Setting from "../features/setting/components/Setting";
 import Blog from "../features/blog/components/user/Blog";
 import BlogPost from "../features/blog/components/user/BlogPost";
@@ -29,20 +44,11 @@ import BlogRouter from "../features/blog/BlogRouter";
 import BlogManagement from "../features/blog/components/doctor/BlogManagement";
 import BlogEditor from "../features/blog/components/doctor/BlogEditor";
 import BlogReader from "../features/blog/components/BlogReader";
+import DoctorBlogReader from "../features/blog/components/doctor/DoctorBlogReader";
 import ChatRouter from "../features/chat/ChatRouter";
-import Profile from "../features/profile/components/Profile";
-import Report from "../features/report/user/Report";
-import Notes from "../features/notes/components/Notes";
-import AdminDashboard from "../features/homepage/components/admin/Homepage";
-import DoctorDashboard from "../features/homepage/components/doctor/DoctorDashboard";
-import StaffDashboard from "../features/homepage/components/staff/StaffDashboard";
-import ProfileUser from "../features/drreport/components/InitialDrReport";
-import ProtectRoute from "./ProtectRoute";
-import TermOfService from "../pages/TermOfService";
-import PrivacyPolicy from "../pages/PrivacyPolicy";
 import AppointmentManagement from "../features/appointments/components/AppointmentManagement";
-import PatientManagement from "../features/patients/components/PatientManagement";
 import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
+import PatientManagement from "../features/patients/components/PatientManagement";
 
 import { getRouteStatus, RouteStatus } from "../config/routes";
 
@@ -78,7 +84,7 @@ const AppRoutes = () => {
         <Route path="/faq" element={<RouteWrapper element={FAQ} />} />
         <Route path="/terms-of-service" element={<RouteWrapper element={TermOfService} />} />
         <Route path="/privacy-policy" element={<RouteWrapper element={PrivacyPolicy} />} />
-        
+
         {/* Public Blog Routes - WordPress-like */}
         <Route path="/blog" element={<RouteWrapper element={BlogReader} />} />
         <Route path="/blog/:slug" element={<RouteWrapper element={BlogReader} />} />
@@ -128,29 +134,11 @@ const AppRoutes = () => {
               <Route path="chat/*" element={<ChatRouter />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Setting />} />
-              <Route path="blog/*" element={<BlogRouter />} />
+              <Route path="blog" element={<DoctorBlogReader />} />
+              <Route path="blog/:slug" element={<BlogPost />} />
               <Route path="blog/management" element={<BlogManagement />} />
               <Route path="blog/editor" element={<BlogEditor />} />
               <Route path="blog/editor/:postId" element={<BlogEditor />} />
-            </Route>
-          </Route>
-        </Route>
-      </Route>
-
-      {/* Staff Dashboard Routes */}
-      <Route element={<ProtectRoute allowedRoles={["staff"]} />}>
-        <Route element={<StaffHomePageLayout />}>
-          <Route element={<RouteProvider />}>
-            <Route path="/dashboard/staff/:id">
-              <Route index element={<StaffDashboard />} />
-              <Route path="appointments" element={<AppointmentManagement />} />
-              <Route path="patients" element={<PatientManagement />} />
-              <Route path="notes" element={<Notes />} />
-              <Route path="reports" element={<Report />} />
-              <Route path="medical-records" element={<Report />} />
-              <Route path="chat/*" element={<ChatRouter />} />
-              <Route path="profile" element={<Profile />} />
-              <Route path="settings" element={<Setting />} />
             </Route>
           </Route>
         </Route>
@@ -167,7 +155,6 @@ const AppRoutes = () => {
               <Route path="notes" element={<Notes />} />
               <Route path="reports" element={<Report />} />
               <Route path="doctors" element={<PatientManagement />} />
-              <Route path="staff" element={<PatientManagement />} />
               <Route path="chat/*" element={<ChatRouter />} />
               <Route path="settings" element={<Setting />} />
             </Route>

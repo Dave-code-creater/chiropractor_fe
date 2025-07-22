@@ -586,7 +586,7 @@ const GlobalSearch = ({ onResultSelect, userRole = "admin" }) => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Staff</SelectItem>
+                    <SelectItem value="all">All Healthcare Professionals</SelectItem>
                     <SelectItem value="Dr. Johnson">Dr. Johnson</SelectItem>
                     <SelectItem value="Dr. Smith">Dr. Smith</SelectItem>
                     <SelectItem value="System">System</SelectItem>

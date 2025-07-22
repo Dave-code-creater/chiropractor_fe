@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import DoctorChat from "./components/doctor/DoctorChat";
 import PatientChat from "./components/patient/PatientChat";
 import AdminChat from "./components/admin/AdminChat";
-import StaffChat from "./components/staff/StaffChat";
+
 
 const ChatRouter = () => {
   const userRole = useSelector((state) => state.auth.role);
@@ -28,9 +28,7 @@ const ChatRouter = () => {
       {userRole === "admin" && (
         <Route path="/*" element={<AdminChat />} />
       )}
-      {userRole === "staff" && (
-        <Route path="/*" element={<StaffChat />} />
-      )}
+
 
       {/* Fallback route */}
       <Route path="*" element={<Navigate to="/unauthorized" replace />} />

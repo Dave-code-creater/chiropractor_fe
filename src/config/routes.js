@@ -47,12 +47,7 @@ export const routeStatuses = {
   "/doctor/profile": RouteStatus.ACTIVE,
   "/doctor/settings": RouteStatus.ACTIVE,
 
-  // Staff routes
-  "/staff": RouteStatus.ACTIVE,
-  "/staff/dashboard": RouteStatus.ACTIVE,
-  "/staff/appointments": RouteStatus.ACTIVE,
-  "/staff/profile": RouteStatus.ACTIVE,
-  "/staff/settings": RouteStatus.ACTIVE,
+  
 };
 
 // Helper function to check route status

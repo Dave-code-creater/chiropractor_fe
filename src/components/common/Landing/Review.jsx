@@ -514,7 +514,7 @@ export default function Review() {
             </div>
 
             <p className="font-normal text-lg leading-8 text-gray-500 ">
-              Dr, Phan and his team are wonderful! His staff of professionals
+              Dr, Phan and his team are wonderful! His team of professionals
               are friendly, helpful and care about our well being. Dr. Phan gave
               wonderful advice and listened to our needs. I would highly
               recommend his facility for anyone that had a car accident or just

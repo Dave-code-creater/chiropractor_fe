@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import BlogList from "./components/patient/BlogList";
 import BlogEditor from "./components/doctor/BlogEditor";
 import BlogManagement from "./components/doctor/BlogManagement";
+import DoctorBlogReader from "./components/doctor/DoctorBlogReader";
 import BlogOverview from "./components/admin/BlogOverview";
 import BlogPost from "./components/user/BlogPost";
 
@@ -23,9 +24,36 @@ const BlogRouter = () => {
 
   return (
     <Routes>
-      {/* Public routes - accessible to all */}
-      <Route path="/" element={<BlogList />} />
-      <Route path="/post/:id" element={<BlogPost />} />
+      {/* Role-based blog reading routes */}
+      {userRole === "doctor" && (
+        <>
+          <Route path="/" element={<DoctorBlogReader />} />
+          <Route path="/:slug" element={<DoctorBlogReader />} />
+        </>
+      )}
+
+      {userRole === "patient" && (
+        <>
+          <Route path="/" element={<BlogList />} />
+          <Route path="/post/:id" element={<BlogPost />} />
+        </>
+      )}
+
+      {/* Fallback for other roles or unauthenticated users */}
+      {userRole === "admin" && (
+        <>
+          <Route path="/" element={<BlogList />} />
+          <Route path="/post/:id" element={<BlogPost />} />
+        </>
+      )}
+
+      {!userRole && (
+        <>
+          <Route path="/" element={<BlogList />} />
+          <Route path="/post/:id" element={<BlogPost />} />
+        </>
+      )}
+
       <Route path="/blog" element={<RenderBlog />} />
 
       {/* Doctor and Admin routes */}
@@ -57,8 +85,8 @@ const BlogRouter = () => {
               userRole === "admin"
                 ? "/blog/admin"
                 : canAccessManagement
-                ? "/blog/manage"
-                : "/blog"
+                  ? "/blog/manage"
+                  : "/blog"
             }
             replace
           />

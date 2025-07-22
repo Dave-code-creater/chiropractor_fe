@@ -273,8 +273,7 @@ export const selectUserRoleDisplay = (state) => {
   const roleMap = {
     patient: "Patient",
     doctor: "Doctor", 
-    admin: "Administrator",
-    staff: "Staff"
+    admin: "Administrator"
   };
   
   return roleMap[role] || role;
