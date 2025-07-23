@@ -6,7 +6,7 @@ import {
   FAQ_QUESTION_ACCOUNT,
   FAQ_QUESTION_PRIVACY,
   FAQ_QUESTION_TECHNICAL,
-  FAQ_QUESTION_OTHER,
+
 } from "../constants/faq.js";
 
 export default function FAQ() {

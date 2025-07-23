@@ -3,7 +3,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { Bell, MessageSquare, Search } from "lucide-react";
+import { MessageSquare, Search } from "lucide-react";
 import stethoscopeLogo from "@/assets/images/stethoscope.svg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,11 +18,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { selectUserRole, selectUserId, logOut } from "../state/data/authSlice";
 import { useLogoutMutation } from "../api/services/authApi";
+import NotificationBell from "@/components/notifications/NotificationBell";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const [logout] = useLogoutMutation();
-  
+
   const { userID, role, currentUser } = useSelector((state) => ({
     userID: selectUserId(state),
     role: selectUserRole(state),
@@ -33,23 +34,23 @@ const Navbar = () => {
     try {
       // Step 1: Call backend logout and wait for confirmation
       const result = await logout(currentUser?.id).unwrap();
-      
+
       // Only proceed if backend confirmed successful logout
       if (result && (result.success === true || result.message === "Logout successful")) {
         console.log("Backend logout successful, proceeding with cleanup");
-        
+
         // Step 2: Set logout flag to prevent token refresh interference
         try {
-                const { setLoggingOut } = await import('../api');
-      setLoggingOut(true);
+          const { setLoggingOut } = await import('../api');
+          setLoggingOut(true);
         } catch (error) {
           console.warn("Could not set logging out flag:", error);
         }
-        
+
         // Step 3: Clear ALL browser storage
         localStorage.clear();
         sessionStorage.clear();
-        
+
         // Step 4: Clear all cookies
         document.cookie.split(";").forEach((c) => {
           const eqPos = c.indexOf("=");
@@ -57,7 +58,7 @@ const Navbar = () => {
           document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/`;
           document.cookie = `${name.trim()}=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/;domain=${window.location.hostname}`;
         });
-        
+
         // Step 5: Clear RTK Query cache
         try {
           const store = window.__REDUX_STORE__;
@@ -67,34 +68,34 @@ const Navbar = () => {
         } catch (error) {
           console.warn("Could not clear RTK Query cache:", error);
         }
-        
+
         // Step 6: Stop token management
         try {
-                const { stopPeriodicTokenCheck } = await import('../api');
-      stopPeriodicTokenCheck();
+          const { stopPeriodicTokenCheck } = await import('../api');
+          stopPeriodicTokenCheck();
         } catch (error) {
           console.warn("Could not stop token management:", error);
         }
-        
+
         // Step 7: Navigate to login
         window.location.href = '/login';
-        
+
       } else {
         console.error("Backend logout failed - not proceeding with local cleanup");
         alert("Logout failed. Please try again.");
       }
-      
+
     } catch (error) {
       console.error("Logout error:", error);
-      
+
       // Show user-friendly error message
       const errorMessage = error?.data?.message || error?.message || "Logout failed. Please try again.";
       alert(`Logout failed: ${errorMessage}`);
-      
+
       // Only do emergency cleanup if it's a network error or server is unreachable
       if (error?.status === undefined || error?.status >= 500) {
         console.warn("Server unreachable - performing emergency cleanup");
-        
+
         try {
           dispatch(logOut());
           localStorage.clear();
@@ -138,15 +139,14 @@ const Navbar = () => {
             </Link>
           </Button>
 
-          <Button variant="ghost" size="icon" className="relative" asChild>
-            <Link to="/notifications">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary text-[10px] font-medium text-primary-foreground flex items-center justify-center">
-                5
-              </span>
-              <span className="sr-only">Notifications</span>
-            </Link>
-          </Button>
+          {/* Enhanced Notification Bell */}
+          <NotificationBell
+            userId={userID}
+            userRole={role}
+            variant="ghost"
+            size="icon"
+            className="relative"
+          />
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

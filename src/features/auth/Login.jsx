@@ -12,6 +12,7 @@ import {
 } from "../../state/forms/loginFormSlice";
 import { useAuthReady } from "../../hooks/useAuthReady";
 import { toast } from "sonner";
+import { enhancedToast } from "@/components/notifications/SimpleToast";
 import { selectUserId, selectUserRole } from "../../state/data/authSlice";
 
 // Role-based redirect paths
@@ -72,7 +73,7 @@ export default function Login() {
     dispatch(clearPasswordError());
 
     if (!email || !password) {
-      toast.error("Please enter both email and password");
+      enhancedToast.validation.required(!email ? "Email address" : "Password");
       return;
     }
 
@@ -82,15 +83,76 @@ export default function Login() {
       // Validate response
       if (!response?.user?.id || !response?.user?.role) {
         console.error('Invalid login response:', response);
-        toast.error('Login failed: Invalid user data');
+        enhancedToast.error(
+          "Login system error",
+          {
+            description: "There was a problem with the authentication system. Please try again.",
+            action: () => handleLogin(event),
+            actionLabel: "Retry Login"
+          }
+        );
         return;
       }
+
+      // Show success message
+      enhancedToast.auth.success(`Successfully signed in as ${response.user.role}`);
 
       // Navigate to the appropriate dashboard
       navigate(`/dashboard/${response.user.role.toLowerCase()}/${response.user.id}`);
     } catch (error) {
       console.error('Login error:', error);
-      toast.error(error?.data?.message || 'Login failed');
+
+      // Handle different types of authentication errors
+      if (error?.status === 401 || error?.data?.message?.toLowerCase().includes('invalid')) {
+        enhancedToast.auth.invalid("Please check your email and password and try again");
+      } else if (error?.status === 403) {
+        enhancedToast.error(
+          "Account access restricted",
+          {
+            description: "Your account may be temporarily suspended or require verification.",
+            action: {
+              label: "Contact Support",
+              onClick: () => navigate('/contact')
+            }
+          }
+        );
+      } else if (error?.status === 429) {
+        enhancedToast.error(
+          "Too many login attempts",
+          {
+            description: "Please wait a few minutes before trying again to protect your account.",
+            showSupport: false,
+            duration: 8000
+          }
+        );
+      } else if (error?.status >= 500) {
+        enhancedToast.error(
+          "Server temporarily unavailable",
+          {
+            description: "Our servers are experiencing issues. Please try again in a few moments.",
+            action: () => handleLogin(event),
+            actionLabel: "Retry"
+          }
+        );
+      } else if (!navigator.onLine) {
+        enhancedToast.error(
+          "No internet connection",
+          {
+            description: "Please check your internet connection and try again.",
+            showSupport: false,
+            duration: 5000
+          }
+        );
+      } else {
+        enhancedToast.error(
+          "Login failed",
+          {
+            description: error?.data?.message || "An unexpected error occurred. Please try again.",
+            action: () => handleLogin(event),
+            actionLabel: "Try Again"
+          }
+        );
+      }
     }
   };
 

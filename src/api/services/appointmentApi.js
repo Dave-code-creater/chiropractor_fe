@@ -14,7 +14,7 @@ export const appointmentApi = createApi({
     getDoctors: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.is_available) queryParams.append("is_available", params.is_available.toString());
         if (params.specialization) queryParams.append("specialization", params.specialization);
 
@@ -62,7 +62,7 @@ export const appointmentApi = createApi({
     getUserAppointments: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.status) queryParams.append("status", params.status);
         if (params.status_not) queryParams.append("status_not", params.status_not);
         if (params.date_from) queryParams.append("date_from", params.date_from);
@@ -79,31 +79,13 @@ export const appointmentApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.SHORT,
     }),
 
-    // Get patient's appointments by patient ID
-    getPatientAppointments: builder.query({
-      query: ({ patient_id, ...params }) => {
-        const queryParams = new URLSearchParams();
-        
-        if (params.status) queryParams.append("status", params.status);
-        if (params.date_from) queryParams.append("date_from", params.date_from);
-        if (params.date_to) queryParams.append("date_to", params.date_to);
-        if (params.page) queryParams.append("page", params.page.toString());
-        if (params.limit) queryParams.append("limit", params.limit.toString());
 
-        return {
-          url: `appointments/patient/${patient_id}?${queryParams}`,
-          method: "GET",
-        };
-      },
-      providesTags: ["Appointments"],
-      keepUnusedDataFor: CACHE_TIMES.SHORT,
-    }),
 
     // Get all appointments (role-filtered)
     getAppointments: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.status) queryParams.append("status", params.status);
         if (params.status_not) queryParams.append("status_not", params.status_not);
         if (params.doctor_id) queryParams.append("doctor_id", params.doctor_id);
@@ -163,25 +145,7 @@ export const appointmentApi = createApi({
       },
     }),
 
-    // Reschedule appointment (alias for update)
-    rescheduleAppointment: builder.mutation({
-      query: ({ id, ...data }) => ({
-        url: `appointments/${id}`,
-        method: "PUT",
-        body: data,
-      }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: "Appointments", id },
-        "Availability",
-      ],
-      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-        } catch (error) {
-          console.error("Failed to reschedule appointment:", error);
-        }
-      },
-    }),
+
 
   }),
 });
@@ -191,12 +155,10 @@ export const {
   useGetDoctorAvailabilityQuery,
   useCreateAppointmentMutation,
   useGetUserAppointmentsQuery,
-  useGetPatientAppointmentsQuery,
   useGetAppointmentsQuery,
   useGetAppointmentByIdQuery,
   useUpdateAppointmentMutation,
   useDeleteAppointmentMutation,
-  useRescheduleAppointmentMutation,
 } = appointmentApi;
 
 // Legacy compatibility exports

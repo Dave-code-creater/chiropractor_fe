@@ -17,7 +17,7 @@ export const authApi = createApi({
         try {
           const { data } = await queryFulfilled;
           dispatch(setCredentials(data));
-          
+
           // Update user profile if additional data is available
           if (data.user) {
             dispatch(updateUserProfile({
@@ -51,7 +51,7 @@ export const authApi = createApi({
           const { data } = await queryFulfilled;
           if (data.user && data.token) {
             dispatch(setCredentials(data));
-            
+
             // Update user profile if additional data is available
             if (data.user) {
               dispatch(updateUserProfile({
@@ -153,14 +153,6 @@ export const authApi = createApi({
       }),
     }),
 
-    verifyEmail: builder.mutation({
-      query: (token) => ({
-        url: "/auth/verify-email",
-        method: "POST",
-        body: { token },
-      }),
-    }),
-
     verifyResetToken: builder.query({
       query: (token) => ({
         url: `/auth/verify-reset-token?token=${encodeURIComponent(token)}`,
@@ -178,6 +170,5 @@ export const {
   useGetCurrentUserQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation,
-  useVerifyEmailMutation,
   useVerifyResetTokenQuery,
 } = authApi;

@@ -11,7 +11,7 @@ export const reportApi = createApi({
   refetchOnReconnect: true,
   endpoints: (builder) => ({
     // ===== INCIDENT-BASED ENDPOINTS (NEW SYSTEM) =====
-    
+
     // 1.1 Create Incident
     createIncident: builder.mutation({
       query: (data) => ({
@@ -26,7 +26,7 @@ export const reportApi = createApi({
     getIncidents: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.status) queryParams.append("status", params.status);
         if (params.incident_type) queryParams.append("incident_type", params.incident_type);
         if (params.page) queryParams.append("page", params.page.toString());
@@ -263,15 +263,8 @@ export const {
   useCreateIncidentMutation,
   useGetIncidentsQuery,
   useGetIncidentByIdQuery,
-  useUpdateIncidentMutation,
-  useDeleteIncidentMutation,
   useSaveIncidentFormMutation,
-  useUpdateIncidentFormMutation,
-  useAddIncidentNoteMutation,
-  useGetCompleteIncidentFormsQuery,
-  useSubmitIncidentFormsMutation,
-  useGetIncidentFormQuery,
-  
+
   // Simple form submission hooks
   useSubmitPatientInfoFormMutation,
   useSubmitHealthInsuranceFormMutation,

@@ -1,6 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import { store, persistor } from "./store/store";
@@ -36,12 +36,12 @@ if (!root) {
 // Render the app
 root.render(
   <StrictMode>
-    <BrowserRouter>
+    <HashRouter>
       <Provider store={store}>
         <PersistGate loading={<LoadingComponent />} persistor={persistor}>
           <App />
         </PersistGate>
       </Provider>
-    </BrowserRouter>
+    </HashRouter>
   </StrictMode>
 );

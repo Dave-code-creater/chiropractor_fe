@@ -1,14 +1,31 @@
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
-import path from 'path' 
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'), 
+      '@': path.resolve(__dirname, './src'),
     },
+  },
+  build: {
+    outDir: 'dist',
+    assetsDir: 'assets',
+    // Optimize for Electron
+    target: 'chrome100',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          redux: ['react-redux', '@reduxjs/toolkit'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@headlessui/react'],
+        }
+      }
+    }
   },
   optimizeDeps: {
     include: [

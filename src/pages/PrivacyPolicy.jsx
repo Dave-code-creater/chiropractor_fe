@@ -353,22 +353,22 @@ export default function PrivacyPolicy() {
       content: `For questions about this Privacy Policy or to exercise your privacy rights, contact us:`,
       contact: {
         privacy: {
-          title: "Privacy Officer",
-          email: "privacy@chirocare.com",
-          phone: "1-800-CHIRO-PRIVACY",
+          title: "Privacy Consultant",
+          email: "tatandat110105@gmail.com",
+          phone: "(647) 778-7816",
         },
         security: {
           title: "Security Team",
-          email: "security@chirocare.com",
-          phone: "1-800-CHIRO-SECURE",
+          email: "tatandat110105@gmail.com",
+          phone: "(647) 778-7816",
         },
         general: {
           title: "General Inquiries",
-          email: "support@chirocare.com",
-          phone: "1-800-CHIRO-CARE",
+          email: "drdieuphanchiropractor@gmail.com",
+          phone: "(303) 777-0125",
         },
         address:
-          "ChiroCare Privacy Department, 123 Healthcare Blvd, Medical City, MC 12345",
+          "1385 West Alameda Ave, Denver, CO 80223, United States",
         hours: "Monday - Friday, 9:00 AM - 5:00 PM EST",
       },
     },

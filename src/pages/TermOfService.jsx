@@ -173,10 +173,10 @@ export default function TermOfService() {
       icon: <Users className="w-5 h-5" />,
       content: `For questions about these Terms of Service, please contact us:`,
       contact: {
-        email: "legal@chirocare.com",
-        phone: "1-800-CHIRO-CARE",
+        email: "drdieuphanchiropractor@gmail.com",
+        phone: "(303) 777-0125",
         address:
-          "ChiroCare Legal Department, 123 Healthcare Blvd, Medical City, MC 12345",
+          "1385 West Alameda Ave, Denver, CO 80223, United States",
         hours: "Monday - Friday, 9:00 AM - 5:00 PM EST",
       },
     },

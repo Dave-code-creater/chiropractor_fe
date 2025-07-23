@@ -1,4 +1,5 @@
 import React from "react";
+import { openExternalLink } from '../../../utils/electronUtils';
 
 export default function Review() {
   return (
@@ -276,10 +277,15 @@ export default function Review() {
                 </div>
                 <div className="col-span-12 md:col-span-4 max-lg:mt-8 md:pl-8">
                   <div className="flex items-center flex-col justify-center w-full h-full ">
-                    <button className="rounded-full px-6 py-4 bg-indigo-600 font-semibold text-lg text-white whitespace-nowrap mb-6 w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400">
+                    <button
+                      onClick={() => openExternalLink('https://www.google.com/maps/place/Chiropractic+%26+Nutritional+Health+Center/@39.711408,-105.0059476,17z/data=!4m17!1m8!3m7!1s0x876c7f146187bcbf:0xe0cae63b74e9dae4!2s1385+W+Alameda+Ave,+Denver,+CO+80223,+USA!3b1!8m2!3d39.711408!4d-105.0059476!16s%2Fg%2F11bw4b0nlp!3m7!1s0x876c7f14618e35e1:0xafbefc1a0ed30c77!8m2!3d39.7114805!4d-105.0059604!9m1!1b1!16s%2Fg%2F1q662f9mj?entry=ttu&g_ep=EgoyMDI1MDcyMC4wIKXMDSoASAFQAw%3D%3D')}
+                      className="rounded-full px-6 py-4 bg-indigo-600 font-semibold text-lg text-white whitespace-nowrap mb-6 w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-700 hover:shadow-indigo-400"
+                    >
                       Write A Review
                     </button>
-                    <button className="rounded-full px-6 py-4 bg-white font-semibold text-lg text-indigo-600 whitespace-nowrap w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-100 hover:shadow-indigo-200">
+                    <button
+                      onClick={() => openExternalLink('https://www.google.com/maps/place/Chiropractic+%26+Nutritional+Health+Center/@39.711408,-105.0059476,17z/data=!4m17!1m8!3m7!1s0x876c7f146187bcbf:0xe0cae63b74e9dae4!2s1385+W+Alameda+Ave,+Denver,+CO+80223,+USA!3b1!8m2!3d39.711408!4d-105.0059476!16s%2Fg%2F11bw4b0nlp!3m7!1s0x876c7f14618e35e1:0xafbefc1a0ed30c77!8m2!3d39.7114805!4d-105.0059604!9m1!1b1!16s%2Fg%2F1q662f9mj?entry=ttu&g_ep=EgoyMDI1MDcyMC4wIKXMDSoASAFQAw%3D%3D')}
+                      className="rounded-full px-6 py-4 bg-white font-semibold text-lg text-indigo-600 whitespace-nowrap w-full text-center shadow-sm shadow-transparent transition-all duration-500 hover:bg-indigo-100 hover:shadow-indigo-200">
                       See All Reviews
                     </button>
                   </div>

@@ -124,37 +124,7 @@ export const notesApi = createApi({
       providesTags: ["NoteTemplate"],
     }),
 
-    // Get doctor's patients
-    getDoctorPatients: builder.query({
-      query: () => `/incidents/doctor/patients`,
-      providesTags: ["DoctorPatients"],
-    }),
 
-    // Get patient incidents (initial reports)
-    getPatientIncidents: builder.query({
-      query: (patientId) => `/incidents?patient_id=${patientId}`,
-      providesTags: (result, error, patientId) => [
-        { type: "PatientIncidents", id: patientId },
-      ],
-    }),
-
-    // Get single incident details
-    getIncidentDetails: builder.query({
-      query: (incidentId) => `/incidents/${incidentId}`,
-      providesTags: (result, error, incidentId) => [
-        { type: "IncidentDetails", id: incidentId },
-      ],
-    }),
-
-    // Treatment Plan endpoints (Incident-based)
-    createTreatmentPlan: builder.mutation({
-      query: ({ incidentId, ...treatmentData }) => ({
-        url: `/incidents/${incidentId}/treatment-plan`,
-        method: 'POST',
-        body: treatmentData,
-      }),
-      invalidatesTags: ['IncidentDetails', 'TreatmentPlan'],
-    }),
 
     getTreatmentPlan: builder.query({
       query: (incidentId) => `/incidents/${incidentId}/treatment-plan`,
@@ -167,6 +137,43 @@ export const notesApi = createApi({
       query: ({ incidentId, ...treatmentData }) => ({
         url: `/incidents/${incidentId}/treatment-plan`,
         method: 'PUT',
+        body: treatmentData,
+      }),
+      invalidatesTags: (result, error, { incidentId }) => [
+        { type: 'TreatmentPlan', id: incidentId },
+        'IncidentDetails',
+      ],
+    }),
+
+    // Get patient incidents
+    getPatientIncidents: builder.query({
+      query: (patientId) => `/incidents/patient/${patientId}`,
+      providesTags: (result, error, patientId) => [
+        { type: 'PatientIncidents', id: patientId },
+      ],
+    }),
+
+    // Get incident details
+    getIncidentDetails: builder.query({
+      query: (incidentId) => `/incidents/${incidentId}`,
+      providesTags: (result, error, incidentId) => [
+        { type: 'IncidentDetails', id: incidentId },
+      ],
+    }),
+
+    // Get doctor patients
+    getDoctorPatients: builder.query({
+      query: (doctorId) => `/doctors/${doctorId}/patients`,
+      providesTags: (result, error, doctorId) => [
+        { type: 'DoctorPatients', id: doctorId },
+      ],
+    }),
+
+    // Create treatment plan
+    createTreatmentPlan: builder.mutation({
+      query: ({ incidentId, ...treatmentData }) => ({
+        url: `/incidents/${incidentId}/treatment-plan`,
+        method: 'POST',
         body: treatmentData,
       }),
       invalidatesTags: (result, error, { incidentId }) => [
@@ -189,10 +196,10 @@ export const {
   useGetSOAPNotesQuery,
   useSearchClinicalNotesQuery,
   useGetNoteTemplatesQuery,
-  useGetDoctorPatientsQuery,
+  useGetTreatmentPlanQuery,
+  useUpdateTreatmentPlanMutation,
   useGetPatientIncidentsQuery,
   useGetIncidentDetailsQuery,
-  useGetTreatmentPlanQuery,
+  useGetDoctorPatientsQuery,
   useCreateTreatmentPlanMutation,
-  useUpdateTreatmentPlanMutation,
 } = notesApi; 

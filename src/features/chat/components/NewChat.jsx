@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+import { enhancedToast } from "@/components/notifications/SimpleToast";
 import {
   useGetAvailableUsersQuery,
   useGetConversationsQuery,
@@ -68,23 +69,23 @@ import {
 // Helper functions
 const extractDataFromResponse = (data) => {
   if (!data) return [];
-  
+
   if (Array.isArray(data)) return data;
-  
+
   // Handle different response structures from API
   if (data.data) {
     if (Array.isArray(data.data)) return data.data;
     if (data.data.conversations) return data.data.conversations;
     if (data.data.messages) return data.data.messages;
     if (data.data.users) return data.data.users;
-    
+
     // Handle role-filtered responses from chat/admin-doctors endpoint
     if (data.data.doctors && Array.isArray(data.data.doctors)) return data.data.doctors;
 
     if (data.data.admin && Array.isArray(data.data.admin)) return data.data.admin;
-    
+
     // Handle combined response when role=all
-          if (data.data.doctors || data.data.admin) {
+    if (data.data.doctors || data.data.admin) {
       const combined = [];
       if (data.data.doctors) combined.push(...data.data.doctors);
 
@@ -92,37 +93,37 @@ const extractDataFromResponse = (data) => {
       return combined;
     }
   }
-  
+
   if (data.conversations) return data.conversations;
   if (data.messages) return data.messages;
   if (data.users) return data.users;
-  
+
   // Direct role-based arrays
   if (data.doctors && Array.isArray(data.doctors)) return data.doctors;
-  
+
   if (data.admin && Array.isArray(data.admin)) return data.admin;
-  
+
   // Combined response when role=all (top level)
-      if (data.doctors || data.admin) {
+  if (data.doctors || data.admin) {
     const combined = [];
     if (data.doctors) combined.push(...data.doctors);
-      
+
     if (data.admin) combined.push(...data.admin);
     return combined;
   }
-  
+
   if (data.metadata) {
     if (Array.isArray(data.metadata)) return data.metadata;
     if (data.metadata.conversations) return data.metadata.conversations;
     if (data.metadata.messages) return data.metadata.messages;
   }
-  
+
   return [];
 };
 
 const formatMessageTime = (timestamp) => {
   if (!timestamp) return "";
-  
+
   const messageDate = new Date(timestamp);
   const now = new Date();
   const diffMs = now - messageDate;
@@ -134,14 +135,14 @@ const formatMessageTime = (timestamp) => {
   if (diffMins < 60) return `${diffMins}m ago`;
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
-  
+
   return messageDate.toLocaleDateString();
 };
 
 const getRoleDisplayName = (role) => {
   const roleMap = {
     'patient': 'Patient',
-    'doctor': 'Doctor', 
+    'doctor': 'Doctor',
 
     'admin': 'Administrator'
   };
@@ -185,14 +186,14 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   }, [searchTerm]);
 
   // Get available users based on role restrictions
-  const { 
-    data: availableUsersData, 
-    isLoading: isLoadingUsers, 
-    error: usersError 
-  } = useGetAvailableUsersQuery({ 
+  const {
+    data: availableUsersData,
+    isLoading: isLoadingUsers,
+    error: usersError
+  } = useGetAvailableUsersQuery({
     search: debouncedSearchTerm,
     role: roleFilter === 'all' ? undefined : roleFilter, // Don't send 'all' to API
-    limit: 50 
+    limit: 50
   }, {
     skip: !isOpen, // Only fetch when modal is open
     refetchOnMountOrArgChange: false, // Prevent excessive refetching
@@ -202,7 +203,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
 
   const availableUsers = useMemo(() => {
     const users = extractDataFromResponse(availableUsersData);
-    
+
     // Filter users based on current user's role restrictions
     if (currentUserRole === 'patient') {
       // Patients can only see doctors and admins
@@ -211,7 +212,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
         return ['doctor', 'admin'].includes(userRole?.toLowerCase());
       });
     }
-    
+
     return users;
   }, [availableUsersData, currentUserRole]);
 
@@ -236,29 +237,35 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
 
     // Validate form data
     const validation = validateConversationData(formData);
-    
+
     if (!validation.isValid) {
-      toast.error(validation.errorMessage);
+      enhancedToast.validation.invalid("Conversation details", validation.errorMessage);
       return;
     }
 
     // Find selected user to validate role restrictions
     const selectedUser = availableUsers.find(user => user.id.toString() === formData.target_user_id.toString());
-    
+
     if (!selectedUser) {
-      toast.error("Please select a valid user");
+      enhancedToast.error("Please select a recipient", "Choose a healthcare professional to start the conversation");
       return;
     }
 
     // Get the target user's role (handle both 'role' and 'type' properties)
     const targetUserRole = selectedUser.role || selectedUser.type;
-    
+
     // Client-side role validation (redundant with server-side but provides better UX)
     const canStart = canStartConversation(currentUserRole, targetUserRole);
-    
+
     if (!canStart) {
       const errorMessage = getRoleRestrictionError(currentUserRole, targetUserRole);
-      toast.error(errorMessage);
+      enhancedToast.error(
+        "Cannot start conversation",
+        {
+          description: errorMessage,
+          showSupport: false
+        }
+      );
       return;
     }
 
@@ -277,7 +284,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   const roleFilterOptions = [
     { value: "all", label: "All Healthcare Professionals", icon: Users },
     { value: "doctor", label: "Doctors Only", icon: Stethoscope },
-    
+
     { value: "admin", label: "Administrators Only", icon: Shield },
   ];
 
@@ -295,7 +302,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          
+
           {/* Role Info Alert */}
           <Alert>
             <AlertCircle className="h-4 w-4" />
@@ -307,8 +314,8 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
           {/* Role Filter */}
           <div className="space-y-2">
             <label className="text-sm font-medium">Filter by Role</label>
-            <Select 
-              value={roleFilter} 
+            <Select
+              value={roleFilter}
               onValueChange={(value) => {
                 try {
                   setRoleFilter(value);
@@ -383,8 +390,8 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
                 <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
                 <p>No users found</p>
                 <p className="text-xs">
-                  {searchTerm ? "Try adjusting your search terms" : 
-                   roleFilter !== "all" ? `No ${roleFilter}s available` : "No healthcare professionals available"}
+                  {searchTerm ? "Try adjusting your search terms" :
+                    roleFilter !== "all" ? `No ${roleFilter}s available` : "No healthcare professionals available"}
                 </p>
               </div>
             ) : (
@@ -398,11 +405,10 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
                       e.stopPropagation();
                       updateFormData({ target_user_id: user.id.toString() });
                     }}
-                    className={`w-full p-3 text-left hover:bg-muted/50 border-b last:border-b-0 transition-colors ${
-                      formData.target_user_id === user.id.toString()
-                        ? "bg-primary/10 border-primary/20"
-                        : ""
-                    }`}
+                    className={`w-full p-3 text-left hover:bg-muted/50 border-b last:border-b-0 transition-colors ${formData.target_user_id === user.id.toString()
+                      ? "bg-primary/10 border-primary/20"
+                      : ""
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <Avatar className="h-8 w-8">
@@ -415,19 +421,18 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
                         <div className="font-medium text-sm truncate">
                           {user.full_name || user.username}
                         </div>
-                                                 <div className="text-xs text-muted-foreground truncate flex items-center gap-1">
-                           {getRoleIconComponent(user.role || user.type)}
-                           {getRoleDisplayName(user.role || user.type)}
-                           {user.email && ` • ${user.email}`}
+                        <div className="text-xs text-muted-foreground truncate flex items-center gap-1">
+                          {getRoleIconComponent(user.role || user.type)}
+                          {getRoleDisplayName(user.role || user.type)}
+                          {user.email && ` • ${user.email}`}
                         </div>
                       </div>
                       <div className="flex items-center gap-1">
                         {formData.target_user_id === user.id.toString() && (
                           <Check className="h-4 w-4 text-primary" />
                         )}
-                        <div className={`h-2 w-2 rounded-full ${
-                          user.status === 'active' ? "bg-green-500" : "bg-gray-400"
-                        }`} title={user.status === 'active' ? "Active" : "Inactive"} />
+                        <div className={`h-2 w-2 rounded-full ${user.status === 'active' ? "bg-green-500" : "bg-gray-400"
+                          }`} title={user.status === 'active' ? "Active" : "Inactive"} />
                       </div>
                     </div>
                   </button>
@@ -437,26 +442,26 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
           </div>
 
           {/* Selected User Display */}
-                     {selectedUser && (
-             <div className="p-3 bg-muted/50 rounded-lg">
-               <div className="flex items-center gap-2 text-sm">
-                 {getRoleIconComponent(selectedUser.role || selectedUser.type)}
-                 <span className="font-medium">Selected:</span>
-                 <span>{selectedUser.full_name || selectedUser.username}</span>
-                 <Badge variant="secondary" className="ml-auto">
-                   {getRoleDisplayName(selectedUser.role || selectedUser.type)}
-                 </Badge>
-               </div>
-             </div>
-           )}
+          {selectedUser && (
+            <div className="p-3 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-2 text-sm">
+                {getRoleIconComponent(selectedUser.role || selectedUser.type)}
+                <span className="font-medium">Selected:</span>
+                <span>{selectedUser.full_name || selectedUser.username}</span>
+                <Badge variant="secondary" className="ml-auto">
+                  {getRoleDisplayName(selectedUser.role || selectedUser.type)}
+                </Badge>
+              </div>
+            </div>
+          )}
 
           {/* Conversation Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Conversation Type */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Type</label>
-              <Select 
-                value={formData.conversation_type} 
+              <Select
+                value={formData.conversation_type}
                 onValueChange={(value) => updateFormData({ conversation_type: value })}
               >
                 <SelectTrigger>
@@ -475,8 +480,8 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             {/* Priority */}
             <div className="space-y-2">
               <label className="text-sm font-medium">Priority</label>
-              <Select 
-                value={formData.priority} 
+              <Select
+                value={formData.priority}
                 onValueChange={(value) => updateFormData({ priority: value })}
               >
                 <SelectTrigger>
@@ -527,8 +532,8 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             <Button variant="outline" onClick={handleClose} className="flex-1">
               Cancel
             </Button>
-            <Button 
-              onClick={handleSubmit} 
+            <Button
+              onClick={handleSubmit}
               disabled={isCreating || !formData.target_user_id || !formData.subject}
               className="flex-1"
             >
@@ -555,20 +560,20 @@ export default function NewChat() {
   const userRole = user?.role || 'patient';
 
   // API hooks
-  const { 
-    data: conversationsData, 
-    isLoading: conversationsLoading, 
-    error: conversationsError, 
-    refetch: refetchConversations 
-  } = useGetConversationsQuery({ 
+  const {
+    data: conversationsData,
+    isLoading: conversationsLoading,
+    error: conversationsError,
+    refetch: refetchConversations
+  } = useGetConversationsQuery({
     limit: 50,
     status: 'active'
   });
 
-  const { 
-    data: messagesData, 
-    isLoading: messagesLoading, 
-    refetch: refetchMessages 
+  const {
+    data: messagesData,
+    isLoading: messagesLoading,
+    refetch: refetchMessages
   } = useGetMessagesQuery(
     selectedConversation?.conversation_id ? { conversation_id: selectedConversation.conversation_id } : undefined,
     { skip: !selectedConversation?.conversation_id }
@@ -584,14 +589,14 @@ export default function NewChat() {
   const conversations = useMemo(() => extractDataFromResponse(conversationsData), [conversationsData]);
   const messages = useMemo(() => {
     let messageList = [];
-    
+
     // Handle the specific format from /chat/conversations/{id}/messages
     if (messagesData?.data?.messages) {
       messageList = [...messagesData.data.messages];
     } else {
       messageList = [...extractDataFromResponse(messagesData)];
     }
-    
+
     // Sort messages by sent_at timestamp - oldest first (proper chat order)
     return messageList.sort((a, b) => {
       const timeA = new Date(a.sent_at || a.created_at || a.timestamp);
@@ -637,16 +642,36 @@ export default function NewChat() {
 
   const handleCreateConversation = async (formData) => {
     if (!isBackendAvailable) {
-      toast.error("Chat service is currently unavailable.");
+      enhancedToast.error(
+        "Chat service unavailable",
+        {
+          description: "Unable to connect to chat servers. Please try again later.",
+          action: () => handleCreateConversation(formData),
+          actionLabel: "Retry"
+        }
+      );
       return;
     }
 
     try {
       const result = await createConversation(formData).unwrap();
-      
-      toast.success("Conversation created successfully!");
+
+      enhancedToast.success(
+        "Conversation started successfully",
+        {
+          description: "You can now send messages to your healthcare provider",
+          action: {
+            label: "Send Message",
+            onClick: () => {
+              // Focus message input or scroll to chat
+              const messageInput = document.querySelector('[data-message-input]');
+              if (messageInput) messageInput.focus();
+            }
+          }
+        }
+      );
       setShowNewConversationModal(false);
-      
+
       // Handle different response structures from backend
       let newConversation = null;
       if (result?.data) {
@@ -654,53 +679,106 @@ export default function NewChat() {
       } else if (result) {
         newConversation = result;
       }
-      
+
       // Set as selected conversation if we have valid data
       if (newConversation?.id) {
         setSelectedConversation(newConversation);
       }
-      
+
       // Refresh conversations list
       await refetchConversations();
     } catch (error) {
       // Handle specific role-based errors
       if (error?.data?.error_code === '4031') {
-        toast.error(error.data.message || "You are not authorized to start conversations with this user type");
+        enhancedToast.error(
+          "Access denied",
+          {
+            description: error.data.message || "You cannot start conversations with this user type",
+            showSupport: false
+          }
+        );
       } else if (error?.data?.error_code === '4032') {
-        toast.error(error.data.message || "Invalid conversation target");
+        enhancedToast.error(
+          "Invalid recipient",
+          {
+            description: error.data.message || "Please select a valid healthcare professional",
+            showSupport: false
+          }
+        );
       } else if (error?.data?.error_code === '4044') {
-        toast.error(error.data.message || "Target user not found");
+        enhancedToast.error(
+          "User not found",
+          {
+            description: "The selected healthcare professional is no longer available",
+            showSupport: false
+          }
+        );
       } else {
-        toast.error("Failed to create conversation. Please try again.");
+        enhancedToast.error(
+          "Failed to create conversation",
+          {
+            description: "There was a problem starting your conversation. Please try again.",
+            action: () => handleCreateConversation(formData),
+            actionLabel: "Try Again"
+          }
+        );
       }
     }
   };
 
   const handleDeleteConversation = async (conversation_id) => {
-    if (!confirm("Are you sure you want to delete this conversation?")) return;
+    // Show confirmation with enhanced dialog
+    if (!confirm("Are you sure you want to delete this conversation? This action cannot be undone.")) return;
 
     try {
       await deleteConversation(conversation_id).unwrap();
-      toast.success("Conversation deleted successfully!");
-      
+      enhancedToast.success(
+        "Conversation deleted",
+        {
+          description: "The conversation and all messages have been removed",
+          duration: 3000
+        }
+      );
+
       if (selectedConversation?.id === conversation_id) {
         setSelectedConversation(null);
       }
       refetchConversations();
     } catch (error) {
-      toast.error("Failed to delete conversation.");
+      enhancedToast.error(
+        "Failed to delete conversation",
+        {
+          description: "There was a problem removing the conversation. Please try again.",
+          action: () => handleDeleteConversation(conversation_id),
+          actionLabel: "Try Again"
+        }
+      );
     }
   };
 
   const handleUpdateStatus = async (conversation_id, status) => {
     if (!canUpdateConversationStatus(userRole)) {
-      toast.error("You are not authorized to update conversation status");
+      enhancedToast.error(
+        "Permission denied",
+        {
+          description: "You don't have permission to update conversation status",
+          showSupport: false
+        }
+      );
       return;
     }
 
     try {
       await updateConversationStatus({ conversation_id, status }).unwrap();
-      toast.success(`Conversation ${status === 'closed' ? 'closed' : 'updated'} successfully!`);
+      enhancedToast.success(
+        `Conversation ${status === 'closed' ? 'closed' : 'updated'}`,
+        {
+          description: status === 'closed'
+            ? "The conversation has been archived"
+            : "Conversation status has been updated",
+          duration: 3000
+        }
+      );
       refetchConversations();
     } catch (error) {
       toast.error("Failed to update conversation status.");
@@ -711,12 +789,12 @@ export default function NewChat() {
   const filteredConversations = useMemo(() => {
     // First filter by status - only show active conversations
     const activeConversations = conversations.filter(conv => conv.status === 'active');
-    
+
     // Then filter by search term if provided
     if (!searchTerm.trim()) return activeConversations;
-    
+
     const searchLower = searchTerm.toLowerCase();
-    return activeConversations.filter(conv => 
+    return activeConversations.filter(conv =>
       conv.subject?.toLowerCase().includes(searchLower) ||
       conv.patient_name?.toLowerCase().includes(searchLower) ||
       conv.doctor_name?.toLowerCase().includes(searchLower) ||
@@ -734,7 +812,7 @@ export default function NewChat() {
 
     // Determine the other participant (not the current user)
     const isCurrentUserPatient = userRole === 'patient';
-    
+
     if (isCurrentUserPatient) {
       // Current user is patient, show doctor info
       let doctorName = conversation.doctor_name || "Healthcare Provider";
@@ -767,7 +845,7 @@ export default function NewChat() {
 
       return {
         name: patientName,
-        role: "patient", 
+        role: "patient",
         avatar: null
       };
     }
@@ -777,14 +855,13 @@ export default function NewChat() {
     const participant = getParticipantInfo(conversation);
     const unreadCount = conversation.unread_count || 0;
 
-        return (
+    return (
       <div
         onClick={() => setSelectedConversation(conversation)}
-        className={`mx-3 mb-3 p-6 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${
-          selectedConversation?.id === conversation.id 
-            ? "bg-primary/10 border border-primary/20 shadow-md" 
-            : "bg-background/60 hover:bg-muted/40 border border-transparent"
-        }`}
+        className={`mx-3 mb-3 p-6 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-md ${selectedConversation?.id === conversation.id
+          ? "bg-primary/10 border border-primary/20 shadow-md"
+          : "bg-background/60 hover:bg-muted/40 border border-transparent"
+          }`}
       >
         <div className="flex items-start gap-5">
           <div className="relative">
@@ -798,7 +875,7 @@ export default function NewChat() {
               {getRoleIconComponent(participant.role)}
             </div>
           </div>
-          
+
           <div className="flex-1 min-w-0 space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -813,30 +890,30 @@ export default function NewChat() {
                 </Badge>
               )}
             </div>
-            
+
             <p className="text-base font-medium text-foreground truncate">
               {conversation.subject}
             </p>
-            
+
             {conversation.last_message && (
               <p className="text-sm text-muted-foreground truncate leading-relaxed">
                 {conversation.last_message}
               </p>
             )}
-            
+
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground flex items-center gap-2">
                 <Clock className="h-4 w-4" />
                 {formatMessageTime(conversation.last_message_at || conversation.updated_at)}
               </span>
-              
+
               <div className="flex items-center gap-2">
                 {unreadCount > 0 && (
                   <Badge variant="destructive" className="text-xs h-5 w-5 rounded-full p-0 flex items-center justify-center shadow-sm">
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </Badge>
                 )}
-                
+
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="sm" className="h-6 w-6 p-0 hover:bg-muted/60">
@@ -893,7 +970,7 @@ export default function NewChat() {
                   {!isBackendAvailable && <WifiOff className="h-5 w-5 text-muted-foreground" />}
                 </div>
               </div>
-              
+
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                 <Input
@@ -930,9 +1007,9 @@ export default function NewChat() {
                   </div>
                   <p className="text-sm font-medium text-foreground">No conversations found</p>
                   <p className="text-xs text-muted-foreground mt-1">Start a new conversation to get started</p>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     className="mt-4"
                     onClick={() => setShowNewConversationModal(true)}
                     disabled={!isBackendAvailable}
@@ -969,7 +1046,7 @@ export default function NewChat() {
                     Choose a conversation from the sidebar to start chatting, or create a new conversation to connect with your healthcare team.
                   </p>
                   <div className="space-y-3">
-                    <Button 
+                    <Button
                       onClick={() => setShowNewConversationModal(true)}
                       disabled={!isBackendAvailable}
                       className="h-12 px-6 text-sm font-medium shadow-sm"
@@ -1011,7 +1088,7 @@ export default function NewChat() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center gap-4">
                       <Badge variant="outline" className="px-4 py-2 text-sm">
                         {formatConversationType(selectedConversation.conversation_type)}
@@ -1058,17 +1135,15 @@ export default function NewChat() {
                           >
                             <div className={`max-w-md lg:max-w-lg ${isCurrentUser ? "order-2" : "order-1"}`}>
                               <div
-                                className={`px-6 py-4 rounded-2xl shadow-sm ${
-                                  isCurrentUser
-                                    ? "bg-primary text-primary-foreground"
-                                    : "bg-background border"
-                                }`}
+                                className={`px-6 py-4 rounded-2xl shadow-sm ${isCurrentUser
+                                  ? "bg-primary text-primary-foreground"
+                                  : "bg-background border"
+                                  }`}
                               >
                                 <p className="text-base leading-relaxed">{message.message_content || message.content}</p>
                               </div>
-                              <div className={`flex items-center gap-3 mt-3 text-sm text-muted-foreground ${
-                                isCurrentUser ? "justify-end" : "justify-start"
-                              }`}>
+                              <div className={`flex items-center gap-3 mt-3 text-sm text-muted-foreground ${isCurrentUser ? "justify-end" : "justify-start"
+                                }`}>
                                 <Clock className="h-4 w-4" />
                                 <span>{formatMessageTime(message.sent_at || message.created_at)}</span>
                                 {isCurrentUser && (
@@ -1129,11 +1204,11 @@ export default function NewChat() {
                   </form>
                   <div className="mt-4 flex items-center justify-between">
                     <p className="text-sm text-muted-foreground">
-                      {!isBackendAvailable 
+                      {!isBackendAvailable
                         ? "⚠️ Chat service currently unavailable"
                         : selectedConversation.status === 'closed'
-                        ? "🔒 This conversation has been closed"
-                        : "💡 Press Enter to send, Shift + Enter for new line"
+                          ? "🔒 This conversation has been closed"
+                          : "💡 Press Enter to send, Shift + Enter for new line"
                       }
                     </p>
                     {isBackendAvailable && selectedConversation.status === 'active' && (

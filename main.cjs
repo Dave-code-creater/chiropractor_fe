@@ -21,7 +21,7 @@ function createWindow() {
     // Handle navigation to external links
     win.webContents.on('will-navigate', (event, navigationUrl) => {
         const parsedUrl = new URL(navigationUrl);
-
+        
         // If it's an external URL (not localhost or file://), open in default browser
         if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
             if (!parsedUrl.hostname.includes('localhost') && !parsedUrl.hostname.includes('127.0.0.1')) {

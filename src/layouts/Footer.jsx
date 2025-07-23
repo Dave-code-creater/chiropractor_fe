@@ -1,11 +1,26 @@
 "use client";
 
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Heart, Stethoscope } from "lucide-react";
+import { useSelector } from "react-redux";
+import { selectUserId, selectIsAuthenticated } from "@/state/data/authSlice";
 
 const Footer = () => {
+
+  const navigate = useNavigate();
+  const user = useSelector(selectUserId);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+
+  const handleBookAppointment = () => {
+    if (isAuthenticated && user) {
+      navigate(`/dashboard/user/${user}/appointments`);
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <footer className="mt-auto border-t border-border/40 bg-gradient-to-r from-background/95 to-muted/20 backdrop-blur-sm">
       <div className="container px-4 py-8 lg:px-8">
@@ -44,12 +59,12 @@ const Footer = () => {
               >
                 About Us
               </Link>
-              <Link
-                to="/appointments"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 w-fit"
+              <button
+                onClick={handleBookAppointment}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 w-fit text-left"
               >
                 Book Appointment
-              </Link>
+              </button>
               <Link
                 to="/blog"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 w-fit"

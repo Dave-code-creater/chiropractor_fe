@@ -34,7 +34,7 @@ export const chatApi = createApi({
     getConversationUsers: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.role) queryParams.append("role", params.role);
         if (params.search_term) queryParams.append("search_term", params.search_term);
         if (params.per_page) queryParams.append("per_page", params.per_page.toString());
@@ -56,7 +56,7 @@ export const chatApi = createApi({
     getConversations: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.page) queryParams.append("page", params.page.toString());
         if (params.per_page) queryParams.append("per_page", params.per_page.toString());
         if (params.status) queryParams.append("status", params.status);
@@ -132,7 +132,7 @@ export const chatApi = createApi({
     getMessages: builder.query({
       query: ({ conversationId, ...params }) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.page) queryParams.append("page", params.page.toString());
         if (params.per_page) queryParams.append("per_page", params.per_page.toString());
         if (params.sort_order) queryParams.append("sort_order", params.sort_order);
@@ -185,7 +185,7 @@ export const chatApi = createApi({
     pollForNewMessages: builder.query({
       query: ({ conversationId, last_message_timestamp, timeout_seconds = 30, max_messages = 50 }) => {
         const queryParams = new URLSearchParams();
-        
+
         if (last_message_timestamp) queryParams.append("last_message_timestamp", last_message_timestamp);
         if (timeout_seconds) queryParams.append("timeout_seconds", timeout_seconds.toString());
         if (max_messages) queryParams.append("max_messages", max_messages.toString());
@@ -209,7 +209,7 @@ export const chatApi = createApi({
 
     // Get message status and delivery info
     getMessageStatus: builder.query({
-      query: ({ conversationId, messageId }) => 
+      query: ({ conversationId, messageId }) =>
         `chat/conversations/${conversationId}/messages/${messageId}/status`,
       transformResponse: (response) => {
         if (response?.success && response?.data) {
@@ -229,7 +229,7 @@ export const chatApi = createApi({
     getAvailableUsers: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         if (params.role) queryParams.append("role", params.role);
         if (params.search_term) queryParams.append("search_term", params.search_term);
         if (params.per_page) queryParams.append("per_page", params.per_page.toString());
@@ -254,18 +254,17 @@ export const {
   useCreateConversationMutation,
   useGetConversationUsersQuery,
   useGetConversationsQuery,
-  useGetConversationQuery,
   useUpdateConversationStatusMutation,
   useDeleteConversationMutation,
-  
+
   // Message hooks
   useGetMessagesQuery,
   useSendMessageMutation,
-  
+
   // Polling hooks
   usePollForNewMessagesQuery,
   useGetMessageStatusQuery,
-  
+
   // Legacy hooks
   useGetAvailableUsersQuery,
 } = chatApi;

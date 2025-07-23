@@ -4,7 +4,7 @@ import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 export const blogApi = createApi({
   reducerPath: "blogApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["BlogPosts"],
+  tagTypes: ["BlogPosts", "Categories"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
   refetchOnMountOrArgChange: 300, // 5 minutes
   refetchOnFocus: false,
@@ -14,7 +14,7 @@ export const blogApi = createApi({
     getBlogPosts: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
+
         // New status-based filtering (replaces published parameter)
         if (params.status) queryParams.append("status", params.status);
         if (params.category) queryParams.append("category", params.category);
@@ -88,12 +88,12 @@ export const blogApi = createApi({
       ],
     }),
 
-    // Get public blog posts (no authentication required, only published posts)
+    // Get public blog posts (published only)
     getPublicBlogPosts: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
-        
-        // Public endpoint - no status parameter needed (backend handles this)
+        queryParams.append("status", "published");
+
         if (params.category) queryParams.append("category", params.category);
         if (params.page) queryParams.append("page", params.page.toString());
         if (params.limit) queryParams.append("limit", params.limit.toString());
@@ -110,6 +110,16 @@ export const blogApi = createApi({
       providesTags: ["BlogPosts"],
       keepUnusedDataFor: CACHE_TIMES.LONG,
     }),
+
+    // Get categories
+    getCategories: builder.query({
+      query: () => ({
+        url: "blog/categories",
+        method: "GET",
+      }),
+      providesTags: ["Categories"],
+      keepUnusedDataFor: CACHE_TIMES.VERY_LONG,
+    }),
   }),
 });
 
@@ -121,9 +131,7 @@ export const {
   useDeleteBlogPostMutation,
   usePublishBlogPostMutation,
   useGetPublicBlogPostsQuery,
+  useGetCategoriesQuery,
 } = blogApi;
 
-// Legacy exports for backward compatibility
-export const useGetPostsQuery = useGetBlogPostsQuery;
-export const useGetPostBySlugQuery = useGetBlogPostByIdQuery;
-export const useGetCategoriesQuery = () => ({ data: [], isLoading: false, error: null });
+

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import FormattedInput from "../components/forms/FormattedInput";
 import callCenter from "../assets/images/call-center.jpg";
+import { openExternalLink } from "../utils/electronUtils";
 
 export default function Contact() {
   const [name, setName] = useState("");
@@ -164,14 +165,12 @@ export default function Contact() {
                           strokeWidth="2"
                         />
                       </svg>
-                      <a
-                        className="text-black text-base font-normal leading-6 ml-5 hover:underline"
-                        href="https://www.google.com/maps/search/?api=1&query=1385+West+Alameda+Ave,+Denver,+CO+80223"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <span
+                        className="text-black text-base font-normal leading-6 ml-5 hover:underline cursor-pointer"
+                        onClick={() => openExternalLink("https://www.google.com/maps/search/?api=1&query=1385+West+Alameda+Ave,+Denver,+CO+80223")}
                       >
                         1385 West Alameda Ave, Denver, CO 80223
-                      </a>
+                      </span>
                     </div>
                   </div>
                 </div>
