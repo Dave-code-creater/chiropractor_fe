@@ -10,7 +10,7 @@ import {
   Users,
 } from "lucide-react";
 
-export default function TermOfService() {
+export default function TermsOfService() {
   const lastUpdated = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",

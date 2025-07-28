@@ -52,7 +52,7 @@ import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 import { toast } from "sonner";
 import { z } from "zod";
 
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/hooks/useMobile";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -402,7 +402,7 @@ export function DataTable({
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div>
                   <span className="text-muted-foreground">Type:</span>
@@ -430,7 +430,7 @@ export function DataTable({
                   <span className="ml-1">{row.original.Times}</span>
                 </div>
               </div>
-              
+
               <div className="text-sm">
                 <span className="text-muted-foreground">Reviewer:</span>
                 <span className="ml-1">{row.original.reviewer}</span>
@@ -459,9 +459,9 @@ export function DataTable({
                           {header.isPlaceholder
                             ? null
                             : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                         </TableHead>
                       );
                     })}

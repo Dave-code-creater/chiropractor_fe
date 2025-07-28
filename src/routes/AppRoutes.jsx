@@ -14,7 +14,7 @@ import About from "../pages/About";
 import Contact from "../pages/Contact";
 import FAQ from "../pages/FAQ";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
-import TermOfService from "../pages/TermOfService";
+import TermsOfService from "../pages/TermsOfService";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
 import UnderDevelopment from "../pages/UnderDevelopment";
@@ -82,7 +82,7 @@ const AppRoutes = () => {
         <Route path="/about" element={<RouteWrapper element={About} />} />
         <Route path="/contact" element={<RouteWrapper element={Contact} />} />
         <Route path="/faq" element={<RouteWrapper element={FAQ} />} />
-        <Route path="/terms-of-service" element={<RouteWrapper element={TermOfService} />} />
+        <Route path="/terms-of-service" element={<RouteWrapper element={TermsOfService} />} />
         <Route path="/privacy-policy" element={<RouteWrapper element={PrivacyPolicy} />} />
 
         {/* Public Blog Routes - WordPress-like */}

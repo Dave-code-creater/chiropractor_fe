@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/hover-card";
 import { Calendar } from "@/components/ui/calendar";
 
-import PATIENT_INFO_DR from "../../../constants/initial-reportsDR";
+import PATIENT_INFO_DR from "../../../constants/initialReportsDR";
 
 import PainChartSection from "../../report/user/components/HumanBody";
 import CervicalSpine from "./CervicalSpineDiagram";
