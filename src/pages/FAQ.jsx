@@ -35,10 +35,10 @@ export default function FAQ() {
   };
 
   return (
-    <section className="py-24">
+    <section className="py-12 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col justify-center items-center gap-x-16 gap-y-5 xl:gap-28 lg:flex-row lg:justify-between max-lg:max-w-2xl mx-auto max-w-full">
-          <div className="w-full lg:w-1/2">
+        <div className="flex flex-col justify-center items-center gap-4 lg:gap-x-16 lg:gap-y-5 xl:gap-28 lg:flex-row lg:justify-between max-lg:max-w-2xl mx-auto max-w-full">
+          <div className="w-full lg:w-1/2 order-2 lg:order-1">
             <img
               src="https://pagedone.io/asset/uploads/1696230182.png"
               alt="FAQ section"
@@ -46,21 +46,21 @@ export default function FAQ() {
             />
           </div>
 
-          <div className="w-full lg:w-1/2">
+          <div className="w-full lg:w-1/2 order-1 lg:order-2">
             <div className="lg:max-w-xl">
-              <div className="mb-6 lg:mb-8">
-                <h2 className="text-4xl text-center font-bold text-gray-900 leading-[3.25rem] mb-5 lg:text-left">
+              <div className="mb-4 sm:mb-6 lg:mb-8">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl text-center font-bold text-gray-900 leading-tight mb-3 sm:mb-5 lg:text-left">
                   Looking for answers?
                 </h2>
               </div>
 
-              <div className="flex items-center gap-x-4 mb-6 justify-center">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-x-4 mb-4 sm:mb-6 justify-center">
                 {FAQ_TYPES_QUESTION.types.map((type, index) => (
                   <button
                     key={index}
                     type="button"
                     onClick={() => setActiveType(type)}
-                    className="inline-flex items-center rounded-md px-6 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset focus:text-gray-900 focus:bg-gray-200 hover:text-gray-900 transition-colors duration-200"
+                    className="inline-flex items-center rounded-md px-3 sm:px-6 py-2 text-sm sm:text-base text-gray-400 ring-1 ring-gray-300 ring-inset focus:text-gray-900 focus:bg-gray-200 hover:text-gray-900 transition-colors duration-200"
                   >
                     {type}
                   </button>
@@ -72,12 +72,12 @@ export default function FAQ() {
                   <div key={index} className="border rounded-lg">
                     <button
                       onClick={() => toggle(index)}
-                      className="w-full text-left px-5 py-4 font-medium text-gray-800 hover:bg-gray-50 focus:outline-none"
+                      className="w-full text-left px-3 sm:px-5 py-3 sm:py-4 font-medium text-sm sm:text-base text-gray-800 hover:bg-gray-50 focus:outline-none"
                     >
                       {item.question}
                     </button>
                     {activeIndex === index && (
-                      <div className="px-5 pb-4 text-gray-600">
+                      <div className="px-3 sm:px-5 pb-3 sm:pb-4 text-sm sm:text-base text-gray-600">
                         {item.answer}
                       </div>
                     )}

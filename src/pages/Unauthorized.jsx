@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShieldX, Home, ArrowLeft } from "lucide-react";
 import { selectUserRole, selectUserId } from "../state/data/authSlice";
@@ -17,7 +17,7 @@ export default function Unauthorized() {
         return "/admin";
       case "doctor":
         return "/doctor";
-      
+
       case "patient":
       default:
         return `/dashboard/${userID}`;

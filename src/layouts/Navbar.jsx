@@ -37,8 +37,6 @@ const Navbar = () => {
 
       // Only proceed if backend confirmed successful logout
       if (result && (result.success === true || result.message === "Logout successful")) {
-        console.log("Backend logout successful, proceeding with cleanup");
-
         // Step 2: Set logout flag to prevent token refresh interference
         try {
           const { setLoggingOut } = await import('../api');

@@ -76,7 +76,7 @@ const AdminChat = () => {
     const colors = {
       admin: "bg-red-100 text-red-800",
       doctor: "bg-blue-100 text-blue-800",
-  
+
       patient: "bg-yellow-100 text-yellow-800",
     };
     return colors[role] || "bg-gray-100 text-gray-800";
@@ -102,7 +102,7 @@ const AdminChat = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => {/* TODO: Implement new conversation */}}
+                  onClick={() => {/* New conversation functionality not yet implemented */ }}
                 >
                   <UserPlus className="h-4 w-4" />
                 </Button>
@@ -134,11 +134,10 @@ const AdminChat = () => {
                     <div
                       key={conversation.id}
                       onClick={() => setSelectedConversation(conversation)}
-                      className={`p-4 rounded-lg mb-2 cursor-pointer ${
-                        selectedConversation?.id === conversation.id
+                      className={`p-4 rounded-lg mb-2 cursor-pointer ${selectedConversation?.id === conversation.id
                           ? "bg-primary/10"
                           : "hover:bg-muted/40"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-center gap-3">
                         <Avatar>
@@ -226,18 +225,16 @@ const AdminChat = () => {
                       {messages.map((message) => (
                         <div
                           key={message.id}
-                          className={`flex ${
-                            message.sender_type === "admin"
+                          className={`flex ${message.sender_type === "admin"
                               ? "justify-end"
                               : "justify-start"
-                          }`}
+                            }`}
                         >
                           <div
-                            className={`max-w-[85%] rounded-xl p-5 ${
-                              message.sender_type === "admin"
+                            className={`max-w-[85%] rounded-xl p-5 ${message.sender_type === "admin"
                                 ? "bg-primary text-primary-foreground"
                                 : "bg-muted"
-                            }`}
+                              }`}
                           >
                             <p className="text-base leading-relaxed">{message.content}</p>
                             <div className="flex items-center gap-2 mt-3 text-xs opacity-70">
@@ -288,4 +285,3 @@ const AdminChat = () => {
 };
 
 export default AdminChat;
- 

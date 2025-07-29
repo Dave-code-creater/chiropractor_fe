@@ -1,5 +1,5 @@
 const FAQ_TYPES_QUESTION = {
-  types: ["General", "Technical", "Account", "Privacy", "Other"],
+  types: ["General", "Technical", "Account", "Privacy"],
 };
 
 const FAQ_QUESTION_GENERAL = [
@@ -107,33 +107,11 @@ const FAQ_QUESTION_PRIVACY = [
   },
 ];
 
-const FAQ_QUESTION_OTHER = [
-  {
-    question: "Do you offer internships or jobs?",
-    answer:
-      "Yes, we occasionally post open positions on our 'Careers' page. Check back regularly or subscribe to job alerts.",
-  },
-  {
-    question: "Can I suggest a new feature?",
-    answer:
-      "Absolutely! We welcome user suggestions. You can submit your ideas through our 'Feedback' page.",
-  },
-  {
-    question: "Do you collaborate with other companies?",
-    answer:
-      "No, this website was created to enhance user experience and digitize user profiles to improve efficiency.",
-  },
-  {
-    question: "Where can I find your terms and conditions?",
-    answer:
-      "You can read our full terms and conditions by visiting the 'Terms of Service' page at the bottom of the website.",
-  },
-];
+
 export {
   FAQ_TYPES_QUESTION,
   FAQ_QUESTION_GENERAL,
   FAQ_QUESTION_TECHNICAL,
   FAQ_QUESTION_ACCOUNT,
-  FAQ_QUESTION_PRIVACY,
-  FAQ_QUESTION_OTHER,
+  FAQ_QUESTION_PRIVACY
 };

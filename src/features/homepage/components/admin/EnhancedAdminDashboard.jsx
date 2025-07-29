@@ -62,7 +62,7 @@ const EnhancedAdminDashboard = () => {
       description: "Register a new patient in the system",
       icon: Users,
       color: "blue",
-      action: () => {}, // TODO: Implement add patient functionality
+      action: () => { }, // Add patient functionality pending
     },
     {
       id: "schedule-appointment",
@@ -70,7 +70,7 @@ const EnhancedAdminDashboard = () => {
       description: "Book a new appointment",
       icon: Calendar,
       color: "green",
-      action: () => {}, // TODO: Implement schedule appointment functionality
+      action: () => { }, // Schedule appointment functionality pending
     }
   ]);
 
@@ -445,7 +445,7 @@ const EnhancedAdminDashboard = () => {
         <TabsContent value="search">
           <div className="space-y-6">
             <GlobalSearch
-              onResultSelect={(result) => {}} // TODO: Implement search result selection
+              onResultSelect={(result) => { }} // TODO: Implement search result selection
               userRole="admin"
             />
             <NotificationSystem userId="admin" userRole="admin" />

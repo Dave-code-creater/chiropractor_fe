@@ -25,16 +25,6 @@ const Notes = () => {
     profile: auth.profile
   };
 
-  // Debug logging to see what user data we have
-  console.log('Notes component - user data:', {
-    user,
-    auth,
-    role: user?.role,
-    roleType: typeof user?.role,
-    isPatient: user?.role === "patient",
-    isPatientLower: user?.role?.toLowerCase() === "patient"
-  });
-
   // If user is not loaded yet, show loading
   if (!user) {
     return (
@@ -110,12 +100,7 @@ const Notes = () => {
     return <PatientNotesView />;
   }
 
-  // If user exists but doesn't match any role, show debug info
-  if (user) {
-    console.warn('User exists but no matching role found:', user);
-  }
-
-  // Default fallback
+  // If user exists but doesn't match any role, show restricted access
   return (
     <Card>
       <CardContent className="p-8 text-center">
@@ -124,15 +109,6 @@ const Notes = () => {
         <p className="text-muted-foreground">
           Please contact your administrator for access to clinical notes.
         </p>
-        {/* Debug info in development */}
-        {process.env.NODE_ENV === 'development' && user && (
-          <div className="mt-4 p-2 bg-gray-100 rounded text-xs text-left">
-            <strong>Debug Info:</strong><br />
-            User Role: "{user.role}"<br />
-            User ID: {user.id}<br />
-            Expected: "patient", "doctor", or "admin"
-          </div>
-        )}
       </CardContent>
     </Card>
   );

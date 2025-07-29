@@ -99,7 +99,7 @@ const DoctorChat = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => {/* TODO: Implement new conversation */}}
+                  onClick={() => {/* New conversation functionality not yet implemented */ }}
                 >
                   <UserPlus className="h-4 w-4" />
                 </Button>
@@ -173,7 +173,7 @@ const DoctorChat = () => {
                     </div>
                   );
                 }
-                
+
                 if (!isBackendAvailable) {
                   return (
                     <div className="text-center p-4">
@@ -181,7 +181,7 @@ const DoctorChat = () => {
                     </div>
                   );
                 }
-                
+
                 if (conversations.length === 0) {
                   return (
                     <div className="text-center p-4">
@@ -189,18 +189,17 @@ const DoctorChat = () => {
                     </div>
                   );
                 }
-                
+
                 return conversations.map((conversation) => (
                   <div
                     key={conversation.id}
                     onClick={() => {
                       setSelectedConversation(conversation);
                     }}
-                    className={`p-4 rounded-xl mb-3 cursor-pointer transition-all duration-200 ${
-                      selectedConversation?.id === conversation.id
+                    className={`p-4 rounded-xl mb-3 cursor-pointer transition-all duration-200 ${selectedConversation?.id === conversation.id
                         ? "bg-primary/10 border-l-4 border-primary shadow-sm"
                         : "hover:bg-muted/50 hover:shadow-sm"
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-3">
                       <Avatar className="h-12 w-12">
@@ -300,7 +299,7 @@ const DoctorChat = () => {
                         </div>
                       );
                     }
-                    
+
                     if (messages.length === 0) {
                       return (
                         <div className="text-center py-8">
@@ -310,26 +309,24 @@ const DoctorChat = () => {
                         </div>
                       );
                     }
-                    
+
                     return (
                       <div className="space-y-4">
                         {messages.map((message) => (
                           <div
                             key={message.id}
-                            className={`flex ${
-                              message.sender_type === "doctor"
+                            className={`flex ${message.sender_type === "doctor"
                                 ? "justify-end"
                                 : "justify-start"
-                            }`}
+                              }`}
                           >
                             <div
-                              className={`max-w-[80%] rounded-lg p-3 ${
-                                message.sender_type === "doctor"
+                              className={`max-w-[80%] rounded-lg p-3 ${message.sender_type === "doctor"
                                   ? "bg-primary text-primary-foreground"
                                   : "bg-muted"
-                              }`}
+                                }`}
                             >
-                               <p className="text-sm leading-relaxed">
+                              <p className="text-sm leading-relaxed">
                                 {message.content || message.message_content}
                               </p>
                               <div className="flex items-center gap-2 mt-2 text-xs opacity-70">

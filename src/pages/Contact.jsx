@@ -10,41 +10,41 @@ export default function Contact() {
   const [message, setMessage] = useState("");
 
   return (
-    <section className="py-24">
+    <section className="py-12 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 grid-cols-1">
-          <div className="bg-gray-50 p-5 lg:p-11 lg:rounded-r-2xl rounded-2xl">
-            <h2 className="text-indigo-600 font-manrope text-4xl font-semibold leading-10 mb-11">
+        <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 lg:gap-0">
+          <div className="bg-gray-50 p-4 sm:p-5 lg:p-11 lg:rounded-r-2xl rounded-2xl order-2 lg:order-1">
+            <h2 className="text-indigo-600 font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight mb-6 sm:mb-11">
               Send Us A Message
             </h2>
             <input
               type="text"
-              className="w-full h-12 text-gray-600 placeholder-gray-400  shadow-sm bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-10"
+              className="w-full h-10 sm:h-12 text-gray-600 placeholder-gray-400 shadow-sm bg-transparent text-sm sm:text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-6 sm:mb-10"
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <input
               type="text"
-              className="w-full h-12 text-gray-600 placeholder-gray-400 shadow-sm bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-10"
+              className="w-full h-10 sm:h-12 text-gray-600 placeholder-gray-400 shadow-sm bg-transparent text-sm sm:text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-6 sm:mb-10"
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <div className="mb-10">
+            <div className="mb-6 sm:mb-10">
               <FormattedInput
                 type="phone"
                 value={phone}
                 onChange={setPhone}
-                className="w-full h-12 text-gray-600 placeholder-gray-400 shadow-sm bg-transparent text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4"
+                className="w-full h-10 sm:h-12 text-gray-600 placeholder-gray-400 shadow-sm bg-transparent text-sm sm:text-lg font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4"
               />
             </div>
-            <div className="mb-10">
-              <h4 className="text-gray-500 text-lg font-normal leading-7 mb-4">
+            <div className="mb-6 sm:mb-10">
+              <h4 className="text-gray-500 text-sm sm:text-lg font-normal leading-7 mb-4">
                 Preferred method of communication
               </h4>
-              <div className="flex">
-                <div className="flex items-center mr-11">
+              <div className="flex flex-col sm:flex-row gap-4 sm:gap-0">
+                <div className="flex items-center sm:mr-11">
                   <input
                     id="radio-group-1"
                     type="radio"
@@ -53,9 +53,9 @@ export default function Contact() {
                   />
                   <label
                     htmlFor="radio-group-1"
-                    className="flex items-center cursor-pointer text-gray-500 text-base font-normal leading-6"
+                    className="flex items-center cursor-pointer text-gray-500 text-sm sm:text-base font-normal leading-6"
                   >
-                    <span className="border border-gray-300 rounded-full mr-2 w-4 h-4  ml-2 "></span>{" "}
+                    <span className="border border-gray-300 rounded-full mr-2 w-4 h-4 ml-2"></span>{" "}
                     Email
                   </label>
                 </div>
@@ -68,9 +68,9 @@ export default function Contact() {
                   />
                   <label
                     htmlFor="radio-group-2"
-                    className="flex items-center cursor-pointer text-gray-500 text-base font-normal leading-6"
+                    className="flex items-center cursor-pointer text-gray-500 text-sm sm:text-base font-normal leading-6"
                   >
-                    <span className="border border-gray-300  rounded-full mr-2 w-4 h-4  ml-2 "></span>{" "}
+                    <span className="border border-gray-300 rounded-full mr-2 w-4 h-4 ml-2"></span>{" "}
                     Phone
                   </label>
                 </div>
@@ -78,27 +78,27 @@ export default function Contact() {
             </div>
             <input
               type="text"
-              className="w-full h-12 text-gray-600 placeholder-gray-400 bg-transparent text-lg shadow-sm font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-10"
+              className="w-full h-10 sm:h-12 text-gray-600 placeholder-gray-400 bg-transparent text-sm sm:text-lg shadow-sm font-normal leading-7 rounded-full border border-gray-200 focus:outline-none pl-4 mb-6 sm:mb-10"
               placeholder="Message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
-            <button className="w-full h-12 text-white text-base font-semibold leading-6 rounded-full transition-all duration-700 hover:bg-indigo-800 bg-indigo-600 shadow-sm">
+            <button className="w-full h-10 sm:h-12 text-white text-sm sm:text-base font-semibold leading-6 rounded-full transition-all duration-700 hover:bg-indigo-800 bg-indigo-600 shadow-sm">
               Send
             </button>
           </div>
-          <div className="lg:mb-0 mb-10">
-            <div className="group w-full h-full">
+          <div className="lg:mb-0 mb-6 order-1 lg:order-2">
+            <div className="group w-full h-full min-h-[300px] sm:min-h-[400px]">
               <div className="relative h-full">
                 <img
                   src={callCenter}
                   alt="Contact Us sections"
                   className="w-full h-full lg:rounded-l-2xl rounded-2xl bg-blend-multiply bg-indigo-700 object-cover"
                 />
-                <h1 className="font-manrope text-white text-4xl font-bold leading-10 absolute top-11 left-11">
+                <h1 className="font-manrope text-white text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight absolute top-4 sm:top-11 left-4 sm:left-11">
                   Contact us
                 </h1>
-                <div className="absolute bottom-0 w-full lg:p-11 p-5">
+                <div className="absolute bottom-0 w-full p-3 sm:p-5 lg:p-11">
                   <div className="bg-white rounded-lg p-6 block">
                     <div className="flex items-center mb-6">
                       <svg

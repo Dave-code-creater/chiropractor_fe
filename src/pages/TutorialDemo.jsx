@@ -147,19 +147,19 @@ const TutorialDemo = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-gray-50 p-3 sm:p-6">
+      <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
         {/* Header */}
         <div className="demo-header text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
             Interactive Tutorial System Demo
           </h1>
-          <p className="text-xl text-gray-600 mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-gray-600 mb-4 sm:mb-8 px-4">
             Experience how our comprehensive tutorial system helps users learn
             and master the chiropractic practice management platform
           </p>
 
-          <div className="flex justify-center space-x-4">
+          <div className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
             <Button
               onClick={startFeatureHighlight}
               className="bg-blue-600 hover:bg-blue-700"
@@ -186,7 +186,7 @@ const TutorialDemo = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {/* Button Variant */}
               <div className="space-y-3">
                 <h3 className="font-medium text-gray-900">Button Variant</h3>
@@ -245,8 +245,7 @@ const TutorialDemo = () => {
                 <CardHeader>
                   <CardTitle className="flex items-center">
                     <div
-                      className={`p-3 rounded-lg mr-3 ${
-                        feature.color === "blue"
+                      className={`p-3 rounded-lg mr-3 ${feature.color === "blue"
                           ? "bg-blue-100"
                           : feature.color === "green"
                             ? "bg-green-100"
@@ -255,11 +254,10 @@ const TutorialDemo = () => {
                               : feature.color === "orange"
                                 ? "bg-orange-100"
                                 : "bg-gray-100"
-                      }`}
+                        }`}
                     >
                       <IconComponent
-                        className={`h-6 w-6 ${
-                          feature.color === "blue"
+                        className={`h-6 w-6 ${feature.color === "blue"
                             ? "text-blue-600"
                             : feature.color === "green"
                               ? "text-green-600"
@@ -268,7 +266,7 @@ const TutorialDemo = () => {
                                 : feature.color === "orange"
                                   ? "text-orange-600"
                                   : "text-gray-600"
-                        }`}
+                          }`}
                       />
                     </div>
                     {feature.title}
@@ -356,7 +354,7 @@ const TutorialDemo = () => {
 
         {/* Feature Overview */}
         <Tabs defaultValue="overview" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="features">Features</TabsTrigger>
             <TabsTrigger value="integration">Integration</TabsTrigger>

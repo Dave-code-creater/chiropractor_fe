@@ -64,12 +64,7 @@ const About = () => {
             <button className="inline-block rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-indigo-500 transition">
               Book an Appointment
             </button>
-            <a
-              href="/about"
-              className="text-sm font-semibold text-black underline underline-offset-4 hover:text-indigo-300"
-            >
-              Learn more →
-            </a>
+           
           </div>
         </div>
 

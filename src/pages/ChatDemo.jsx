@@ -4,11 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  MessageCircle, 
-  Users, 
-  Zap, 
-  CheckCircle, 
+import {
+  MessageCircle,
+  Users,
+  Zap,
+  CheckCircle,
   ArrowRight,
   Stethoscope,
   UserCheck,
@@ -93,7 +93,7 @@ export default function ChatDemo() {
     },
     {
       title: "Get Available Doctors",
-      method: "GET", 
+      method: "GET",
       endpoint: "/users/doctors",
       description: "Retrieve list of available doctors for chat",
       payload: null,
@@ -113,7 +113,7 @@ export default function ChatDemo() {
     {
       title: "Send Message",
       method: "POST",
-      endpoint: "/messages", 
+      endpoint: "/messages",
       description: "Send a message in an existing conversation",
       payload: {
         conversation_id: "conv123",
@@ -133,59 +133,61 @@ export default function ChatDemo() {
   ];
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-3 sm:p-6 space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="text-center space-y-4">
-        <div className="flex items-center justify-center gap-3">
-          <MessageCircle className="h-8 w-8 text-blue-600" />
-          <h1 className="text-3xl font-bold">Chat System Demo</h1>
+      <div className="text-center space-y-3 sm:space-y-4">
+        <div className="flex items-center justify-center gap-2 sm:gap-3">
+          <MessageCircle className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Chat System Demo</h1>
         </div>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Complete chat system with doctor-patient communication, real-time messaging, 
+        <p className="text-muted-foreground max-w-2xl mx-auto text-sm sm:text-base px-4">
+          Complete chat system with doctor-patient communication, real-time messaging,
           and seamless backend integration.
         </p>
-        
-        <Alert className="max-w-4xl mx-auto">
+
+        <Alert className="max-w-4xl mx-4 sm:mx-auto">
           <CheckCircle className="h-4 w-4" />
           <AlertDescription>
-            <strong>Backend Integration Complete!</strong> All chat endpoints are now implemented 
-            and ready for production use. The system supports direct doctor-patient communication 
+            <strong>Backend Integration Complete!</strong> All chat endpoints are now implemented
+            and ready for production use. The system supports direct doctor-patient communication
             with smart duplicate prevention and auto-registration.
           </AlertDescription>
         </Alert>
       </div>
 
       <Tabs value={activeDemo} onValueChange={setActiveDemo} className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="features">Features</TabsTrigger>
-          <TabsTrigger value="api">API Examples</TabsTrigger>
-          <TabsTrigger value="live">Live Demo</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+          <TabsTrigger value="overview" className="text-xs sm:text-sm py-2 px-2 sm:px-4">Overview</TabsTrigger>
+          <TabsTrigger value="features" className="text-xs sm:text-sm py-2 px-2 sm:px-4">Features</TabsTrigger>
+          <TabsTrigger value="api" className="text-xs sm:text-sm py-2 px-2 sm:px-4">API Examples</TabsTrigger>
+          <TabsTrigger value="live" className="text-xs sm:text-sm py-2 px-2 sm:px-4">Live Demo</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <TabsContent value="overview" className="space-y-4 sm:space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
             {features.map((feature, index) => (
               <Card key={index} className="h-full">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    {feature.icon}
-                    <div>
-                      <CardTitle className="text-lg">{feature.title}</CardTitle>
-                      <Badge 
+                <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="flex-shrink-0 mt-1">
+                      {feature.icon}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="text-sm sm:text-lg leading-tight">{feature.title}</CardTitle>
+                      <Badge
                         variant={feature.status === 'implemented' ? 'default' : 'secondary'}
-                        className="mt-1"
+                        className="mt-1 text-xs"
                       >
                         {feature.status}
                       </Badge>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-3">
+                <CardContent className="p-3 sm:p-6 pt-0">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3 leading-relaxed">
                     {feature.description}
                   </p>
-                  <code className="text-xs bg-muted px-2 py-1 rounded">
+                  <code className="text-xs bg-muted px-2 py-1 rounded block break-all">
                     {feature.endpoint}
                   </code>
                 </CardContent>
@@ -194,64 +196,68 @@ export default function ChatDemo() {
           </div>
         </TabsContent>
 
-        <TabsContent value="features" className="space-y-6">
-          <div className="grid gap-6">
+        <TabsContent value="features" className="space-y-4 sm:space-y-6">
+          <div className="grid gap-4 sm:gap-6">
             <Card>
-              <CardHeader>
-                <CardTitle>🩺 Doctor-Patient Chat Workflow</CardTitle>
+              <CardHeader className="p-3 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">🩺 Doctor-Patient Chat Workflow</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                  <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-                  <div>
-                    <p className="font-medium">Patient selects doctor</p>
-                    <p className="text-sm text-muted-foreground">Choose from available healthcare providers</p>
+              <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6 pt-0">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">1</div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm sm:text-base">Patient selects doctor</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Choose from available healthcare providers</p>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
-                <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
-                  <div className="w-8 h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                  <div>
-                    <p className="font-medium">System creates secure chat</p>
-                    <p className="text-sm text-muted-foreground">Auto-registers users and prevents duplicates</p>
+                <div className="flex justify-center">
+                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground transform rotate-90 sm:rotate-0" />
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">2</div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm sm:text-base">System creates secure chat</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Auto-registers users and prevents duplicates</p>
                   </div>
                 </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground mx-auto" />
-                <div className="flex items-center gap-3 p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-                  <div className="w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
-                  <div>
-                    <p className="font-medium">Real-time communication</p>
-                    <p className="text-sm text-muted-foreground">Instant messaging with message history</p>
+                <div className="flex justify-center">
+                  <ArrowRight className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground transform rotate-90 sm:rotate-0" />
+                </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 text-white rounded-full flex items-center justify-center text-xs sm:text-sm font-bold flex-shrink-0">3</div>
+                  <div className="min-w-0">
+                    <p className="font-medium text-sm sm:text-base">Real-time communication</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Instant messaging with message history</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
-              <CardHeader>
-                <CardTitle>🔧 Technical Implementation</CardTitle>
+              <CardHeader className="p-3 sm:p-6">
+                <CardTitle className="text-lg sm:text-xl">🔧 Technical Implementation</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between p-2 bg-muted rounded">
-                    <span className="font-medium">Frontend Framework</span>
-                    <Badge>React + RTK Query</Badge>
+              <CardContent className="p-3 sm:p-6 pt-0">
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 bg-muted rounded gap-1 sm:gap-0">
+                    <span className="font-medium text-sm sm:text-base">Frontend Framework</span>
+                    <Badge className="text-xs sm:text-sm self-start sm:self-auto">React + RTK Query</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-muted rounded">
-                    <span className="font-medium">Backend Service</span>
-                    <Badge>Node.js + Express</Badge>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 bg-muted rounded gap-1 sm:gap-0">
+                    <span className="font-medium text-sm sm:text-base">Backend Service</span>
+                    <Badge className="text-xs sm:text-sm self-start sm:self-auto">Node.js + Express</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-muted rounded">
-                    <span className="font-medium">Database</span>
-                    <Badge>MongoDB</Badge>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 bg-muted rounded gap-1 sm:gap-0">
+                    <span className="font-medium text-sm sm:text-base">Database</span>
+                    <Badge className="text-xs sm:text-sm self-start sm:self-auto">MongoDB</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-muted rounded">
-                    <span className="font-medium">Authentication</span>
-                    <Badge>JWT Tokens</Badge>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 bg-muted rounded gap-1 sm:gap-0">
+                    <span className="font-medium text-sm sm:text-base">Authentication</span>
+                    <Badge className="text-xs sm:text-sm self-start sm:self-auto">JWT Tokens</Badge>
                   </div>
-                  <div className="flex items-center justify-between p-2 bg-muted rounded">
-                    <span className="font-medium">API Base URL</span>
-                    <Badge variant="outline">http://localhost:3000/api/v1/2025</Badge>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2 bg-muted rounded gap-1 sm:gap-0">
+                    <span className="font-medium text-sm sm:text-base">API Base URL</span>
+                    <Badge variant="outline" className="text-xs sm:text-sm self-start sm:self-auto break-all">http://localhost:3000/api/v1/2025</Badge>
                   </div>
                 </div>
               </CardContent>
@@ -259,39 +265,39 @@ export default function ChatDemo() {
           </div>
         </TabsContent>
 
-        <TabsContent value="api" className="space-y-6">
-          <div className="space-y-6">
+        <TabsContent value="api" className="space-y-4 sm:space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {apiExamples.map((example, index) => (
               <Card key={index}>
-                <CardHeader>
-                  <div className="flex items-center gap-3">
-                    <Badge variant={example.method === 'POST' ? 'default' : 'secondary'}>
+                <CardHeader className="p-3 sm:p-6">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+                    <Badge variant={example.method === 'POST' ? 'default' : 'secondary'} className="text-xs sm:text-sm self-start">
                       {example.method}
                     </Badge>
-                    <CardTitle className="text-lg">{example.title}</CardTitle>
+                    <CardTitle className="text-sm sm:text-lg leading-tight">{example.title}</CardTitle>
                   </div>
-                  <p className="text-sm text-muted-foreground">{example.description}</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">{example.description}</p>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-6 pt-0">
                   <div>
-                    <p className="text-sm font-medium mb-2">Endpoint:</p>
-                    <code className="block p-3 bg-muted rounded text-sm">
+                    <p className="text-xs sm:text-sm font-medium mb-1 sm:mb-2">Endpoint:</p>
+                    <code className="block p-2 sm:p-3 bg-muted rounded text-xs sm:text-sm break-all">
                       {example.method} {example.endpoint}
                     </code>
                   </div>
-                  
+
                   {example.payload && (
                     <div>
-                      <p className="text-sm font-medium mb-2">Request Body:</p>
-                      <pre className="bg-muted p-3 rounded text-xs overflow-x-auto">
+                      <p className="text-xs sm:text-sm font-medium mb-1 sm:mb-2">Request Body:</p>
+                      <pre className="bg-muted p-2 sm:p-3 rounded text-xs overflow-x-auto">
                         {JSON.stringify(example.payload, null, 2)}
                       </pre>
                     </div>
                   )}
-                  
+
                   <div>
-                    <p className="text-sm font-medium mb-2">Response:</p>
-                    <pre className="bg-muted p-3 rounded text-xs overflow-x-auto">
+                    <p className="text-xs sm:text-sm font-medium mb-1 sm:mb-2">Response:</p>
+                    <pre className="bg-muted p-2 sm:p-3 rounded text-xs overflow-x-auto">
                       {JSON.stringify(example.response, null, 2)}
                     </pre>
                   </div>
@@ -301,16 +307,18 @@ export default function ChatDemo() {
           </div>
         </TabsContent>
 
-        <TabsContent value="live" className="space-y-6">
+        <TabsContent value="live" className="space-y-4 sm:space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>🚀 Live Chat Interface</CardTitle>
-              <p className="text-sm text-muted-foreground">
+            <CardHeader className="p-3 sm:p-6">
+              <CardTitle className="text-lg sm:text-xl">🚀 Live Chat Interface</CardTitle>
+              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                 Try the complete chat system with your implemented backend endpoints.
               </p>
             </CardHeader>
-            <CardContent>
-              <NewChat />
+            <CardContent className="p-1 sm:p-3 lg:p-6">
+              <div className="w-full overflow-hidden">
+                <NewChat />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>
