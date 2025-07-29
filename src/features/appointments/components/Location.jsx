@@ -38,11 +38,11 @@ export default function LocationSelector({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header with Doctor Info */}
       <div>
-        <h2 className="text-xl font-semibold mb-1">Select Location</h2>
-        <p className="text-muted-foreground">
+        <h2 className="text-lg sm:text-xl font-semibold mb-1">Select Location</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Choose your preferred clinic location
           {selectedDoctor && (
             <span className="ml-1">
@@ -70,7 +70,7 @@ export default function LocationSelector({
                 <p className="text-sm text-green-700">
                   {selectedDoctor.specializations?.primary}
                 </p>
-                
+
               </div>
               <div className="text-right">
                 <p className="text-sm text-green-700">Available at</p>

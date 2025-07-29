@@ -14,7 +14,7 @@ import { Calendar, Clock, User, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
 // Import API service for quick scheduling
-import { useCreateQuickAppointmentMutation } from "@/api/services/appointmentApi";
+import { useCreateAppointmentMutation } from "@/api/services/appointmentApi";
 
 export default function QuickScheduler() {
   const [formData, setFormData] = useState({
@@ -29,7 +29,7 @@ export default function QuickScheduler() {
   });
 
   // API mutation hook
-  const [createQuickAppointment, { isLoading: isSubmitting }] = useCreateQuickAppointmentMutation();
+  const [createQuickAppointment, { isLoading: isSubmitting }] = useCreateAppointmentMutation();
 
   const appointmentTypes = [
     "Initial Consultation",
@@ -102,7 +102,7 @@ export default function QuickScheduler() {
 
       if (response.success) {
         toast.success("Appointment scheduled successfully!");
-        
+
         // Reset form
         setFormData({
           patientName: "",

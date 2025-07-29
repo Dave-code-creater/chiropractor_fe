@@ -14,7 +14,7 @@ import Display from "./Display";
 
 const tabs = [
   { id: "account", label: "Account", icon: UserCog },
-  // { id: "appearance", label: "Appearance", icon: Paintbrush },
+  { id: "appearance", label: "Appearance", icon: Paintbrush },
   // { id: "notifications", label: "Notifications", icon: Bell },
   // { id: "display", label: "Display", icon: Monitor },
 ];

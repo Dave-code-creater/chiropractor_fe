@@ -27,6 +27,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { LogOut } from "lucide-react";
+import ThemeToggleButton from "@/components/theme/ThemeToggleButton";
 
 const AppSidebar = () => {
   const navigate = useNavigate();
@@ -81,15 +82,15 @@ const AppSidebar = () => {
 
   const getUserInitials = () => {
     if (!currentUser) return "U";
-    
+
     if (currentUser.firstName && currentUser.lastName) {
       return `${currentUser.firstName[0]}${currentUser.lastName[0]}`.toUpperCase();
     }
     return currentUser.name
       ? currentUser.name.substring(0, 2).toUpperCase()
       : currentUser.email
-      ? currentUser.email[0].toUpperCase()
-      : "U";
+        ? currentUser.email[0].toUpperCase()
+        : "U";
   };
 
   const handleLogout = async () => {
@@ -117,47 +118,50 @@ const AppSidebar = () => {
 
       {/* Sidebar - shows on desktop, collapsible on mobile */}
       <Sidebar variant="sidebar" collapsible={isMobile ? "offcanvas" : "none"}>
-        <SidebarHeader className="p-4 sm:p-6 border-b bg-gradient-to-br from-card to-muted/20">
-          <div className="flex items-start gap-3 sm:gap-4">
+        <SidebarHeader className="p-6 border-b bg-gradient-to-br from-card to-muted/20">
+          <div className="flex items-start gap-4">
             <div className="relative flex-shrink-0">
-              <Avatar className="h-12 w-12 sm:h-14 sm:w-14 border-2 border-primary/20 shadow-lg">
+              <Avatar className="h-16 w-16 border-2 border-primary/20 shadow-lg">
                 <AvatarImage
                   src={currentUser?.profileImage}
                   alt="Profile"
                 />
-                <AvatarFallback className="bg-gradient-to-br from-primary/10 to-primary/5 text-primary font-semibold text-sm sm:text-base">
+                <AvatarFallback className="bg-gradient-to-br from-primary/10 to-primary/5 text-primary font-semibold text-lg">
                   {getUserInitials()}
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute -bottom-1 -right-1 h-4 w-4 sm:h-5 sm:w-5 bg-green-500 border-2 border-background rounded-full"></div>
+              <div className="absolute -bottom-1 -right-1 h-5 w-5 bg-green-500 border-2 border-background rounded-full"></div>
             </div>
-            <div className="flex-1 min-w-0 max-w-[calc(100%-4rem)]">
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2 min-w-0">
-                  <h2 className="text-sm sm:text-lg font-semibold leading-tight overflow-hidden text-ellipsis whitespace-nowrap max-w-full">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3 min-w-0">
+                  <h2 className="text-lg font-semibold leading-tight overflow-hidden text-ellipsis whitespace-nowrap">
                     {getUserDisplayName()}
                   </h2>
                   <Badge
                     variant="secondary"
-                    className="flex-shrink-0 bg-primary/5 text-primary border-primary/20 text-xs sm:text-sm whitespace-nowrap"
+                    className="flex-shrink-0 bg-primary/5 text-primary border-primary/20 text-sm whitespace-nowrap"
                   >
                     {userRole?.charAt(0).toUpperCase() + userRole?.slice(1)}
                   </Badge>
                 </div>
-                <p className="text-xs sm:text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
+                <p className="text-sm text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap">
                   {currentUser?.email}
                 </p>
               </div>
+            </div>
+            <div className="flex-shrink-0">
+              <ThemeToggleButton variant="ghost" size="sm" />
             </div>
           </div>
         </SidebarHeader>
 
         <SidebarContent>
           <ScrollArea className="flex-1">
-            <div className="p-3 sm:p-4 space-y-4 sm:space-y-6">
+            <div className="p-6 space-y-8">
               {Object.entries(navigation).map(([key, section]) => (
-                <div key={key} className="space-y-1 sm:space-y-2">
-                  <h3 className="px-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                <div key={key} className="space-y-3">
+                  <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                     {section.label}
                   </h3>
                   <SidebarMenu>
@@ -170,13 +174,13 @@ const AppSidebar = () => {
                           <Link
                             to={item.path}
                             className={cn(
-                              "flex items-center w-full gap-2 sm:gap-3 px-2 sm:px-3 py-2 sm:py-2.5 rounded-lg transition-colors text-sm sm:text-base group",
-                              location.pathname === item.path 
-                                ? "bg-primary/10 text-primary border border-primary/20" 
+                              "flex items-center w-full gap-4 px-4 py-3 rounded-lg transition-colors text-base group",
+                              location.pathname === item.path
+                                ? "bg-primary/10 text-primary border border-primary/20"
                                 : "hover:bg-accent"
                             )}
                           >
-                            {item.icon && <item.icon className="h-4 w-4 flex-shrink-0" />}
+                            {item.icon && <item.icon className="h-5 w-5 flex-shrink-0" />}
                             <span className="font-medium truncate flex-1 min-w-0">{item.name}</span>
                           </Link>
                         </SidebarMenuButton>
@@ -189,13 +193,13 @@ const AppSidebar = () => {
           </ScrollArea>
         </SidebarContent>
 
-        <SidebarFooter className="border-t bg-gradient-to-br from-card to-muted/20 p-3 sm:p-4">
+        <SidebarFooter className="border-t bg-gradient-to-br from-card to-muted/20 p-6">
           <Button
             variant="outline"
-            className="w-full justify-start gap-2 sm:gap-3 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20 transition-all duration-200 text-sm sm:text-base"
+            className="w-full justify-start gap-3 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20 transition-all duration-200 text-base py-3"
             onClick={handleLogout}
           >
-            <LogOut className="h-4 w-4" />
+            <LogOut className="h-5 w-5" />
             <span className="font-medium">Logout</span>
           </Button>
         </SidebarFooter>

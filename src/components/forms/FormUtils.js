@@ -48,22 +48,22 @@ export function renderSSN(ssnNumber) {
 // NEW: Auto-format SSN as user types with validation
 export function autoFormatSSN(input) {
   if (!input) return { value: "", error: null };
-  
+
   const inputStr = String(input);
-  
+
   // Check for alphabetic characters
   if (/[A-Za-z]/.test(inputStr)) {
     return { value: inputStr, error: "SSN cannot contain letters" };
   }
-  
+
   // Remove all non-digits
   const digits = inputStr.replace(/\D/g, "");
-  
+
   // Check length before formatting
   if (digits.length > 9) {
     return { value: inputStr, error: "SSN cannot be more than 9 digits" };
   }
-  
+
   // Format progressively as user types
   let formatted = digits;
   if (digits.length >= 4) {
@@ -72,7 +72,7 @@ export function autoFormatSSN(input) {
   if (digits.length >= 6) {
     formatted = `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
   }
-  
+
   // Validate complete SSN
   let error = null;
   if (digits.length > 0 && digits.length < 9) {
@@ -83,33 +83,33 @@ export function autoFormatSSN(input) {
       error = "Invalid SSN format";
     }
   }
-  
+
   return { value: formatted, error };
 }
 
 export function validatePhoneNumber(phoneNumber) {
   if (!phoneNumber) {
-    throw new Error("Phone number is required");
+    throw new Error("Phone Number is required");
   }
 
   const input = String(phoneNumber).trim();
 
   if (/[A-Za-z]/.test(input)) {
-    throw new Error("Phone number cannot contain letters");
+    throw new Error("Phone Number cannot contain letters");
   }
 
   const digits = input.replace(/\D/g, "");
 
   if (digits.length < 10) {
-    throw new Error("Phone number must be at least 10 digits");
+    throw new Error("Phone Number must be at least 10 digits");
   }
 
   if (digits.length > 11) {
-    throw new Error("Phone number cannot be more than 11 digits");
+    throw new Error("Phone Number cannot be more than 11 digits");
   }
 
   if (digits.length === 11 && !digits.startsWith("1")) {
-    throw new Error("11-digit phone number must start with 1");
+    throw new Error("11-Digit Phone Number must start with 1");
   }
 
   const areaCode = digits.length === 11 ? digits.slice(1, 4) : digits.slice(0, 3);
@@ -123,32 +123,32 @@ export function validatePhoneNumber(phoneNumber) {
 // NEW: Auto-format phone number as user types with validation
 export function autoFormatPhoneNumber(input) {
   if (!input) return { value: "", error: null };
-  
+
   const inputStr = String(input);
-  
+
   // Check for alphabetic characters
   if (/[A-Za-z]/.test(inputStr)) {
-    return { value: inputStr, error: "Phone number cannot contain letters" };
+    return { value: inputStr, error: "Phone Number cannot contain letters" };
   }
-  
+
   // Remove all non-digits
   const digits = inputStr.replace(/\D/g, "");
-  
+
   // Check length before formatting
   if (digits.length > 11) {
-    return { value: inputStr, error: "Phone number cannot be more than 11 digits" };
+    return { value: inputStr, error: "Phone Number cannot be more than 11 digits" };
   }
-  
+
   // Format progressively as user types
   let formatted = digits;
-  
+
   if (digits.length >= 1) {
     if (digits.length === 11 && digits.startsWith("1")) {
       // Format as +1 (xxx) xxx-xxxx
       const area = digits.slice(1, 4);
       const prefix = digits.slice(4, 7);
       const line = digits.slice(7);
-      
+
       if (digits.length <= 4) {
         formatted = `+1 (${area}`;
       } else if (digits.length <= 7) {
@@ -172,7 +172,7 @@ export function autoFormatPhoneNumber(input) {
       }
     }
   }
-  
+
   // Validate area code for complete numbers
   let error = null;
   if (digits.length === 10) {
@@ -182,7 +182,7 @@ export function autoFormatPhoneNumber(input) {
     }
   } else if (digits.length === 11) {
     if (!digits.startsWith("1")) {
-      error = "11-digit number must start with 1";
+      error = "11-Digit Number must start with 1";
     } else {
       const areaCode = digits.slice(1, 4);
       if (areaCode.startsWith("0") || areaCode.startsWith("1")) {
@@ -192,7 +192,7 @@ export function autoFormatPhoneNumber(input) {
   } else if (digits.length > 0 && digits.length < 10) {
     error = null; // Allow partial input while typing
   }
-  
+
   return { value: formatted, error };
 }
 
@@ -248,14 +248,14 @@ export function formatPhoneNumberForDisplay(phonenumber) {
 
 export function validateEmail(email) {
   if (!email) {
-    throw new Error("Email is required");
+    throw new Error("Email Address is required");
   }
 
   const emailStr = String(email).trim().toLowerCase();
   const emailRegex = /^[A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
 
   if (!emailRegex.test(emailStr)) {
-    throw new Error("Invalid email format");
+    throw new Error("Invalid Email Address format");
   }
 
   return emailStr;
@@ -302,14 +302,14 @@ export function validatePassword(password, isRegistration = false) {
 
 export function renderGmailExprs(email) {
   if (!email) {
-    throw new Error("Email is required");
+    throw new Error("Email Address is required");
   }
 
   const emailStr = String(email).trim().toLowerCase();
   const emailRegex = /^[A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
 
   if (!emailRegex.test(emailStr)) {
-    throw new Error("Invalid email format");
+    throw new Error("Invalid Email Address format");
   }
 
   return emailStr;

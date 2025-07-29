@@ -9,7 +9,7 @@ const TokenStatusIndicator = ({ showInProduction = false }) => {
   const tokenStatus = useTokenStatus();
   
   // Only show in development mode unless explicitly enabled
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const isDevelopment = import.meta.env.MODE === 'development';
   if (!isDevelopment && !showInProduction) {
     return null;
   }

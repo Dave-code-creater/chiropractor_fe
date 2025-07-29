@@ -10,7 +10,7 @@ const BlogContentRenderer = ({ content = [] }) => {
           </p>
         );
       
-      case "heading":
+      case "heading": {
         const HeadingTag = `h${block.level || 1}`;
         const headingClasses = {
           1: "text-3xl font-bold mb-6 text-gray-900",
@@ -29,8 +29,9 @@ const BlogContentRenderer = ({ content = [] }) => {
           },
           block.text
         );
+      }
       
-      case "list":
+      case "list": {
         const ListTag = block.ordered ? "ol" : "ul";
         const listClass = block.ordered 
           ? "list-decimal list-inside mb-4 text-gray-700 space-y-1"
@@ -43,8 +44,9 @@ const BlogContentRenderer = ({ content = [] }) => {
             ))}
           </ListTag>
         );
+      }
       
-      case "blockquote":
+      case "blockquote": {
         return (
           <blockquote 
             key={index} 
@@ -53,8 +55,9 @@ const BlogContentRenderer = ({ content = [] }) => {
             {block.text}
           </blockquote>
         );
+      }
       
-      case "code":
+      case "code": {
         return (
           <pre 
             key={index} 
@@ -63,8 +66,9 @@ const BlogContentRenderer = ({ content = [] }) => {
             <code>{block.text}</code>
           </pre>
         );
+      }
       
-      case "image":
+      case "image": {
         return (
           <div key={index} className="mb-6">
             <img 
@@ -79,6 +83,7 @@ const BlogContentRenderer = ({ content = [] }) => {
             )}
           </div>
         );
+      }
       
       default:
         // Fallback for unknown block types

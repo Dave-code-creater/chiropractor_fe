@@ -5,19 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
+import {
   useGetUserAppointmentsQuery,
   useUpdateAppointmentMutation
 } from '@/api/services/appointmentApi';
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@/state/data/authSlice';
-import { 
-  Calendar, 
-  Clock, 
-  MapPin, 
-  Phone, 
-  Mail, 
-  FileText, 
+import {
+  Calendar,
+  Clock,
+  MapPin,
+  Phone,
+  Mail,
+  FileText,
   AlertCircle,
   CheckCircle,
   XCircle,
@@ -53,42 +53,42 @@ export default function PatientAppointments() {
   // Process appointments data
   const appointments = useMemo(() => {
     if (!appointmentsData) return [];
-    
+
     // Handle different response structures
     if (Array.isArray(appointmentsData)) {
       return appointmentsData;
     }
-    
+
     if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
       return appointmentsData.data;
     }
-    
+
     if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
       return appointmentsData.data.appointments;
     }
-    
+
     return [];
   }, [appointmentsData]);
 
   // Categorize appointments
   const categorizedAppointments = useMemo(() => {
     const today = new Date();
-    
+
     return {
       upcoming: appointments.filter(apt => {
         const appointmentDate = new Date(apt.appointment_date || apt.date || apt.datetime);
-        return isFuture(appointmentDate) && 
-               ['pending', 'confirmed', 'scheduled'].includes(apt.status);
+        return isFuture(appointmentDate) &&
+          ['pending', 'confirmed', 'scheduled'].includes(apt.status);
       }),
       past: appointments.filter(apt => {
         const appointmentDate = new Date(apt.appointment_date || apt.date || apt.datetime);
-        return isPast(appointmentDate) || 
-               ['completed', 'cancelled'].includes(apt.status);
+        return isPast(appointmentDate) ||
+          ['completed', 'cancelled'].includes(apt.status);
       }),
       today: appointments.filter(apt => {
         const appointmentDate = new Date(apt.appointment_date || apt.date || apt.datetime);
-        return isToday(appointmentDate) && 
-               ['pending', 'confirmed', 'scheduled'].includes(apt.status);
+        return isToday(appointmentDate) &&
+          ['pending', 'confirmed', 'scheduled'].includes(apt.status);
       })
     };
   }, [appointments]);
@@ -189,10 +189,10 @@ export default function PatientAppointments() {
   // Appointment Card Component
   const AppointmentCard = ({ appointment, showActions = true }) => {
     const appointmentDate = new Date(appointment.appointment_date);
-    const canCancel = ['pending', 'confirmed', 'scheduled'].includes(appointment.status) && 
-                     isFuture(appointmentDate);
-    const canReschedule = ['pending', 'confirmed'].includes(appointment.status) && 
-                         isFuture(appointmentDate);
+    const canCancel = ['pending', 'confirmed', 'scheduled'].includes(appointment.status) &&
+      isFuture(appointmentDate);
+    const canReschedule = ['pending', 'confirmed'].includes(appointment.status) &&
+      isFuture(appointmentDate);
 
     return (
       <Card className="mb-4">
@@ -202,8 +202,8 @@ export default function PatientAppointments() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold text-lg">
-                    {appointment.doctor ? 
-                      `Dr. ${appointment.doctor.first_name} ${appointment.doctor.last_name}` : 
+                    {appointment.doctor ?
+                      `Dr. ${appointment.doctor.first_name} ${appointment.doctor.last_name}` :
                       'Dr. Unknown'
                     }
                   </h3>
@@ -216,8 +216,8 @@ export default function PatientAppointments() {
                     {appointment.status}
                   </Badge>
                   {canCancel && (
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => setCancelModal({ isOpen: true, appointment })}
                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -231,7 +231,7 @@ export default function PatientAppointments() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-3 sm:mb-4">
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4" />
@@ -249,37 +249,40 @@ export default function PatientAppointments() {
               )}
             </div>
 
-           
+
           </div>
 
           {showActions && (
-            <div className="flex gap-2 pt-2 border-t">
+            <div className="flex flex-wrap gap-2 pt-2 border-t">
               {canReschedule && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setRescheduleModal({ isOpen: true, appointment })}
+                  className="text-xs sm:text-sm"
                 >
-                  <Edit className="h-4 w-4 mr-1" />
+                  <Edit className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Reschedule
                 </Button>
               )}
               {appointment.status === 'completed' && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => setFeedbackModal({ isOpen: true, appointment })}
+                  className="text-xs sm:text-sm"
                 >
-                  <Star className="h-4 w-4 mr-1" />
+                  <Star className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                   Feedback
                 </Button>
               )}
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => setSelectedAppointment(appointment)}
+                className="text-xs sm:text-sm"
               >
-                <FileText className="h-4 w-4 mr-1" />
+                <FileText className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
                 Details
               </Button>
             </div>
@@ -304,7 +307,7 @@ export default function PatientAppointments() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">My Appointments</h1>
-        
+
       </div>
 
       {/* Patient Stats */}
@@ -331,16 +334,22 @@ export default function PatientAppointments() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="book">Book Appointment</TabsTrigger>
-          <TabsTrigger value="upcoming">
-            Upcoming ({categorizedAppointments.upcoming.length})
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+          <TabsTrigger value="book" className="text-xs sm:text-sm py-2.5">
+            <span className="hidden sm:inline">Book Appointment</span>
+            <span className="sm:hidden">Book</span>
           </TabsTrigger>
-          <TabsTrigger value="today">
-            Today ({categorizedAppointments.today.length})
+          <TabsTrigger value="upcoming" className="text-xs sm:text-sm py-2.5">
+            <span className="hidden sm:inline">Upcoming ({categorizedAppointments.upcoming.length})</span>
+            <span className="sm:hidden">Upcoming</span>
           </TabsTrigger>
-          <TabsTrigger value="history">
-            History ({categorizedAppointments.past.length})
+          <TabsTrigger value="today" className="text-xs sm:text-sm py-2.5">
+            <span className="hidden sm:inline">Today ({categorizedAppointments.today.length})</span>
+            <span className="sm:hidden">Today</span>
+          </TabsTrigger>
+          <TabsTrigger value="history" className="text-xs sm:text-sm py-2.5">
+            <span className="hidden sm:inline">History ({categorizedAppointments.past.length})</span>
+            <span className="sm:hidden">History</span>
           </TabsTrigger>
         </TabsList>
 
@@ -365,8 +374,8 @@ export default function PatientAppointments() {
                 <div className="text-center py-8">
                   <Calendar className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                   <p className="text-muted-foreground">No upcoming appointments</p>
-                  <Button 
-                    className="mt-4" 
+                  <Button
+                    className="mt-4"
                     onClick={() => setActiveTab('book')}
                   >
                     Book Your First Appointment
@@ -375,9 +384,9 @@ export default function PatientAppointments() {
               ) : (
                 <div className="space-y-4">
                   {categorizedAppointments.upcoming.map((appointment) => (
-                    <AppointmentCard 
-                      key={appointment.id} 
-                      appointment={appointment} 
+                    <AppointmentCard
+                      key={appointment.id}
+                      appointment={appointment}
                     />
                   ))}
                 </div>
@@ -400,9 +409,9 @@ export default function PatientAppointments() {
               ) : (
                 <div className="space-y-4">
                   {categorizedAppointments.today.map((appointment) => (
-                    <AppointmentCard 
-                      key={appointment.id} 
-                      appointment={appointment} 
+                    <AppointmentCard
+                      key={appointment.id}
+                      appointment={appointment}
                     />
                   ))}
                 </div>
@@ -425,9 +434,9 @@ export default function PatientAppointments() {
               ) : (
                 <div className="space-y-4">
                   {categorizedAppointments.past.map((appointment) => (
-                    <AppointmentCard 
-                      key={appointment.id} 
-                      appointment={appointment} 
+                    <AppointmentCard
+                      key={appointment.id}
+                      appointment={appointment}
                       showActions={false}
                     />
                   ))}
@@ -447,7 +456,7 @@ export default function PatientAppointments() {
               Are you sure you want to cancel this appointment? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          
+
           {cancelModal.appointment && (
             <div className="space-y-4">
               <div className="p-4 bg-muted rounded-lg">
@@ -465,19 +474,19 @@ export default function PatientAppointments() {
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     <span>
-                      {cancelModal.appointment.doctor ? 
-                        `Dr. ${cancelModal.appointment.doctor.first_name} ${cancelModal.appointment.doctor.last_name}` : 
+                      {cancelModal.appointment.doctor ?
+                        `Dr. ${cancelModal.appointment.doctor.first_name} ${cancelModal.appointment.doctor.last_name}` :
                         'Dr. Unknown'
                       }
                     </span>
                   </div>
                 </div>
               </div>
-              
+
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  Please note that cancelling your appointment may affect your treatment schedule. 
+                  Please note that cancelling your appointment may affect your treatment schedule.
                   If you need to reschedule, please book a new appointment as soon as possible.
                 </AlertDescription>
               </Alert>
@@ -485,14 +494,14 @@ export default function PatientAppointments() {
           )}
 
           <div className="flex justify-end gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setCancelModal({ isOpen: false, appointment: null })}
             >
               Keep Appointment
             </Button>
-            <Button 
-              variant="destructive" 
+            <Button
+              variant="destructive"
               onClick={() => handleCancelAppointment(cancelModal.appointment.id)}
             >
               <XCircle className="h-4 w-4 mr-2" />
@@ -511,7 +520,7 @@ export default function PatientAppointments() {
               Request to reschedule your appointment. Our team will contact you to confirm a new time.
             </DialogDescription>
           </DialogHeader>
-          
+
           {rescheduleModal.appointment && (
             <div className="space-y-4">
               <div className="p-4 bg-muted rounded-lg">
@@ -529,8 +538,8 @@ export default function PatientAppointments() {
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     <span>
-                      {rescheduleModal.appointment.doctor ? 
-                        `Dr. ${rescheduleModal.appointment.doctor.first_name} ${rescheduleModal.appointment.doctor.last_name}` : 
+                      {rescheduleModal.appointment.doctor ?
+                        `Dr. ${rescheduleModal.appointment.doctor.first_name} ${rescheduleModal.appointment.doctor.last_name}` :
                         'Dr. Unknown'
                       }
                     </span>
@@ -541,13 +550,13 @@ export default function PatientAppointments() {
           )}
 
           <div className="flex justify-end gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setRescheduleModal({ isOpen: false, appointment: null })}
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={() => handleRescheduleRequest(rescheduleModal.appointment.id)}
             >
               <Edit className="h-4 w-4 mr-2" />
@@ -566,7 +575,7 @@ export default function PatientAppointments() {
               How was your experience with this appointment?
             </DialogDescription>
           </DialogHeader>
-          
+
           {feedbackModal.appointment && (
             <div className="space-y-4">
               <div className="p-4 bg-muted rounded-lg">
@@ -580,15 +589,15 @@ export default function PatientAppointments() {
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     <span>
-                      {feedbackModal.appointment.doctor ? 
-                        `Dr. ${feedbackModal.appointment.doctor.first_name} ${feedbackModal.appointment.doctor.last_name}` : 
+                      {feedbackModal.appointment.doctor ?
+                        `Dr. ${feedbackModal.appointment.doctor.first_name} ${feedbackModal.appointment.doctor.last_name}` :
                         'Dr. Unknown'
                       }
                     </span>
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium">Rate your experience:</label>
                 <div className="flex gap-1">
@@ -604,10 +613,10 @@ export default function PatientAppointments() {
                   ))}
                 </div>
               </div>
-              
+
               <div className="space-y-2">
                 <label className="text-sm font-medium">Additional comments (optional):</label>
-                <textarea 
+                <textarea
                   className="w-full p-2 border rounded-md resize-none"
                   rows={3}
                   placeholder="Share your feedback about the appointment..."
@@ -617,8 +626,8 @@ export default function PatientAppointments() {
           )}
 
           <div className="flex justify-end gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setFeedbackModal({ isOpen: false, appointment: null })}
             >
               Skip

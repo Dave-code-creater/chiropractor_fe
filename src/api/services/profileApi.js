@@ -6,40 +6,6 @@ export const profileApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Profile"],
   endpoints: (builder) => ({
-    // Get current user profile
-    getProfile: builder.query({
-      query: () => ({
-        url: "users/profile",
-        method: "GET",
-      }),
-      providesTags: ["Profile"],
-      transformResponse: (response) => {
-        // Transform response from snake_case to camelCase for frontend
-        if (response.success && response.data) {
-          const profile = response.data;
-          return {
-            ...profile,
-            firstName: profile.first_name,
-            lastName: profile.last_name,
-            middleName: profile.middle_name,
-            dateOfBirth: profile.date_of_birth,
-            maritalStatus: profile.marital_status,
-            phoneNumber: profile.phone_number,
-            homeAddress: profile.home_address,
-            zipCode: profile.zip_code,
-            emergencyContact: profile.emergency_contact,
-            bloodType: profile.blood_type,
-            chronicConditions: profile.chronic_conditions,
-            physicianName: profile.physician_name,
-            physicianPhone: profile.physician_phone,
-            insuranceProvider: profile.insurance_provider,
-            policyNumber: profile.policy_number,
-          };
-        }
-        return response;
-      },
-    }),
-
     // Update personal information
     updateProfile: builder.mutation({
       query: (profileData) => ({
@@ -103,7 +69,6 @@ export const profileApi = createApi({
 });
 
 export const {
-  useGetProfileQuery,
   useUpdateProfileMutation,
   useUpdateContactInfoMutation,
   useUpdateMedicalInfoMutation,

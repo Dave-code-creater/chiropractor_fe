@@ -108,11 +108,11 @@ export default function DateSelector({
   const { morning, afternoon, evening } = getTimeSlotsByPeriod();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header with Doctor Info */}
       <div>
-        <h2 className="text-xl font-semibold mb-1">Select Date & Time</h2>
-        <p className="text-muted-foreground">
+        <h2 className="text-lg sm:text-xl font-semibold mb-1">Select Date & Time</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
           Choose your preferred appointment date and time
           {selectedDoctor && (
             <span className="ml-1">
@@ -146,23 +146,23 @@ export default function DateSelector({
         </Card>
       )}
 
-      <div className="grid lg:grid-cols-2 gap-4 lg:gap-6">
+      <div className="grid lg:grid-cols-2 gap-3 lg:gap-6">
         {/* Calendar */}
         <Card className="order-1 lg:order-1">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <CalendarDays className="h-5 w-5" />
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <CalendarDays className="h-4 w-4 sm:h-5 sm:w-5" />
               Select Date
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             <div className="relative">
               <Calendar
                 mode="single"
                 selected={selectedDate}
                 onSelect={handleDateSelect}
                 disabled={isDateDisabled}
-                className="rounded-md border w-full p-0"
+                className="rounded-md border w-full p-0 [&_table]:text-sm sm:[&_table]:text-base"
                 classNames={{
                   months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 relative w-full",
                   month: "space-y-4 w-full",
@@ -173,10 +173,10 @@ export default function DateSelector({
                   button_next: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100 border border-input hover:bg-accent hover:text-accent-foreground absolute right-1 top-1 rounded-md z-10",
                   month_grid: "w-full border-collapse space-y-1",
                   weekdays: "flex",
-                  weekday: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+                  weekday: "text-muted-foreground rounded-md w-8 sm:w-9 font-normal text-[0.7rem] sm:text-[0.8rem]",
                   week: "flex w-full mt-2",
-                  day: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-                  day_button: "h-9 w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground rounded-md",
+                  day: "h-8 w-8 sm:h-9 sm:w-9 text-center text-xs sm:text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+                  day_button: "h-8 w-8 sm:h-9 sm:w-9 p-0 font-normal aria-selected:opacity-100 hover:bg-accent hover:text-accent-foreground rounded-md",
                   selected: "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
                   today: "bg-accent text-accent-foreground font-semibold",
                   outside: "text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
@@ -186,7 +186,7 @@ export default function DateSelector({
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <div className="w-3 h-3 bg-primary rounded"></div>
                 <span>Selected date</span>
@@ -205,9 +205,9 @@ export default function DateSelector({
 
         {/* Time Slots */}
         <Card className="order-2 lg:order-2">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Clock className="h-5 w-5" />
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5" />
               Available Times
               {selectedDoctor && (
                 <Badge variant="outline" className="ml-auto text-xs">
@@ -216,12 +216,12 @@ export default function DateSelector({
               )}
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             {/* Loading State */}
             {isLoadingAvailability && (
-              <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                <span className="ml-2 text-sm text-muted-foreground">
+              <div className="flex items-center justify-center py-6 sm:py-8">
+                <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
+                <span className="ml-2 text-xs sm:text-sm text-muted-foreground">
                   Loading available times...
                 </span>
               </div>
@@ -249,144 +249,144 @@ export default function DateSelector({
 
             {/* No Doctor Selected */}
             {!bookingData.doctor && selectedDate && !isLoadingAvailability && (
-              <div className="text-center py-8">
-                <User className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground">
+              <div className="text-center py-6 sm:py-8">
+                <User className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3" />
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Please select a doctor to view available times
                 </p>
               </div>
             )}
 
             {/* Available Times */}
-            {selectedDate && 
-             bookingData.doctor && 
-             !isLoadingAvailability && 
-             !availabilityError && 
-             availableSlots.length > 0 && (
-              <div className="space-y-4">
-                {/* Morning */}
-                {morning.length > 0 && (
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground mb-2 block">
-                      Morning
-                    </Label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {morning.map((slot) => (
-                        <Button
-                          key={slot.time}
-                          variant={
-                            bookingData.time === slot.time
-                              ? "default"
-                              : slot.available
-                                ? "outline"
-                                : "secondary"
-                          }
-                          size="sm"
-                          disabled={!slot.available}
-                          onClick={() => handleTimeSelect(slot.time)}
-                          className={cn(
-                            "h-10 text-sm",
-                            bookingData.time === slot.time &&
+            {selectedDate &&
+              bookingData.doctor &&
+              !isLoadingAvailability &&
+              !availabilityError &&
+              availableSlots.length > 0 && (
+                <div className="space-y-3 sm:space-y-4">
+                  {/* Morning */}
+                  {morning.length > 0 && (
+                    <div>
+                      <Label className="text-xs sm:text-sm font-medium text-muted-foreground mb-2 block">
+                        Morning
+                      </Label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {morning.map((slot) => (
+                          <Button
+                            key={slot.time}
+                            variant={
+                              bookingData.time === slot.time
+                                ? "default"
+                                : slot.available
+                                  ? "outline"
+                                  : "secondary"
+                            }
+                            size="sm"
+                            disabled={!slot.available}
+                            onClick={() => handleTimeSelect(slot.time)}
+                            className={cn(
+                              "h-9 sm:h-10 text-xs sm:text-sm font-medium",
+                              bookingData.time === slot.time &&
                               "bg-primary text-primary-foreground",
-                            !slot.available &&
+                              !slot.available &&
                               "opacity-50 cursor-not-allowed bg-muted",
-                          )}
-                        >
-                          {formatTime(slot.time)}
-                        </Button>
-                      ))}
+                            )}
+                          >
+                            {formatTime(slot.time)}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Afternoon */}
-                {afternoon.length > 0 && (
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground mb-2 block">
-                      Afternoon
-                    </Label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {afternoon.map((slot) => (
-                        <Button
-                          key={slot.time}
-                          variant={
-                            bookingData.time === slot.time
-                              ? "default"
-                              : slot.available
-                                ? "outline"
-                                : "secondary"
-                          }
-                          size="sm"
-                          disabled={!slot.available}
-                          onClick={() => handleTimeSelect(slot.time)}
-                          className={cn(
-                            "h-10 text-sm",
-                            bookingData.time === slot.time &&
+                  {/* Afternoon */}
+                  {afternoon.length > 0 && (
+                    <div>
+                      <Label className="text-xs sm:text-sm font-medium text-muted-foreground mb-2 block">
+                        Afternoon
+                      </Label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {afternoon.map((slot) => (
+                          <Button
+                            key={slot.time}
+                            variant={
+                              bookingData.time === slot.time
+                                ? "default"
+                                : slot.available
+                                  ? "outline"
+                                  : "secondary"
+                            }
+                            size="sm"
+                            disabled={!slot.available}
+                            onClick={() => handleTimeSelect(slot.time)}
+                            className={cn(
+                              "h-9 sm:h-10 text-xs sm:text-sm font-medium",
+                              bookingData.time === slot.time &&
                               "bg-primary text-primary-foreground",
-                            !slot.available &&
+                              !slot.available &&
                               "opacity-50 cursor-not-allowed bg-muted",
-                          )}
-                        >
-                          {formatTime(slot.time)}
-                        </Button>
-                      ))}
+                            )}
+                          >
+                            {formatTime(slot.time)}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {/* Evening */}
-                {evening.length > 0 && (
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground mb-2 block">
-                      Evening
-                    </Label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                      {evening.map((slot) => (
-                        <Button
-                          key={slot.time}
-                          variant={
-                            bookingData.time === slot.time
-                              ? "default"
-                              : slot.available
-                                ? "outline"
-                                : "secondary"
-                          }
-                          size="sm"
-                          disabled={!slot.available}
-                          onClick={() => handleTimeSelect(slot.time)}
-                          className={cn(
-                            "h-10 text-sm",
-                            bookingData.time === slot.time &&
+                  {/* Evening */}
+                  {evening.length > 0 && (
+                    <div>
+                      <Label className="text-xs sm:text-sm font-medium text-muted-foreground mb-2 block">
+                        Evening
+                      </Label>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {evening.map((slot) => (
+                          <Button
+                            key={slot.time}
+                            variant={
+                              bookingData.time === slot.time
+                                ? "default"
+                                : slot.available
+                                  ? "outline"
+                                  : "secondary"
+                            }
+                            size="sm"
+                            disabled={!slot.available}
+                            onClick={() => handleTimeSelect(slot.time)}
+                            className={cn(
+                              "h-9 sm:h-10 text-xs sm:text-sm font-medium",
+                              bookingData.time === slot.time &&
                               "bg-primary text-primary-foreground",
-                            !slot.available &&
+                              !slot.available &&
                               "opacity-50 cursor-not-allowed bg-muted",
-                          )}
-                        >
-                          {formatTime(slot.time)}
-                        </Button>
-                      ))}
+                            )}
+                          >
+                            {formatTime(slot.time)}
+                          </Button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
 
             {/* No Available Times */}
-            {selectedDate && 
-             bookingData.doctor && 
-             !isLoadingAvailability && 
-             !availabilityError && 
-             availableSlots.length === 0 && (
-              <div className="text-center py-8">
-                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground">
-                  No available times for this date
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Please select a different date
-                </p>
-              </div>
-            )}
+            {selectedDate &&
+              bookingData.doctor &&
+              !isLoadingAvailability &&
+              !availabilityError &&
+              availableSlots.length === 0 && (
+                <div className="text-center py-6 sm:py-8">
+                  <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
+                  <p className="text-muted-foreground">
+                    No available times for this date
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Please select a different date
+                  </p>
+                </div>
+              )}
 
             {/* Selected Time Info */}
             {bookingData.time && (

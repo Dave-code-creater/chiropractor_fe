@@ -92,50 +92,7 @@ export const authApi = createApi({
       invalidatesTags: ["User"],
     }),
 
-    refreshToken: builder.mutation({
-      query: () => ({
-        url: "/auth/refresh-token",
-        method: "POST",
-      }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(setCredentials(data));
-        } catch (error) {
-          dispatch(logOut());
-        }
-      },
-      invalidatesTags: ["User"],
-    }),
 
-    getCurrentUser: builder.query({
-      query: () => ({
-        url: "/auth/me",
-        method: "GET",
-      }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          if (data.user) {
-            dispatch(updateUserProfile({
-              firstName: data.user.first_name,
-              lastName: data.user.last_name,
-              fullName: data.user.full_name,
-              phoneNumber: data.user.phone_number,
-              dateOfBirth: data.user.date_of_birth,
-              gender: data.user.gender,
-              marriageStatus: data.user.marriage_status,
-              race: data.user.race,
-              isVerified: data.user.is_verified,
-              phoneVerified: data.user.phone_verified,
-            }));
-          }
-        } catch (error) {
-          console.error("Failed to get current user:", error);
-        }
-      },
-      providesTags: ["User"],
-    }),
 
     forgotPassword: builder.mutation({
       query: (email) => ({
@@ -166,8 +123,6 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
-  useRefreshTokenMutation,
-  useGetCurrentUserQuery,
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useVerifyResetTokenQuery,

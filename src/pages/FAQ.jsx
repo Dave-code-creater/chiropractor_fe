@@ -24,7 +24,7 @@ export default function FAQ() {
       case "Privacy":
         return FAQ_QUESTION_PRIVACY;
       case "Other":
-        return FAQ_QUESTION_OTHER;
+        return []; // No specific questions for "Other" category
       default:
         return [];
     }

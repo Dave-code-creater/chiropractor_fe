@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   sidebarOpen: false,
   darkMode: false,
+  theme: 'light', // 'light', 'dark', or 'system'
 };
 
 const uiStateSlice = createSlice({
@@ -14,10 +15,15 @@ const uiStateSlice = createSlice({
     },
     toggleDarkMode(state) {
       state.darkMode = !state.darkMode;
+      state.theme = state.darkMode ? 'dark' : 'light';
+    },
+    setTheme(state, action) {
+      state.theme = action.payload;
+      state.darkMode = action.payload === 'dark';
     },
   },
 });
 
-export const { toggleSidebar, toggleDarkMode: toggleUiDarkMode } =
+export const { toggleSidebar, toggleDarkMode: toggleUiDarkMode, setTheme } =
   uiStateSlice.actions;
 export default uiStateSlice.reducer;

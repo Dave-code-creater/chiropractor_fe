@@ -1,43 +1,16 @@
 import React, { useState, lazy, Suspense } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useScreenSize } from "@/hooks/useScreenSize";
+import MobilePainDetailModal from "./MobilePainDetailModal";
+import DesktopPainDetailDialog from "./DesktopPainDetailDialog";
+
 const BodyComponent = lazy(() =>
   import("reactjs-human-body").then((m) => ({
     default: m.BodyComponent || m.default,
   })),
 );
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Info } from "lucide-react";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import {
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent,
-} from "@/components/ui/hover-card";
-import {
-  RenderQuesFuncs,
-  RenderTextAreaQues,
-  RenderRadioQues,
-  RenderCheckboxQues,
-  RenderOtherQues,
-} from "@/components/forms/FormComponents";
 
 const painFields = [
   { id: "head", label: "Head" },
@@ -181,6 +154,7 @@ export default function PainChartSection({
 
   const [openFieldId, setopenFieldId] = useState(null);
   const [pendingLevel, setPendingLevel] = useState(1);
+  const { isMobile } = useScreenSize();
 
   const partMap = {
     head: "head",
@@ -203,8 +177,8 @@ export default function PainChartSection({
     if (!field) return;
     // Handle both old number format and new object format
     const existingData = painMap[field];
-    const currentLevel = existingData && typeof existingData === 'object' 
-      ? existingData['pain-level'] 
+    const currentLevel = existingData && typeof existingData === 'object'
+      ? existingData['pain-level']
       : existingData || 1;
     setPendingLevel(currentLevel);
     setopenFieldId(field);
@@ -222,133 +196,19 @@ export default function PainChartSection({
   };
 
   const closeDialog = () => setopenFieldId(null);
-  const saveDialog = () => {
-    if (!openFieldId) return;
-    
-    // Get the current body part's data (including any changes made in the dialog)
-    const currentData = painMap[openFieldId] || {};
-    
-    // Create the final body part data with the updated pain level
-    const bodyPartData = {
-      ...currentData,
-      "pain-level": pendingLevel,
-      "selected-at": currentData["selected-at"] || new Date().toISOString(),
-      "body-part": openFieldId
-    };
-    
-    setPainMap((prev) => ({
-      ...prev,
-      [openFieldId]: bodyPartData,
-    }));
-    setopenFieldId(null);
-  };
-
-  const removeDialog = () => {
-    if (!openFieldId) return;
-    setPainMap((prev) => {
-      const map = { ...prev };
-      delete map[openFieldId];
-      return map;
-    });
-    setopenFieldId(null);
-  };
-
-  const newrenderQuestion = (question) => {
-    const commonFieldsetClasses = "border rounded-md p-4 space-y-4";
-    
-    // Get current body part's specific data
-    const currentBodyPartData = painMap[openFieldId] || {};
-    
-    // Create body-part specific formData
-    const bodyPartFormData = {
-      [question.id]: question.id === 'painType' ? currentBodyPartData['pain-types'] || [] :
-                    question.id === 'painLevel' ? currentBodyPartData['pain-severity'] || [] :
-                    question.id === 'painTiming' ? currentBodyPartData['pain-timing'] || "" :
-                    question.id === 'painChanges' ? currentBodyPartData['pain-changes'] || "" :
-                    question.id === 'radiatingPain' ? currentBodyPartData['radiating-pain'] || "" :
-                    currentBodyPartData[question.id] || (question.type === 'checkbox' ? [] : "")
-    };
-    
-    // Create body-part specific setFormData function
-    const setBodyPartFormData = (updater) => {
-      setPainMap((prev) => {
-        const updated = typeof updater === 'function' ? updater(bodyPartFormData) : updater;
-        const newBodyPartData = { ...currentBodyPartData };
-        
-        // Map the question data back to our body part structure
-        if (question.id === 'painType') {
-          newBodyPartData['pain-types'] = updated[question.id];
-        } else if (question.id === 'painLevel') {
-          newBodyPartData['pain-severity'] = updated[question.id];
-        } else if (question.id === 'painTiming') {
-          newBodyPartData['pain-timing'] = updated[question.id];
-        } else if (question.id === 'painChanges') {
-          newBodyPartData['pain-changes'] = updated[question.id];
-        } else if (question.id === 'radiatingPain') {
-          newBodyPartData['radiating-pain'] = updated[question.id];
-        } else {
-          newBodyPartData[question.id] = updated[question.id];
-        }
-        
-        return {
-          ...prev,
-          [openFieldId]: newBodyPartData
-        };
-      });
-    };
-    
-    if (question.type === "group") {
-      return (
-        <RenderQuesFuncs
-          question={question}
-          formData={bodyPartFormData}
-          setFormData={setBodyPartFormData}
-          commonFieldsetClasses={commonFieldsetClasses}
-        />
-      );
-    } else if (question.type === "textarea") {
-      return (
-        <RenderTextAreaQues
-          question={question}
-          formData={bodyPartFormData}
-          setFormData={setBodyPartFormData}
-          commonFieldsetClasses={commonFieldsetClasses}
-        />
-      );
-    } else if (question.type === "radio") {
-      return (
-        <RenderRadioQues
-          question={question}
-          formData={bodyPartFormData}
-          setFormData={setBodyPartFormData}
-          commonFieldsetClasses={commonFieldsetClasses}
-        />
-      );
-    } else if (question.type === "checkbox") {
-      return (
-        <RenderCheckboxQues
-          question={question}
-          formData={bodyPartFormData}
-          setFormData={setBodyPartFormData}
-          commonFieldsetClasses={commonFieldsetClasses}
-        />
-      );
-    } else {
-      return (
-        <RenderOtherQues
-          question={question}
-          formData={bodyPartFormData}
-          setFormData={setBodyPartFormData}
-          commonFieldsetClasses={commonFieldsetClasses}
-        />
-      );
-    }
-  };
 
   return (
-    <div className="w-full flex flex-col items-center">
-      <div className="scale-90">
-        <Suspense fallback={<div>Loading...</div>}>
+    <div className="w-full flex flex-col items-center px-2 sm:px-4">
+      {/* Mobile-friendly body component */}
+      <div className="w-full max-w-md sm:max-w-lg scale-75 sm:scale-90 lg:scale-100">
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+              <p className="text-muted-foreground">Loading body diagram...</p>
+            </div>
+          </div>
+        }>
           <BodyComponent
             bodyModel={
               gender && gender.toLowerCase().includes("female")
@@ -360,124 +220,94 @@ export default function PainChartSection({
           />
         </Suspense>
       </div>
-      <div className="flex flex-wrap justify-center gap-4 mt-6">
-        {painFields
-          .filter(
-            (field) => painMap[field.id] !== undefined && 
-            (typeof painMap[field.id] === 'object' ? painMap[field.id]['pain-level'] > 0 : painMap[field.id] > 0),
-          )
-          .map((field) => (
-            <div key={field.id} className="text-center">
-              <Label className="font-semibold text-sm">{field.label}</Label>
-              <Button
-                id={field.id}
-                size="sm"
-                variant="outline"
-                onClick={() => {
-                  const existingData = painMap[field.id];
-                  const currentLevel = existingData && typeof existingData === 'object' 
-                    ? existingData['pain-level'] 
-                    : existingData || 1;
-                  setPendingLevel(currentLevel);
-                  setopenFieldId(field.id);
-                }}
-              >
-                {(() => {
-                  const data = painMap[field.id];
-                  const level = data && typeof data === 'object' ? data['pain-level'] : data;
-                  return typeof level === "number" ? level : "0";
-                })()} / 10
-              </Button>
-            </div>
-          ))}
-        <Dialog
-          open={Boolean(openFieldId)}
-          onOpenChange={(isOpen) => {
-            if (!isOpen) setopenFieldId(null);
-          }}
-        >
-          {openFieldId && (
-            <DialogContent className="max-w-2xl w-full bg-white rounded-lg shadow-lg">
-              {(() => {
-                const field = painFields.find((f) => f.id === openFieldId);
-                if (!field) return null;
-                return (
-                  <>
-                    <DialogHeader>
-                      <DialogTitle>Details your {field.label}</DialogTitle>
-                      <DialogDescription asChild>
-                        <div className="flex-1 p-6 overflow-y-auto">
-                          <Card>
-                            <CardContent className="space-y-8">
-                              <section key={objectHuman.id}>
-                                <h3 className="text-xl font-semibold mb-4">
-                                  Describe details of your {field.label}
-                                </h3>
-                                <div
-                                  key={field.id}
-                                  className="text-center mb-6"
-                                >
-                                  <Label className="font-semibold text-sm">
-                                    {field.label}
-                                  </Label>
-                                  <div className="w-40 mx-auto space-y-1 mt-2">
-                                    <div className="flex items-center gap-2">
-                                      <span className="text-xs w-6 text-left">
-                                        1
-                                      </span>
-                                      <Slider
-                                        min={1}
-                                        max={10}
-                                        step={1}
-                                        value={[pendingLevel]}
-                                        onValueChange={handleSliderChange}
-                                        className="flex-1"
-                                      />
-                                      <span className="text-xs w-6 text-right">
-                                        10
-                                      </span>
-                                    </div>
-                                    <div className="text-xs flex justify-between px-4">
-                                      <span>Minimal</span>
-                                      <span className="flex-1 text-center">
-                                        {" "}
-                                      </span>
-                                      <span>Max</span>
-                                    </div>
-                                    <div className="text-center text-xs">
-                                      {pendingLevel} / 10
-                                    </div>
-                                  </div>
-                                </div>
-                                <div className="flex flex-col gap-4">
-                                  {objectHuman.questions.map((question) =>
-                                    newrenderQuestion(question),
-                                  )}
-                                </div>
-                              </section>
-                            </CardContent>
-                          </Card>
+
+      {/* Selected areas info */}
+      <div className="w-full max-w-2xl mt-4 sm:mt-6">
+        <Card className="bg-gray-50">
+          <CardContent className="p-4">
+            <h4 className="font-semibold text-lg mb-3 text-center">Selected Pain Areas</h4>
+            <p className="text-sm text-muted-foreground text-center mb-4">
+              Click on body parts to select
+            </p>
+
+            {painFields
+              .filter(
+                (field) => painMap[field.id] !== undefined &&
+                  (typeof painMap[field.id] === 'object' ? painMap[field.id]['pain-level'] > 0 : painMap[field.id] > 0),
+              ).length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-muted-foreground text-sm">
+                  No areas selected yet. Tap on the body diagram above to add pain areas.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {painFields
+                  .filter(
+                    (field) => painMap[field.id] !== undefined &&
+                      (typeof painMap[field.id] === 'object' ? painMap[field.id]['pain-level'] > 0 : painMap[field.id] > 0),
+                  )
+                  .map((field) => {
+                    const data = painMap[field.id];
+                    const level = data && typeof data === 'object' ? data['pain-level'] : data;
+                    return (
+                      <Button
+                        key={field.id}
+                        variant="outline"
+                        className="flex items-center justify-between p-4 h-auto text-left hover:bg-blue-50 border-blue-200"
+                        onClick={() => {
+                          const existingData = painMap[field.id];
+                          const currentLevel = existingData && typeof existingData === 'object'
+                            ? existingData['pain-level']
+                            : existingData || 1;
+                          setPendingLevel(currentLevel);
+                          setopenFieldId(field.id);
+                        }}
+                      >
+                        <div className="flex-1">
+                          <span className="font-medium text-base">{field.label}</span>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            Pain Level: {typeof level === "number" ? level : "0"}/10
+                          </div>
                         </div>
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex justify-end mt-4 gap-2">
-                      <Button variant="outline" onClick={closeDialog}>
-                        Cancel
+                        <div className="text-sm text-blue-600 font-medium">
+                          Edit →
+                        </div>
                       </Button>
-                      {openFieldId && painMap[openFieldId] !== undefined && (
-                        <Button variant="destructive" onClick={removeDialog}>
-                          Remove
-                        </Button>
-                      )}
-                      <Button onClick={saveDialog}>Save</Button>
-                    </div>
-                  </>
-                );
-              })()}
-            </DialogContent>
-          )}
-        </Dialog>
+                    );
+                  })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+      {/* Responsive Pain Detail Modals */}
+      {isMobile ? (
+        <MobilePainDetailModal
+          isOpen={Boolean(openFieldId)}
+          onClose={closeDialog}
+          field={painFields.find((f) => f.id === openFieldId)}
+          pendingLevel={pendingLevel}
+          setPendingLevel={setPendingLevel}
+          painMap={painMap}
+          setPainMap={setPainMap}
+          openFieldId={openFieldId}
+          objectHuman={objectHuman}
+        />
+      ) : (
+        <DesktopPainDetailDialog
+          isOpen={Boolean(openFieldId)}
+          onClose={closeDialog}
+          field={painFields.find((f) => f.id === openFieldId)}
+          pendingLevel={pendingLevel}
+          setPendingLevel={setPendingLevel}
+          painMap={painMap}
+          setPainMap={setPainMap}
+          openFieldId={openFieldId}
+          objectHuman={objectHuman}
+        />
+      )}
     </div>
   );
 }

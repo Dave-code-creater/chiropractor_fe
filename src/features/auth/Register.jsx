@@ -120,7 +120,7 @@ export default function Register() {
         <div className="w-full max-w-3xl p-12 lg:p-12 bg-white">
           <div className="mx-auto h-10 w-auto" />
           <h1 className="text-2xl font-semibold text-center text-gray-900">
-            Create your account
+            Create Your Account
           </h1>
           <p className="mt-2 text-center text-sm text-gray-400">
             Let's get you all set up so you can start your journey with us.
@@ -140,7 +140,7 @@ export default function Register() {
                 id="firstName"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                placeholder="John"
+                placeholder="Enter first name"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -155,7 +155,7 @@ export default function Register() {
                 id="lastName"
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
-                placeholder="Doe"
+                placeholder="Enter last name"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -186,7 +186,7 @@ export default function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={handleEmailBlur}
-                placeholder="you@example.com"
+                placeholder="Enter your email address"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md bg-white text-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -245,9 +245,9 @@ export default function Register() {
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?{" "}
+            Already Have an Account?{" "}
             <a href="/login" className="text-blue-600 hover:underline">
-              Log in
+              Log In
             </a>
           </p>
         </div>

@@ -59,12 +59,12 @@ export function RenderQuesFuncs({
           const isReq = !!field.required;
 
           // Determine if this field should use formatted input
-          const isPhoneField = field.type === "tel" || 
-                              field.id.toLowerCase().includes("phone") ||
-                              field.placeholder?.includes("(") && field.placeholder?.includes(")");
-          const isSSNField = field.id === "ssn" || 
-                           field.id.toLowerCase().includes("ssn") ||
-                           field.placeholder?.includes("-") && field.placeholder?.length <= 12;
+          const isPhoneField = field.type === "tel" ||
+            field.id.toLowerCase().includes("phone") ||
+            field.placeholder?.includes("(") && field.placeholder?.includes(")");
+          const isSSNField = field.id === "ssn" ||
+            field.id.toLowerCase().includes("ssn") ||
+            field.placeholder?.includes("-") && field.placeholder?.length <= 12;
 
           return (
             <div key={field.id}>
@@ -210,6 +210,16 @@ export function RenderRadioQues({
   commonFieldsetClasses,
   errors = {},
 }) {
+  // Create shorter placeholder for mobile
+  const getPlaceholder = () => {
+    const label = question.label;
+    if (label.length > 30) {
+      // Truncate long labels for mobile
+      return `Select ${label.substring(0, 20)}...`;
+    }
+    return `Select ${label}`;
+  };
+
   return (
     <fieldset key={question.id} className={commonFieldsetClasses}>
       <FormatLegend question={question} />
@@ -220,12 +230,12 @@ export function RenderRadioQues({
         }
         required={!!question.required}
       >
-        <SelectTrigger>
-          <SelectValue placeholder={`Select ${question.label}`} />
+        <SelectTrigger className="h-12 text-base">
+          <SelectValue placeholder={getPlaceholder()} />
         </SelectTrigger>
         <SelectContent>
           {question.options.map((opt) => (
-            <SelectItem key={opt} value={opt}>
+            <SelectItem key={opt} value={opt} className="text-base py-3">
               {opt}
             </SelectItem>
           ))}
@@ -248,9 +258,9 @@ export function RenderCheckboxQues({
   return (
     <fieldset key={question.id} className={commonFieldsetClasses}>
       <FormatLegend question={question} />
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {question.options.map((opt) => (
-          <div key={opt} className="flex items-center text-sm">
+          <div key={opt} className="flex items-center p-3 sm:p-2 hover:bg-muted/50 rounded-lg transition-colors border border-transparent hover:border-gray-200">
             <Checkbox
               id={`${question.id}-${opt}`}
               checked={formData[question.id]?.includes(opt)}
@@ -266,8 +276,12 @@ export function RenderCheckboxQues({
                 })
               }
               required={!!question.required}
+              className="flex-shrink-0 h-5 w-5"
             />
-            <Label htmlFor={`${question.id}-${opt}`} className="ml-2">
+            <Label
+              htmlFor={`${question.id}-${opt}`}
+              className="ml-3 cursor-pointer leading-relaxed text-base sm:text-sm font-medium"
+            >
               {opt}
             </Label>
           </div>

@@ -48,9 +48,9 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
 
   if (isEmpty) {
     return (
-      <div className="text-center py-8 text-muted-foreground">
-        <CalendarDays className="h-12 w-12 mx-auto mb-3 opacity-50" />
-        <p className="text-sm">
+      <div className="text-center py-4 sm:py-8 text-muted-foreground">
+        <CalendarDays className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-2 sm:mb-3 opacity-50" />
+        <p className="text-xs sm:text-sm">
           Your appointment details will appear here as you make selections.
         </p>
       </div>
@@ -58,35 +58,35 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2 sm:space-y-4">
       {/* Doctor - First in the flow */}
       {selectedDoctor && (
-        <div className="flex items-start gap-3">
-          <User className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-          <div className="flex-1 space-y-2">
-            <p className="font-medium text-sm">Healthcare Provider</p>
-            <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10">
+        <div className="flex items-start gap-2 sm:gap-3">
+          <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
+          <div className="flex-1 space-y-1 sm:space-y-2">
+            <p className="font-medium text-xs sm:text-sm">Healthcare Provider</p>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <Avatar className="h-6 w-6 sm:h-10 sm:w-10">
                 <AvatarImage src={selectedDoctor.profileImage} />
-                <AvatarFallback>
+                <AvatarFallback className="text-xs">
                   {selectedDoctor.firstName?.[0]}
                   {selectedDoctor.lastName?.[0]}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="text-sm font-medium">
+                <p className="text-xs sm:text-sm font-medium">
                   Dr. {selectedDoctor.firstName} {selectedDoctor.lastName}
                 </p>
                 <p className="text-xs text-muted-foreground">
                   {selectedDoctor.specializations?.primary ||
                     selectedDoctor.specialization}
                 </p>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-1 sm:gap-2 mt-1">
                   {selectedDoctor.rating && (
                     <span className="text-xs">⭐ {selectedDoctor.rating}</span>
                   )}
                   {selectedDoctor.yearsOfExperience && (
-                    <Badge variant="outline" className="text-xs px-1 py-0">
+                    <Badge variant="outline" className="text-xs px-1 py-0 h-4">
                       {selectedDoctor.yearsOfExperience}+ years
                     </Badge>
                   )}
@@ -100,12 +100,12 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
       {/* Location - Second in the flow */}
       {bookingData.location && (
         <>
-          {selectedDoctor && <Separator />}
-          <div className="flex items-start gap-3">
-            <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+          {selectedDoctor && <Separator className="my-2 sm:my-3" />}
+          <div className="flex items-start gap-2 sm:gap-3">
+            <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
             <div>
-              <p className="font-medium text-sm">Location</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-medium text-xs sm:text-sm">Location</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {getLocationDetails(bookingData.location)?.label || bookingData.location}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
@@ -119,14 +119,14 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
       {/* Date & Time - Third in the flow */}
       {(bookingData.date || bookingData.time) && (
         <>
-          {(selectedDoctor || bookingData.location) && <Separator />}
-          <div className="space-y-3">
+          {(selectedDoctor || bookingData.location) && <Separator className="my-2 sm:my-3" />}
+          <div className="space-y-2 sm:space-y-3">
             {bookingData.date && (
-              <div className="flex items-start gap-3">
-                <CalendarDays className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div className="flex items-start gap-2 sm:gap-3">
+                <CalendarDays className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-sm">Date</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-medium text-xs sm:text-sm">Date</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {formatDate(bookingData.date)}
                   </p>
                 </div>
@@ -134,11 +134,11 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
             )}
 
             {bookingData.time && (
-              <div className="flex items-start gap-3">
-                <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div className="flex items-start gap-2 sm:gap-3">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-sm">Time</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="font-medium text-xs sm:text-sm">Time</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     {formatTime(bookingData.time)}
                   </p>
                 </div>
@@ -151,12 +151,12 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
       {/* Reason for Visit */}
       {bookingData.reason && (
         <>
-          <Separator />
-          <div className="flex items-start gap-3">
-            <FileText className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+          <Separator className="my-2 sm:my-3" />
+          <div className="flex items-start gap-2 sm:gap-3">
+            <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
             <div>
-              <p className="font-medium text-sm">Reason for Visit</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="font-medium text-xs sm:text-sm">Reason for Visit</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {bookingData.reason}
               </p>
             </div>
@@ -167,7 +167,7 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
       {/* Additional Notes */}
       {bookingData.notes && (
         <>
-          <Separator />
+          <Separator className="my-2 sm:my-3" />
           <div className="flex items-start gap-3">
             <FileText className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
             <div>
@@ -185,44 +185,44 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
         bookingData.location ||
         bookingData.date ||
         bookingData.time) && (
-        <>
-          <Separator />
-          <div className="flex items-start gap-3">
-            <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium text-sm">Duration</p>
-              <p className="text-sm text-muted-foreground">
-                30 minutes (estimated)
-              </p>
+          <>
+            <Separator />
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="font-medium text-sm">Duration</p>
+                <p className="text-sm text-muted-foreground">
+                  30 minutes (estimated)
+                </p>
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
 
       {/* Important Notes */}
       {(selectedDoctor ||
         bookingData.location ||
         bookingData.date ||
         bookingData.time) && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-          <h4 className="text-sm font-medium text-blue-900 mb-2">
-            Important Reminders:
-          </h4>
-          <ul className="text-xs text-blue-800 space-y-1">
-            <li>• Please arrive 15 minutes early for check-in</li>
-            <li>• Bring a valid ID and insurance card</li>
-            <li>• Wear comfortable clothing</li>
-            <li>• You can reschedule up to 24 hours in advance</li>
-            {selectedDoctor && (
-              <li>
-                • Dr. {selectedDoctor.lastName} specializes in{" "}
-                {selectedDoctor.specializations?.primary ||
-                  selectedDoctor.specialization}
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
+            <h4 className="text-sm font-medium text-blue-900 mb-2">
+              Important Reminders:
+            </h4>
+            <ul className="text-xs text-blue-800 space-y-1">
+              <li>• Please arrive 15 minutes early for check-in</li>
+              <li>• Bring a valid ID and insurance card</li>
+              <li>• Wear comfortable clothing</li>
+              <li>• You can reschedule up to 24 hours in advance</li>
+              {selectedDoctor && (
+                <li>
+                  • Dr. {selectedDoctor.lastName} specializes in{" "}
+                  {selectedDoctor.specializations?.primary ||
+                    selectedDoctor.specialization}
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
     </div>
   );
 }

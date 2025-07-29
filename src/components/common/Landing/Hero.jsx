@@ -5,11 +5,10 @@ import { useSelector } from "react-redux";
 import { useState, useEffect } from "react";
 import { selectUserId, selectIsAuthenticated } from "../../../state/data/authSlice";
 
-
-import background1 from '../../../../public/background-1.jpg';
-import background2 from '../../../../public/background-2.jpg';
-import background3 from '../../../../public/background-3.jpg';
-import background4 from '../../../../public/background-4.jpg';
+import background1 from '../../../assets/background-1.jpg';
+import background2 from '../../../assets/background-2.jpg';
+import background3 from '../../../assets/background-3.jpg';
+import background4 from '../../../assets/background-4.jpg';
 
 
 export default function Hero() {

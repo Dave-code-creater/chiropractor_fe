@@ -183,7 +183,7 @@ export default function Login() {
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
-          Sign in to your account
+          Sign In to Your Account
         </h2>
       </div>
 
@@ -194,7 +194,7 @@ export default function Login() {
               htmlFor="email"
               className="block text-sm font-medium text-gray-900"
             >
-              Email address
+              Email Address
             </label>
             <input
               id="email"
@@ -205,7 +205,7 @@ export default function Login() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onBlur={handleEmailBlur}
-              placeholder="you@example.com"
+              placeholder="Enter your email address"
               className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
             />
             {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
@@ -224,7 +224,7 @@ export default function Login() {
                   to="/forgot-password"
                   className="font-semibold text-indigo-600 hover:text-indigo-500"
                 >
-                  Forgot password?
+                  Forgot Password?
                 </Link>
               </div>
             </div>
@@ -248,18 +248,18 @@ export default function Login() {
               disabled={isLoading}
               className="w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? "Signing in..." : "Sign in"}
+              {isLoading ? "Signing In..." : "Sign In"}
             </button>
           </div>
         </form>
 
         <p className="mt-10 text-center text-sm text-gray-500">
-          Not a member?{" "}
+          Not a Member?{" "}
           <Link
             to="/register"
             className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
           >
-            Register now
+            Register Now
           </Link>
         </p>
       </div>

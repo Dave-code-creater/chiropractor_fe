@@ -56,7 +56,7 @@ export default function Testimonials() {
                         Meet our happy clients
                     </h2>
                     <p className="text-lg text-gray-600 mb-6">
-                        Join a global network of thought leaders, product developers,
+                        Here are some of the testimonials from our satisfied clients.
                     </p>
 
                 </div>

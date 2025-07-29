@@ -18,6 +18,7 @@ import {
   Ban,
   Lock,
   Unlock,
+  X,
 } from "lucide-react";
 
 const AdminChat = () => {
@@ -87,7 +88,7 @@ const AdminChat = () => {
       <Card className="h-full shadow-xl border-0 overflow-hidden rounded-none">
         <div className="flex h-full">
           {/* Conversations Sidebar */}
-          <div className="w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex flex-col">
+          <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
             <div className="p-8 border-b bg-background/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-6">
@@ -135,8 +136,8 @@ const AdminChat = () => {
                       key={conversation.id}
                       onClick={() => setSelectedConversation(conversation)}
                       className={`p-4 rounded-lg mb-2 cursor-pointer ${selectedConversation?.id === conversation.id
-                          ? "bg-primary/10"
-                          : "hover:bg-muted/40"
+                        ? "bg-primary/10"
+                        : "hover:bg-muted/40"
                         }`}
                     >
                       <div className="flex items-center gap-3">
@@ -169,13 +170,13 @@ const AdminChat = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col bg-gradient-to-br from-background to-muted/20">
+          <div className={`${selectedConversation ? 'flex' : 'hidden lg:flex'} flex-1 flex-col bg-gradient-to-br from-background to-muted/20`}>
             {!selectedConversation ? (
               <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Admin Control Panel</h3>
-                  <p className="text-muted-foreground">
+                <div className="text-center p-4">
+                  <Shield className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium mb-2">Admin Control Panel</h3>
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     Select a conversation to manage communications
                   </p>
                 </div>
@@ -183,26 +184,36 @@ const AdminChat = () => {
             ) : (
               <>
                 {/* Chat Header */}
-                <div className="p-8 border-b bg-background/80 backdrop-blur-sm">
+                <div className="p-3 sm:p-4 lg:p-8 border-b bg-background/80 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-6">
-                      <Avatar className="h-12 w-12">
+                    <div className="flex items-center gap-2 sm:gap-3 lg:gap-6">
+                      {/* Back button for mobile */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="lg:hidden p-1 h-8 w-8"
+                        onClick={() => setSelectedConversation(null)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+
+                      <Avatar className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12">
                         <AvatarFallback>
                           {selectedConversation.participant_name?.[0] || "U"}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <h3 className="font-medium text-sm sm:text-base truncate">
                             {selectedConversation.participant_name || "User"}
                           </h3>
                           {selectedConversation.participant_role && (
-                            <Badge className={getRoleBadgeColor(selectedConversation.participant_role)}>
+                            <Badge className={`${getRoleBadgeColor(selectedConversation.participant_role)} text-xs`}>
                               {selectedConversation.participant_role}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">
                           {selectedConversation.subject}
                         </p>
                       </div>
@@ -226,14 +237,14 @@ const AdminChat = () => {
                         <div
                           key={message.id}
                           className={`flex ${message.sender_type === "admin"
-                              ? "justify-end"
-                              : "justify-start"
+                            ? "justify-end"
+                            : "justify-start"
                             }`}
                         >
                           <div
                             className={`max-w-[85%] rounded-xl p-5 ${message.sender_type === "admin"
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted"
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted"
                               }`}
                           >
                             <p className="text-base leading-relaxed">{message.content}</p>

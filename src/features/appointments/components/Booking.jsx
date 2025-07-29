@@ -45,7 +45,7 @@ export default function DoctorBooking() {
   // Ensure doctors is always an array with fallback data and transform API response
   const doctors = useMemo(() => {
     let rawDoctors = [];
-    
+
     // Handle the actual backend response structure
     if (doctorsData?.data) {
       // Backend returns { success: true, data: [...] }
@@ -73,7 +73,7 @@ export default function DoctorBooking() {
         primary: doctor.specialization || doctor.specialty || 'Chiropractor'
       }
     }));
-    
+
     return transformedDoctors;
   }, [doctorsData]);
 
@@ -112,7 +112,7 @@ export default function DoctorBooking() {
   useEffect(() => {
     // Only auto-advance if user hasn't manually navigated
     if (manualTabNavigation) return;
-    
+
     if (activeTab === "doctor" && bookingData.doctor) {
       setActiveTab("location");
     } else if (activeTab === "location" && bookingData.location) {
@@ -126,7 +126,7 @@ export default function DoctorBooking() {
   const handleTabChange = (newTab) => {
     setManualTabNavigation(true);
     setActiveTab(newTab);
-    
+
     // Don't reset manual navigation automatically - only reset when user naturally fills form
   };
 
@@ -151,16 +151,16 @@ export default function DoctorBooking() {
     try {
       // Get selected doctor details
       const selectedDoctor = getSelectedDoctor();
-      
+
       // Get selected location details
       const selectedLocation = getLocationByValue(bookingData.location) || DEFAULT_CLINIC_LOCATION;
-      
+
       // Format date to ISO date string (YYYY-MM-DD)
       const formattedDate = bookingData.date.toISOString().split('T')[0];
-      
+
       // Use time as is (24-hour format HH:MM from time input)
       const formattedTime = bookingData.time;
-      
+
       // Format the appointment data to match backend expectation (same as doctor components)
       const appointmentData = {
         doctor_id: bookingData.doctor,
@@ -229,16 +229,16 @@ export default function DoctorBooking() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
-      <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+    <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+      <div className="grid lg:grid-cols-3 gap-3 sm:gap-6">
         {/* Left: Form Steps */}
         <div className="lg:col-span-2">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid grid-cols-4 mb-4 sm:mb-6 w-full h-auto">
+            <TabsList className="grid grid-cols-2 sm:grid-cols-4 mb-3 sm:mb-6 w-full h-auto gap-1 sm:gap-0">
               <TabsTrigger
                 value="doctor"
                 className={cn(
-                  "text-xs sm:text-sm py-2 px-1 sm:px-2",
+                  "text-xs sm:text-sm py-2.5 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
                   isStepComplete("doctor") ? "bg-primary/10 text-primary" : ""
                 )}
               >
@@ -249,7 +249,7 @@ export default function DoctorBooking() {
                 value="location"
                 disabled={!isStepComplete("doctor")}
                 className={cn(
-                  "text-xs sm:text-sm py-2 px-1 sm:px-2",
+                  "text-xs sm:text-sm py-2.5 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground",
                   isStepComplete("location") ? "bg-primary/10 text-primary" : ""
                 )}
               >
@@ -260,20 +260,20 @@ export default function DoctorBooking() {
                 value="date"
                 disabled={!isStepComplete("location")}
                 className={cn(
-                  "text-xs sm:text-sm py-2 px-1 sm:px-2",
+                  "text-xs sm:text-sm py-2.5 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground col-span-2 sm:col-span-1",
                   isStepComplete("date") ? "bg-primary/10 text-primary" : ""
                 )}
               >
                 <span className="hidden sm:inline">Date & Time</span>
-                <span className="sm:hidden">Date</span>
+                <span className="sm:hidden">Date & Time</span>
               </TabsTrigger>
-              <TabsTrigger 
-                value="summary" 
+              <TabsTrigger
+                value="summary"
                 disabled={!canProceedToSummary()}
-                className="text-xs sm:text-sm py-2 px-1 sm:px-2"
+                className="text-xs sm:text-sm py-2.5 px-2 sm:px-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground col-span-2 sm:col-span-1"
               >
                 <span className="hidden sm:inline">Summary</span>
-                <span className="sm:hidden">Sum.</span>
+                <span className="sm:hidden">Summary</span>
               </TabsTrigger>
             </TabsList>
 
@@ -286,14 +286,16 @@ export default function DoctorBooking() {
                 isError={doctorsError}
                 error={doctorsErrorDetails}
               />
-              
+
               {/* Mobile Progress Summary */}
-              <div className="lg:hidden mt-4 sm:mt-6">
+              <div className="lg:hidden mt-3 sm:mt-6">
                 <Card className="bg-primary/5 border-primary/20">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="text-xs sm:text-sm">
-                      <div className="font-medium mb-2">Progress Summary:</div>
-                      <BookingSummary bookingData={bookingData} doctors={doctors} />
+                  <CardContent className="p-3">
+                    <div className="text-xs sm:text-sm space-y-2">
+                      <div className="font-medium text-primary">Progress:</div>
+                      <div className="space-y-1">
+                        <BookingSummary bookingData={bookingData} doctors={doctors} />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -306,14 +308,16 @@ export default function DoctorBooking() {
                 updateBookingData={updateBookingData}
                 selectedDoctor={getSelectedDoctor()}
               />
-              
+
               {/* Mobile Progress Summary */}
-              <div className="lg:hidden mt-4 sm:mt-6">
+              <div className="lg:hidden mt-3 sm:mt-6">
                 <Card className="bg-primary/5 border-primary/20">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="text-xs sm:text-sm">
-                      <div className="font-medium mb-2">Progress Summary:</div>
-                      <BookingSummary bookingData={bookingData} doctors={doctors} />
+                  <CardContent className="p-3">
+                    <div className="text-xs sm:text-sm space-y-2">
+                      <div className="font-medium text-primary">Progress:</div>
+                      <div className="space-y-1">
+                        <BookingSummary bookingData={bookingData} doctors={doctors} />
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -326,15 +330,17 @@ export default function DoctorBooking() {
                 updateBookingData={updateBookingData}
                 selectedDoctor={getSelectedDoctor()}
               />
-              
+
               {/* Mobile Progress Summary */}
-              <div className="lg:hidden mt-4 sm:mt-6">
+              <div className="lg:hidden mt-3 sm:mt-6">
                 <Card className="bg-primary/5 border-primary/20">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="text-xs sm:text-sm">
-                      <div className="font-medium mb-2">Progress Summary:</div>
-                      <BookingSummary bookingData={bookingData} doctors={doctors} />
-                      
+                  <CardContent className="p-3">
+                    <div className="text-xs sm:text-sm space-y-2">
+                      <div className="font-medium text-primary">Progress:</div>
+                      <div className="space-y-1">
+                        <BookingSummary bookingData={bookingData} doctors={doctors} />
+                      </div>
+
                       {canProceedToSummary() && (
                         <Button
                           onClick={() => setActiveTab("summary")}
@@ -391,18 +397,18 @@ export default function DoctorBooking() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
                     <Button
                       variant="outline"
                       onClick={() => setActiveTab("date")}
-                      className="flex-1 order-2 sm:order-1"
+                      className="flex-1 order-2 sm:order-1 h-11 sm:h-10"
                     >
                       Back
                     </Button>
                     <Button
                       onClick={handleSubmit}
                       disabled={isSubmitting || !canProceedToSummary()}
-                      className="flex-1 order-1 sm:order-2"
+                      className="flex-1 order-1 sm:order-2 h-11 sm:h-10"
                     >
                       {isSubmitting ? "Booking..." : "Confirm Appointment"}
                     </Button>

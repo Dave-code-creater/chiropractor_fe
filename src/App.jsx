@@ -1,11 +1,14 @@
 import "./App.css";
 import AppRoutes from "./routes/AppRoutes";
+import ThemeProvider from "./contexts/ThemeContext";
 
 const App = () => {
   return (
-    <div className="App">
-      <AppRoutes />
-    </div>
+    <ThemeProvider>
+      <div className="App">
+        <AppRoutes />
+      </div>
+    </ThemeProvider>
   );
 };
 

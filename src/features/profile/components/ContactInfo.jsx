@@ -35,7 +35,7 @@ function ContactInfo() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Transform to snake_case format for backend
     const contactData = {
       phone_number: phoneNumber,
@@ -52,14 +52,14 @@ function ContactInfo() {
 
     try {
       const response = await updateContactInfo(contactData).unwrap();
-      
+
       if (response.success) {
         toast.success("Contact information updated successfully!");
       }
     } catch (error) {
       console.error("Contact update error:", error);
       toast.error(
-        error.data?.message || 
+        error.data?.message ||
         "Failed to update contact information. Please try again."
       );
     }
@@ -86,11 +86,11 @@ function ContactInfo() {
             <FormField label="City" value={city} onChange={setCity} />
             <FormField label="State" value={state} onChange={setState} />
             <FormField
-              label="Zip Code"
+              label="ZIP Code"
               value={zipCode}
               onChange={setZipCode}
               type="number"
-              placeholder="12345"
+              placeholder="Enter ZIP code"
             />
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

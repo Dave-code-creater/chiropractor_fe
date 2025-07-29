@@ -13,6 +13,7 @@ import {
   UserPlus,
   Archive,
   AlertTriangle,
+  X,
 } from "lucide-react";
 
 const DoctorChat = () => {
@@ -78,16 +79,16 @@ const DoctorChat = () => {
       <Card className="flex-1 shadow-xl border-0 overflow-hidden">
         <div className="flex h-full">
           {/* Conversations Sidebar */}
-          <div className="w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex flex-col">
-            <div className="p-6 border-b bg-background/80 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-lg bg-primary/10">
-                    <MessageCircle className="h-6 w-6 text-primary" />
+          <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
+            <div className="p-3 sm:p-4 lg:p-6 border-b bg-background/80 backdrop-blur-sm">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <div className="flex items-center gap-3 sm:gap-4">
+                  <div className="p-2 sm:p-3 rounded-lg bg-primary/10">
+                    <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-foreground">Patient Messages</h2>
-                    <p className="text-sm text-muted-foreground">Manage patient communications</p>
+                    <h2 className="text-lg sm:text-xl font-bold text-foreground">Patient Messages</h2>
+                    <p className="text-xs sm:text-sm text-muted-foreground">Manage patient communications</p>
                     {isPolling && selectedConversation && (
                       <div className="flex items-center gap-2 mt-1">
                         <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -99,19 +100,20 @@ const DoctorChat = () => {
                 <Button
                   variant="outline"
                   size="icon"
+                  className="h-8 w-8 sm:h-10 sm:w-10"
                   onClick={() => {/* New conversation functionality not yet implemented */ }}
                 >
-                  <UserPlus className="h-4 w-4" />
+                  <UserPlus className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Button>
               </div>
 
               {/* Filters */}
-              <div className="space-y-3">
-                <div className="flex gap-2">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex gap-1 sm:gap-2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="flex-1">
-                        <Filter className="h-4 w-4 mr-2" />
+                      <Button variant="outline" size="sm" className="flex-1 text-xs sm:text-sm h-8 sm:h-9">
+                        <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                         Status: {statusFilter}
                       </Button>
                     </DropdownMenuTrigger>
@@ -197,8 +199,8 @@ const DoctorChat = () => {
                       setSelectedConversation(conversation);
                     }}
                     className={`p-4 rounded-xl mb-3 cursor-pointer transition-all duration-200 ${selectedConversation?.id === conversation.id
-                        ? "bg-primary/10 border-l-4 border-primary shadow-sm"
-                        : "hover:bg-muted/50 hover:shadow-sm"
+                      ? "bg-primary/10 border-l-4 border-primary shadow-sm"
+                      : "hover:bg-muted/50 hover:shadow-sm"
                       }`}
                   >
                     <div className="flex items-center gap-3">
@@ -230,13 +232,13 @@ const DoctorChat = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col bg-gradient-to-br from-background to-muted/20">
+          <div className={`${selectedConversation ? 'flex' : 'hidden lg:flex'} flex-1 flex-col bg-gradient-to-br from-background to-muted/20`}>
             {!selectedConversation ? (
               <div className="flex-1 flex items-center justify-center">
-                <div className="text-center">
-                  <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium mb-2">Select a Conversation</h3>
-                  <p className="text-muted-foreground">
+                <div className="text-center p-4">
+                  <MessageCircle className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium mb-2">Select a Conversation</h3>
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     Choose a patient conversation from the sidebar
                   </p>
                 </div>
@@ -244,26 +246,36 @@ const DoctorChat = () => {
             ) : (
               <>
                 {/* Chat Header */}
-                <div className="p-4 border-b bg-background/80 backdrop-blur-sm">
+                <div className="p-3 sm:p-4 border-b bg-background/80 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-10 w-10">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      {/* Back button for mobile */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="lg:hidden p-1 h-8 w-8"
+                        onClick={() => setSelectedConversation(null)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+
+                      <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                         <AvatarFallback>
                           {selectedConversation.patient_name?.[0] || selectedConversation.doctor_name?.[0] || "P"}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="font-medium text-base">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1 sm:gap-2">
+                          <h3 className="font-medium text-sm sm:text-base truncate">
                             {selectedConversation.patient_name || selectedConversation.doctor_name || "Patient"}
                           </h3>
                           {selectedConversation.priority && (
-                            <Badge className={getPriorityBadge(selectedConversation.priority)}>
+                            <Badge className={`${getPriorityBadge(selectedConversation.priority)} text-xs`}>
                               {selectedConversation.priority}
                             </Badge>
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate">
                           {selectedConversation.subject || selectedConversation.title || "Conversation"}
                         </p>
                       </div>
@@ -271,8 +283,8 @@ const DoctorChat = () => {
 
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <MoreVertical className="h-4 w-4" />
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent>
@@ -316,14 +328,14 @@ const DoctorChat = () => {
                           <div
                             key={message.id}
                             className={`flex ${message.sender_type === "doctor"
-                                ? "justify-end"
-                                : "justify-start"
+                              ? "justify-end"
+                              : "justify-start"
                               }`}
                           >
                             <div
                               className={`max-w-[80%] rounded-lg p-3 ${message.sender_type === "doctor"
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-muted"
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-muted"
                                 }`}
                             >
                               <p className="text-sm leading-relaxed">

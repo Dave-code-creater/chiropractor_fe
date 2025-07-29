@@ -43,13 +43,13 @@ export default function DoctorSelector({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
       <div>
-        <h2 className="text-xl font-semibold mb-1">
+        <h2 className="text-lg sm:text-xl font-semibold mb-1">
           Select Healthcare Provider
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Choose your preferred doctor for this appointment
         </p>
       </div>
@@ -67,22 +67,22 @@ export default function DoctorSelector({
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full justify-between h-12 p-4 text-base"
+              className="w-full justify-between h-12 sm:h-14 p-3 sm:p-4 text-sm sm:text-base"
             >
               {selectedDoctor ? (
-                <div className="flex items-center gap-3">
-                  <Avatar className="h-8 w-8">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                     <AvatarImage src={selectedDoctor.profileImage} />
-                    <AvatarFallback>
+                    <AvatarFallback className="text-xs sm:text-sm">
                       {selectedDoctor.firstName?.[0]}
                       {selectedDoctor.lastName?.[0]}
                     </AvatarFallback>
                   </Avatar>
                   <div className="text-left">
-                    <div className="font-medium">
+                    <div className="font-medium text-sm sm:text-base">
                       Dr. {selectedDoctor.firstName} {selectedDoctor.lastName}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs sm:text-sm text-muted-foreground">
                       {selectedDoctor.specializations?.primary ||
                         selectedDoctor.specialization}
                     </div>
@@ -98,10 +98,10 @@ export default function DoctorSelector({
             </Button>
           </PopoverTrigger>
 
-          <PopoverContent 
-            className="w-[var(--radix-popover-trigger-width)] p-0" 
-            align="start" 
-            side="bottom" 
+          <PopoverContent
+            className="w-[var(--radix-popover-trigger-width)] p-0"
+            align="start"
+            side="bottom"
             sideOffset={8}
             avoidCollisions={true}
             collisionPadding={20}
@@ -124,9 +124,9 @@ export default function DoctorSelector({
                         <User className="h-8 w-8 text-red-500" />
                         <p className="text-sm text-muted-foreground">Unable to load doctors</p>
                         <p className="text-xs text-muted-foreground">
-                          {error?.status === 500 ? 'Backend server unavailable' : 
-                           error?.status === 404 ? 'Doctors endpoint not found' :
-                           'Please check your connection and try again'}
+                          {error?.status === 500 ? 'Backend server unavailable' :
+                            error?.status === 404 ? 'Doctors endpoint not found' :
+                              'Please check your connection and try again'}
                         </p>
                         <p className="text-xs text-blue-600 mt-2">
                           Check console for detailed error information

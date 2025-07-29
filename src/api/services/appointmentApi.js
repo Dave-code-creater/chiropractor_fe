@@ -103,14 +103,6 @@ export const appointmentApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.SHORT,
     }),
 
-    getAppointmentById: builder.query({
-      query: (id) => ({
-        url: `appointments/${id}`,
-        method: "GET",
-      }),
-      providesTags: (result, error, id) => [{ type: "Appointments", id }],
-    }),
-
     updateAppointment: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `appointments/${id}`,
@@ -156,7 +148,6 @@ export const {
   useCreateAppointmentMutation,
   useGetUserAppointmentsQuery,
   useGetAppointmentsQuery,
-  useGetAppointmentByIdQuery,
   useUpdateAppointmentMutation,
   useDeleteAppointmentMutation,
 } = appointmentApi;

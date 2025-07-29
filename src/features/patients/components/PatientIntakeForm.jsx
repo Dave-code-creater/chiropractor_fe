@@ -35,7 +35,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
         gender: initialData.gender || "",
         ssn: initialData.ssn || "",
         maritalStatus: initialData.maritalStatus || "",
-        
+
         // Contact Information
         phone: initialData.phone || "",
         email: initialData.email || "",
@@ -43,43 +43,43 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
         city: initialData.city || "",
         state: initialData.state || "",
         zipCode: initialData.zipCode || "",
-        
+
         // Emergency Contact
         emergencyContactName: initialData.emergencyContactName || "",
         emergencyContactRelationship: initialData.emergencyContactRelationship || "",
         emergencyContactPhone: initialData.emergencyContactPhone || "",
-        
+
         // Employment Information
         employer: initialData.employer || "",
         occupation: initialData.occupation || "",
         workAddress: initialData.workAddress || "",
         workPhone: initialData.workPhone || "",
-        
+
         // Insurance Information
         insuranceProvider: initialData.insuranceProvider || "",
         policyNumber: initialData.policyNumber || "",
         groupNumber: initialData.groupNumber || "",
         copay: initialData.copay || "",
-        
+
         // Medical History
         allergies: initialData.allergies || "",
         currentMedications: initialData.currentMedications || "",
         previousSurgeries: initialData.previousSurgeries || "",
         chronicConditions: initialData.chronicConditions || "",
         familyHistory: initialData.familyHistory || "",
-        
+
         // Current Health
         primaryCondition: initialData.primaryCondition || "",
         secondaryConditions: initialData.secondaryConditions || [],
         currentSymptoms: initialData.currentSymptoms || "",
         painLevel: initialData.painLevel || "",
         functionalLimitations: initialData.functionalLimitations || "",
-        
+
         // Lifestyle Information
         smokingStatus: initialData.smokingStatus || "",
         alcoholConsumption: initialData.alcoholConsumption || "",
         exerciseLevel: initialData.exerciseLevel || "",
-        
+
         // Vitals
         height: initialData.height || "",
         weight: initialData.weight || "",
@@ -95,7 +95,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
             ...prev,
             [field]: value
         }));
-        
+
         // Clear error when field is updated
         if (errors[field]) {
             setErrors(prev => ({
@@ -112,36 +112,36 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
     };
 
     const removeSecondaryCondition = (condition) => {
-        updateFormData('secondaryConditions', 
+        updateFormData('secondaryConditions',
             formData.secondaryConditions.filter(c => c !== condition)
         );
     };
 
     const validateTab = (tabName) => {
         const newErrors = {};
-        
+
         switch (tabName) {
             case 'personal':
-                if (!formData.firstName) newErrors.firstName = 'First name is required';
-                if (!formData.lastName) newErrors.lastName = 'Last name is required';
-                if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
+                if (!formData.firstName) newErrors.firstName = 'First Name is required';
+                if (!formData.lastName) newErrors.lastName = 'Last Name is required';
+                if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of Birth is required';
                 if (!formData.gender) newErrors.gender = 'Gender is required';
                 break;
             case 'contact':
-                if (!formData.phone) newErrors.phone = 'Phone number is required';
-                if (!formData.email) newErrors.email = 'Email is required';
-                if (!formData.address) newErrors.address = 'Address is required';
+                if (!formData.phone) newErrors.phone = 'Phone Number is required';
+                if (!formData.email) newErrors.email = 'Email Address is required';
+                if (!formData.address) newErrors.address = 'Street Address is required';
                 break;
             case 'emergency':
-                if (!formData.emergencyContactName) newErrors.emergencyContactName = 'Emergency contact name is required';
-                if (!formData.emergencyContactPhone) newErrors.emergencyContactPhone = 'Emergency contact phone is required';
+                if (!formData.emergencyContactName) newErrors.emergencyContactName = 'Emergency Contact Name is required';
+                if (!formData.emergencyContactPhone) newErrors.emergencyContactPhone = 'Emergency Contact Phone is required';
                 break;
             case 'insurance':
-                if (!formData.insuranceProvider) newErrors.insuranceProvider = 'Insurance provider is required';
-                if (!formData.policyNumber) newErrors.policyNumber = 'Policy number is required';
+                if (!formData.insuranceProvider) newErrors.insuranceProvider = 'Insurance Provider is required';
+                if (!formData.policyNumber) newErrors.policyNumber = 'Policy Number is required';
                 break;
         }
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -149,7 +149,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
     const handleSubmit = () => {
         // Validate all tabs
         const allTabsValid = ['personal', 'contact', 'emergency', 'insurance'].every(tab => validateTab(tab));
-        
+
         if (allTabsValid) {
             onSubmit(formData);
         } else {
@@ -259,7 +259,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.firstName}
                                             onChange={(e) => updateFormData('firstName', e.target.value)}
-                                            placeholder="John"
+                                            placeholder="Enter first name"
                                             className={errors.firstName ? 'border-red-500' : ''}
                                         />
                                         {errors.firstName && (
@@ -271,7 +271,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.middleName}
                                             onChange={(e) => updateFormData('middleName', e.target.value)}
-                                            placeholder="A."
+                                            placeholder="Enter middle name or initial"
                                         />
                                     </div>
                                     <div>
@@ -279,7 +279,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.lastName}
                                             onChange={(e) => updateFormData('lastName', e.target.value)}
-                                            placeholder="Doe"
+                                            placeholder="Enter last name"
                                             className={errors.lastName ? 'border-red-500' : ''}
                                         />
                                         {errors.lastName && (
@@ -312,8 +312,8 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium">Gender *</label>
-                                        <Select 
-                                            value={formData.gender} 
+                                        <Select
+                                            value={formData.gender}
                                             onValueChange={(value) => updateFormData('gender', value)}
                                         >
                                             <SelectTrigger className={errors.gender ? 'border-red-500' : ''}>
@@ -343,8 +343,8 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium">Marital Status</label>
-                                        <Select 
-                                            value={formData.maritalStatus} 
+                                        <Select
+                                            value={formData.maritalStatus}
                                             onValueChange={(value) => updateFormData('maritalStatus', value)}
                                         >
                                             <SelectTrigger>
@@ -393,7 +393,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                             type="email"
                                             value={formData.email}
                                             onChange={(e) => updateFormData('email', e.target.value)}
-                                            placeholder="john.doe@email.com"
+                                            placeholder="Enter email address"
                                             className={errors.email ? 'border-red-500' : ''}
                                         />
                                         {errors.email && (
@@ -407,7 +407,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                     <Input
                                         value={formData.address}
                                         onChange={(e) => updateFormData('address', e.target.value)}
-                                        placeholder="123 Main Street"
+                                        placeholder="Enter street address"
                                         className={errors.address ? 'border-red-500' : ''}
                                     />
                                     {errors.address && (
@@ -421,7 +421,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.city}
                                             onChange={(e) => updateFormData('city', e.target.value)}
-                                            placeholder="City"
+                                            placeholder="Enter city"
                                         />
                                     </div>
                                     <div>
@@ -429,7 +429,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.state}
                                             onChange={(e) => updateFormData('state', e.target.value)}
-                                            placeholder="State"
+                                            placeholder="Enter state"
                                         />
                                     </div>
                                     <div>
@@ -437,7 +437,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.zipCode}
                                             onChange={(e) => updateFormData('zipCode', e.target.value)}
-                                            placeholder="12345"
+                                            placeholder="Enter ZIP code"
                                         />
                                     </div>
                                 </div>
@@ -448,7 +448,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.employer}
                                             onChange={(e) => updateFormData('employer', e.target.value)}
-                                            placeholder="Company Name"
+                                            placeholder="Enter employer name"
                                         />
                                     </div>
                                     <div>
@@ -456,7 +456,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.occupation}
                                             onChange={(e) => updateFormData('occupation', e.target.value)}
-                                            placeholder="Job Title"
+                                            placeholder="Enter job title"
                                         />
                                     </div>
                                 </div>
@@ -475,11 +475,11 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                             </CardHeader>
                             <CardContent className="space-y-4">
                                 <div>
-                                    <label className="text-sm font-medium">Contact Name *</label>
+                                    <label className="text-sm font-medium">Emergency Contact Name *</label>
                                     <Input
                                         value={formData.emergencyContactName}
                                         onChange={(e) => updateFormData('emergencyContactName', e.target.value)}
-                                        placeholder="Emergency contact full name"
+                                        placeholder="Enter emergency contact full name"
                                         className={errors.emergencyContactName ? 'border-red-500' : ''}
                                     />
                                     {errors.emergencyContactName && (
@@ -490,8 +490,8 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-sm font-medium">Relationship</label>
-                                        <Select 
-                                            value={formData.emergencyContactRelationship} 
+                                        <Select
+                                            value={formData.emergencyContactRelationship}
                                             onValueChange={(value) => updateFormData('emergencyContactRelationship', value)}
                                         >
                                             <SelectTrigger>
@@ -552,7 +552,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.policyNumber}
                                             onChange={(e) => updateFormData('policyNumber', e.target.value)}
-                                            placeholder="BC123456789"
+                                            placeholder="Enter policy number"
                                             className={errors.policyNumber ? 'border-red-500' : ''}
                                         />
                                         {errors.policyNumber && (
@@ -567,7 +567,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <Input
                                             value={formData.groupNumber}
                                             onChange={(e) => updateFormData('groupNumber', e.target.value)}
-                                            placeholder="GRP001"
+                                            placeholder="Enter group number"
                                         />
                                     </div>
                                     <div>
@@ -651,8 +651,8 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div>
                                         <label className="text-sm font-medium">Smoking Status</label>
-                                        <Select 
-                                            value={formData.smokingStatus} 
+                                        <Select
+                                            value={formData.smokingStatus}
                                             onValueChange={(value) => updateFormData('smokingStatus', value)}
                                         >
                                             <SelectTrigger>
@@ -667,8 +667,8 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium">Alcohol Consumption</label>
-                                        <Select 
-                                            value={formData.alcoholConsumption} 
+                                        <Select
+                                            value={formData.alcoholConsumption}
                                             onValueChange={(value) => updateFormData('alcoholConsumption', value)}
                                         >
                                             <SelectTrigger>
@@ -684,8 +684,8 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                     </div>
                                     <div>
                                         <label className="text-sm font-medium">Exercise Level</label>
-                                        <Select 
-                                            value={formData.exerciseLevel} 
+                                        <Select
+                                            value={formData.exerciseLevel}
                                             onValueChange={(value) => updateFormData('exerciseLevel', value)}
                                         >
                                             <SelectTrigger>
@@ -729,8 +729,8 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         {formData.secondaryConditions.map((condition, index) => (
                                             <Badge key={index} variant="secondary" className="flex items-center gap-1">
                                                 {condition}
-                                                <X 
-                                                    className="w-3 h-3 cursor-pointer" 
+                                                <X
+                                                    className="w-3 h-3 cursor-pointer"
                                                     onClick={() => removeSecondaryCondition(condition)}
                                                 />
                                             </Badge>
@@ -746,9 +746,9 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                                 }
                                             }}
                                         />
-                                        <Button 
-                                            type="button" 
-                                            variant="outline" 
+                                        <Button
+                                            type="button"
+                                            variant="outline"
                                             size="sm"
                                             onClick={(e) => {
                                                 const input = e.target.parentElement.querySelector('input');
@@ -775,15 +775,15 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
                                         <label className="text-sm font-medium">Pain Level (0-10)</label>
-                                        <Select 
-                                            value={formData.painLevel} 
+                                        <Select
+                                            value={formData.painLevel}
                                             onValueChange={(value) => updateFormData('painLevel', value)}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Select pain level" />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                {Array.from({length: 11}, (_, i) => (
+                                                {Array.from({ length: 11 }, (_, i) => (
                                                     <SelectItem key={i} value={i.toString()}>
                                                         {i} - {i === 0 ? 'No pain' : i <= 3 ? 'Mild' : i <= 6 ? 'Moderate' : 'Severe'}
                                                     </SelectItem>
@@ -796,7 +796,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                         <textarea
                                             className="w-full mt-1 p-3 border rounded-lg resize-none"
                                             rows={2}
-                                            placeholder="Describe limitations in daily activities..."
+                                            placeholder="Describe any limitations in daily activities..."
                                             value={formData.functionalLimitations}
                                             onChange={(e) => updateFormData('functionalLimitations', e.target.value)}
                                         />
@@ -812,7 +812,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                             <Input
                                                 value={formData.height}
                                                 onChange={(e) => updateFormData('height', e.target.value)}
-                                                placeholder="5'6\""
+                                                placeholder="Enter height (e.g., 5'6&quot;)"
                                             />
                                         </div>
                                         <div>
@@ -820,7 +820,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                             <Input
                                                 value={formData.weight}
                                                 onChange={(e) => updateFormData('weight', e.target.value)}
-                                                placeholder="140 lbs"
+                                                placeholder="Enter weight (e.g., 140 lbs)"
                                             />
                                         </div>
                                         <div>
@@ -828,7 +828,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                             <Input
                                                 value={formData.bloodPressure}
                                                 onChange={(e) => updateFormData('bloodPressure', e.target.value)}
-                                                placeholder="120/80"
+                                                placeholder="Enter blood pressure (e.g., 120/80)"
                                             />
                                         </div>
                                     </div>
@@ -838,7 +838,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                             <Input
                                                 value={formData.heartRate}
                                                 onChange={(e) => updateFormData('heartRate', e.target.value)}
-                                                placeholder="72 bpm"
+                                                placeholder="Enter heart rate (e.g., 72 bpm)"
                                             />
                                         </div>
                                         <div>
@@ -846,7 +846,7 @@ export default function PatientIntakeForm({ onSubmit, onCancel, initialData = {}
                                             <Input
                                                 value={formData.temperature}
                                                 onChange={(e) => updateFormData('temperature', e.target.value)}
-                                                placeholder="98.6°F"
+                                                placeholder="Enter temperature (e.g., 98.6°F)"
                                             />
                                         </div>
                                     </div>

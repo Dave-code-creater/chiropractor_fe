@@ -986,7 +986,6 @@ const PATIENT_INFO_DR = [
     id: "8",
     title: "Thoracic Spine Orthopedic Examination",
     questions: [
-      ,
       {
         id: "LumbarTest",
         label: "Lumbar Spine Range of Motion",

@@ -2,11 +2,7 @@ import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import ProtectRoute from "./ProtectRoute";
 import RouteProvider from "./RouteProvider";
-import DefaultLayout from "../layouts/DefaultLayout";
-import AdminHomePageLayout from "../layouts/admin/HomePageLayout";
-import DoctorHomePageLayout from "../layouts/doctor/HomePageLayout";
-import UserHomePageLayout from "../layouts/user/HomePageLayout";
-import PublicLayout from "../layouts/PublicLayout";
+import MainLayout from "../layouts/MainLayout";
 
 // Public Pages
 import LandingPage from "../pages/LandingPage";
@@ -18,8 +14,6 @@ import TermsOfService from "../pages/TermsOfService";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
 import UnderDevelopment from "../pages/UnderDevelopment";
-import TutorialDemo from "../pages/TutorialDemo";
-import ChatDemo from "../pages/ChatDemo";
 
 // Auth Pages
 import Login from "../features/auth/Login";
@@ -76,8 +70,9 @@ const RouteWrapper = ({ element: Element, ...props }) => {
 const AppRoutes = () => {
   return (
     <Routes>
-      {/* Public routes - no authentication required */}
-      <Route element={<PublicLayout />}>
+      {/* All routes use the MainLayout which intelligently switches between public and authenticated layouts */}
+      <Route element={<MainLayout />}>
+        {/* Public routes - no authentication required */}
         <Route path="/" element={<RouteWrapper element={LandingPage} />} />
         <Route path="/about" element={<RouteWrapper element={About} />} />
         <Route path="/contact" element={<RouteWrapper element={Contact} />} />
@@ -88,20 +83,16 @@ const AppRoutes = () => {
         {/* Public Blog Routes - WordPress-like */}
         <Route path="/blog" element={<RouteWrapper element={BlogReader} />} />
         <Route path="/blog/:slug" element={<RouteWrapper element={BlogReader} />} />
-      </Route>
 
-      {/* Auth routes - separate layout */}
-      <Route element={<PublicLayout />}>
+        {/* Auth routes */}
         <Route path="/login" element={<RouteWrapper element={Login} />} />
         <Route path="/register" element={<RouteWrapper element={Register} />} />
         <Route path="/forgot-password" element={<RouteWrapper element={ForgotPassword} />} />
         <Route path="/reset-password" element={<RouteWrapper element={ResetPassword} />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
-      </Route>
 
-      {/* Patient/User Dashboard Routes */}
-      <Route element={<ProtectRoute allowedRoles={["patient"]} />}>
-        <Route element={<DefaultLayout />}>
+        {/* Patient/User Dashboard Routes */}
+        <Route element={<ProtectRoute allowedRoles={["patient"]} />}>
           <Route element={<RouteProvider />}>
             <Route path="/dashboard/patient/:id">
               <Route index element={<HomePage />} />
@@ -118,11 +109,9 @@ const AppRoutes = () => {
             </Route>
           </Route>
         </Route>
-      </Route>
 
-      {/* Doctor Dashboard Routes */}
-      <Route element={<ProtectRoute allowedRoles={["doctor"]} />}>
-        <Route element={<DoctorHomePageLayout />}>
+        {/* Doctor Dashboard Routes */}
+        <Route element={<ProtectRoute allowedRoles={["doctor"]} />}>
           <Route element={<RouteProvider />}>
             <Route path="/dashboard/doctor/:id">
               <Route index element={<DoctorDashboard />} />
@@ -142,11 +131,9 @@ const AppRoutes = () => {
             </Route>
           </Route>
         </Route>
-      </Route>
 
-      {/* Admin Dashboard Routes */}
-      <Route element={<ProtectRoute allowedRoles={["admin"]} />}>
-        <Route element={<AdminHomePageLayout />}>
+        {/* Admin Dashboard Routes */}
+        <Route element={<ProtectRoute allowedRoles={["admin"]} />}>
           <Route element={<RouteProvider />}>
             <Route path="/dashboard/admin/:id">
               <Route index element={<AdminDashboard />} />
@@ -160,10 +147,10 @@ const AppRoutes = () => {
             </Route>
           </Route>
         </Route>
-      </Route>
 
-      {/* Catch all route - 404 */}
-      <Route path="*" element={<NotFound />} />
+        {/* Catch all route - 404 */}
+        <Route path="*" element={<NotFound />} />
+      </Route>
     </Routes>
   );
 };

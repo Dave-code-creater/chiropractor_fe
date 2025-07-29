@@ -1,7 +1,6 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { API_CONFIG, getBaseUrl } from '../config/config';
-import { handleApiResponse } from '../config/errors';
-import { refreshTokens, setLoggingOut } from './tokenManager';
+import { refreshTokens } from './tokenManager';
 import { getToken } from './tokenManager';
 import { logOut } from '../../state/data/authSlice';
 
