@@ -61,9 +61,9 @@ const Gallery = () => {
     }, [images.length]);
 
     return (
-        <section className="py-16 bg-gradient-to-br from-red-50 to-red-100 relative overflow-hidden">
-            {/* Background decoration similar to Seneca */}
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-transparent"></div>
+        <section className="py-16 bg-gradient-to-br from-earthfire-clay-50 to-earthfire-clay-100 relative overflow-hidden">
+            {/* Decorative background gradient */}
+            <div className="absolute inset-0 bg-gradient-to-r from-earthfire-brick-500/10 to-transparent"></div>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
                 {/* Section Header */}
@@ -98,7 +98,7 @@ const Gallery = () => {
                                     </p>
 
                                     {/* Call to Action */}
-                                    <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105">
+                                    <button className="bg-earthfire-brick-600 hover:bg-earthfire-brick-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200 transform hover:scale-105">
                                         Book Consultation
                                     </button>
                                 </div>
@@ -110,8 +110,8 @@ const Gallery = () => {
                                     <div
                                         key={index}
                                         className={`w-1 h-8 rounded-full transition-all duration-500 ${index === currentImageIndex
-                                                ? 'bg-white'
-                                                : 'bg-white/30'
+                                            ? 'bg-white'
+                                            : 'bg-white/30'
                                             }`}
                                     />
                                 ))}
@@ -122,7 +122,7 @@ const Gallery = () => {
                     {/* Step Counter */}
                     <div className="flex justify-center mt-8">
                         <div className="bg-white rounded-full px-6 py-3 shadow-lg">
-                            <span className="text-red-600 font-bold text-lg">
+                            <span className="text-earthfire-brick-600 font-bold text-lg">
                                 {currentImageIndex + 1} of {images.length}
                             </span>
                             <span className="text-gray-600 ml-2">
@@ -135,7 +135,7 @@ const Gallery = () => {
                 {/* Process Overview Cards */}
                 <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-200">
-                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 bg-earthfire-clay-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <span className="text-2xl">🩺</span>
                         </div>
                         <h4 className="text-xl font-bold text-gray-900 mb-2">Expert Assessment</h4>
@@ -143,7 +143,7 @@ const Gallery = () => {
                     </div>
 
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-200">
-                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 bg-earthfire-clay-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <span className="text-2xl">⚡</span>
                         </div>
                         <h4 className="text-xl font-bold text-gray-900 mb-2">Targeted Treatment</h4>
@@ -151,7 +151,7 @@ const Gallery = () => {
                     </div>
 
                     <div className="bg-white rounded-xl shadow-lg p-6 text-center transform hover:scale-105 transition-transform duration-200">
-                        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 bg-earthfire-clay-100 rounded-full flex items-center justify-center mx-auto mb-4">
                             <span className="text-2xl">🎯</span>
                         </div>
                         <h4 className="text-xl font-bold text-gray-900 mb-2">Long-term Wellness</h4>

@@ -63,7 +63,7 @@ const baseQuery = fetchBaseQuery({
   timeout: API_CONFIG.REQUEST.TIMEOUT,
   prepareHeaders: (headers, { getState, endpoint }) => {
     const isAuthEndpoint = endpoint?.includes('auth/');
-    
+
     if (!isAuthEndpoint) {
       const token = getToken();
       if (token) {
@@ -119,7 +119,7 @@ const baseQueryWithRetry = retry(
       const refreshToken = state?.auth?.refreshToken;
       const isAuthEndpoint = args.url?.includes('/auth/') || args.url?.includes('/login') || args.url?.includes('/register');
       const isRefreshEndpoint = args.url?.includes('/refresh');
-      
+
       // Only attempt refresh if we have tokens, not an auth endpoint, and app is initialized
       if (hasToken && refreshToken && !isAuthEndpoint && !isRefreshEndpoint && appInitialized) {
         try {
@@ -128,11 +128,11 @@ const baseQueryWithRetry = retry(
           result = await baseQuery(args, api, extraOptions);
         } catch (refreshError) {
           console.error('Token refresh failed:', refreshError);
-          
+
           // Only logout if refresh token is invalid, not for network errors
           if (refreshError.message?.includes('Refresh failed with status: 401')) {
             api.dispatch(logOut());
-            
+
             // Redirect to login if not already there
             if (!window.location.pathname.includes('/login') && !window.location.pathname.includes('/register')) {
               setTimeout(() => {

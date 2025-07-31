@@ -69,7 +69,7 @@ export default function Services() {
         aria-hidden="true"
         className="absolute inset-0 -z-10 overflow-hidden"
       >
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] aspect-[3/1] bg-indigo-100 opacity-30 rounded-full blur-3xl" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] aspect-[3/1] bg-earthfire-clay-100 opacity-30 rounded-full blur-3xl" />
       </div>
 
       <div className="max-w-7xl mx-auto">
@@ -97,10 +97,10 @@ export default function Services() {
           {chiropracticServices.map((service) => (
             <div
               key={service.id}
-              className="bg-white border border-indigo-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-indigo-300"
+              className="bg-white border border-earthfire-clay-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:border-earthfire-clay-300"
             >
               <div className="mb-4">
-                <service.icon className="h-8 w-8 text-indigo-600" />
+                <service.icon className="h-8 w-8 text-earthfire-brick-600" />
               </div>
 
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -118,7 +118,7 @@ export default function Services() {
         <div className="text-center">
           <button
             onClick={handleBookAppointment}
-            className="inline-block rounded-md bg-indigo-600 px-6 py-3 text-lg font-semibold text-white hover:bg-indigo-500 transition-colors duration-300"
+            className="inline-block rounded-md bg-earthfire-brick-600 px-6 py-3 text-lg font-semibold text-white hover:bg-earthfire-brick-500 transition-colors duration-300"
           >
             Get started today
           </button>

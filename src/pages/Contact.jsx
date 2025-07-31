@@ -14,7 +14,7 @@ export default function Contact() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 grid-cols-1 gap-6 lg:gap-0">
           <div className="bg-gray-50 p-4 sm:p-5 lg:p-11 lg:rounded-r-2xl rounded-2xl order-2 lg:order-1">
-            <h2 className="text-indigo-600 font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight mb-6 sm:mb-11">
+            <h2 className="text-earthfire-brick-600 font-manrope text-2xl sm:text-3xl lg:text-4xl font-semibold leading-tight mb-6 sm:mb-11">
               Send Us A Message
             </h2>
             <input
@@ -83,7 +83,7 @@ export default function Contact() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
             />
-            <button className="w-full h-10 sm:h-12 text-white text-sm sm:text-base font-semibold leading-6 rounded-full transition-all duration-700 hover:bg-indigo-800 bg-indigo-600 shadow-sm">
+            <button className="w-full h-10 sm:h-12 text-white text-sm sm:text-base font-semibold leading-6 rounded-full transition-all duration-700 hover:bg-earthfire-brick-800 bg-earthfire-brick-600 shadow-sm">
               Send
             </button>
           </div>
@@ -93,7 +93,7 @@ export default function Contact() {
                 <img
                   src={callCenter}
                   alt="Contact Us sections"
-                  className="w-full h-full lg:rounded-l-2xl rounded-2xl bg-blend-multiply bg-indigo-700 object-cover"
+                  className="w-full h-full lg:rounded-l-2xl rounded-2xl bg-blend-multiply bg-earthfire-brown-700 object-cover"
                 />
                 <h1 className="font-manrope text-white text-2xl sm:text-3xl lg:text-4xl font-bold leading-tight absolute top-4 sm:top-11 left-4 sm:left-11">
                   Contact us

@@ -164,47 +164,45 @@ const DesktopPainDetailDialog = ({
                 </DialogHeader>
 
                 <div className="flex-1 overflow-y-auto p-6">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Left Column - Pain Level */}
-                        <div className="space-y-6">
-                            <Card>
-                                <CardContent className="p-6">
-                                    <h3 className="text-xl font-semibold mb-4">
-                                        Pain Level Assessment
-                                    </h3>
-                                    <div className="text-center">
-                                        <Label className="font-semibold text-lg block mb-4">
-                                            {field.label}
-                                        </Label>
-                                        <div className="w-full max-w-md mx-auto space-y-4">
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-sm font-medium w-8">1</span>
-                                                <Slider
-                                                    min={1}
-                                                    max={10}
-                                                    step={1}
-                                                    value={[pendingLevel]}
-                                                    onValueChange={handleSliderChange}
-                                                    className="flex-1 h-6"
-                                                />
-                                                <span className="text-sm font-medium w-8">10</span>
-                                            </div>
-                                            <div className="text-sm flex justify-between px-2 text-gray-600">
-                                                <span>Minimal</span>
-                                                <span>Maximum</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <div className="inline-block bg-blue-100 text-blue-800 font-bold text-2xl py-4 px-8 rounded-lg">
-                                                    {pendingLevel} / 10
-                                                </div>
+                    <div className="space-y-8">
+                        {/* Pain Level Section */}
+                        <Card>
+                            <CardContent className="p-6">
+                                <h3 className="text-xl font-semibold mb-4">
+                                    Pain Level Assessment
+                                </h3>
+                                <div className="text-center">
+                                    <Label className="font-semibold text-lg block mb-4">
+                                        {field.label}
+                                    </Label>
+                                    <div className="w-full max-w-md mx-auto space-y-4">
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-sm font-medium w-8">1</span>
+                                            <Slider
+                                                min={1}
+                                                max={10}
+                                                step={1}
+                                                value={[pendingLevel]}
+                                                onValueChange={handleSliderChange}
+                                                className="flex-1 h-6"
+                                            />
+                                            <span className="text-sm font-medium w-8">10</span>
+                                        </div>
+                                        <div className="text-sm flex justify-between px-2 text-gray-600">
+                                            <span>Minimal</span>
+                                            <span>Maximum</span>
+                                        </div>
+                                        <div className="text-center">
+                                            <div className="inline-block bg-blue-100 text-blue-800 font-bold text-2xl py-4 px-8 rounded-lg">
+                                                {pendingLevel} / 10
                                             </div>
                                         </div>
                                     </div>
-                                </CardContent>
-                            </Card>
-                        </div>
+                                </div>
+                            </CardContent>
+                        </Card>
 
-                        {/* Right Column - Questions */}
+                        {/* Additional Information Section */}
                         <div className="space-y-6">
                             <h3 className="text-xl font-semibold">
                                 Additional Information

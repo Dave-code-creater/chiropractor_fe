@@ -11,12 +11,12 @@ export default function AppointmentsCard() {
   const [rescheduling, setRescheduling] = useState(false);
   const userID = useSelector((state) => state?.auth?.userID);
   const { data, isLoading, error } = useGetUserAppointmentsQuery(
-    { 
+    {
       status_not: 'cancelled', // Exclude cancelled appointments
       date_from: new Date().toISOString().split('T')[0], // Only upcoming appointments
-      limit: 10 
-    }, 
-    { 
+      limit: 10
+    },
+    {
       skip: !userID,
       refetchOnMountOrArgChange: false,
       refetchOnFocus: false,
@@ -27,7 +27,7 @@ export default function AppointmentsCard() {
   // Extract appointments from the correct API response structure
   const appointments = useMemo(() => {
     if (!data) return [];
-    
+
     let rawAppointments = [];
     if (data?.data?.appointments && Array.isArray(data.data.appointments)) {
       rawAppointments = data.data.appointments;
@@ -46,11 +46,13 @@ export default function AppointmentsCard() {
     // Transform the appointment data to match the card format and limit to 3 for dashboard
     return activeAppointments.slice(0, 3).map(appt => ({
       id: appt.id,
-      doctorName: `Dr. ${appt.doctor_first_name || appt.patient_first_name || 'Unknown'} ${appt.doctor_last_name || appt.patient_last_name || ''}`.trim(),
-      specialty: appt.doctor_specialization || 'Chiropractic',
+      doctorName: appt.doctor
+        ? `Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}`
+        : 'Dr. Unknown',
+      specialty: appt.doctor?.specialization || 'Chiropractic',
       date: new Date(appt.appointment_date).toLocaleDateString("en-US", {
         weekday: "long",
-        month: "long", 
+        month: "long",
         day: "numeric",
         year: "numeric"
       }),
@@ -104,9 +106,9 @@ export default function AppointmentsCard() {
             <ScrollArea className="flex-1">
               <div className="space-y-3 sm:space-y-4 pr-2">
                 {appointments.map((appt) => (
-                  <CompactAppointmentCard 
-                    key={appt.id || appt.date} 
-                    appointment={appt} 
+                  <CompactAppointmentCard
+                    key={appt.id || appt.date}
+                    appointment={appt}
                   />
                 ))}
               </div>

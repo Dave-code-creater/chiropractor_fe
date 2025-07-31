@@ -64,7 +64,7 @@ export default function Hero() {
       {/* Content Wrapper */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center py-20 sm:py-32 lg:py-40">
         {/* Badge or sub-heading */}
-        <div className="mb-6 inline-block rounded-full bg-white/10 px-4 py-1 text-sm font-medium text-indigo-200 backdrop-blur-sm ring-1 ring-white/20">
+        <div className="mb-6 inline-block rounded-full bg-white/10 px-4 py-1 text-sm font-medium text-earthfire-clay-200 backdrop-blur-sm ring-1 ring-white/20">
           Expert Chiropractic Care That Moves You Forward
         </div>
 
@@ -85,13 +85,13 @@ export default function Hero() {
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={handleBookAppointment}
-            className="inline-block rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-indigo-500 transition"
+            className="inline-block rounded-md bg-earthfire-brick-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-earthfire-brick-500 transition"
           >
             Book an Appointment
           </button>
           <a
             href="/about"
-            className="text-sm font-semibold text-white underline underline-offset-4 hover:text-indigo-300"
+            className="text-sm font-semibold text-white underline underline-offset-4 hover:text-earthfire-clay-300"
           >
             Learn more →
           </a>

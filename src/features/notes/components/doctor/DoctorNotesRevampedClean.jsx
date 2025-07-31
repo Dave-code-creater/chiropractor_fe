@@ -47,53 +47,12 @@ import {
     Zap,
 } from "lucide-react";
 
-import { useGetPatientsQuery, useGetIncidentDetailsQuery, useGetTreatmentPlanQuery } from "@/api/services/clinicalNotes";
+import { useDoctorPatientsWithIncidents, useIncidentDetails } from "../../domain/noteService";
+import { useGetTreatmentPlanQuery } from "@/api/services/clinicalNotes";
 import InitialReportDisplay from "../InitialReportDisplay";
 import TreatmentPlanForm from "../TreatmentPlanForm";
 
 const DoctorNotesRevamped = ({ doctorId }) => {
-    // State management - ALL HOOKS MUST BE DECLARED FIRST
-    const [selectedPatient, setSelectedPatient] = useState(null);
-    const [activeTab, setActiveTab] = useState("overview");
-    const [searchTerm, setSearchTerm] = useState("");
-    const [filterStatus, setFilterStatus] = useState("all");
-    const [filterPriority, setFilterPriority] = useState("all");
-    const [selectedIncident, setSelectedIncident] = useState(null);
-    const [isCreatingTreatmentPlan, setIsCreatingTreatmentPlan] = useState(false);
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    const [showQuickActions, setShowQuickActions] = useState(false);
-
-    // Data fetching hooks - MUST be called unconditionally
-    const { data: patients = [], isLoading: isLoadingPatients, error: patientsError } = useGetPatientsQuery();
-    const { data: incidentDetails, isLoading: isLoadingIncident, error: incidentError } = useGetIncidentDetailsQuery(selectedIncident?.id, {
-        skip: !selectedIncident?.id
-    });
-
-    // Filter patients - useMemo hook
-    const filteredPatients = useMemo(() => {
-        if (!patients || !Array.isArray(patients)) return [];
-
-        return patients.filter(patient => {
-            const patientName = `${patient?.first_name || ''} ${patient?.last_name || ''}`.trim().toLowerCase();
-            const email = (patient?.email || '').toLowerCase();
-            const matchesSearch = patientName.includes(searchTerm.toLowerCase()) ||
-                email.includes(searchTerm.toLowerCase());
-
-            const matchesStatus = filterStatus === "all" || patient?.status === filterStatus;
-
-            // Priority filter based on incident urgency
-            let matchesPriority = filterPriority === "all";
-            if (!matchesPriority && patient?.recent_incidents?.length > 0) {
-                matchesPriority = patient.recent_incidents.some(incident =>
-                    incident.priority === filterPriority
-                );
-            }
-
-            return matchesSearch && matchesStatus && matchesPriority;
-        });
-    }, [patients, searchTerm, filterStatus, filterPriority]);
-
-    // CONDITIONAL RETURNS AFTER ALL HOOKS
     // Validate required props
     if (!doctorId) {
         console.error('DoctorNotesRevamped: doctorId prop is required');
@@ -110,23 +69,20 @@ const DoctorNotesRevamped = ({ doctorId }) => {
         );
     }
 
-    // Error handling
-    if (patientsError) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-6">
-                <Card className="p-8 text-center max-w-md shadow-xl border-0">
-                    <CardContent>
-                        <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-                        <h2 className="text-2xl font-semibold text-gray-800 mb-2">Unable to Load Patients</h2>
-                        <p className="text-gray-600 mb-4">There was an error loading patient data. Please try again.</p>
-                        <Button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700">
-                            Retry
-                        </Button>
-                    </CardContent>
-                </Card>
-            </div>
-        );
-    }
+    // State management
+    const [selectedPatient, setSelectedPatient] = useState(null);
+    const [activeTab, setActiveTab] = useState("overview");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filterStatus, setFilterStatus] = useState("all");
+    const [filterPriority, setFilterPriority] = useState("all");
+    const [selectedIncident, setSelectedIncident] = useState(null);
+    const [isCreatingTreatmentPlan, setIsCreatingTreatmentPlan] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [showQuickActions, setShowQuickActions] = useState(false);
+
+    // Data fetching
+    const { patients, isLoading: isLoadingPatients, error: patientsError } = useDoctorPatientsWithIncidents(doctorId);
+    const { incidentDetails, isLoading: isLoadingIncident, error: incidentError } = useIncidentDetails(selectedIncident?.id);
 
     // Helper functions
     const getStatusColor = (status) => {
@@ -172,6 +128,48 @@ const DoctorNotesRevamped = ({ doctorId }) => {
         return icons[type] || icons.default;
     };
 
+    // Error handling
+    if (patientsError) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-6">
+                <Card className="p-8 text-center max-w-md shadow-xl border-0">
+                    <CardContent>
+                        <AlertTriangle className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+                        <h2 className="text-2xl font-semibold text-gray-800 mb-2">Unable to Load Patients</h2>
+                        <p className="text-gray-600 mb-4">There was an error loading patient data. Please try again.</p>
+                        <Button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700">
+                            Retry
+                        </Button>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    // Filter patients
+    const filteredPatients = useMemo(() => {
+        if (!patients) return [];
+
+        return patients.filter(patient => {
+            const patientName = `${patient?.first_name || ''} ${patient?.last_name || ''}`.trim().toLowerCase();
+            const email = (patient?.email || '').toLowerCase();
+            const matchesSearch = patientName.includes(searchTerm.toLowerCase()) ||
+                email.includes(searchTerm.toLowerCase());
+
+            const matchesStatus = filterStatus === "all" || patient?.status === filterStatus;
+
+            // Priority filter based on incident urgency
+            let matchesPriority = filterPriority === "all";
+            if (!matchesPriority && patient?.recent_incidents?.length > 0) {
+                matchesPriority = patient.recent_incidents.some(incident =>
+                    incident.priority === filterPriority
+                );
+            }
+
+            return matchesSearch && matchesStatus && matchesPriority;
+        });
+    }, [patients, searchTerm, filterStatus, filterPriority]);
+
     const renderPatientCard = (patient) => {
         if (!patient) return null;
 
@@ -185,8 +183,8 @@ const DoctorNotesRevamped = ({ doctorId }) => {
             <Card
                 key={patient.id}
                 className={`cursor-pointer transition-all duration-200 border group hover:shadow-md ${isSelected
-                    ? 'border-blue-500 bg-blue-50/50 shadow-md ring-2 ring-blue-500/20'
-                    : 'border-slate-200 hover:border-slate-300 bg-white/60 backdrop-blur-sm'
+                        ? 'border-blue-500 bg-blue-50/50 shadow-md ring-2 ring-blue-500/20'
+                        : 'border-slate-200 hover:border-slate-300 bg-white/60 backdrop-blur-sm'
                     }`}
                 onClick={() => setSelectedPatient(patient)}
             >
@@ -198,8 +196,8 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                                 <AvatarImage src={patient?.avatar} />
                                 <AvatarFallback
                                     className={`text-sm font-semibold ${isSelected
-                                        ? 'bg-blue-100 text-blue-700'
-                                        : 'bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700'
+                                            ? 'bg-blue-100 text-blue-700'
+                                            : 'bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700'
                                         }`}
                                 >
                                     {patientName?.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2) || 'P'}

@@ -61,10 +61,10 @@ const About = () => {
           </em>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="inline-block rounded-md bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-indigo-500 transition">
+            <button className="inline-block rounded-md bg-earthfire-brick-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-earthfire-brick-500 transition">
               Book an Appointment
             </button>
-           
+
           </div>
         </div>
 

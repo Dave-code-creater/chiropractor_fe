@@ -7,7 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   useGetUserAppointmentsQuery,
-  useUpdateAppointmentMutation
+  useUpdateAppointmentMutation,
+  useGetDoctorsQuery
 } from '@/api/services/appointmentApi';
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@/state/data/authSlice';
@@ -47,6 +48,9 @@ export default function PatientAppointments() {
     limit: 100 // Get more appointments to show full history
   });
 
+  // Fetch doctors separately to get full doctor information
+  const { data: doctorsData } = useGetDoctorsQuery();
+
   // Mutations
   const [updateAppointment] = useUpdateAppointmentMutation();
 
@@ -69,6 +73,29 @@ export default function PatientAppointments() {
 
     return [];
   }, [appointmentsData]);
+
+  // Process doctors data
+  const doctors = useMemo(() => {
+    if (!doctorsData) return [];
+
+    // Handle different response structures (same as in Booking.jsx)
+    if (doctorsData?.data) {
+      if (Array.isArray(doctorsData.data)) {
+        return doctorsData.data;
+      }
+    }
+
+    if (Array.isArray(doctorsData)) {
+      return doctorsData;
+    }
+
+    return [];
+  }, [doctorsData]);
+
+  // Helper function to get doctor by ID
+  const getDoctorById = (doctorId) => {
+    return doctors.find(doc => doc.id === doctorId || doc.id === parseInt(doctorId));
+  };
 
   // Categorize appointments
   const categorizedAppointments = useMemo(() => {
@@ -202,9 +229,9 @@ export default function PatientAppointments() {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-semibold text-lg">
-                    {appointment.doctor ?
-                      `Dr. ${appointment.doctor.first_name} ${appointment.doctor.last_name}` :
-                      'Dr. Unknown'
+                    {appointment.doctor
+                      ? `Dr. ${appointment.doctor.first_name} ${appointment.doctor.last_name}`
+                      : 'Dr. Unknown'
                     }
                   </h3>
                   <p className="text-sm text-muted-foreground">
@@ -474,9 +501,9 @@ export default function PatientAppointments() {
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     <span>
-                      {cancelModal.appointment.doctor ?
-                        `Dr. ${cancelModal.appointment.doctor.first_name} ${cancelModal.appointment.doctor.last_name}` :
-                        'Dr. Unknown'
+                      {cancelModal.appointment.doctor
+                        ? `Dr. ${cancelModal.appointment.doctor.first_name} ${cancelModal.appointment.doctor.last_name}`
+                        : 'Dr. Unknown'
                       }
                     </span>
                   </div>
@@ -538,9 +565,9 @@ export default function PatientAppointments() {
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     <span>
-                      {rescheduleModal.appointment.doctor ?
-                        `Dr. ${rescheduleModal.appointment.doctor.first_name} ${rescheduleModal.appointment.doctor.last_name}` :
-                        'Dr. Unknown'
+                      {rescheduleModal.appointment.doctor
+                        ? `Dr. ${rescheduleModal.appointment.doctor.first_name} ${rescheduleModal.appointment.doctor.last_name}`
+                        : 'Dr. Unknown'
                       }
                     </span>
                   </div>
@@ -589,9 +616,9 @@ export default function PatientAppointments() {
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4" />
                     <span>
-                      {feedbackModal.appointment.doctor ?
-                        `Dr. ${feedbackModal.appointment.doctor.first_name} ${feedbackModal.appointment.doctor.last_name}` :
-                        'Dr. Unknown'
+                      {feedbackModal.appointment.doctor
+                        ? `Dr. ${feedbackModal.appointment.doctor.first_name} ${feedbackModal.appointment.doctor.last_name}`
+                        : 'Dr. Unknown'
                       }
                     </span>
                   </div>

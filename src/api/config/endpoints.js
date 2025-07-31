@@ -46,6 +46,15 @@ export const API_ENDPOINTS = {
     AVAILABLE_USERS: "/chat/admin-doctors",
   },
 
+  // Clinical Notes
+  CLINICAL_NOTES: {
+    BASE: "/clinical-notes",
+    BY_PATIENT: (patientId) => `/clinical-notes/patient/${patientId}`,
+    SOAP: "/clinical-notes/soap",
+    TEMPLATES: "/clinical-notes/templates",
+    SEARCH: "/clinical-notes/search",
+  },
+
   // Blog
   BLOG: {
     BASE: "/blog",

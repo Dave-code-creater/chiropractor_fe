@@ -68,15 +68,15 @@ export default function Testimonials() {
                         {testimonials.map((testimonial) => (
                             <div
                                 key={`first-${testimonial.id}`}
-                                className="bg-white border border-indigo-200 rounded-2xl p-6 min-w-[400px] shadow-sm hover:shadow-md transition-shadow"
+                                className="bg-white border border-earthfire-clay-200 rounded-2xl p-6 min-w-[400px] shadow-sm hover:shadow-md transition-shadow"
                             >
                                 <div className="flex items-center mb-4">
-                                    <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                    <div className="w-12 h-12 bg-earthfire-brick-600 rounded-full flex items-center justify-center text-white font-semibold">
                                         {testimonial.name.charAt(0)}
                                     </div>
                                     <div className="ml-4">
                                         <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                                        <p className="text-sm text-indigo-600">{testimonial.username}</p>
+                                        <p className="text-sm text-earthfire-brick-600">{testimonial.username}</p>
                                     </div>
                                 </div>
 
@@ -96,15 +96,15 @@ export default function Testimonials() {
                         {testimonials.map((testimonial) => (
                             <div
                                 key={`second-${testimonial.id}`}
-                                className="bg-white border border-indigo-200 rounded-2xl p-6 min-w-[400px] shadow-sm hover:shadow-md transition-shadow"
+                                className="bg-white border border-earthfire-clay-200 rounded-2xl p-6 min-w-[400px] shadow-sm hover:shadow-md transition-shadow"
                             >
                                 <div className="flex items-center mb-4">
-                                    <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center text-white font-semibold">
+                                    <div className="w-12 h-12 bg-earthfire-brick-600 rounded-full flex items-center justify-center text-white font-semibold">
                                         {testimonial.name.charAt(0)}
                                     </div>
                                     <div className="ml-4">
                                         <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                                        <p className="text-sm text-indigo-600">{testimonial.username}</p>
+                                        <p className="text-sm text-earthfire-brick-600">{testimonial.username}</p>
                                     </div>
                                 </div>
 

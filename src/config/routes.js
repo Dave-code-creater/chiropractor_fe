@@ -29,6 +29,7 @@ export const routeStatuses = {
   "/chat": RouteStatus.ACTIVE,
   "/blog": RouteStatus.ACTIVE,
   "/blog/:slug": RouteStatus.ACTIVE,
+  "/theme-preview": RouteStatus.ACTIVE,
   "/report": RouteStatus.ACTIVE,
 
   // Admin routes
@@ -47,7 +48,7 @@ export const routeStatuses = {
   "/doctor/profile": RouteStatus.ACTIVE,
   "/doctor/settings": RouteStatus.ACTIVE,
 
-  
+
 };
 
 // Helper function to check route status

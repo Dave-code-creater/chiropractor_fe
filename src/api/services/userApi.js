@@ -4,8 +4,11 @@ import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Patients", "ClinicalNotes", "Vitals"],
-  keepUnusedDataFor: CACHE_TIMES.SHORT,
+  tagTypes: ["Patients", "Vitals"],
+  keepUnusedDataFor: CACHE_TIMES.MEDIUM,
+  refetchOnMountOrArgChange: 30,
+  refetchOnFocus: true,
+  refetchOnReconnect: true,
   refetchOnMountOrArgChange: 30,
   refetchOnFocus: true,
   refetchOnReconnect: true,
@@ -55,36 +58,6 @@ export const userApi = createApi({
         { type: "Patients", id },
       ],
     }),
-
-    // Clinical Notes
-    addClinicalNotes: builder.mutation({
-      query: ({ patient_id, ...data }) => ({
-        url: `users/patients/${patient_id}/clinical-notes`,
-        method: "POST",
-        body: data,
-      }),
-      invalidatesTags: (result, error, { patient_id }) => [
-        { type: "ClinicalNotes", id: patient_id },
-        { type: "Patients", id: patient_id },
-      ],
-    }),
-
-    getClinicalNotes: builder.query({
-      query: ({ patient_id, ...params }) => {
-        const queryParams = new URLSearchParams();
-
-        if (params.date_from) queryParams.append("date_from", params.date_from);
-        if (params.date_to) queryParams.append("date_to", params.date_to);
-
-        return {
-          url: `users/patients/${patient_id}/clinical-notes?${queryParams}`,
-          method: "GET",
-        };
-      },
-      providesTags: (result, error, { patient_id }) => [
-        { type: "ClinicalNotes", id: patient_id },
-      ],
-    }),
   }),
 });
 
@@ -93,6 +66,4 @@ export const {
   useGetPatientsQuery,
   useGetPatientByIdQuery,
   useUpdatePatientMutation,
-  useAddClinicalNotesMutation,
-  useGetClinicalNotesQuery,
 } = userApi; 

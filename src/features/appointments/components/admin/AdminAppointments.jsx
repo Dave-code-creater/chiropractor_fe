@@ -11,23 +11,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  useGetAppointmentsQuery, 
-  useUpdateAppointmentMutation, 
+import {
+  useGetAppointmentsQuery,
+  useUpdateAppointmentMutation,
   useCreateAppointmentMutation,
   useDeleteAppointmentMutation,
   useGetDoctorsQuery
 } from '@/api/services/appointmentApi';
 import { useGetPatientsQuery } from '@/api/services/userApi';
-import { 
-  Calendar, 
-  Search, 
-  Plus, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  Users, 
-  Phone, 
+import {
+  Calendar,
+  Search,
+  Plus,
+  Clock,
+  CheckCircle,
+  XCircle,
+  Users,
+  Phone,
   Edit,
   Trash2,
   Filter,
@@ -58,7 +58,7 @@ const AdminAppointments = () => {
   const [selectedAppointments, setSelectedAppointments] = useState([]);
   const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState('today');
-  
+
   // Modal states
   const [createModal, setCreateModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, appointment: null });
@@ -68,7 +68,7 @@ const AdminAppointments = () => {
   // Query parameters based on active tab and filters
   const queryParams = useMemo(() => {
     const params = {};
-    
+
     // Date range filtering
     if (dateRange === 'today') {
       params.date = selectedDate;
@@ -79,15 +79,15 @@ const AdminAppointments = () => {
       params.date_from = startOfMonth(new Date()).toISOString().split('T')[0];
       params.date_to = endOfMonth(new Date()).toISOString().split('T')[0];
     }
-    
+
     if (statusFilter !== 'all') {
       params.status = statusFilter;
     }
-    
+
     if (doctorFilter !== 'all') {
       params.doctor_id = doctorFilter;
     }
-    
+
     return params;
   }, [activeTab, selectedDate, statusFilter, doctorFilter, dateRange]);
 
@@ -119,10 +119,10 @@ const AdminAppointments = () => {
 
   // Admin-specific analytics
   const adminStats = useMemo(() => {
-    const todayAppointments = appointments.filter(apt => 
+    const todayAppointments = appointments.filter(apt =>
       isToday(new Date(apt.appointment_date))
     );
-    
+
     const pendingAppointments = appointments.filter(apt => apt.status === 'pending');
     const completedAppointments = appointments.filter(apt => apt.status === 'completed');
     const cancelledAppointments = appointments.filter(apt => apt.status === 'cancelled');
@@ -202,8 +202,8 @@ const AdminAppointments = () => {
   // Filter appointments based on search
   const filteredAppointments = useMemo(() => {
     if (!searchTerm) return appointments;
-    
-    return appointments.filter(appointment => 
+
+    return appointments.filter(appointment =>
       appointment.patient_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       appointment.doctor_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       appointment.reason_for_visit?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -304,20 +304,29 @@ const AdminAppointments = () => {
       header: "Patient",
       cell: ({ row }) => {
         const appointment = row.original;
+
+        // Check if appointment has a patient object (patient API structure)
+        const patientName = appointment.patient
+          ? `${appointment.patient.first_name} ${appointment.patient.last_name}`
+          : appointment.patient_name || 'Unknown Patient';
+
+        const patientEmail = appointment.patient?.email || appointment.patient_email;
+        const patientPhone = appointment.patient?.phone || appointment.patient_phone;
+
         return (
           <div className="space-y-1">
-            <div className="font-medium">{appointment.patient_name || 'Unknown Patient'}</div>
+            <div className="font-medium">{patientName}</div>
             <div className="text-sm text-muted-foreground flex items-center gap-2">
-              {appointment.patient_email && (
+              {patientEmail && (
                 <span className="flex items-center gap-1">
                   <Mail className="h-3 w-3" />
-                  {appointment.patient_email}
+                  {patientEmail}
                 </span>
               )}
-              {appointment.patient_phone && (
+              {patientPhone && (
                 <span className="flex items-center gap-1">
                   <Phone className="h-3 w-3" />
-                  {appointment.patient_phone}
+                  {patientPhone}
                 </span>
               )}
             </div>
@@ -330,12 +339,28 @@ const AdminAppointments = () => {
       header: "Doctor",
       cell: ({ row }) => {
         const appointment = row.original;
+
+        // Check if appointment has a doctor object (patient API structure)
+        if (appointment.doctor) {
+          return (
+            <div className="space-y-1">
+              <div className="font-medium">
+                Dr. {appointment.doctor.first_name} {appointment.doctor.last_name}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                {appointment.doctor.specialization || 'Chiropractic Care'}
+              </div>
+            </div>
+          );
+        }
+
+        // Fallback to admin API structure
         const doctor = doctors.find(d => d.id === appointment.doctor_id);
         return (
           <div className="space-y-1">
             <div className="font-medium">
-              {doctor ? `Dr. ${doctor.first_name} ${doctor.last_name}` : 
-               appointment.doctor_name || 'Unknown Doctor'}
+              {doctor ? `Dr. ${doctor.first_name} ${doctor.last_name}` :
+                appointment.doctor_name || 'Unknown Doctor'}
             </div>
             <div className="text-sm text-muted-foreground">
               {doctor?.specialization || 'Chiropractic Care'}
@@ -387,22 +412,22 @@ const AdminAppointments = () => {
         const appointment = row.original;
         return (
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => setEditModal({ isOpen: true, appointment })}
             >
               <Edit className="w-4 h-4" />
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => handleDeleteAppointment(appointment.id)}
             >
               <Trash2 className="w-4 h-4" />
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
             >
               <Eye className="w-4 h-4" />
@@ -450,7 +475,7 @@ const AdminAppointments = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="patient">Patient</Label>
-            <Select value={formData.patient_id} onValueChange={(value) => setFormData({...formData, patient_id: value})}>
+            <Select value={formData.patient_id} onValueChange={(value) => setFormData({ ...formData, patient_id: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select patient" />
               </SelectTrigger>
@@ -466,7 +491,7 @@ const AdminAppointments = () => {
 
           <div className="space-y-2">
             <Label htmlFor="doctor">Doctor</Label>
-            <Select value={formData.doctor_id} onValueChange={(value) => setFormData({...formData, doctor_id: value})}>
+            <Select value={formData.doctor_id} onValueChange={(value) => setFormData({ ...formData, doctor_id: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select doctor" />
               </SelectTrigger>
@@ -487,7 +512,7 @@ const AdminAppointments = () => {
             <Input
               type="date"
               value={formData.appointment_date}
-              onChange={(e) => setFormData({...formData, appointment_date: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })}
               required
             />
           </div>
@@ -497,7 +522,7 @@ const AdminAppointments = () => {
             <Input
               type="time"
               value={formData.appointment_time}
-              onChange={(e) => setFormData({...formData, appointment_time: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })}
               required
             />
           </div>
@@ -506,7 +531,7 @@ const AdminAppointments = () => {
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
             <Label htmlFor="type">Type</Label>
-            <Select value={formData.type} onValueChange={(value) => setFormData({...formData, type: value})}>
+            <Select value={formData.type} onValueChange={(value) => setFormData({ ...formData, type: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select type" />
               </SelectTrigger>
@@ -522,7 +547,7 @@ const AdminAppointments = () => {
 
           <div className="space-y-2">
             <Label htmlFor="status">Status</Label>
-            <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
+            <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select status" />
               </SelectTrigger>
@@ -542,7 +567,7 @@ const AdminAppointments = () => {
             <Input
               type="number"
               value={formData.fee}
-              onChange={(e) => setFormData({...formData, fee: parseFloat(e.target.value)})}
+              onChange={(e) => setFormData({ ...formData, fee: parseFloat(e.target.value) })}
               placeholder="0.00"
               step="0.01"
             />
@@ -553,7 +578,7 @@ const AdminAppointments = () => {
           <Label htmlFor="reason">Reason for Visit</Label>
           <Input
             value={formData.reason_for_visit}
-            onChange={(e) => setFormData({...formData, reason_for_visit: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, reason_for_visit: e.target.value })}
             placeholder="Brief description of the visit purpose"
           />
         </div>
@@ -562,7 +587,7 @@ const AdminAppointments = () => {
           <Label htmlFor="notes">Admin Notes</Label>
           <Textarea
             value={formData.notes}
-            onChange={(e) => setFormData({...formData, notes: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
             placeholder="Internal notes and observations"
             rows={3}
           />
@@ -684,15 +709,15 @@ const AdminAppointments = () => {
             <span className="text-sm text-muted-foreground">
               {selectedAppointments.length} selected
             </span>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => setBulkActionModal({ isOpen: true, action: 'confirm' })}
             >
               Bulk Confirm
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={() => setBulkActionModal({ isOpen: true, action: 'cancel' })}
             >
@@ -708,8 +733,8 @@ const AdminAppointments = () => {
           <CardTitle>All Appointments</CardTitle>
         </CardHeader>
         <CardContent>
-          <DataTable 
-            columns={columns} 
+          <DataTable
+            columns={columns}
             data={filteredAppointments}
             onRowSelectionChange={setSelectedAppointments}
           />
@@ -725,7 +750,7 @@ const AdminAppointments = () => {
               Create a new appointment for any patient with any doctor.
             </DialogDescription>
           </DialogHeader>
-          <AppointmentForm 
+          <AppointmentForm
             onClose={() => setCreateModal(false)}
           />
         </DialogContent>
@@ -740,7 +765,7 @@ const AdminAppointments = () => {
               Update appointment details and status.
             </DialogDescription>
           </DialogHeader>
-          <AppointmentForm 
+          <AppointmentForm
             appointment={editModal.appointment}
             onClose={() => setEditModal({ isOpen: false, appointment: null })}
           />
@@ -757,13 +782,13 @@ const AdminAppointments = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setBulkActionModal({ isOpen: false, action: null })}
             >
               Cancel
             </Button>
-            <Button 
+            <Button
               onClick={() => handleBulkAction(bulkActionModal.action)}
             >
               Confirm

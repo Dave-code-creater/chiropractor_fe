@@ -117,7 +117,7 @@ const AppSidebar = () => {
       )}
 
       {/* Sidebar - shows on desktop, collapsible on mobile */}
-      <Sidebar variant="sidebar" collapsible={isMobile ? "offcanvas" : "none"}>
+      <Sidebar variant="sidebar" collapsible={isMobile ? "offcanvas" : "none"} className="sidebar-full-height">
         <SidebarHeader className="p-6 border-b bg-gradient-to-br from-card to-muted/20">
           <div className="flex items-start gap-4">
             <div className="relative flex-shrink-0">

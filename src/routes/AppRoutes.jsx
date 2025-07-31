@@ -44,6 +44,9 @@ import AppointmentManagement from "../features/appointments/components/Appointme
 import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
 import PatientManagement from "../features/patients/components/PatientManagement";
 
+// Theme Preview
+import ThemePreview from "../pages/ThemePreview";
+
 import { getRouteStatus, RouteStatus } from "../config/routes";
 
 const RouteWrapper = ({ element: Element, ...props }) => {
@@ -83,6 +86,9 @@ const AppRoutes = () => {
         {/* Public Blog Routes - WordPress-like */}
         <Route path="/blog" element={<RouteWrapper element={BlogReader} />} />
         <Route path="/blog/:slug" element={<RouteWrapper element={BlogReader} />} />
+
+        {/* Theme Preview Route */}
+        <Route path="/theme-preview" element={<RouteWrapper element={ThemePreview} />} />
 
         {/* Auth routes */}
         <Route path="/login" element={<RouteWrapper element={Login} />} />

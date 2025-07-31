@@ -32,6 +32,12 @@ export {
   useGetSOAPNotesQuery,
   useSearchClinicalNotesQuery,
   useGetNoteTemplatesQuery,
+  useGetTreatmentPlanQuery,
+  useUpdateTreatmentPlanMutation,
+  useCreateTreatmentPlanMutation,
+  useGetPatientIncidentsQuery,
+  useGetIncidentDetailsQuery,
+  useGetDoctorPatientsQuery,
 } from './services/clinicalNotes';
 
 export {

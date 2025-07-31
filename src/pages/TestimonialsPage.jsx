@@ -76,7 +76,7 @@ export default function TestimonialsPage() {
                             <div key={index} className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition duration-200">
                                 <div className="mb-4">
                                     <h3 className="font-semibold text-gray-900">{story.name}</h3>
-                                    <p className="text-sm text-blue-600 font-medium">{story.condition}</p>
+                                    <p className="text-sm text-earthfire-brick-600 font-medium">{story.condition}</p>
                                 </div>
                                 <div className="mb-4">
                                     <div className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full inline-block">
@@ -93,19 +93,19 @@ export default function TestimonialsPage() {
             </section>
 
             {/* Call to Action */}
-            <section className="py-16 bg-blue-600">
+            <section className="py-16 bg-earthfire-brick-600">
                 <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
                     <h2 className="text-3xl font-bold text-white mb-4">
                         Ready to Start Your Healing Journey?
                     </h2>
-                    <p className="text-xl text-blue-100 mb-8">
+                    <p className="text-xl text-earthfire-clay-100 mb-8">
                         Join thousands of patients who have found relief and improved their quality of life
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="bg-white text-blue-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-50 transition duration-200 transform hover:scale-105">
+                        <button className="bg-white text-earthfire-brick-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-50 transition duration-200 transform hover:scale-105">
                             Schedule Consultation
                         </button>
-                        <button className="border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-blue-600 transition duration-200">
+                        <button className="border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-earthfire-brick-600 transition duration-200">
                             Learn More About Our Services
                         </button>
                     </div>

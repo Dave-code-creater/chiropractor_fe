@@ -13,7 +13,7 @@ import {
   useGetTreatmentPlanQuery,
   useCreateTreatmentPlanMutation,
   useUpdateTreatmentPlanMutation
-} from "@/api/services/notesApi";
+} from "@/api/services/clinicalNotes";
 import { useMemo } from "react";
 
 // Note type constants

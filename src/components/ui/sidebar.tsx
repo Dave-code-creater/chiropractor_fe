@@ -195,7 +195,7 @@ const Sidebar = React.forwardRef<
       return (
         <div
           className={cn(
-            "flex h-full w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground",
+            "fixed inset-y-0 left-0 z-10 flex h-svh w-[--sidebar-width] flex-col bg-sidebar text-sidebar-foreground border-r",
             className,
           )}
           ref={ref}
@@ -342,6 +342,8 @@ const SidebarInset = React.forwardRef<
       className={cn(
         "relative flex w-full flex-1 flex-col bg-background",
         "md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
+        // Add margin-left for fixed sidebar when collapsible is "none"
+        "md:ml-[--sidebar-width]",
         className,
       )}
       {...props}

@@ -1,11 +1,11 @@
 /* Add this to your global CSS (tailwind.config.js or globals.css) */
 .scroll-area::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 .scroll-area::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
 }
 
 @tailwind base;
@@ -14,58 +14,111 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 160 84% 39%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 210 40% 98%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 98%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 160 84% 39%;
+    /* Earthfire Elegance Theme - Light Mode */
+    /* Background: Creamy warmth #fdf9f6 */
+    --background: 35 60% 98%;
+    --foreground: 25 25% 18%;
+    /* Deep espresso brown #3d2e24 */
+
+    /* Card colors - soft clay tones */
+    --card: 25 50% 97%;
+    --card-foreground: 25 25% 18%;
+
+    /* Popover colors */
+    --popover: 25 50% 97%;
+    --popover-foreground: 25 25% 18%;
+
+    /* Primary colors - muted brick red #a94438 */
+    --primary: 7 42% 44%;
+    --primary-foreground: 35 60% 98%;
+
+    /* Secondary colors - soft clay #f4d4c3 */
+    --secondary: 25 50% 86%;
+    --secondary-foreground: 25 25% 18%;
+
+    /* Muted colors - sandstone tones #c9a78d */
+    --muted: 30 30% 68%;
+    --muted-foreground: 25 20% 35%;
+
+    /* Accent colors - warm brown #7b4b2a */
+    --accent: 25 50% 32%;
+    --accent-foreground: 35 60% 98%;
+
+    /* Destructive colors - keeping red theme */
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 35 60% 98%;
+
+    /* Border and input colors - sandstone blend */
+    --border: 30 25% 78%;
+    --input: 30 25% 78%;
+    --ring: 7 42% 44%;
+
     --radius: 0.5rem;
-    --chart-1: 160 84% 39%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+
+    /* Chart colors - earthfire harmonies */
+    --chart-1: 7 42% 44%;
+    /* Brick red */
+    --chart-2: 25 50% 32%;
+    /* Warm brown */
+    --chart-3: 15 45% 25%;
+    /* Burnt umber */
+    --chart-4: 30 30% 68%;
+    /* Sandstone */
+    --chart-5: 25 50% 86%;
+    /* Soft clay */
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 160 84% 39%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 160 84% 39%;
-    --chart-1: 160 84% 39%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    /* Earthfire Elegance Theme - Dark Mode */
+    /* Background: Deep burnt umber #5a1f18 */
+    --background: 15 55% 22%;
+    --foreground: 25 50% 86%;
+    /* Soft clay for text */
+
+    /* Card colors - slightly lighter burnt tones */
+    --card: 15 45% 26%;
+    --card-foreground: 25 50% 86%;
+
+    /* Popover colors */
+    --popover: 15 45% 26%;
+    --popover-foreground: 25 50% 86%;
+
+    /* Primary colors - enhanced brick red for dark mode */
+    --primary: 7 55% 55%;
+    --primary-foreground: 15 55% 22%;
+
+    /* Secondary colors - darker warm brown */
+    --secondary: 25 35% 25%;
+    --secondary-foreground: 25 50% 86%;
+
+    /* Muted colors - medium brown blend */
+    --muted: 25 30% 35%;
+    --muted-foreground: 30 30% 68%;
+
+    /* Accent colors - warm brown with good contrast */
+    --accent: 25 45% 38%;
+    --accent-foreground: 25 50% 86%;
+
+    /* Destructive colors */
+    --destructive: 0 70% 55%;
+    --destructive-foreground: 25 50% 86%;
+
+    /* Border and input colors - medium earth tones */
+    --border: 25 25% 32%;
+    --input: 25 25% 32%;
+    --ring: 7 55% 55%;
+
+    /* Chart colors - vibrant earthfire palette for dark mode */
+    --chart-1: 7 60% 58%;
+    /* Bright brick red */
+    --chart-2: 25 55% 45%;
+    /* Medium warm brown */
+    --chart-3: 15 50% 35%;
+    /* Deep earth brown */
+    --chart-4: 30 45% 52%;
+    /* Rich sandstone */
+    --chart-5: 25 40% 68%;
+    /* Light clay */
   }
 }
 
@@ -73,6 +126,7 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
@@ -82,39 +136,45 @@
     /* Improve touch scrolling on mobile */
     -webkit-overflow-scrolling: touch;
   }
-  
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
   }
-  
+
   ::-webkit-scrollbar-track {
     @apply bg-muted;
   }
-  
+
   ::-webkit-scrollbar-thumb {
     @apply bg-muted-foreground/30 rounded-full;
   }
-  
+
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-muted-foreground/50;
   }
 
   /* Mobile-specific improvements */
   @media (max-width: 768px) {
+
     /* Improve touch targets */
-    button, [role="button"] {
+    button,
+    [role="button"] {
       min-height: 44px;
       min-width: 44px;
     }
 
     /* Improve text readability on mobile */
-    p, span, div {
+    p,
+    span,
+    div {
       line-height: 1.5;
     }
 
     /* Prevent zoom on input focus on iOS */
-    input, textarea, select {
+    input,
+    textarea,
+    select {
       font-size: 16px;
     }
 
@@ -126,6 +186,7 @@
 
   /* Tablet-specific improvements */
   @media (min-width: 769px) and (max-width: 1024px) {
+
     /* Optimize spacing for tablets */
     .container {
       padding-left: 1rem;
@@ -138,11 +199,11 @@
   .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
-  
+
   .glass-effect {
     @apply bg-background/80 backdrop-blur-sm border border-border/50;
   }
@@ -172,6 +233,14 @@
   .responsive-card-grid {
     @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3;
   }
+
+  /* Full height sidebar for large screens */
+  .sidebar-full-height {
+    @media (min-width: 768px) {
+      height: 100vh !important;
+      min-height: 100vh !important;
+    }
+  }
 }
 
 @keyframes fadeIn {
@@ -179,6 +248,7 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -190,6 +260,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
