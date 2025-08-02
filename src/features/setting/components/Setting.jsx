@@ -14,7 +14,7 @@ import Display from "./Display";
 
 const tabs = [
   { id: "account", label: "Account", icon: UserCog },
-  { id: "appearance", label: "Appearance", icon: Paintbrush },
+  // { id: "appearance", label: "Appearance", icon: Paintbrush }, // Temporarily disabled
   // { id: "notifications", label: "Notifications", icon: Bell },
   // { id: "display", label: "Display", icon: Monitor },
 ];
@@ -45,8 +45,8 @@ export default function Setting() {
     switch (tab) {
       case "account":
         return <Account />;
-      case "appearance":
-        return <Appearance />;
+      // case "appearance": // Temporarily disabled
+      //   return <Appearance />;
       case "notifications":
         return <Notifications />;
       case "display":
