@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useLoginMutation } from "../../api/services/authApi";
+import { useLoginMutation, useOauthLoginMutation } from "../../api/services/authApi";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { validateEmail, validatePassword } from "../../components/forms/FormUtils";
 import PasswordInput from "../../components/forms/PasswordInput";
+import OAuthLogin from "../../components/auth/OAuthLogin";
 import {
   setEmailError,
   clearEmailError,
@@ -31,6 +32,7 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginMutation, { isLoading }] = useLoginMutation();
+  const [oauthLoginMutation, { isLoading: isOAuthLoading }] = useOauthLoginMutation();
   const dispatch = useDispatch();
   const errorEmail = useSelector((state) => state?.forms?.loginForm?.errors?.email);
   const pwError = useSelector((state) => state?.forms?.loginForm?.errors?.password);
@@ -156,6 +158,83 @@ export default function Login() {
     }
   };
 
+  // Handle OAuth login success
+  const handleOAuthSuccess = async (userData) => {
+    try {
+      console.log('OAuth userData:', userData);
+
+      const response = await oauthLoginMutation(userData).unwrap();
+
+      // Validate response
+      if (!response?.user?.id || !response?.user?.role) {
+        console.error('Invalid OAuth login response:', response);
+        enhancedToast.error(
+          "OAuth login system error",
+          {
+            description: "There was a problem with the OAuth authentication system. Please try again.",
+            duration: 8000
+          }
+        );
+        return;
+      }
+
+      // Show success message
+      enhancedToast.auth.success(`Successfully signed in with ${userData.provider} as ${response.user.role}`);
+
+      // Navigate to the appropriate dashboard
+      navigate(`/dashboard/${response.user.role.toLowerCase()}/${response.user.id}`);
+    } catch (error) {
+      console.error('OAuth login error:', error);
+
+      // Handle OAuth-specific errors
+      if (error?.status === 409) {
+        enhancedToast.error(
+          "Account already exists",
+          {
+            description: "An account with this email already exists. Please use regular login or contact support.",
+            action: {
+              label: "Try Regular Login",
+              onClick: () => {
+                // Focus on email input if the userData contains email
+                if (userData.email) {
+                  setEmail(userData.email);
+                }
+              }
+            }
+          }
+        );
+      } else if (error?.status === 422) {
+        enhancedToast.error(
+          "OAuth account incomplete",
+          {
+            description: "Your OAuth account is missing required information. Please complete your profile.",
+            duration: 8000
+          }
+        );
+      } else {
+        enhancedToast.error(
+          `${userData.provider} login failed`,
+          {
+            description: error?.data?.message || "An error occurred during OAuth authentication. Please try again.",
+            duration: 6000
+          }
+        );
+      }
+    }
+  };
+
+  // Handle OAuth login error
+  const handleOAuthError = (message, error) => {
+    console.error('OAuth Error:', message, error);
+    enhancedToast.error(
+      "Authentication failed",
+      {
+        description: message || "OAuth login failed. Please try again.",
+        duration: 5000
+      }
+    );
+  };
+
   // Show loading while auth state is being rehydrated
   if (!isReady) {
     return (
@@ -168,12 +247,26 @@ export default function Login() {
     );
   }
 
-  // If already authenticated, show redirecting message
-  if (isAuthenticated) {
+  // If already authenticated, show Facebook-like redirecting message
+  if (isAuthenticated && userID && userRole) {
     return (
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="text-center">
-          <div className="text-lg text-gray-600">🚀 Redirecting to your dashboard...</div>
+          <div className="mb-4">
+            <div className="text-4xl mb-4">👋</div>
+            <div className="text-xl font-semibold text-gray-900 mb-2">
+              Welcome back!
+            </div>
+            <div className="text-lg text-gray-600 mb-4">
+              You're already signed in as {userRole}
+            </div>
+          </div>
+          <div className="flex justify-center mb-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+          </div>
+          <div className="text-sm text-gray-500">
+            Taking you to your dashboard...
+          </div>
         </div>
       </div>
     );
@@ -245,13 +338,23 @@ export default function Login() {
           <div>
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || isOAuthLoading}
               className="w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </button>
           </div>
         </form>
+
+
+
+        {/* OAuth Login Component */}
+        <div className="mt-6">
+          <OAuthLogin
+            onLoginSuccess={handleOAuthSuccess}
+            onLoginError={handleOAuthError}
+          />
+        </div>
 
         <p className="mt-10 text-center text-sm text-gray-500">
           Not a Member?{" "}

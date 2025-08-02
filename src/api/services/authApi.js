@@ -116,6 +116,31 @@ export const authApi = createApi({
         method: "GET",
       }),
     }),
+
+    // OAuth login endpoint
+    oauthLogin: builder.mutation({
+      query: (oauthData) => ({
+        url: "/auth/oauth",
+        method: "POST",
+        body: oauthData,
+      }),
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+
+          if (data?.accessToken && data?.user) {
+            dispatch(
+              setCredentials({
+                user: data.user,
+                token: data.accessToken,
+              })
+            );
+          }
+        } catch (error) {
+          console.error("OAuth login failed:", error);
+        }
+      },
+    }),
   }),
 });
 
@@ -126,4 +151,5 @@ export const {
   useForgotPasswordMutation,
   useResetPasswordMutation,
   useVerifyResetTokenQuery,
+  useOauthLoginMutation,
 } = authApi;

@@ -1,7 +1,21 @@
 import React from "react";
 import dr from "../assets/images/dr.png";
-
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectUserId, selectIsAuthenticated } from "../state/data/authSlice";
 const About = () => {
+
+  const navigate = useNavigate();
+  const user = useSelector(selectUserId);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const handleBookAppointment = () => {
+    if (isAuthenticated && user?.id) {
+      navigate(`dashboard/${user.id}/services/appointments/`);
+    } else {
+      navigate("/login");
+    }
+  };
+
   return (
     <section className=" py-24 px-6 sm:py-28 lg:px-8">
       <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -61,7 +75,7 @@ const About = () => {
           </em>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="inline-block rounded-md bg-earthfire-brick-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-earthfire-brick-500 transition">
+            <button onClick={handleBookAppointment} className="inline-block rounded-md bg-earthfire-brick-600 px-6 py-3 text-sm font-semibold text-white shadow-md hover:bg-earthfire-brick-500 transition">
               Book an Appointment
             </button>
 

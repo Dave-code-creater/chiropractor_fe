@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Calendar, 
-  Clock, 
-  Eye, 
-  User, 
+import {
+  Calendar,
+  Clock,
+  Eye,
+  User,
   Tag,
   ArrowLeft,
   Share2,
@@ -44,20 +44,31 @@ const BlogPostViewer = ({ post, onBack }) => {
   };
 
   const formatReadTime = (content) => {
-    if (!content || !Array.isArray(content)) return "1 min read";
-    
-    const wordCount = content.reduce((count, block) => {
-      if (block.text) {
-        return count + block.text.split(" ").length;
-      }
-      if (block.items) {
-        return count + block.items.join(" ").split(" ").length;
-      }
-      return count;
-    }, 0);
-    
+    if (!content) return "1 min read";
+
+    let wordCount = 0;
+
+    // Handle string content
+    if (typeof content === 'string') {
+      // Remove HTML tags if present and count words
+      const textContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      wordCount = textContent ? textContent.split(' ').length : 0;
+    }
+    // Handle array content (structured blocks)
+    else if (Array.isArray(content)) {
+      wordCount = content.reduce((count, block) => {
+        if (block.text) {
+          return count + block.text.split(" ").length;
+        }
+        if (block.items) {
+          return count + block.items.join(" ").split(" ").length;
+        }
+        return count;
+      }, 0);
+    }
+
     const readTime = Math.ceil(wordCount / 200); // Assuming 200 words per minute
-    return `${readTime} min read`;
+    return `${Math.max(1, readTime)} min read`;
   };
 
   const handleShare = async () => {
@@ -83,8 +94,8 @@ const BlogPostViewer = ({ post, onBack }) => {
       {/* Back Button */}
       {onBack && (
         <div className="mb-8">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             onClick={onBack}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
           >
@@ -144,9 +155,9 @@ const BlogPostViewer = ({ post, onBack }) => {
           </div>
 
           {/* Share Button */}
-          <Button 
-            variant="ghost" 
-            size="sm" 
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleShare}
             className="flex items-center gap-2 text-gray-500 hover:text-gray-700"
           >

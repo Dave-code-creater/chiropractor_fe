@@ -419,7 +419,7 @@ const FeatureHighlight = ({
         />
       </div>
 
-      <style jsx>{`
+      <style>{`
         @keyframes pulse {
           0%,
           100% {

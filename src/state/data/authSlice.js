@@ -11,13 +11,13 @@ const initialState = {
   isAuthenticated: false,
   loading: false,
   error: null,
-  
+
   // Complete user data (consolidated from entities.user)
   userID: null,
   role: null,
   email: null,
   username: null,
-  
+
   // User profile data
   profile: {
     firstName: null,
@@ -31,7 +31,7 @@ const initialState = {
     isVerified: false,
     phoneVerified: false,
   },
-  
+
   // User preferences
   preferences: {
     theme: "light",
@@ -46,7 +46,7 @@ const authSlice = createSlice({
   reducers: {
     setCredentials: (state, action) => {
       const { user, token, accessToken, refreshToken } = action.payload;
-      
+
       if (user && (token || accessToken)) {
         state.accessToken = accessToken || token;
         state.refreshToken = refreshToken;
@@ -57,7 +57,7 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.loading = false;
         state.error = null;
-        
+
         // Update profile data if available
         if (user.first_name) state.profile.firstName = user.first_name;
         if (user.last_name) state.profile.lastName = user.last_name;
@@ -98,6 +98,37 @@ const authSlice = createSlice({
     setLoading: (state, action) => {
       state.loading = action.payload;
     },
+
+    // Session restoration action
+    restoreSession: (state, action) => {
+      const { accessToken, refreshToken, userID, role, email, username, profile } = action.payload;
+
+      if (accessToken && userID && role) {
+        state.accessToken = accessToken;
+        state.refreshToken = refreshToken;
+        state.userID = userID;
+        state.role = role;
+        state.email = email;
+        state.username = username;
+        state.isAuthenticated = true;
+        state.loading = false;
+        state.error = null;
+
+        if (profile) {
+          state.profile = { ...state.profile, ...profile };
+        }
+      }
+    },
+
+    // Check if session is valid
+    validateSession: (state) => {
+      // If we have essential auth data, mark as authenticated
+      if (state.accessToken && state.userID && state.role) {
+        state.isAuthenticated = true;
+      } else {
+        state.isAuthenticated = false;
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -113,12 +144,12 @@ const authSlice = createSlice({
         (state, action) => {
           state.loading = false;
           state.error = action.error?.data || action.error?.message;
-          
-          const isAuthAction = 
-            action.type.includes("auth/") || 
-            action.type.includes("login") || 
+
+          const isAuthAction =
+            action.type.includes("auth/") ||
+            action.type.includes("login") ||
             action.type.includes("refresh");
-            
+
           if (isAuthAction) {
             state.isAuthenticated = false;
           }
@@ -141,6 +172,8 @@ export const {
   logOut,
   clearError,
   setLoading,
+  restoreSession,
+  validateSession,
 } = authSlice.actions;
 
 // Memoized selectors
@@ -188,35 +221,35 @@ export const selectUserDisplayName = createSelector(
   [selectAuth],
   (auth) => {
     const { role, profile, username, email } = auth;
-    
+
     if (!role) return "Welcome Back";
 
     // Check profile data first (most detailed)
     if (profile.fullName && profile.fullName !== 'undefined undefined') {
-      return role === "admin" || role === "doctor" 
-        ? `Dr. ${profile.fullName}` 
+      return role === "admin" || role === "doctor"
+        ? `Dr. ${profile.fullName}`
         : profile.fullName;
     }
 
     // Check for first/last name
     if (profile.firstName && profile.lastName) {
       const fullName = `${profile.firstName} ${profile.lastName}`;
-      return role === "admin" || role === "doctor" 
-        ? `Dr. ${fullName}` 
+      return role === "admin" || role === "doctor"
+        ? `Dr. ${fullName}`
         : fullName;
     }
 
     // Fallback to username or email
     if (username) {
-      return role === "admin" || role === "doctor" 
-        ? `Dr. ${username}` 
+      return role === "admin" || role === "doctor"
+        ? `Dr. ${username}`
         : username;
     }
 
     if (email) {
       const emailName = email.split("@")[0];
-      return role === "admin" || role === "doctor" 
-        ? `Dr. ${emailName}` 
+      return role === "admin" || role === "doctor"
+        ? `Dr. ${emailName}`
         : emailName;
     }
 
@@ -229,7 +262,7 @@ export const selectUserInitials = createSelector(
   [selectAuth],
   (auth) => {
     const { profile, username, email } = auth;
-    
+
     if (profile.fullName && profile.fullName !== 'undefined undefined') {
       const names = profile.fullName.split(' ').filter(n => n && n !== 'undefined');
       if (names.length >= 2) {
@@ -239,19 +272,19 @@ export const selectUserInitials = createSelector(
         return names[0].substring(0, 2).toUpperCase();
       }
     }
-    
+
     if (profile.firstName && profile.lastName) {
       return `${profile.firstName[0]}${profile.lastName[0]}`.toUpperCase();
     }
-    
+
     if (username) {
       return username.substring(0, 2).toUpperCase();
     }
-    
+
     if (email) {
       return email.substring(0, 2).toUpperCase();
     }
-    
+
     return "U";
   }
 );
@@ -269,13 +302,13 @@ export const selectUserVerificationStatus = (state) => ({
 export const selectUserRoleDisplay = (state) => {
   const role = state?.auth?.role;
   if (!role) return "User";
-  
+
   const roleMap = {
     patient: "Patient",
-    doctor: "Doctor", 
+    doctor: "Doctor",
     admin: "Administrator"
   };
-  
+
   return roleMap[role] || role;
 };
 

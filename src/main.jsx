@@ -1,27 +1,17 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import "./index.css";
 import App from "./App.jsx";
 import { store, persistor } from "./store/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import SessionLoadingScreen from "./components/loading/SessionLoadingScreen";
 
-// Loading component during rehydration
+// Loading component during rehydration - Enhanced version
 const LoadingComponent = () => (
-  <div style={{
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    fontSize: '18px',
-    color: '#6B7280'
-  }}>
-    <div>
-      <div style={{ marginBottom: '10px' }}>🔄 Loading...</div>
-      <div style={{ fontSize: '14px' }}>Restoring your session</div>
-    </div>
-  </div>
+  <SessionLoadingScreen message="Loading your account..." />
 );
 
 // Create root only once and store it
@@ -36,12 +26,14 @@ if (!root) {
 // Render the app
 root.render(
   <StrictMode>
-    <BrowserRouter>
-      <Provider store={store}>
-        <PersistGate loading={<LoadingComponent />} persistor={persistor}>
-          <App />
-        </PersistGate>
-      </Provider>
-    </BrowserRouter>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your_google_client_id'}>
+      <BrowserRouter>
+        <Provider store={store}>
+          <PersistGate loading={<LoadingComponent />} persistor={persistor}>
+            <App />
+          </PersistGate>
+        </Provider>
+      </BrowserRouter>
+    </GoogleOAuthProvider>
   </StrictMode>
 );

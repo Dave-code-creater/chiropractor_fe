@@ -32,13 +32,9 @@ import Report from "../features/report/user/Report";
 import Notes from "../features/notes/components/Notes";
 import Profile from "../features/profile/components/Profile";
 import Setting from "../features/setting/components/Setting";
-import Blog from "../features/blog/components/user/Blog";
-import BlogPost from "../features/blog/components/user/BlogPost";
-import BlogRouter from "../features/blog/BlogRouter";
 import BlogManagement from "../features/blog/components/doctor/BlogManagement";
 import BlogEditor from "../features/blog/components/doctor/BlogEditor";
-import BlogReader from "../features/blog/components/BlogReader";
-import DoctorBlogReader from "../features/blog/components/doctor/DoctorBlogReader";
+import UnifiedBlog from "../features/blog/components/UnifiedBlog";
 import ChatRouter from "../features/chat/ChatRouter";
 import AppointmentManagement from "../features/appointments/components/AppointmentManagement";
 import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
@@ -84,10 +80,8 @@ const AppRoutes = () => {
         <Route path="/privacy-policy" element={<RouteWrapper element={PrivacyPolicy} />} />
 
         {/* Public Blog Routes - WordPress-like */}
-        <Route path="/blog" element={<RouteWrapper element={BlogReader} />} />
-        <Route path="/blog/:slug" element={<RouteWrapper element={BlogReader} />} />
-
-        {/* Theme Preview Route */}
+        <Route path="blog" element={<UnifiedBlog />} />
+        <Route path="blog/:slug" element={<UnifiedBlog />} />        {/* Theme Preview Route */}
         <Route path="/theme-preview" element={<RouteWrapper element={ThemePreview} />} />
 
         {/* Auth routes */}
@@ -108,8 +102,8 @@ const AppRoutes = () => {
               <Route path="reports" element={<Report />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Setting />} />
-              <Route path="blog" element={<Blog />} />
-              <Route path="blog/:slug" element={<BlogPost />} />
+              <Route path="blog" element={<UnifiedBlog />} />
+              <Route path="blog/:slug" element={<UnifiedBlog />} />
               <Route path="chat/*" element={<ChatRouter />} />
               <Route path="medical-records" element={<Report />} />
             </Route>
@@ -129,8 +123,8 @@ const AppRoutes = () => {
               <Route path="chat/*" element={<ChatRouter />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Setting />} />
-              <Route path="blog" element={<DoctorBlogReader />} />
-              <Route path="blog/:slug" element={<BlogPost />} />
+              <Route path="blog" element={<UnifiedBlog />} />
+              <Route path="blog/:slug" element={<UnifiedBlog />} />
               <Route path="blog/management" element={<BlogManagement />} />
               <Route path="blog/editor" element={<BlogEditor />} />
               <Route path="blog/editor/:postId" element={<BlogEditor />} />

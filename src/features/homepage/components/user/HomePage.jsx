@@ -33,9 +33,9 @@ export default function HomePage() {
         </Link>
         
         {/* Blog Card - Full width on mobile, 1/2 on tablet, 1/3 on desktop */}
-        <Link to="blog" className="group h-full sm:col-span-1">
+        <div className="sm:col-span-1">
           <BlogCard />
-        </Link>
+        </div>
       </div>
     </div>
   );

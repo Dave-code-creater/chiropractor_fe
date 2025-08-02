@@ -1,5 +1,6 @@
 import { useLocation, Outlet, Navigate } from "react-router-dom";
 import { useAuthReady } from "../hooks/useAuthReady";
+import SessionLoadingScreen from "../components/loading/SessionLoadingScreen";
 
 export default function ProtectRoute({ allowedRoles }) {
   const location = useLocation();
@@ -7,21 +8,7 @@ export default function ProtectRoute({ allowedRoles }) {
 
   // Show loading while auth state is being rehydrated
   if (!isReady) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        fontSize: '16px',
-        color: '#6B7280'
-      }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ marginBottom: '10px' }}>🔄 Loading...</div>
-          <div style={{ fontSize: '14px' }}>Verifying access</div>
-        </div>
-      </div>
-    );
+    return <SessionLoadingScreen message="Verifying access..." />;
   }
 
   // not logged in → go to login

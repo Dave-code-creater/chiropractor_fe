@@ -1,15 +1,192 @@
 import React from "react";
 
 const BlogContentRenderer = ({ content = [] }) => {
+  // Handle different content formats
+  const renderContent = () => {
+    // If content is null or undefined
+    if (!content) {
+      return (
+        <div className="text-gray-500 italic">
+          No content available.
+        </div>
+      );
+    }
+
+    // If content is a string (HTML, markdown, or plain text)
+    if (typeof content === 'string') {
+      // If it's an empty string
+      if (content.trim() === '') {
+        return (
+          <div className="text-gray-500 italic">
+            No content available.
+          </div>
+        );
+      }
+
+      // Split content by double newlines to create paragraphs
+      const paragraphs = content.split('\n\n').filter(p => p.trim());
+
+      return paragraphs.map((paragraph, index) => {
+        const trimmedParagraph = paragraph.trim();
+
+        // Handle different markdown-style formatting
+        if (trimmedParagraph.startsWith('### ')) {
+          return (
+            <h3 key={index} className="text-xl font-bold mb-4 text-gray-900">
+              {trimmedParagraph.replace('### ', '')}
+            </h3>
+          );
+        } else if (trimmedParagraph.startsWith('## ')) {
+          return (
+            <h2 key={index} className="text-2xl font-bold mb-5 text-gray-900">
+              {trimmedParagraph.replace('## ', '')}
+            </h2>
+          );
+        } else if (trimmedParagraph.startsWith('# ')) {
+          return (
+            <h1 key={index} className="text-3xl font-bold mb-6 text-gray-900">
+              {trimmedParagraph.replace('# ', '')}
+            </h1>
+          );
+        } else if (trimmedParagraph.startsWith('> ')) {
+          return (
+            <blockquote
+              key={index}
+              className="border-l-4 border-blue-500 pl-4 py-2 mb-4 italic text-gray-600 bg-gray-50 rounded-r"
+            >
+              {trimmedParagraph.replace('> ', '')}
+            </blockquote>
+          );
+        } else if (trimmedParagraph.startsWith('```')) {
+          const codeContent = trimmedParagraph.replace(/```[\w]*\n?/, '').replace(/```$/, '');
+          return (
+            <pre
+              key={index}
+              className="bg-gray-900 text-green-400 p-4 rounded-lg mb-4 overflow-x-auto"
+            >
+              <code>{codeContent}</code>
+            </pre>
+          );
+        } else {
+          // Handle list items
+          if (trimmedParagraph.includes('\n- ') || trimmedParagraph.startsWith('- ')) {
+            const listItems = trimmedParagraph.split('\n').filter(item => item.trim().startsWith('- '));
+            return (
+              <ul key={index} className="list-disc list-inside mb-4 text-gray-700 space-y-1">
+                {listItems.map((item, itemIndex) => (
+                  <li key={itemIndex} className="leading-relaxed">
+                    {item.replace('- ', '')}
+                  </li>
+                ))}
+              </ul>
+            );
+          } else if (trimmedParagraph.includes('\n1. ') || /^\d+\.\s/.test(trimmedParagraph)) {
+            const listItems = trimmedParagraph.split('\n').filter(item => /^\d+\.\s/.test(item.trim()));
+            return (
+              <ol key={index} className="list-decimal list-inside mb-4 text-gray-700 space-y-1">
+                {listItems.map((item, itemIndex) => (
+                  <li key={itemIndex} className="leading-relaxed">
+                    {item.replace(/^\d+\.\s/, '')}
+                  </li>
+                ))}
+              </ol>
+            );
+          } else {
+            // Regular paragraph - handle line breaks within the paragraph
+            const lines = trimmedParagraph.split('\n');
+            return (
+              <p key={index} className="mb-4 text-gray-700 leading-relaxed">
+                {lines.map((line, lineIndex) => (
+                  <React.Fragment key={lineIndex}>
+                    {line}
+                    {lineIndex < lines.length - 1 && <br />}
+                  </React.Fragment>
+                ))}
+              </p>
+            );
+          }
+        }
+      });
+    }
+
+    // If content is an array (structured content)
+    if (Array.isArray(content)) {
+      if (content.length === 0) {
+        return (
+          <div className="text-gray-500 italic">
+            No content available.
+          </div>
+        );
+      }
+
+      return content.map((block, index) => renderBlock(block, index));
+    }
+
+    // If content is an object, try to extract text or handle specific structures
+    if (typeof content === 'object' && content !== null) {
+      // Check if it has a text property
+      if (content.text) {
+        return (
+          <div className="mb-4 text-gray-700 leading-relaxed">
+            {content.text}
+          </div>
+        );
+      }
+
+      // Check if it has blocks or content property
+      if (content.blocks && Array.isArray(content.blocks)) {
+        return content.blocks.map((block, index) => renderBlock(block, index));
+      }
+
+      if (content.content) {
+        // Recursively render nested content
+        return <BlogContentRenderer content={content.content} />;
+      }
+
+      // Try to stringify the object as a fallback
+      return (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+          <p className="text-sm text-blue-800 mb-2">
+            Content object detected:
+          </p>
+          <pre className="text-xs text-gray-600 whitespace-pre-wrap">
+            {JSON.stringify(content, null, 2)}
+          </pre>
+        </div>
+      );
+    }
+
+    // Fallback for other data types
+    return (
+      <div className="text-gray-500 italic">
+        Unable to render content format. Content type: {typeof content}
+      </div>
+    );
+  };
+
   const renderBlock = (block, index) => {
     switch (block.type) {
       case "paragraph":
+        // Handle paragraph with nested content structure
+        if (block.content && Array.isArray(block.content)) {
+          return (
+            <p key={index} className="mb-4 text-gray-700 leading-relaxed">
+              {block.content.map((item, itemIndex) => {
+                if (item.type === "text") {
+                  return <span key={itemIndex}>{item.text}</span>;
+                }
+                return null;
+              }).filter(Boolean)}
+            </p>
+          );
+        }
+        // Fallback for simple text
         return (
           <p key={index} className="mb-4 text-gray-700 leading-relaxed">
             {block.text}
           </p>
         );
-      
+
       case "heading": {
         const HeadingTag = `h${block.level || 1}`;
         const headingClasses = {
@@ -20,23 +197,64 @@ const BlogContentRenderer = ({ content = [] }) => {
           5: "text-base font-bold mb-3 text-gray-900",
           6: "text-sm font-bold mb-2 text-gray-900"
         };
-        
+
+        // Handle heading with nested content structure
+        let headingText = block.text;
+        if (block.content && Array.isArray(block.content)) {
+          headingText = block.content.map(item => {
+            if (item.type === "text") return item.text;
+            return "";
+          }).join("");
+        }
+
         return React.createElement(
           HeadingTag,
-          { 
-            key: index, 
-            className: headingClasses[block.level || 1] 
+          {
+            key: index,
+            className: headingClasses[block.level || 1]
           },
-          block.text
+          headingText
         );
       }
-      
+
+      case "bullet_list":
       case "list": {
-        const ListTag = block.ordered ? "ol" : "ul";
-        const listClass = block.ordered 
+        const isOrdered = block.type === "ordered_list" || block.ordered;
+        const ListTag = isOrdered ? "ol" : "ul";
+        const listClass = isOrdered
           ? "list-decimal list-inside mb-4 text-gray-700 space-y-1"
           : "list-disc list-inside mb-4 text-gray-700 space-y-1";
-        
+
+        // Handle structured list content
+        if (block.content && Array.isArray(block.content)) {
+          return (
+            <ListTag key={index} className={listClass}>
+              {block.content.map((listItem, itemIndex) => {
+                if (listItem.type === "list_item" && listItem.content) {
+                  // Extract text from nested paragraph structure
+                  const itemText = listItem.content.map(contentItem => {
+                    if (contentItem.type === "paragraph" && contentItem.content) {
+                      return contentItem.content.map(textItem => {
+                        if (textItem.type === "text") return textItem.text;
+                        return "";
+                      }).join("");
+                    }
+                    return "";
+                  }).join("");
+
+                  return (
+                    <li key={itemIndex} className="leading-relaxed">
+                      {itemText}
+                    </li>
+                  );
+                }
+                return null;
+              }).filter(Boolean)}
+            </ListTag>
+          );
+        }
+
+        // Fallback for simple array items
         return (
           <ListTag key={index} className={listClass}>
             {block.items?.map((item, itemIndex) => (
@@ -45,35 +263,91 @@ const BlogContentRenderer = ({ content = [] }) => {
           </ListTag>
         );
       }
-      
-      case "blockquote": {
+
+      case "ordered_list": {
+        // Handle ordered lists same as bullet_list but with ordered styling
+        const listClass = "list-decimal list-inside mb-4 text-gray-700 space-y-1";
+
+        if (block.content && Array.isArray(block.content)) {
+          return (
+            <ol key={index} className={listClass}>
+              {block.content.map((listItem, itemIndex) => {
+                if (listItem.type === "list_item" && listItem.content) {
+                  const itemText = listItem.content.map(contentItem => {
+                    if (contentItem.type === "paragraph" && contentItem.content) {
+                      return contentItem.content.map(textItem => {
+                        if (textItem.type === "text") return textItem.text;
+                        return "";
+                      }).join("");
+                    }
+                    return "";
+                  }).join("");
+
+                  return (
+                    <li key={itemIndex} className="leading-relaxed">
+                      {itemText}
+                    </li>
+                  );
+                }
+                return null;
+              }).filter(Boolean)}
+            </ol>
+          );
+        }
+
         return (
-          <blockquote 
-            key={index} 
+          <ol key={index} className={listClass}>
+            {block.items?.map((item, itemIndex) => (
+              <li key={itemIndex} className="leading-relaxed">{item}</li>
+            ))}
+          </ol>
+        );
+      }
+
+      case "blockquote": {
+        let quoteText = block.text;
+        if (block.content && Array.isArray(block.content)) {
+          quoteText = block.content.map(item => {
+            if (item.type === "text") return item.text;
+            return "";
+          }).join("");
+        }
+
+        return (
+          <blockquote
+            key={index}
             className="border-l-4 border-blue-500 pl-4 py-2 mb-4 italic text-gray-600 bg-gray-50 rounded-r"
           >
-            {block.text}
+            {quoteText}
           </blockquote>
         );
       }
-      
+
       case "code": {
+        let codeText = block.text;
+        if (block.content && Array.isArray(block.content)) {
+          codeText = block.content.map(item => {
+            if (item.type === "text") return item.text;
+            return "";
+          }).join("");
+        }
+
         return (
-          <pre 
-            key={index} 
+          <pre
+            key={index}
             className="bg-gray-900 text-green-400 p-4 rounded-lg mb-4 overflow-x-auto"
           >
-            <code>{block.text}</code>
+            <code>{codeText}</code>
           </pre>
         );
       }
-      
+
       case "image": {
         return (
           <div key={index} className="mb-6">
-            <img 
-              src={block.src} 
-              alt={block.alt || ""} 
+            <img
+              src={block.src}
+              alt={block.alt || ""}
               className="w-full h-auto rounded-lg shadow-md"
             />
             {block.caption && (
@@ -84,7 +358,7 @@ const BlogContentRenderer = ({ content = [] }) => {
           </div>
         );
       }
-      
+
       default:
         // Fallback for unknown block types
         return (
@@ -100,17 +374,9 @@ const BlogContentRenderer = ({ content = [] }) => {
     }
   };
 
-  if (!content || content.length === 0) {
-    return (
-      <div className="text-gray-500 italic">
-        No content available.
-      </div>
-    );
-  }
-
   return (
     <div className="prose prose-lg max-w-none">
-      {content.map((block, index) => renderBlock(block, index))}
+      {renderContent()}
     </div>
   );
 };

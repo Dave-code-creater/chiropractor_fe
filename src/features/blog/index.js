@@ -8,8 +8,5 @@ export { default as BlogManagement } from './components/doctor/BlogManagement';
 export { default as BlogOverview } from './components/admin/BlogOverview';
 
 // Common components
-export { default as BlogPost } from './components/user/BlogPost';
-export { default as RenderBlog } from './components/RenderBlog';
-
-// Legacy exports for backward compatibility
-export { default as Blog } from './components/user/Blog'; 
+export { default as UnifiedBlog } from './components/UnifiedBlog';
+export { default as RenderBlog } from './components/RenderBlog'; 

@@ -34,20 +34,31 @@ const BlogListing = ({ posts = [], isLoading = false, onPostClick, onSearch, onC
   };
 
   const formatReadTime = (content) => {
-    if (!content || !Array.isArray(content)) return "1 min read";
-    
-    const wordCount = content.reduce((count, block) => {
-      if (block.text) {
-        return count + block.text.split(" ").length;
-      }
-      if (block.items) {
-        return count + block.items.join(" ").split(" ").length;
-      }
-      return count;
-    }, 0);
-    
+    if (!content) return "1 min read";
+
+    let wordCount = 0;
+
+    // Handle string content
+    if (typeof content === 'string') {
+      // Remove HTML tags if present and count words
+      const textContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+      wordCount = textContent ? textContent.split(' ').length : 0;
+    }
+    // Handle array content (structured blocks)
+    else if (Array.isArray(content)) {
+      wordCount = content.reduce((count, block) => {
+        if (block.text) {
+          return count + block.text.split(" ").length;
+        }
+        if (block.items) {
+          return count + block.items.join(" ").split(" ").length;
+        }
+        return count;
+      }, 0);
+    }
+
     const readTime = Math.ceil(wordCount / 200);
-    return `${readTime} min read`;
+    return `${Math.max(1, readTime)} min read`;
   };
 
   const handleSearch = (value) => {
