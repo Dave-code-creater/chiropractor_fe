@@ -6,10 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  useGetUserAppointmentsQuery,
+  useGetMyAppointmentsQuery,
+  useCreateAppointmentMutation,
+  useCancelAppointmentMutation,
+  useRescheduleAppointmentMutation,
+  useGetDoctorsQuery,
   useUpdateAppointmentMutation,
-  useGetDoctorsQuery
-} from '@/api/services/appointmentApi';
+} from "@/api/services/appointmentApi";
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@/state/data/authSlice';
 import {
@@ -43,7 +46,7 @@ export default function PatientAppointments() {
   const [feedbackModal, setFeedbackModal] = useState({ isOpen: false, appointment: null });
 
   // API queries - get current user's appointments
-  const { data: appointmentsData, isLoading, error, refetch } = useGetUserAppointmentsQuery({
+  const { data: appointmentsData, isLoading, error, refetch } = useGetMyAppointmentsQuery({
     status_not: 'cancelled', // Exclude cancelled appointments
     limit: 100 // Get more appointments to show full history
   });

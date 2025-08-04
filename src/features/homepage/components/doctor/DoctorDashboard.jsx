@@ -15,7 +15,7 @@ import {
   Activity,
   CheckCircle,
 } from "lucide-react";
-import { useGetUserAppointmentsQuery } from "@/api/services/appointmentApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { Link } from "react-router-dom";
 import { selectCurrentUser, selectUserId } from "../../../../state/data/authSlice";
 import { useGetPatientsQuery } from '@/api/services/userApi';
@@ -32,38 +32,38 @@ export default function DoctorDashboard() {
     data: appointmentsData,
     isLoading: isLoadingAppointments,
     error,
-  } = useGetUserAppointmentsQuery({ 
+  } = useGetAppointmentsQuery({
     status_not: 'cancelled', // Exclude cancelled appointments
     limit: 50,
   });
 
   // Fetch patients
   const { data: patientsData, isLoading: isLoadingPatients } = useGetPatientsQuery();
-  
+
   // Fetch conversations
-  const { data: conversationsData, isLoading: isLoadingConversations } = useGetConversationsQuery({ 
-    status: 'active' 
+  const { data: conversationsData, isLoading: isLoadingConversations } = useGetConversationsQuery({
+    status: 'active'
   });
 
   // Process appointments data - same logic as other appointment components
   const appointments = React.useMemo(() => {
     if (isLoadingAppointments || error || !appointmentsData) return [];
-    
+
     // Based on your API structure: { data: { appointments: [...] } }
     if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
       return appointmentsData.data.appointments;
     }
-    
+
     // Fallback: Handle if data is directly in data array
     if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
       return appointmentsData.data;
     }
-    
+
     // Fallback: Handle if appointments are at root level
     if (Array.isArray(appointmentsData)) {
       return appointmentsData;
     }
-    
+
     return [];
   }, [appointmentsData, isLoadingAppointments, error]);
 
@@ -148,11 +148,11 @@ export default function DoctorDashboard() {
               {getGreeting()}, Dr. {user?.lastName || user?.name || 'Doctor'}! 👨‍⚕️
             </h1>
             <p className="text-muted-foreground mt-1">
-              {currentTime.toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
+              {currentTime.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
               })}
             </p>
           </div>
@@ -359,11 +359,11 @@ export default function DoctorDashboard() {
                           <p className="text-sm text-muted-foreground">{patient.email}</p>
                         </div>
                       </div>
-                                             <Link to={`/dashboard/doctor/${userID}/patients/${patient.id}`}>
-                         <Button size="sm" variant="ghost">
-                           View
-                         </Button>
-                       </Link>
+                      <Link to={`/dashboard/doctor/${userID}/patients/${patient.id}`}>
+                        <Button size="sm" variant="ghost">
+                          View
+                        </Button>
+                      </Link>
                     </div>
                   ))}
                 </div>
@@ -411,11 +411,11 @@ export default function DoctorDashboard() {
                             {conv.unread_count}
                           </Badge>
                         )}
-                                                 <Link to={`/dashboard/doctor/${userID}/chat/${conv.id}`}>
-                           <Button size="sm" variant="ghost">
-                             Open
-                           </Button>
-                         </Link>
+                        <Link to={`/dashboard/doctor/${userID}/chat/${conv.id}`}>
+                          <Button size="sm" variant="ghost">
+                            Open
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   ))}

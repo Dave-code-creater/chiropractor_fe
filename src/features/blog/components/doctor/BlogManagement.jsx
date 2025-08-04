@@ -229,7 +229,7 @@ const BlogManagement = () => {
           <h1 className="text-4xl font-bold tracking-tight">Blog Management</h1>
           <p className="text-lg text-muted-foreground mt-2">Create and manage your blog posts</p>
         </div>
-        
+
       </div>
 
       {/* Stats Cards */}
@@ -286,7 +286,7 @@ const BlogManagement = () => {
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-500">Total Views</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {posts.reduce((sum, post) => sum + (post.views || 0), 0)}
+                  {posts.reduce((sum, post) => sum + (post.view_count || 0), 0)}
                 </p>
               </div>
             </div>
@@ -309,131 +309,131 @@ const BlogManagement = () => {
 
         {/* Published Posts Tab */}
         <TabsContent value="published">
-      <Card className="shadow-md mb-8">
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row gap-6">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                <Input
+          <Card className="shadow-md mb-8">
+            <CardContent className="p-6">
+              <div className="flex flex-col sm:flex-row gap-6">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    <Input
                       placeholder="Search published posts..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-12 h-12 text-lg w-full"
-                />
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-12 h-12 text-lg w-full"
+                    />
+                  </div>
+                </div>
+                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                  <SelectTrigger className="w-full sm:w-[200px] h-12">
+                    <SelectValue placeholder="Filter by category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Categories</SelectItem>
+                    <SelectItem value="chiropractic-care">Chiropractic Care</SelectItem>
+                    <SelectItem value="spine-health">Spine Health</SelectItem>
+                    <SelectItem value="pain-management">Pain Management</SelectItem>
+                    <SelectItem value="wellness">Wellness & Prevention</SelectItem>
+                    <SelectItem value="exercise">Exercise & Therapy</SelectItem>
+                    <SelectItem value="nutrition">Nutrition & Lifestyle</SelectItem>
+                    <SelectItem value="patient-stories">Patient Stories</SelectItem>
+                    <SelectItem value="clinic-news">Clinic News</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-            </div>
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-full sm:w-[200px] h-12">
-                <SelectValue placeholder="Filter by category" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="chiropractic-care">Chiropractic Care</SelectItem>
-                <SelectItem value="spine-health">Spine Health</SelectItem>
-                <SelectItem value="pain-management">Pain Management</SelectItem>
-                <SelectItem value="wellness">Wellness & Prevention</SelectItem>
-                <SelectItem value="exercise">Exercise & Therapy</SelectItem>
-                <SelectItem value="nutrition">Nutrition & Lifestyle</SelectItem>
-                <SelectItem value="patient-stories">Patient Stories</SelectItem>
-                <SelectItem value="clinic-news">Clinic News</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
 
-      <Card className="shadow-md">
-        <CardHeader className="p-6">
+          <Card className="shadow-md">
+            <CardHeader className="p-6">
               <CardTitle className="text-2xl">Published Posts</CardTitle>
-        </CardHeader>
-        <CardContent className="p-6">
+            </CardHeader>
+            <CardContent className="p-6">
               {isLoading ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
                   <p className="mt-4 text-gray-600">Loading posts...</p>
                 </div>
               ) : posts.length === 0 ? (
-            <div className="text-center py-12">
+                <div className="text-center py-12">
                   <CheckCircle className="h-16 w-16 text-gray-400 mx-auto mb-6" />
                   <h3 className="text-xl font-semibold mb-3">No published posts found</h3>
-              <p className="text-gray-600 text-lg mb-6">
+                  <p className="text-gray-600 text-lg mb-6">
                     {searchTerm || categoryFilter !== "all"
                       ? "No published posts match your current filters."
                       : "You haven't published any blog posts yet."}
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="py-4 text-base">Title</TableHead>
-                    <TableHead className="py-4 text-base">Category</TableHead>
+                  </p>
+                </div>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="py-4 text-base">Title</TableHead>
+                        <TableHead className="py-4 text-base">Category</TableHead>
                         <TableHead className="py-4 text-base">Published</TableHead>
-                    <TableHead className="py-4 text-base">Updated</TableHead>
-                    <TableHead className="py-4 text-base">Views</TableHead>
-                    <TableHead className="w-[100px] py-4 text-base">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {posts.map((post) => (
-                    <TableRow key={post.id}>
-                      <TableCell className="py-4">
-                        <div className="space-y-1">
-                          <div className="font-medium text-base">{post.title}</div>
-                          <div className="text-sm text-gray-500 line-clamp-2">
-                            {post.excerpt}
-                          </div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <Badge variant="outline" className="text-sm px-3 py-1">
-                          {getCategoryLabel(post.category)}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Calendar className="h-4 w-4 mr-2" />
+                        <TableHead className="py-4 text-base">Updated</TableHead>
+                        <TableHead className="py-4 text-base">Views</TableHead>
+                        <TableHead className="w-[100px] py-4 text-base">Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {posts.map((post) => (
+                        <TableRow key={post.id}>
+                          <TableCell className="py-4">
+                            <div className="space-y-1">
+                              <div className="font-medium text-base">{post.title}</div>
+                              <div className="text-sm text-gray-500 line-clamp-2">
+                                {post.excerpt}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-4">
+                            <Badge variant="outline" className="text-sm px-3 py-1">
+                              {getCategoryLabel(post.category)}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-4">
+                            <div className="flex items-center text-sm text-gray-500">
+                              <Calendar className="h-4 w-4 mr-2" />
                               {formatDate(post.published_at || post.created_at)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Clock className="h-4 w-4 mr-2" />
-                          {formatDate(post.updated_at)}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Eye className="h-4 w-4 mr-2" />
-                              {post.view_count || 0}
-                        </div>
-                      </TableCell>
-                      <TableCell className="py-4">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => navigate(getBlogPath(`editor/${post.id}`))}
-                            >
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => navigate(getBlogPath(`post/${post.id}`))}
-                            >
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-4">
+                            <div className="flex items-center text-sm text-gray-500">
+                              <Clock className="h-4 w-4 mr-2" />
+                              {formatDate(post.updated_at)}
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-4">
+                            <div className="flex items-center text-sm text-gray-500">
                               <Eye className="h-4 w-4 mr-2" />
-                              View
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleStatusToggle(post.id, post.is_published)}
-                              disabled={isUpdating}
-                            >
+                              {post.view_count || 0}
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-4">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="h-8 w-8 p-0">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => navigate(getBlogPath(`editor/${post.id}`))}
+                                >
+                                  <Edit className="h-4 w-4 mr-2" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => navigate(getBlogPath(`post/${post.id}`))}
+                                >
+                                  <Eye className="h-4 w-4 mr-2" />
+                                  View
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleStatusToggle(post.id, post.is_published)}
+                                  disabled={isUpdating}
+                                >
                                   <XCircle className="h-4 w-4 mr-2" />
                                   Unpublish
                                 </DropdownMenuItem>
@@ -597,25 +597,25 @@ const BlogManagement = () => {
                                 >
                                   <CheckCircle className="h-4 w-4 mr-2" />
                                   Publish
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setDeletePostId(post.id)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => setDeletePostId(post.id)}
+                                  className="text-red-600"
+                                >
+                                  <Trash2 className="h-4 w-4 mr-2" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
 

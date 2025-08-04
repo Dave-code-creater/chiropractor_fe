@@ -140,8 +140,7 @@ const FeatureHighlight = ({
             left: highlightedElement.left - 4,
             width: highlightedElement.width + 8,
             height: highlightedElement.height + 8,
-            boxShadow: `0 0 0 4px ${
-              highlightColor === "blue"
+            boxShadow: `0 0 0 4px ${highlightColor === "blue"
                 ? "#3B82F6"
                 : highlightColor === "green"
                   ? "#10B981"
@@ -150,7 +149,7 @@ const FeatureHighlight = ({
                     : highlightColor === "orange"
                       ? "#F59E0B"
                       : "#3B82F6"
-            }, 
+              }, 
                        0 0 0 9999px rgba(0, 0, 0, 0.5)`,
             borderRadius: "8px",
             animation: "pulse 2s infinite",
@@ -174,8 +173,7 @@ const FeatureHighlight = ({
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center space-x-2">
                 <div
-                  className={`p-2 rounded-lg ${
-                    highlightColor === "blue"
+                  className={`p-2 rounded-lg ${highlightColor === "blue"
                       ? "bg-blue-100"
                       : highlightColor === "green"
                         ? "bg-green-100"
@@ -184,12 +182,11 @@ const FeatureHighlight = ({
                           : highlightColor === "orange"
                             ? "bg-orange-100"
                             : "bg-blue-100"
-                  }`}
+                    }`}
                 >
                   {currentStepData.action === "click" && (
                     <MousePointer
-                      className={`h-4 w-4 ${
-                        highlightColor === "blue"
+                      className={`h-4 w-4 ${highlightColor === "blue"
                           ? "text-blue-600"
                           : highlightColor === "green"
                             ? "text-green-600"
@@ -198,13 +195,12 @@ const FeatureHighlight = ({
                               : highlightColor === "orange"
                                 ? "text-orange-600"
                                 : "text-blue-600"
-                      }`}
+                        }`}
                     />
                   )}
                   {currentStepData.action === "look" && (
                     <Eye
-                      className={`h-4 w-4 ${
-                        highlightColor === "blue"
+                      className={`h-4 w-4 ${highlightColor === "blue"
                           ? "text-blue-600"
                           : highlightColor === "green"
                             ? "text-green-600"
@@ -213,13 +209,12 @@ const FeatureHighlight = ({
                               : highlightColor === "orange"
                                 ? "text-orange-600"
                                 : "text-blue-600"
-                      }`}
+                        }`}
                     />
                   )}
                   {currentStepData.action === "interact" && (
                     <Hand
-                      className={`h-4 w-4 ${
-                        highlightColor === "blue"
+                      className={`h-4 w-4 ${highlightColor === "blue"
                           ? "text-blue-600"
                           : highlightColor === "green"
                             ? "text-green-600"
@@ -228,13 +223,12 @@ const FeatureHighlight = ({
                               : highlightColor === "orange"
                                 ? "text-orange-600"
                                 : "text-blue-600"
-                      }`}
+                        }`}
                     />
                   )}
                   {!currentStepData.action && (
                     <Target
-                      className={`h-4 w-4 ${
-                        highlightColor === "blue"
+                      className={`h-4 w-4 ${highlightColor === "blue"
                           ? "text-blue-600"
                           : highlightColor === "green"
                             ? "text-green-600"
@@ -243,7 +237,7 @@ const FeatureHighlight = ({
                               : highlightColor === "orange"
                                 ? "text-orange-600"
                                 : "text-blue-600"
-                      }`}
+                        }`}
                     />
                   )}
                 </div>
@@ -275,8 +269,7 @@ const FeatureHighlight = ({
               {/* Action hint */}
               {currentStepData.action && (
                 <div
-                  className={`p-3 rounded-lg ${
-                    highlightColor === "blue"
+                  className={`p-3 rounded-lg ${highlightColor === "blue"
                       ? "bg-blue-50 border border-blue-200"
                       : highlightColor === "green"
                         ? "bg-green-50 border border-green-200"
@@ -285,7 +278,7 @@ const FeatureHighlight = ({
                           : highlightColor === "orange"
                             ? "bg-orange-50 border border-orange-200"
                             : "bg-blue-50 border border-blue-200"
-                  }`}
+                    }`}
                 >
                   <div className="flex items-center space-x-2">
                     {currentStepData.action === "click" && (
@@ -400,8 +393,7 @@ const FeatureHighlight = ({
 
         {/* Arrow pointing to highlighted element */}
         <div
-          className={`absolute w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent ${
-            highlightColor === "blue"
+          className={`absolute w-0 h-0 border-l-8 border-r-8 border-t-8 border-transparent ${highlightColor === "blue"
               ? "border-t-blue-500"
               : highlightColor === "green"
                 ? "border-t-green-500"
@@ -410,7 +402,7 @@ const FeatureHighlight = ({
                   : highlightColor === "orange"
                     ? "border-t-orange-500"
                     : "border-t-blue-500"
-          }`}
+            }`}
           style={{
             top: "-8px",
             left: "50%",

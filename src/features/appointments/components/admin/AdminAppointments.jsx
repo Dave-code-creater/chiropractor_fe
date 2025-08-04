@@ -15,7 +15,9 @@ import {
   useGetAppointmentsQuery,
   useUpdateAppointmentMutation,
   useCreateAppointmentMutation,
-  useDeleteAppointmentMutation,
+  useCancelAppointmentMutation,
+  useRescheduleAppointmentMutation,
+  useGetAppointmentStatsQuery,
   useGetDoctorsQuery
 } from '@/api/services/appointmentApi';
 import { useGetPatientsQuery } from '@/api/services/userApi';
@@ -99,7 +101,7 @@ const AdminAppointments = () => {
   // Mutations
   const [updateAppointment] = useUpdateAppointmentMutation();
   const [createAppointment] = useCreateAppointmentMutation();
-  const [deleteAppointment] = useDeleteAppointmentMutation();
+  const [cancelAppointment] = useCancelAppointmentMutation();
 
   // Process data
   const appointments = useMemo(() => {
@@ -254,11 +256,11 @@ const AdminAppointments = () => {
 
   const handleDeleteAppointment = async (appointmentId) => {
     try {
-      await deleteAppointment(appointmentId).unwrap();
-      toast.success('Appointment deleted successfully');
+      await cancelAppointment({ id: appointmentId, reason: 'Cancelled by admin' }).unwrap();
+      toast.success('Appointment cancelled successfully');
       refetch();
     } catch (error) {
-      toast.error('Failed to delete appointment');
+      toast.error('Failed to cancel appointment');
     }
   };
 

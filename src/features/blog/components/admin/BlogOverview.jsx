@@ -99,8 +99,8 @@ const BlogOverview = () => {
     totalPosts: posts.length,
     publishedPosts: posts.filter(p => p.is_published).length,
     draftPosts: posts.filter(p => !p.is_published).length,
-    totalViews: posts.reduce((sum, post) => sum + (post.views || 0), 0),
-    avgViews: posts.length > 0 ? Math.round(posts.reduce((sum, post) => sum + (post.views || 0), 0) / posts.length) : 0,
+    totalViews: posts.reduce((sum, post) => sum + (post.view_count || 0), 0),
+    avgViews: posts.length > 0 ? Math.round(posts.reduce((sum, post) => sum + (post.view_count || 0), 0) / posts.length) : 0,
     topCategories: getTopCategories(posts),
     recentActivity: getRecentActivity(posts),
   };
@@ -113,7 +113,7 @@ const BlogOverview = () => {
       }
     });
     return Object.entries(categoryCount)
-      .sort(([,a], [,b]) => b - a)
+      .sort(([, a], [, b]) => b - a)
       .slice(0, 5)
       .map(([category, count]) => ({ category, count }));
   }
@@ -560,7 +560,7 @@ const BlogOverview = () => {
                         <TableCell>
                           <div className="flex items-center text-sm text-gray-500">
                             <Eye className="h-4 w-4 mr-1" />
-                            {post.views || 0}
+                            {post.view_count || 0}
                           </div>
                         </TableCell>
                         <TableCell>
@@ -660,7 +660,7 @@ const BlogOverview = () => {
                         <span className="text-sm">{getCategoryLabel(item.category)}</span>
                         <div className="flex items-center gap-2">
                           <div className="w-16 bg-gray-200 rounded-full h-2">
-                            <div 
+                            <div
                               className="bg-blue-500 h-2 rounded-full"
                               style={{ width: `${(item.count / analytics.totalPosts) * 100}%` }}
                             />

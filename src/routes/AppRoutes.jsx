@@ -32,11 +32,8 @@ import Report from "../features/report/user/Report";
 import Notes from "../features/notes/components/Notes";
 import Profile from "../features/profile/components/Profile";
 import Setting from "../features/setting/components/Setting";
-import BlogManagement from "../features/blog/components/doctor/BlogManagement";
-import BlogEditor from "../features/blog/components/doctor/BlogEditor";
-import UnifiedBlog from "../features/blog/components/UnifiedBlog";
+import BlogRouter from "../features/blog/BlogRouter";
 import ChatRouter from "../features/chat/ChatRouter";
-import AppointmentManagement from "../features/appointments/components/AppointmentManagement";
 import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
 import PatientManagement from "../features/patients/components/PatientManagement";
 
@@ -80,8 +77,7 @@ const AppRoutes = () => {
         <Route path="/privacy-policy" element={<RouteWrapper element={PrivacyPolicy} />} />
 
         {/* Public Blog Routes - WordPress-like */}
-        <Route path="blog" element={<UnifiedBlog />} />
-        <Route path="blog/:slug" element={<UnifiedBlog />} />        {/* Theme Preview Route */}
+        <Route path="blog/*" element={<BlogRouter />} />        {/* Theme Preview Route */}
         <Route path="/theme-preview" element={<RouteWrapper element={ThemePreview} />} />
 
         {/* Auth routes */}
@@ -102,8 +98,7 @@ const AppRoutes = () => {
               <Route path="reports" element={<Report />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Setting />} />
-              <Route path="blog" element={<UnifiedBlog />} />
-              <Route path="blog/:slug" element={<UnifiedBlog />} />
+              <Route path="blog/*" element={<BlogRouter />} />
               <Route path="chat/*" element={<ChatRouter />} />
               <Route path="medical-records" element={<Report />} />
             </Route>
@@ -115,7 +110,7 @@ const AppRoutes = () => {
           <Route element={<RouteProvider />}>
             <Route path="/dashboard/doctor/:id">
               <Route index element={<DoctorDashboard />} />
-              <Route path="appointments" element={<AppointmentManagement />} />
+              <Route path="appointments" element={<Appointments />} />
               <Route path="patients" element={<PatientManagement />} />
               <Route path="notes" element={<Notes />} />
               <Route path="reports" element={<PatientManagement />} />
@@ -123,11 +118,7 @@ const AppRoutes = () => {
               <Route path="chat/*" element={<ChatRouter />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Setting />} />
-              <Route path="blog" element={<UnifiedBlog />} />
-              <Route path="blog/:slug" element={<UnifiedBlog />} />
-              <Route path="blog/management" element={<BlogManagement />} />
-              <Route path="blog/editor" element={<BlogEditor />} />
-              <Route path="blog/editor/:postId" element={<BlogEditor />} />
+              <Route path="blog/*" element={<BlogRouter />} />
             </Route>
           </Route>
         </Route>
@@ -137,7 +128,7 @@ const AppRoutes = () => {
           <Route element={<RouteProvider />}>
             <Route path="/dashboard/admin/:id">
               <Route index element={<AdminDashboard />} />
-              <Route path="appointments" element={<AppointmentManagement />} />
+              <Route path="appointments" element={<Appointments />} />
               <Route path="patients" element={<PatientManagement />} />
               <Route path="notes" element={<Notes />} />
               <Route path="reports" element={<Report />} />

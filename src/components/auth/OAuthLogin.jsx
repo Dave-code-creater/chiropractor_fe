@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
     const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-    
+
     const handleGoogleSuccess = (credentialResponse) => {
         try {
             // Decode the JWT token to get user info

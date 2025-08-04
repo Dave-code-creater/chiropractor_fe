@@ -3,15 +3,13 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 // Role-based components
-import BlogList from "./components/patient/BlogList";
 import BlogEditor from "./components/doctor/BlogEditor";
 import BlogManagement from "./components/doctor/BlogManagement";
-import DoctorBlogReader from "./components/doctor/DoctorBlogReader";
 import BlogOverview from "./components/admin/BlogOverview";
-import BlogPost from "./components/user/BlogPost";
 
 // Common components
-import RenderBlog from "./components/RenderBlog";
+import BlogListing from "./components/BlogListing";
+import BlogViewer from "./components/BlogViewer";
 
 const BlogRouter = () => {
   const userRole = useSelector((state) => state.auth.role);
@@ -24,69 +22,45 @@ const BlogRouter = () => {
 
   return (
     <Routes>
-      {/* Role-based blog reading routes */}
-      {userRole === "doctor" && (
-        <>
-          <Route path="/" element={<DoctorBlogReader />} />
-          <Route path="/:slug" element={<DoctorBlogReader />} />
-        </>
-      )}
-
-      {userRole === "patient" && (
-        <>
-          <Route path="/" element={<BlogList />} />
-          <Route path="/post/:id" element={<BlogPost />} />
-        </>
-      )}
-
-      {/* Fallback for other roles or unauthenticated users */}
-      {userRole === "admin" && (
-        <>
-          <Route path="/" element={<BlogList />} />
-          <Route path="/post/:id" element={<BlogPost />} />
-        </>
-      )}
-
-      {!userRole && (
-        <>
-          <Route path="/" element={<BlogList />} />
-          <Route path="/post/:id" element={<BlogPost />} />
-        </>
-      )}
-
-      <Route path="/blog" element={<RenderBlog />} />
+      {/* Blog viewing routes - same for all users */}
+      <Route path="/" element={<BlogListing />} />
+      <Route path="post/:id" element={<BlogViewer />} />
+      <Route path=":slug" element={<BlogViewer />} />
 
       {/* Doctor and Admin routes */}
-      {canAccessEditor && (
+      {canAccessManagement && (
         <>
-          <Route path="/editor" element={<BlogEditor />} />
-          <Route path="/editor/:id" element={<BlogEditor />} />
+          <Route path="manage" element={<BlogManagement />} />
+          <Route path="management" element={<BlogManagement />} />
         </>
       )}
 
-      {canAccessManagement && (
-        <Route path="/manage" element={<BlogManagement />} />
+      {canAccessEditor && (
+        <>
+          <Route path="editor" element={<BlogEditor />} />
+          <Route path="editor/:postId" element={<BlogEditor />} />
+        </>
       )}
 
       {/* Admin-only routes */}
       {canAccessAdmin && (
         <>
-          <Route path="/admin" element={<BlogOverview />} />
-          <Route path="/admin/overview" element={<BlogOverview />} />
+          <Route path="admin" element={<BlogOverview />} />
+          <Route path="admin/overview" element={<BlogOverview />} />
         </>
       )}
 
       {/* Role-based redirects */}
       <Route
-        path="/dashboard"
+        path="dashboard"
         element={
           <Navigate
             to={
               userRole === "admin"
-                ? "/blog/admin"
+                ? "admin"
                 : canAccessManagement
-                  ? "/blog/manage"
-                  : "/blog"
+                  ? "manage"
+                  : "/"
             }
             replace
           />
@@ -95,40 +69,40 @@ const BlogRouter = () => {
 
       {/* Protected route fallbacks */}
       <Route
-        path="/editor/*"
+        path="editor/*"
         element={
           canAccessEditor ? (
-            <Navigate to="/blog/editor" replace />
+            <Navigate to="editor" replace />
           ) : (
-            <Navigate to="/blog" replace />
+            <Navigate to="/" replace />
           )
         }
       />
 
       <Route
-        path="/manage/*"
+        path="manage/*"
         element={
           canAccessManagement ? (
-            <Navigate to="/blog/manage" replace />
+            <Navigate to="manage" replace />
           ) : (
-            <Navigate to="/blog" replace />
+            <Navigate to="/" replace />
           )
         }
       />
 
       <Route
-        path="/admin/*"
+        path="admin/*"
         element={
           canAccessAdmin ? (
-            <Navigate to="/blog/admin" replace />
+            <Navigate to="admin" replace />
           ) : (
-            <Navigate to="/blog" replace />
+            <Navigate to="/" replace />
           )
         }
       />
 
       {/* Catch all - redirect to main blog */}
-      <Route path="*" element={<Navigate to="/blog" replace />} />
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

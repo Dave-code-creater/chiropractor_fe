@@ -26,7 +26,7 @@ export const ThemeProvider = ({ children }) => {
 
     useEffect(() => {
         const root = window.document.documentElement;
-        
+
         // Always apply light mode
         root.classList.remove('light', 'dark');
         root.classList.add('light');

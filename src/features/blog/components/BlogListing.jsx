@@ -1,77 +1,42 @@
-import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import React, { useState, useMemo } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import {
+    selectUserId,
+    selectUserRole,
+    selectIsAuthenticated,
+} from "@/state/data/authSlice";
+import { useGetPublicBlogPostsQuery } from "@/api/services/blogApi";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import {
-  Calendar,
-  Clock,
-  Eye,
-  User,
-  Search,
-  ArrowRight,
-  BookOpen,
+    Search,
+    Calendar,
+    Clock,
+    Eye,
+    User,
+    BookOpen,
+    Filter,
+    ArrowRight,
+    TrendingUp,
+    Share2,
+    Bookmark,
+    Heart,
 } from "lucide-react";
+import { toast } from "sonner";
 
-const BlogListing = ({ posts = [], isLoading = false, onPostClick, onSearch, onCategoryFilter }) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const formatReadTime = (content) => {
-    if (!content) return "1 min read";
-
-    let wordCount = 0;
-
-    // Handle string content
-    if (typeof content === 'string') {
-      // Remove HTML tags if present and count words
-      const textContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
-      wordCount = textContent ? textContent.split(' ').length : 0;
-    }
-    // Handle array content (structured blocks)
-    else if (Array.isArray(content)) {
-      wordCount = content.reduce((count, block) => {
-        if (block.text) {
-          return count + block.text.split(" ").length;
-        }
-        if (block.items) {
-          return count + block.items.join(" ").split(" ").length;
-        }
-        return count;
-      }, 0);
-    }
-
-    const readTime = Math.ceil(wordCount / 200);
-    return `${Math.max(1, readTime)} min read`;
-  };
-
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-    onSearch?.(value);
-  };
-
-  const handleCategoryChange = (value) => {
-    setSelectedCategory(value);
-    onCategoryFilter?.(value);
-  };
-
-  const categories = [
+const BLOG_CATEGORIES = [
     { value: "all", label: "All Categories" },
     { value: "chiropractic-care", label: "Chiropractic Care" },
     { value: "spine-health", label: "Spine Health" },
@@ -80,197 +45,498 @@ const BlogListing = ({ posts = [], isLoading = false, onPostClick, onSearch, onC
     { value: "exercise", label: "Exercise & Therapy" },
     { value: "nutrition", label: "Nutrition & Lifestyle" },
     { value: "patient-stories", label: "Patient Stories" },
-  ];
+    { value: "clinic-news", label: "Clinic News" },
+];
 
-  if (isLoading) {
-    return (
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header Skeleton */}
-        <div className="mb-8">
-          <Skeleton className="h-12 w-64 mb-4" />
-          <Skeleton className="h-6 w-96" />
-        </div>
+const BlogListing = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const [selectedCategory, setSelectedCategory] = useState("all");
+    const [searchTerm, setSearchTerm] = useState("");
+    const [sortBy, setSortBy] = useState("newest");
+    const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
 
-        {/* Filters Skeleton */}
-        <div className="flex flex-col sm:flex-row gap-4 mb-8">
-          <Skeleton className="h-12 flex-1" />
-          <Skeleton className="h-12 w-48" />
-        </div>
+    // Get user info from Redux state
+    const userID = useSelector(selectUserId);
+    const userRole = useSelector(selectUserRole);
+    const isAuthenticated = useSelector(selectIsAuthenticated);
 
-        {/* Posts Grid Skeleton */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card key={i} className="overflow-hidden">
-              <Skeleton className="h-48 w-full" />
-              <CardContent className="p-6">
-                <Skeleton className="h-4 w-20 mb-3" />
-                <Skeleton className="h-6 w-full mb-2" />
-                <Skeleton className="h-6 w-3/4 mb-4" />
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-5/6 mb-4" />
-                <div className="flex items-center gap-4">
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-16" />
-                  <Skeleton className="h-4 w-16" />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    );
-  }
+    // Fetch published blog posts
+    const {
+        data: postsData,
+        isLoading: postsLoading,
+        error: postsError,
+    } = useGetPublicBlogPostsQuery({
+        category: selectedCategory === "all" ? undefined : selectedCategory,
+        search: searchTerm || undefined,
+    });
 
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Our Blog
-        </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-          Discover insights on chiropractic care, wellness tips, and health advice from our expert team.
-        </p>
-      </div>
+    const posts = postsData?.data?.posts || postsData?.results || [];
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-8">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-          <Input
-            placeholder="Search articles..."
-            value={searchTerm}
-            onChange={(e) => handleSearch(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <Select value={selectedCategory} onValueChange={handleCategoryChange}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Select category" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((category) => (
-              <SelectItem key={category.value} value={category.value}>
-                {category.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    // Filter and sort posts
+    const filteredPosts = useMemo(() => {
+        // Create a copy of the posts array to avoid mutating the original
+        let filtered = [...posts];
 
-      {/* Posts Grid */}
-      {posts.length === 0 ? (
-        <div className="text-center py-16">
-          <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            No articles found
-          </h3>
-          <p className="text-gray-600">
-            {searchTerm || selectedCategory !== "all"
-              ? "Try adjusting your search or filters."
-              : "Check back soon for new articles."}
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {posts.map((post) => (
-            <Card
-              key={post.id}
-              className="overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer group"
-              onClick={() => onPostClick?.(post)}
-            >
-              {/* Featured Image */}
-              {post.featured_image && (
-                <div className="relative overflow-hidden h-48">
-                  <img
-                    src={post.featured_image}
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                  {post.category && (
-                    <div className="absolute top-4 left-4">
-                      <Badge variant="secondary" className="bg-white/90 text-gray-800">
-                        {post.category.charAt(0).toUpperCase() + post.category.slice(1).replace('-', ' ')}
-                      </Badge>
+        // Apply search filter
+        if (searchTerm) {
+            filtered = filtered.filter(
+                (post) =>
+                    post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    post.excerpt?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    post.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    post.tags?.some((tag) =>
+                        tag.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+            );
+        }
+
+        // Apply category filter
+        if (selectedCategory !== "all") {
+            filtered = filtered.filter((post) => post.category === selectedCategory);
+        }
+
+        // Apply sorting (now safe to mutate since we have a copy)
+        switch (sortBy) {
+            case "newest":
+                filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                break;
+            case "oldest":
+                filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                break;
+            case "popular":
+                filtered.sort((a, b) => (b.view_count || 0) - (a.view_count || 0));
+                break;
+            case "title":
+                filtered.sort((a, b) => a.title.localeCompare(b.title));
+                break;
+            default:
+                break;
+        }
+
+        return filtered;
+    }, [posts, searchTerm, selectedCategory, sortBy]);
+
+    // Helper functions
+    const formatDate = (dateString) => {
+        return new Date(dateString).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+    };
+
+    const formatReadTime = (content) => {
+        if (!content) return "1 min read";
+
+        const wordsPerMinute = 200;
+        let text = "";
+
+        // Handle different content types
+        if (typeof content === "string") {
+            text = content;
+        } else if (typeof content === "object") {
+            // If content is an object (structured content), convert to string
+            text = JSON.stringify(content);
+        } else {
+            return "1 min read";
+        }
+
+        // Remove HTML tags and count words
+        const words = text.replace(/<[^>]*>/g, "").split(" ").filter(word => word.trim().length > 0).length;
+        const minutes = Math.ceil(words / wordsPerMinute);
+        return `${minutes} min read`;
+    };
+
+    const getCategoryColor = (categorySlug) => {
+        const colors = {
+            "chiropractic-care": "bg-blue-100 text-blue-800",
+            "spine-health": "bg-green-100 text-green-800",
+            "pain-management": "bg-red-100 text-red-800",
+            "wellness": "bg-purple-100 text-purple-800",
+            "exercise": "bg-orange-100 text-orange-800",
+            "nutrition": "bg-yellow-100 text-yellow-800",
+            "patient-stories": "bg-pink-100 text-pink-800",
+            "clinic-news": "bg-gray-100 text-gray-800",
+        };
+        return colors[categorySlug] || "bg-gray-100 text-gray-800";
+    };
+
+    const getCategoryLabel = (categorySlug) => {
+        const category = BLOG_CATEGORIES.find((cat) => cat.value === categorySlug);
+        return category ? category.label : categorySlug;
+    };
+
+    const getBlogPostUrl = (post) => {
+        // Use current context - if in dashboard, stay in dashboard
+        if (location.pathname.includes("/dashboard/")) {
+            return `/dashboard/${userRole}/${userID}/blog/post/${post.id}`;
+        }
+        // Otherwise use public blog URLs
+        return `/blog/post/${post.id}`;
+    };
+
+    const handleBookmark = (postId) => {
+        const newBookmarks = new Set(bookmarkedPosts);
+        if (newBookmarks.has(postId)) {
+            newBookmarks.delete(postId);
+            toast.success("Removed from bookmarks");
+        } else {
+            newBookmarks.add(postId);
+            toast.success("Added to bookmarks");
+        }
+        setBookmarkedPosts(newBookmarks);
+    };
+
+    const handleShare = (post) => {
+        const url = window.location.origin + getBlogPostUrl(post);
+        if (navigator.share) {
+            navigator.share({
+                title: post.title,
+                text: post.excerpt,
+                url: url,
+            });
+        } else {
+            navigator.clipboard.writeText(url);
+            toast.success("Link copied to clipboard");
+        }
+    };
+
+    // Loading state
+    if (postsLoading) {
+        return (
+            <div className="max-w-7xl mx-auto p-6">
+                <div className="space-y-6">
+                    {/* Header Skeleton */}
+                    <div className="text-center">
+                        <Skeleton className="h-12 w-64 mx-auto mb-4" />
+                        <Skeleton className="h-6 w-96 mx-auto" />
                     </div>
-                  )}
-                </div>
-              )}
 
-              <CardContent className="p-6">
-                {/* Category (if no featured image) */}
-                {!post.featured_image && post.category && (
-                  <div className="mb-3">
-                    <Badge variant="secondary" className="text-xs">
-                      {post.category.charAt(0).toUpperCase() + post.category.slice(1).replace('-', ' ')}
-                    </Badge>
-                  </div>
+                    {/* Filters Skeleton */}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <Skeleton className="h-12 flex-1" />
+                        <Skeleton className="h-12 w-48" />
+                        <Skeleton className="h-12 w-48" />
+                    </div>
+
+                    {/* Posts Grid Skeleton */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <Card key={i} className="overflow-hidden">
+                                <Skeleton className="h-48 w-full" />
+                                <CardContent className="p-6">
+                                    <Skeleton className="h-4 w-20 mb-3" />
+                                    <Skeleton className="h-6 w-full mb-2" />
+                                    <Skeleton className="h-6 w-3/4 mb-4" />
+                                    <div className="flex justify-between">
+                                        <Skeleton className="h-4 w-24" />
+                                        <Skeleton className="h-4 w-16" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (postsError) {
+        return (
+            <div className="max-w-7xl mx-auto p-6">
+                <Card>
+                    <CardContent className="p-12">
+                        <div className="text-center">
+                            <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-semibold mb-2">Unable to load blog posts</h3>
+                            <p className="text-gray-600 mb-4">
+                                There was an error loading the blog posts. Please try again later.
+                            </p>
+                            <Button onClick={() => window.location.reload()}>Try Again</Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    return (
+        <div className="max-w-7xl mx-auto p-6">
+            <div className="space-y-8">
+                {/* Header */}
+                <div className="text-center">
+                    <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        Health & Wellness Blog
+                    </h1>
+                    <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                        Discover expert insights on chiropractic care, wellness tips, and health advice
+                        from our professional team.
+                    </p>
+                </div>
+
+                {/* Filters */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle className="flex items-center">
+                            <Filter className="h-5 w-5 mr-2" />
+                            Find Articles
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col lg:flex-row gap-4">
+                            {/* Search */}
+                            <div className="flex-1">
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                                    <Input
+                                        placeholder="Search articles..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="pl-10"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Category Filter */}
+                            <div className="lg:w-64">
+                                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Select category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {BLOG_CATEGORIES.map((category) => (
+                                            <SelectItem key={category.value} value={category.value}>
+                                                {category.label}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+
+                            {/* Sort */}
+                            <div className="lg:w-48">
+                                <Select value={sortBy} onValueChange={setSortBy}>
+                                    <SelectTrigger>
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="newest">Newest First</SelectItem>
+                                        <SelectItem value="oldest">Oldest First</SelectItem>
+                                        <SelectItem value="popular">Most Popular</SelectItem>
+                                        <SelectItem value="title">Alphabetical</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Stats */}
+                {filteredPosts.length > 0 && (
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                        <span>
+                            Showing {filteredPosts.length} article{filteredPosts.length !== 1 ? "s" : ""}
+                            {selectedCategory !== "all" && ` in ${getCategoryLabel(selectedCategory)}`}
+                        </span>
+                        <span>Updated regularly with new content</span>
+                    </div>
                 )}
 
-                {/* Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                  {post.title}
-                </h3>
-
-                {/* Excerpt */}
-                <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                  {post.excerpt}
-                </p>
-
-                {/* Meta Info */}
-                <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
-                  <div className="flex items-center gap-1">
-                    <User className="h-3 w-3" />
-                    <span>{post.author_name}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-3 w-3" />
-                    <span>{formatDate(post.published_at || post.created_at)}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    <span>{formatReadTime(post.content)}</span>
-                  </div>
-                </div>
-
-                {/* Tags */}
-                {post.tags && post.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {post.tags.slice(0, 3).map((tag, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {post.tags.length > 3 && (
-                      <Badge variant="outline" className="text-xs">
-                        +{post.tags.length - 3}
-                      </Badge>
-                    )}
-                  </div>
+                {/* No Results */}
+                {filteredPosts.length === 0 && !postsLoading && (
+                    <Card>
+                        <CardContent className="p-12">
+                            <div className="text-center">
+                                <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                <h3 className="text-lg font-semibold mb-2">No articles found</h3>
+                                <p className="text-gray-600 mb-4">
+                                    {searchTerm || selectedCategory !== "all"
+                                        ? "Try adjusting your search terms or filters."
+                                        : "Check back soon for new articles."}
+                                </p>
+                                {(searchTerm || selectedCategory !== "all") && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            setSearchTerm("");
+                                            setSelectedCategory("all");
+                                        }}
+                                    >
+                                        Clear Filters
+                                    </Button>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
                 )}
 
-                {/* Read More */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
-                    <Eye className="h-3 w-3" />
-                    <span>{post.view_count || 0} views</span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-blue-600 hover:text-blue-700 p-0 h-auto font-medium"
-                  >
-                    Read More
-                    <ArrowRight className="h-3 w-3 ml-1" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                {/* Featured Post */}
+                {filteredPosts.length > 0 && (
+                    <Card className="overflow-hidden">
+                        <div className="md:flex">
+                            {/* Image */}
+                            <div className="md:w-1/2">
+                                {filteredPosts[0].featured_image ? (
+                                    <img
+                                        src={filteredPosts[0].featured_image}
+                                        alt={filteredPosts[0].title}
+                                        className="w-full h-64 md:h-full object-cover"
+                                    />
+                                ) : (
+                                    <div className="w-full h-64 md:h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                                        <BookOpen className="w-12 h-12 text-blue-500" />
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Content */}
+                            <div className="md:w-1/2 p-6 md:p-8">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <TrendingUp className="w-4 h-4 text-blue-500" />
+                                    <span className="text-sm font-medium text-blue-600">Featured Article</span>
+                                </div>
+
+                                {filteredPosts[0].category && (
+                                    <Badge className={`mb-4 ${getCategoryColor(filteredPosts[0].category)}`}>
+                                        {getCategoryLabel(filteredPosts[0].category)}
+                                    </Badge>
+                                )}
+
+                                <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">
+                                    {filteredPosts[0].title}
+                                </h2>
+
+                                <p className="text-gray-600 mb-6 line-clamp-3">
+                                    {filteredPosts[0].excerpt}
+                                </p>
+
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4 text-sm text-gray-500">
+                                        <div className="flex items-center gap-1">
+                                            <Calendar className="w-4 h-4" />
+                                            {formatDate(filteredPosts[0].created_at)}
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Clock className="w-4 h-4" />
+                                            {formatReadTime(filteredPosts[0].content)}
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Eye className="w-4 h-4" />
+                                            {filteredPosts[0].view_count || 0} views
+                                        </div>
+                                    </div>
+
+                                    <Link to={getBlogPostUrl(filteredPosts[0])}>
+                                        <Button className="gap-2">
+                                            Read More
+                                            <ArrowRight className="w-4 h-4" />
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                )}
+
+                {/* Regular Posts Grid */}
+                {filteredPosts.length > 1 && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {filteredPosts.slice(1).map((post) => (
+                            <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow group">
+                                {/* Image */}
+                                <div className="aspect-video overflow-hidden">
+                                    {post.featured_image ? (
+                                        <img
+                                            src={post.featured_image}
+                                            alt={post.title}
+                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                        />
+                                    ) : (
+                                        <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
+                                            <BookOpen className="w-8 h-8 text-gray-400" />
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Content */}
+                                <CardContent className="p-6">
+                                    <div className="flex items-center justify-between mb-3">
+                                        {post.category && (
+                                            <Badge className={getCategoryColor(post.category)} size="sm">
+                                                {getCategoryLabel(post.category)}
+                                            </Badge>
+                                        )}
+
+                                        <div className="flex items-center gap-1">
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleBookmark(post.id)}
+                                                className={`p-1 h-auto ${bookmarkedPosts.has(post.id) ? "text-yellow-500" : "text-gray-400"}`}
+                                            >
+                                                <Bookmark className="w-4 h-4" />
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                size="sm"
+                                                onClick={() => handleShare(post)}
+                                                className="p-1 h-auto text-gray-400 hover:text-gray-600"
+                                            >
+                                                <Share2 className="w-4 h-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+
+                                    <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                        {post.title}
+                                    </h3>
+
+                                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                                        {post.excerpt}
+                                    </p>
+
+                                    <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-1">
+                                                <Calendar className="w-3 h-3" />
+                                                {formatDate(post.created_at)}
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Clock className="w-3 h-3" />
+                                                {formatReadTime(post.content)}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Eye className="w-3 h-3" />
+                                            {post.view_count || 0}
+                                        </div>
+                                    </div>
+
+                                    <Link to={getBlogPostUrl(post)} className="block">
+                                        <Button variant="outline" size="sm" className="w-full group-hover:bg-blue-50 group-hover:border-blue-200">
+                                            Read Article
+                                            <ArrowRight className="w-3 h-3 ml-1" />
+                                        </Button>
+                                    </Link>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+
+                {/* Load More / Pagination could go here */}
+                {filteredPosts.length > 12 && (
+                    <div className="text-center">
+                        <Button variant="outline" size="lg">
+                            Load More Articles
+                        </Button>
+                    </div>
+                )}
+            </div>
         </div>
-      )}
-    </div>
-  );
+    );
 };
 
-export default BlogListing; 
+export default BlogListing;

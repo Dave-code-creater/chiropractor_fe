@@ -27,16 +27,16 @@ export default function Appointments() {
   switch (userRole) {
     case "admin":
       return <AdminAppointments />;
-    
+
     case "doctor":
       return <DoctorAppointments />;
-    
 
-    
+
+
     case "patient":
     case "user":
       return <PatientAppointments />;
-    
+
     default:
       return (
         <Card className="max-w-md mx-auto mt-8">

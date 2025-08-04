@@ -10,25 +10,26 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { 
-  useGetUserAppointmentsQuery,
-  useUpdateAppointmentMutation, 
+import {
+  useGetAppointmentsQuery,
   useCreateAppointmentMutation,
-  useDeleteAppointmentMutation
-} from '@/api/services/appointmentApi';
+  useUpdateAppointmentMutation,
+  useCancelAppointmentMutation,
+  useRescheduleAppointmentMutation
+} from "@/api/services/appointmentApi";
 import { useGetPatientsQuery } from '@/api/services/userApi';
 import { useSelector } from 'react-redux';
 import { selectUserId, selectUserRole } from '@/state/data/authSlice';
-import { 
-  Calendar, 
-  Search, 
-  CheckCircle, 
-  XCircle, 
-  Clock, 
-  TrendingUp, 
-  Plus, 
-  Edit, 
-  Trash2, 
+import {
+  Calendar,
+  Search,
+  CheckCircle,
+  XCircle,
+  Clock,
+  TrendingUp,
+  Plus,
+  Edit,
+  Trash2,
   User,
   Phone,
   Mail,
@@ -46,11 +47,12 @@ import { format, isToday, isPast, isFuture } from 'date-fns';
 const DoctorAppointments = () => {
   const currentUserId = useSelector(selectUserId);
   const userRole = useSelector(selectUserRole);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedAppointments, setSelectedAppointments] = useState([]);
   const [activeTab, setActiveTab] = useState('today');
-  
+
   // Reset page when tab or search changes
   React.useEffect(() => {
     setCurrentPage(1);
@@ -58,50 +60,67 @@ const DoctorAppointments = () => {
   const [selectedUserId, setSelectedUserId] = useState(''); // Placeholder for user selection
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  
+
   // Modal states
   const [createModal, setCreateModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, appointment: null });
 
   // API queries - using the same API as patient appointments
-  const { data: appointmentsData, isLoading, error, refetch } = useGetUserAppointmentsQuery({
+  const queryParams = {
     status_not: 'cancelled', // Exclude cancelled appointments like patient view
     limit: 100
-  });
+  };
+
+  const { data: appointmentsData, isLoading, error, refetch } = useGetAppointmentsQuery(queryParams);
 
   const { data: patientsData } = useGetPatientsQuery();
 
   // Mutations
   const [updateAppointment] = useUpdateAppointmentMutation();
   const [createAppointment] = useCreateAppointmentMutation();
-  const [deleteAppointment] = useDeleteAppointmentMutation();
+  const [cancelAppointment] = useCancelAppointmentMutation();
 
   // Process appointments data - same logic as PatientAppointments
   const appointments = useMemo(() => {
     if (!appointmentsData) return [];
-    
+
     // Based on your API structure: { data: { appointments: [...] } }
     if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
       return appointmentsData.data.appointments;
     }
-    
+
     // Fallback: Handle if data is directly in data array
     if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
       return appointmentsData.data;
     }
-    
+
     // Fallback: Handle if appointments are at root level
     if (Array.isArray(appointmentsData)) {
       return appointmentsData;
     }
-    
+
     return [];
   }, [appointmentsData]);
 
   const patients = useMemo(() => {
     if (!patientsData) return [];
-    return Array.isArray(patientsData?.data) ? patientsData.data :
-           Array.isArray(patientsData) ? patientsData : [];
+
+    // Handle the nested structure: { data: { patients: [...] } }
+    if (patientsData.data && Array.isArray(patientsData.data.patients)) {
+      return patientsData.data.patients;
+    }
+
+    // Fallback: Handle if data is directly in data array
+    if (Array.isArray(patientsData?.data)) {
+      return patientsData.data;
+    }
+
+    // Fallback: Handle if patients are at root level
+    if (Array.isArray(patientsData)) {
+      return patientsData;
+    }
+
+    return [];
   }, [patientsData]);
 
   // Categorize appointments - same logic as PatientAppointments
@@ -127,35 +146,35 @@ const DoctorAppointments = () => {
       }),
       all: appointments
     };
-    
+
     return result;
   }, [appointments]);
 
   // Filter appointments
   const filteredAppointments = useMemo(() => {
     const currentAppointments = categorizedAppointments[activeTab] || [];
-    
+
     const filtered = currentAppointments.filter(apt => {
       // If no search term, include all appointments
       if (!searchTerm.trim()) {
         const matchesStatus = statusFilter === 'all' || apt.status === statusFilter;
         return matchesStatus;
       }
-      
+
       // If there's a search term, try to match against available fields
-      const matchesSearch = 
+      const matchesSearch =
         apt.patient?.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         apt.patient?.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         apt.patient?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         apt.reason_for_visit?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         apt.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         apt.status?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
       const matchesStatus = statusFilter === 'all' || apt.status === statusFilter;
-      
+
       return matchesSearch && matchesStatus;
     });
-    
+
     return filtered;
   }, [categorizedAppointments, activeTab, searchTerm, statusFilter]);
 
@@ -230,7 +249,7 @@ const DoctorAppointments = () => {
 
     try {
       await Promise.all(
-        selectedAppointments.map(id => 
+        selectedAppointments.map(id =>
           updateAppointment({ id, status }).unwrap()
         )
       );
@@ -244,15 +263,15 @@ const DoctorAppointments = () => {
   };
 
   const handleDeleteAppointment = async (appointmentId) => {
-    if (!confirm('Are you sure you want to delete this appointment?')) return;
+    if (!confirm('Are you sure you want to cancel this appointment?')) return;
 
     try {
-      await deleteAppointment(appointmentId).unwrap();
-      toast.success('Appointment deleted successfully');
+      await cancelAppointment({ id: appointmentId, reason: 'Cancelled by doctor' }).unwrap();
+      toast.success('Appointment cancelled successfully');
       refetch();
     } catch (error) {
-      console.error('Delete appointment error:', error);
-      toast.error('Failed to delete appointment');
+      console.error('Cancel appointment error:', error);
+      toast.error('Failed to cancel appointment');
     }
   };
 
@@ -296,12 +315,28 @@ const DoctorAppointments = () => {
 
     const handleSubmit = async (e) => {
       e.preventDefault();
+
+      // Transform form data to use sender/recipient structure
+      const appointmentData = {
+        sender_id: currentUserId,           // Doctor creating the appointment
+        recipient_id: formData.patient_id,  // Patient receiving the appointment
+        appointment_date: formData.appointment_date,
+        appointment_time: formData.appointment_time,
+        reason_for_visit: formData.reason_for_visit,
+        location: formData.location,
+        status: formData.status,
+        additional_notes: formData.additional_notes
+      };
+
+      console.log('🩺 [Doctor Form] Appointment form data:', appointmentData);
+
       try {
         if (appointment) {
-          await updateAppointment({ id: appointment.id, ...formData }).unwrap();
+          const updateData = { id: appointment.id, ...appointmentData };
+          await updateAppointment(updateData).unwrap();
           toast.success('Appointment updated successfully');
         } else {
-          await createAppointment(formData).unwrap();
+          await createAppointment(appointmentData).unwrap();
           toast.success('Appointment created successfully');
         }
         onClose();
@@ -317,14 +352,15 @@ const DoctorAppointments = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="patient">Patient</Label>
-            <Select value={formData.patient_id} onValueChange={(value) => setFormData({...formData, patient_id: value})}>
+            <Select value={formData.patient_id} onValueChange={(value) => setFormData({ ...formData, patient_id: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select patient" />
               </SelectTrigger>
               <SelectContent>
                 {patients.map((patient) => (
-                  <SelectItem key={patient.id} value={patient.id}>
-                    {patient.first_name} {patient.last_name} - {patient.email}
+                  <SelectItem key={patient.id} value={patient.id.toString()}>
+                    {patient.full_name} - {patient.email}
+                    {patient.phone && ` - ${patient.phone}`}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -333,7 +369,7 @@ const DoctorAppointments = () => {
 
           <div className="space-y-2">
             <Label htmlFor="location">Location</Label>
-            <Select value={formData.location} onValueChange={(value) => setFormData({...formData, location: value})}>
+            <Select value={formData.location} onValueChange={(value) => setFormData({ ...formData, location: value })}>
               <SelectTrigger>
                 <SelectValue placeholder="Select location" />
               </SelectTrigger>
@@ -352,7 +388,7 @@ const DoctorAppointments = () => {
             <Input
               type="date"
               value={formData.appointment_date}
-              onChange={(e) => setFormData({...formData, appointment_date: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })}
               required
             />
           </div>
@@ -362,7 +398,7 @@ const DoctorAppointments = () => {
             <Input
               type="time"
               value={formData.appointment_time}
-              onChange={(e) => setFormData({...formData, appointment_time: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })}
               required
             />
           </div>
@@ -372,7 +408,7 @@ const DoctorAppointments = () => {
           <Label htmlFor="reason">Reason for Visit</Label>
           <Input
             value={formData.reason_for_visit}
-            onChange={(e) => setFormData({...formData, reason_for_visit: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, reason_for_visit: e.target.value })}
             placeholder="Brief description of the visit purpose"
           />
         </div>
@@ -381,7 +417,7 @@ const DoctorAppointments = () => {
           <Label htmlFor="notes">Additional Notes</Label>
           <Textarea
             value={formData.additional_notes}
-            onChange={(e) => setFormData({...formData, additional_notes: e.target.value})}
+            onChange={(e) => setFormData({ ...formData, additional_notes: e.target.value })}
             placeholder="Additional notes or instructions"
             rows={3}
           />
@@ -509,15 +545,15 @@ const DoctorAppointments = () => {
                       <span className="text-sm text-muted-foreground">
                         {selectedAppointments.length} selected
                       </span>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => handleBulkStatusUpdate('confirmed')}
                       >
                         Confirm All
                       </Button>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="sm"
                         onClick={() => handleBulkStatusUpdate('completed')}
                       >
@@ -564,22 +600,22 @@ const DoctorAppointments = () => {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                                                     <TableHead className="w-[50px]">
-                             <Checkbox
-                               checked={paginatedAppointments.length > 0 && paginatedAppointments.every(apt => selectedAppointments.includes(apt.id))}
-                               onCheckedChange={(checked) => {
-                                 if (checked) {
-                                   // Select all appointments on current page
-                                   const newSelected = [...selectedAppointments, ...paginatedAppointments.map(apt => apt.id).filter(id => !selectedAppointments.includes(id))];
-                                   setSelectedAppointments(newSelected);
-                                 } else {
-                                   // Deselect all appointments on current page
-                                   const pageIds = paginatedAppointments.map(apt => apt.id);
-                                   setSelectedAppointments(selectedAppointments.filter(id => !pageIds.includes(id)));
-                                 }
-                               }}
-                             />
-                           </TableHead>
+                          <TableHead className="w-[50px]">
+                            <Checkbox
+                              checked={paginatedAppointments.length > 0 && paginatedAppointments.every(apt => selectedAppointments.includes(apt.id))}
+                              onCheckedChange={(checked) => {
+                                if (checked) {
+                                  // Select all appointments on current page
+                                  const newSelected = [...selectedAppointments, ...paginatedAppointments.map(apt => apt.id).filter(id => !selectedAppointments.includes(id))];
+                                  setSelectedAppointments(newSelected);
+                                } else {
+                                  // Deselect all appointments on current page
+                                  const pageIds = paginatedAppointments.map(apt => apt.id);
+                                  setSelectedAppointments(selectedAppointments.filter(id => !pageIds.includes(id)));
+                                }
+                              }}
+                            />
+                          </TableHead>
                           <TableHead>Patient</TableHead>
                           <TableHead>Status</TableHead>
                           <TableHead>Date</TableHead>
@@ -588,11 +624,11 @@ const DoctorAppointments = () => {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                                                 {paginatedAppointments.map((appointment) => {
+                        {paginatedAppointments.map((appointment) => {
                           const patient = appointment.patient;
                           const isSelected = selectedAppointments.includes(appointment.id);
                           const canCancel = ['pending', 'confirmed', 'scheduled'].includes(appointment.status);
-                          
+
                           return (
                             <TableRow key={appointment.id} className={isSelected ? "bg-muted/50" : ""}>
                               <TableCell>
@@ -623,8 +659,8 @@ const DoctorAppointments = () => {
                                 </Badge>
                               </TableCell>
                               <TableCell>
-                                {appointment.appointment_date ? 
-                                  format(new Date(appointment.appointment_date), 'MMM d, yyyy') : 
+                                {appointment.appointment_date ?
+                                  format(new Date(appointment.appointment_date), 'MMM d, yyyy') :
                                   'Not set'
                                 }
                               </TableCell>
@@ -634,8 +670,8 @@ const DoctorAppointments = () => {
                               <TableCell>
                                 <div className="flex items-center gap-2">
                                   {canCancel && (
-                                    <Button 
-                                      variant="outline" 
+                                    <Button
+                                      variant="outline"
                                       size="sm"
                                       onClick={() => handleStatusUpdate(appointment.id, "cancelled")}
                                       className="text-red-600 hover:text-red-700 hover:bg-red-50"
@@ -649,60 +685,60 @@ const DoctorAppointments = () => {
                             </TableRow>
                           );
                         })}
-                                             </TableBody>
-                     </Table>
-                   </div>
-                   
-                   {/* Pagination Controls */}
-                   {totalPages > 1 && (
-                     <div className="flex items-center justify-between mt-4">
-                       <div className="text-sm text-muted-foreground">
-                         Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAppointments.length)} of {filteredAppointments.length} appointments
-                       </div>
-                       <div className="flex items-center space-x-2">
-                         <Button
-                           variant="outline"
-                           size="sm"
-                           onClick={() => setCurrentPage(1)}
-                           disabled={currentPage === 1}
-                         >
-                           <ChevronsLeft className="h-4 w-4" />
-                         </Button>
-                         <Button
-                           variant="outline"
-                           size="sm"
-                           onClick={() => setCurrentPage(currentPage - 1)}
-                           disabled={currentPage === 1}
-                         >
-                           <ChevronLeft className="h-4 w-4" />
-                         </Button>
-                         <span className="text-sm">
-                           Page {currentPage} of {totalPages}
-                         </span>
-                         <Button
-                           variant="outline"
-                           size="sm"
-                           onClick={() => setCurrentPage(currentPage + 1)}
-                           disabled={currentPage === totalPages}
-                         >
-                           <ChevronRight className="h-4 w-4" />
-                         </Button>
-                         <Button
-                           variant="outline"
-                           size="sm"
-                           onClick={() => setCurrentPage(totalPages)}
-                           disabled={currentPage === totalPages}
-                         >
-                           <ChevronsRight className="h-4 w-4" />
-                         </Button>
-                       </div>
-                     </div>
-                   )}
-                 </>
-               )}
-             </CardContent>
-           </Card>
-         </TabsContent>
+                      </TableBody>
+                    </Table>
+                  </div>
+
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-4">
+                      <div className="text-sm text-muted-foreground">
+                        Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredAppointments.length)} of {filteredAppointments.length} appointments
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(1)}
+                          disabled={currentPage === 1}
+                        >
+                          <ChevronsLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <span className="text-sm">
+                          Page {currentPage} of {totalPages}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(totalPages)}
+                          disabled={currentPage === totalPages}
+                        >
+                          <ChevronsRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
       </Tabs>
 
       {/* Create Appointment Modal */}
@@ -714,7 +750,7 @@ const DoctorAppointments = () => {
               Schedule a new appointment for a patient.
             </DialogDescription>
           </DialogHeader>
-          <AppointmentForm 
+          <AppointmentForm
             onClose={() => setCreateModal(false)}
             onSave={() => setCreateModal(false)}
           />
@@ -730,7 +766,7 @@ const DoctorAppointments = () => {
               Update the appointment details.
             </DialogDescription>
           </DialogHeader>
-          <AppointmentForm 
+          <AppointmentForm
             appointment={editModal.appointment}
             onClose={() => setEditModal({ isOpen: false, appointment: null })}
             onSave={() => setEditModal({ isOpen: false, appointment: null })}

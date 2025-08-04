@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CalendarDays, AlertCircle } from "lucide-react";
-import { useGetUserAppointmentsQuery } from "@/api/services/appointmentApi";
+import { useGetMyAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
 import CompactAppointmentCard from "@/components/CompactAppointmentCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export default function AppointmentsCard() {
   const [rescheduling, setRescheduling] = useState(false);
   const userID = useSelector((state) => state?.auth?.userID);
-  const { data, isLoading, error } = useGetUserAppointmentsQuery(
+  const { data, isLoading, error } = useGetMyAppointmentsQuery(
     {
       status_not: 'cancelled', // Exclude cancelled appointments
       date_from: new Date().toISOString().split('T')[0], // Only upcoming appointments

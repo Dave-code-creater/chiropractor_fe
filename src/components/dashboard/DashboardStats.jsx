@@ -41,15 +41,15 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { useGetUserAppointmentsQuery } from "@/api/services/appointmentApi";
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useGetPatientsQuery } from "@/api/services/userApi";
 import { useGetIncidentsQuery } from "@/api/services/reportApi";
 
 const DashboardStats = ({ userRole = "admin" }) => {
   const [timeRange, setTimeRange] = useState("7d");
-  
+
   // Fetch data from APIs - using the same API as appointment components
-  const { data: appointmentsData, isLoading: isLoadingAppointments } = useGetUserAppointmentsQuery({
+  const { data: appointmentsData, isLoading: isLoadingAppointments } = useGetAppointmentsQuery({
     status_not: 'cancelled',
     limit: 100
   });
@@ -59,22 +59,22 @@ const DashboardStats = ({ userRole = "admin" }) => {
   // Process appointments data - same logic as other appointment components
   const appointments = useMemo(() => {
     if (!appointmentsData) return [];
-    
+
     // Based on your API structure: { data: { appointments: [...] } }
     if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
       return appointmentsData.data.appointments;
     }
-    
+
     // Fallback: Handle if data is directly in data array
     if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
       return appointmentsData.data;
     }
-    
+
     // Fallback: Handle if appointments are at root level
     if (Array.isArray(appointmentsData)) {
       return appointmentsData;
     }
-    
+
     return [];
   }, [appointmentsData]);
 
@@ -82,14 +82,14 @@ const DashboardStats = ({ userRole = "admin" }) => {
   const patients = useMemo(() => {
     if (!patientsData) return [];
     return Array.isArray(patientsData?.metadata) ? patientsData.metadata :
-           Array.isArray(patientsData) ? patientsData : [];
+      Array.isArray(patientsData) ? patientsData : [];
   }, [patientsData]);
 
   // Process incidents data
   const incidents = useMemo(() => {
     if (!incidentsData) return [];
     return Array.isArray(incidentsData?.data) ? incidentsData.data :
-           Array.isArray(incidentsData) ? incidentsData : [];
+      Array.isArray(incidentsData) ? incidentsData : [];
   }, [incidentsData]);
 
   // Calculate stats from real data
@@ -107,7 +107,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
       return aptDate?.startsWith(thisMonth);
     });
 
-    const completedAppointments = appointments.filter(apt => 
+    const completedAppointments = appointments.filter(apt =>
       apt.status === "completed"
     );
 
@@ -142,7 +142,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
         pending: appointments.filter(apt => apt.status === "pending").length,
         cancelled: appointments.filter(apt => apt.status === "cancelled").length,
         noShow: appointments.filter(apt => apt.status === "no_show").length,
-        completionRate: appointments.length ? 
+        completionRate: appointments.length ?
           (completedAppointments.length / appointments.length * 100).toFixed(1) : 0,
         averageDuration: 30, // Default if not available in data
       },
@@ -184,9 +184,9 @@ const DashboardStats = ({ userRole = "admin" }) => {
       const painForms = i.forms.filter(f => f.form_type === 'pain_assessment');
       return painForms.some(f => f.form_data?.pain_before && f.form_data?.pain_after);
     });
-    
+
     if (!incidentsWithPain.length) return 0;
-    
+
     const totalReduction = incidentsWithPain.reduce((sum, i) => {
       const painForms = i.forms.filter(f => f.form_type === 'pain_assessment');
       const reduction = painForms.reduce((formSum, f) => {
@@ -195,13 +195,13 @@ const DashboardStats = ({ userRole = "admin" }) => {
       }, 0);
       return sum + reduction;
     }, 0);
-    
+
     return (totalReduction / incidentsWithPain.length).toFixed(1);
   };
 
   const calculateTreatmentSuccess = (incidents) => {
     if (!incidents.length) return 0;
-    const successfulTreatments = incidents.filter(i => 
+    const successfulTreatments = incidents.filter(i =>
       i.status === "completed" || i.status === "resolved"
     ).length;
     return ((successfulTreatments / incidents.length) * 100).toFixed(1);
@@ -214,9 +214,9 @@ const DashboardStats = ({ userRole = "admin" }) => {
         return data && data.satisfaction_rating;
       });
     });
-    
+
     if (!incidentsWithSatisfaction.length) return 0;
-    
+
     const totalSatisfaction = incidentsWithSatisfaction.reduce((sum, i) => {
       const satisfactionForms = i.forms.filter(f => {
         const data = typeof f.form_data === 'string' ? JSON.parse(f.form_data) : f.form_data;
@@ -228,7 +228,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
       }, 0);
       return sum + incidentSatisfaction;
     }, 0);
-    
+
     return (totalSatisfaction / incidentsWithSatisfaction.length).toFixed(1);
   };
 
@@ -298,7 +298,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
       { name: 'Fair', color: '#F59E0B' },
       { name: 'Poor', color: '#EF4444' },
     ];
-    
+
     const totalIncidents = incidents.length;
     if (!totalIncidents) return outcomes.map(o => ({ ...o, value: 0 }));
 
@@ -313,7 +313,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
           return outcome.name === 'Poor';
         }
       });
-      
+
       return {
         ...outcome,
         value: Math.round((matchingIncidents.length / totalIncidents) * 100),
@@ -513,7 +513,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
                         {Math.round(
                           (stats.patients.demographics.male /
                             stats.patients.total) *
-                            100,
+                          100,
                         )}
                         %)
                       </span>
@@ -535,7 +535,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
                         {Math.round(
                           (stats.patients.demographics.female /
                             stats.patients.total) *
-                            100,
+                          100,
                         )}
                         %)
                       </span>

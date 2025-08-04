@@ -161,9 +161,10 @@ export default function DoctorBooking() {
       // Use time as is (24-hour format HH:MM from time input)
       const formattedTime = bookingData.time;
 
-      // Format the appointment data to match backend expectation (same as doctor components)
+      // Format the appointment data with unified sender/recipient structure
       const appointmentData = {
-        doctor_id: bookingData.doctor,
+        sender_id: user.userID,        // Patient booking for themselves
+        recipient_id: bookingData.doctor,  // Doctor receiving the appointment
         appointment_date: formattedDate,
         appointment_time: formattedTime,
         reason_for_visit: bookingData.reason,
@@ -175,6 +176,8 @@ export default function DoctorBooking() {
         clinic_phone: selectedLocation.phone,
         clinic_hours: selectedLocation.hours,
       };
+
+      console.log('� [Patient Form] Appointment form data:', appointmentData);
 
       const result = await createAppointment(appointmentData).unwrap();
 
@@ -192,6 +195,8 @@ export default function DoctorBooking() {
         setActiveTab("doctor"); // Reset to first step
       }
     } catch (error) {
+      console.error('Appointment booking failed:', error);
+
       // Handle specific API errors
       if (error.status === 409) {
         toast.error("This time slot is already booked. Please select a different time.");

@@ -34,7 +34,6 @@ import {
 
 // Import the new feature components
 import DashboardStats from "@/components/dashboard/DashboardStats";
-import NotificationSystem from "@/components/notifications/NotificationSystem";
 import GlobalSearch from "@/components/advanced-search/GlobalSearch";
 import AdvancedPatientManagement from "@/features/patients/components/AdvancedPatientManagement";
 import DoctorAvailabilitySystem from "@/features/doctors/components/DoctorAvailabilitySystem";
@@ -448,7 +447,6 @@ const EnhancedAdminDashboard = () => {
               onResultSelect={(result) => { }} // TODO: Implement search result selection
               userRole="admin"
             />
-            <NotificationSystem userId="admin" userRole="admin" />
           </div>
         </TabsContent>
       </Tabs>

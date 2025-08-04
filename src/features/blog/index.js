@@ -1,12 +1,11 @@
 // Main router
 export { default as BlogRouter } from './BlogRouter';
 
-// Role-based components
-export { default as BlogList } from './components/patient/BlogList';
+// Role-based components (for management only)
 export { default as BlogEditor } from './components/doctor/BlogEditor';
 export { default as BlogManagement } from './components/doctor/BlogManagement';
 export { default as BlogOverview } from './components/admin/BlogOverview';
 
-// Common components
-export { default as UnifiedBlog } from './components/UnifiedBlog';
-export { default as RenderBlog } from './components/RenderBlog'; 
+// Common components (for public viewing)
+export { default as BlogListing } from './components/BlogListing';
+export { default as BlogViewer } from './components/BlogViewer'; 

@@ -24,7 +24,6 @@ import accidentsInsuranceReducer from "../state/forms/accidentsInsurance";
 
 import loadingReducer from "../state/ui/loadingSlice";
 import uiErrorsReducer from "../state/ui/errorsSlice";
-import notificationsReducer from "../state/ui/notificationsSlice";
 import modalsReducer from "../state/ui/modalsSlice";
 import { authApi } from "../api/services/authApi";
 import { reportApi } from "../api/services/reportApi";
@@ -78,7 +77,6 @@ const rootReducer = combineReducers({
   ui: combineReducers({
     loading: loadingReducer,
     errors: uiErrorsReducer,
-    notifications: notificationsReducer,
     modals: modalsReducer,
   }),
   [authApi.reducerPath]: authApi.reducer,
