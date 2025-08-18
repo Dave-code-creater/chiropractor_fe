@@ -14,6 +14,15 @@ const LoadingComponent = () => (
   <SessionLoadingScreen message="Loading your account..." />
 );
 
+// Conditional StrictMode wrapper - only in development
+const AppWrapper = ({ children }) => {
+  return import.meta.env.DEV ? (
+    <StrictMode>{children}</StrictMode>
+  ) : (
+    children
+  );
+};
+
 // Create root only once and store it
 const container = document.getElementById("root");
 let root = container._reactRoot;
@@ -25,7 +34,7 @@ if (!root) {
 
 // Render the app
 root.render(
-  <StrictMode>
+  <AppWrapper>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your_google_client_id'}>
       <BrowserRouter>
         <Provider store={store}>
@@ -35,5 +44,5 @@ root.render(
         </Provider>
       </BrowserRouter>
     </GoogleOAuthProvider>
-  </StrictMode>
+  </AppWrapper>
 );

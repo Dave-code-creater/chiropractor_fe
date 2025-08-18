@@ -4,11 +4,11 @@ import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 export const reportApi = createApi({
   reducerPath: "reportApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Incidents", "IncidentForms", "IncidentNotes"],
-  keepUnusedDataFor: CACHE_TIMES.SHORT,
-  refetchOnMountOrArgChange: 30,
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
+  tagTypes: ["Reports", "Incidents"],
+  keepUnusedDataFor: CACHE_TIMES.MEDIUM,
+  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
+  refetchOnFocus: false,            // Prevent automatic refetch on window focus
+  refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
     // ===== INCIDENT-BASED ENDPOINTS (NEW SYSTEM) =====
 

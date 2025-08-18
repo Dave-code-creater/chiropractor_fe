@@ -1,14 +1,14 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "../core/baseApi";
+import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 
 export const chatApi = createApi({
   reducerPath: "chatApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Conversations", "Messages", "AvailableUsers"],
-  keepUnusedDataFor: 30,
-  refetchOnMountOrArgChange: 30,
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
+  tagTypes: ["Conversations", "Messages", "MessageStatus"],
+  keepUnusedDataFor: CACHE_TIMES.SHORT,
+  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
+  refetchOnFocus: false,            // Prevent automatic refetch on window focus
+  refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
     // ===============================================
     // CONVERSATION ROUTES

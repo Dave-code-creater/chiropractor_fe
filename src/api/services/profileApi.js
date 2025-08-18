@@ -1,10 +1,14 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "../core/baseApi";
+import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 
 export const profileApi = createApi({
   reducerPath: "profileApi",
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Profile"],
+  keepUnusedDataFor: CACHE_TIMES.MEDIUM,
+  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
+  refetchOnFocus: false,            // Prevent automatic refetch on window focus
+  refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
     // Update personal information
     updateProfile: builder.mutation({

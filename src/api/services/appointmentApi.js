@@ -5,10 +5,10 @@ export const appointmentApi = createApi({
   reducerPath: "appointmentApi",
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Appointments", "Doctors", "Availability", "Patients"],
-  keepUnusedDataFor: CACHE_TIMES.SHORT,
-  refetchOnMountOrArgChange: 60,
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
+  keepUnusedDataFor: CACHE_TIMES.MEDIUM,
+  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
+  refetchOnFocus: false,            // Prevent automatic refetch on window focus
+  refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
     // Public routes (no authentication required)
     getDoctors: builder.query({

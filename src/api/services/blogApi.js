@@ -5,10 +5,10 @@ export const blogApi = createApi({
   reducerPath: "blogApi",
   baseQuery: baseQueryWithReauth,
   tagTypes: ["BlogPosts", "Categories"],
-  keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-  refetchOnMountOrArgChange: 300, // 5 minutes
-  refetchOnFocus: false,
-  refetchOnReconnect: true,
+  keepUnusedDataFor: CACHE_TIMES.LONG,
+  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
+  refetchOnFocus: false,            // Already correct
+  refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
     // Get all blog posts
     getBlogPosts: builder.query({

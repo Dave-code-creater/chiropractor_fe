@@ -1,11 +1,15 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQueryWithReauth } from "../core/baseApi";
+import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 import { setCredentials, logOut, updateUserProfile } from "../../state/data/authSlice";
 
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
   tagTypes: ["User"],
+  keepUnusedDataFor: CACHE_TIMES.SHORT,
+  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
+  refetchOnFocus: false,            // Prevent automatic refetch on window focus
+  refetchOnReconnect: false,        // Auth shouldn't auto-refetch on reconnect
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({

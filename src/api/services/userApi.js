@@ -6,12 +6,9 @@ export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Patients", "Vitals"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-  refetchOnMountOrArgChange: 30,
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
-  refetchOnMountOrArgChange: 30,
-  refetchOnFocus: true,
-  refetchOnReconnect: true,
+  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
+  refetchOnFocus: false,            // Prevent automatic refetch on window focus
+  refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
     // Patient Management
     createPatient: builder.mutation({

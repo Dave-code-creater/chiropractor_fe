@@ -85,19 +85,7 @@ const PatientNotesView = () => {
             incident.patient?.id === user?.id    // nested object
         );
 
-        console.log('Patient incidents filtering:', {
-            total: incidentsList.length,
-            filtered: filteredIncidents.length,
-            userId: user?.id,
-            sampleIncident: incidentsList[0],
-            filteredIncidents: filteredIncidents,
-            filterMatch: {
-                user_id: incidentsList[0]?.user_id === user?.id,
-                userId: incidentsList[0]?.userId === user?.id,
-                patient_id: incidentsList[0]?.patient_id === user?.id,
-                patientId: incidentsList[0]?.patientId === user?.id
-            }
-        });
+        
 
         return filteredIncidents;
     }, [userIncidents, user?.id]);

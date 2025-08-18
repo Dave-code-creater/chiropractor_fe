@@ -62,7 +62,7 @@ const AdminDashboard = () => {
       description: "Register a new patient in the system",
       icon: Users,
       color: "blue",
-      action: () => {}, // TODO: Implement add patient functionality
+      action: () => { }, // TODO: Implement add patient functionality
     },
     {
       id: "schedule-appointment",
@@ -70,7 +70,7 @@ const AdminDashboard = () => {
       description: "Book a new appointment",
       icon: Calendar,
       color: "green",
-      action: () => {}, // TODO: Implement schedule appointment functionality
+      action: () => { }, // TODO: Implement schedule appointment functionality
     }
   ]);
 
@@ -141,8 +141,7 @@ const AdminDashboard = () => {
         <CardContent className="p-4">
           <div className="flex items-center space-x-3">
             <div
-              className={`p-3 rounded-lg ${
-                action.color === "blue"
+              className={`p-3 rounded-lg ${action.color === "blue"
                   ? "bg-blue-100"
                   : action.color === "green"
                     ? "bg-green-100"
@@ -151,11 +150,10 @@ const AdminDashboard = () => {
                       : action.color === "red"
                         ? "bg-red-100"
                         : "bg-gray-100"
-              }`}
+                }`}
             >
               <IconComponent
-                className={`h-6 w-6 ${
-                  action.color === "blue"
+                className={`h-6 w-6 ${action.color === "blue"
                     ? "text-blue-600"
                     : action.color === "green"
                       ? "text-green-600"
@@ -164,7 +162,7 @@ const AdminDashboard = () => {
                         : action.color === "red"
                           ? "text-red-600"
                           : "text-gray-600"
-                }`}
+                  }`}
               />
             </div>
             <div>
@@ -194,8 +192,7 @@ const AdminDashboard = () => {
             )}
           </div>
           <div
-            className={`p-3 rounded-lg ${
-              color === "blue"
+            className={`p-3 rounded-lg ${color === "blue"
                 ? "bg-blue-100"
                 : color === "green"
                   ? "bg-green-100"
@@ -204,11 +201,10 @@ const AdminDashboard = () => {
                     : color === "purple"
                       ? "bg-purple-100"
                       : "bg-gray-100"
-            }`}
+              }`}
           >
             <Icon
-              className={`h-6 w-6 ${
-                color === "blue"
+              className={`h-6 w-6 ${color === "blue"
                   ? "text-blue-600"
                   : color === "green"
                     ? "text-green-600"
@@ -217,7 +213,7 @@ const AdminDashboard = () => {
                       : color === "purple"
                         ? "text-purple-600"
                         : "text-gray-600"
-              }`}
+                }`}
             />
           </div>
         </div>
@@ -231,8 +227,7 @@ const AdminDashboard = () => {
     return (
       <div className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg">
         <div
-          className={`p-2 rounded-lg ${
-            activity.color === "blue"
+          className={`p-2 rounded-lg ${activity.color === "blue"
               ? "bg-blue-100"
               : activity.color === "green"
                 ? "bg-green-100"
@@ -241,11 +236,10 @@ const AdminDashboard = () => {
                   : activity.color === "red"
                     ? "bg-red-100"
                     : "bg-gray-100"
-          }`}
+            }`}
         >
           <IconComponent
-            className={`h-4 w-4 ${
-              activity.color === "blue"
+            className={`h-4 w-4 ${activity.color === "blue"
                 ? "text-blue-600"
                 : activity.color === "green"
                   ? "text-green-600"
@@ -254,7 +248,7 @@ const AdminDashboard = () => {
                     : activity.color === "red"
                       ? "text-red-600"
                       : "text-gray-600"
-            }`}
+              }`}
           />
         </div>
         <div className="flex-1 min-w-0">

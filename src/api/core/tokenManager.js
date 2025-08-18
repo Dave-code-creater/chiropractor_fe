@@ -1,6 +1,6 @@
 import { API_CONFIG, getBaseUrl } from '../config/config';
 import { logOut, setCredentials } from '../../state/data/authSlice';
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 
 // Token refresh state management
 let isRefreshing = false;
@@ -57,7 +57,15 @@ export const refreshTokens = async (api) => {
           accessToken: data.token,
           refreshToken: data.refreshToken || refreshToken,
         }));
-        
+        // Persist refreshed tokens to localStorage immediately so a reload
+        // or other window context sees the updated values while persistor writes.
+        try {
+          storeTokens(data.token, data.refreshToken || refreshToken, data.user);
+        } catch (err) {
+          // Non-fatal: log and continue
+          console.warn('Failed to persist refreshed tokens to localStorage:', err);
+        }
+
         return data.token;
       } else {
         throw new Error('Invalid refresh response format or user logging out');
@@ -68,16 +76,23 @@ export const refreshTokens = async (api) => {
     return newToken;
 
   } catch (error) {
-    // Only logout if not already logging out and it's a genuine auth failure
+    // Only logout on explicit 401 Unauthorized from refresh endpoint
     if (!isLoggingOut && error.message?.includes('Refresh failed with status: 401')) {
-      api.dispatch(logOut());
-      
+      try {
+        api.dispatch(logOut());
+      } catch (e) {
+        console.warn('Failed to dispatch logout action:', e);
+      }
+
       // Redirect to login if not already there
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
+    } else {
+      // For network / transient errors, bubble up but do not force logout here.
+      console.warn('Token refresh error (non-401):', error);
     }
-    
+
     throw error;
   } finally {
     isRefreshing = false;
@@ -133,13 +148,14 @@ export const getToken = () => {
     const store = window.__REDUX_STORE__;
     if (!store) {
       console.warn("Redux store not available on window");
-      return null;
+      // Fallback to localStorage
+      return localStorage.getItem('accessToken') || null;
     }
     const state = store.getState();
-    return state?.auth?.accessToken || null;
+    return state?.auth?.accessToken || localStorage.getItem('accessToken') || null;
   } catch (error) {
     console.error("Failed to get token from store:", error);
-    return null;
+    return localStorage.getItem('accessToken') || null;
   }
 };
 
@@ -151,13 +167,13 @@ export const getRefreshToken = () => {
     const store = window.__REDUX_STORE__;
     if (!store) {
       console.warn("Redux store not available on window");
-      return null;
+      return localStorage.getItem('refreshToken') || null;
     }
     const state = store.getState();
-    return state?.auth?.refreshToken || null;
+    return state?.auth?.refreshToken || localStorage.getItem('refreshToken') || null;
   } catch (error) {
     console.error("Failed to get refresh token from store:", error);
-    return null;
+    return localStorage.getItem('refreshToken') || null;
   }
 };
 

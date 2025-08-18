@@ -20,21 +20,28 @@ import {
     Car,
     FileCheck,
     ClipboardCheck,
+    RefreshCw,
 } from "lucide-react";
-import { useGetIncidentByIdQuery } from "@/api";
+import { useSmartReportFetch, usePrefetchOnHover } from "@/hooks/useOptimizedReportFetching";
 
 const InitialReportDisplay = ({ incident: basicIncident }) => {
     const [expanded, setExpanded] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
 
-    // Fetch detailed incident data when expanded
+    // Smart fetching with caching and prefetch on hover
     const {
         data: detailedIncidentData,
         isLoading: isLoadingDetails,
         error: detailsError
-    } = useGetIncidentByIdQuery(basicIncident?.id, {
-        skip: !basicIncident?.id || !expanded
+    } = useSmartReportFetch(basicIncident?.id, expanded, {
+        refetchOnMount: false,
+        refetchOnFocus: false,
+        refetchOnReconnect: false,
+        staleTime: 15 * 60 * 1000, // 15 minutes
     });
+
+    // Prefetch on hover for better UX
+    const handlePrefetchOnHover = usePrefetchOnHover(basicIncident?.id);
 
     if (!basicIncident) return null;
 
@@ -150,6 +157,7 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                 variant={expanded ? "default" : "outline"}
                                 size="sm"
                                 onClick={() => setExpanded(!expanded)}
+                                onMouseEnter={handlePrefetchOnHover}
                                 className="flex items-center gap-2"
                             >
                                 {expanded ? (
@@ -237,11 +245,13 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
             {expanded && (
                 <Card className="mt-4">
                     <CardContent className="p-6">
-                        {isLoadingDetails && (
+                                                {isLoadingDetails && (
                             <div className="text-center py-12">
-                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-                                <p className="text-lg font-semibold text-muted-foreground">Loading detailed report...</p>
-                                <p className="text-sm text-muted-foreground">Please wait while we fetch the complete patient information</p>
+                                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-700 mb-2">Loading detailed report...</h3>
+                                <p className="text-sm text-muted-foreground">Fetching complete patient information</p>
                             </div>
                         )}
 
@@ -249,7 +259,16 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                             <div className="text-center py-12">
                                 <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
                                 <h3 className="text-lg font-semibold text-red-600 mb-2">Failed to load detailed report</h3>
-                                <p className="text-sm text-muted-foreground">Please try refreshing the page or contact support</p>
+                                <p className="text-sm text-muted-foreground mb-4">Please try refreshing the page or contact support</p>
+                                <Button 
+                                    variant="outline" 
+                                    size="sm"
+                                    onClick={() => window.location.reload()}
+                                    className="text-red-600 border-red-300 hover:bg-red-50"
+                                >
+                                    <RefreshCw className="w-4 h-4 mr-2" />
+                                    Retry
+                                </Button>
                             </div>
                         )}
 
