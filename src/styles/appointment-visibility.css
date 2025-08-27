@@ -49,11 +49,45 @@
 
 /* Enhanced text contrast */
 .enhanced-text {
-  color: hsl(var(--foreground) / 0.85) !important;
+  color: hsl(var(--foreground)) !important;
 }
 
 .enhanced-muted-text {
-  color: hsl(var(--foreground) / 0.65) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+/* Ensure white text on primary backgrounds */
+.bg-primary,
+.bg-primary\/90,
+.bg-primary\/80,
+[class*="bg-primary"] {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Force white text on dark appointments cards */
+.appointment-card-dark {
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.appointment-card-dark * {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Enhanced visibility for appointment summary cards */
+.appointment-summary {
+  background-color: hsl(var(--card)) !important;
+  color: hsl(var(--card-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+}
+
+/* Force proper text colors in appointment sections */
+.appointment-text-primary {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+.appointment-text-secondary {
+  color: hsl(var(--primary-foreground) / 0.8) !important;
 }
 
 /* Better calendar visibility */
@@ -84,20 +118,46 @@
 
 /* Status indicators with better contrast */
 .status-indicator {
-  @apply font-medium px-2 py-1 rounded-md text-xs;
+  @apply font-medium px-2 py-1 rounded-md text-xs border;
 }
 
 .status-indicator.completed {
   background-color: hsl(120 60% 90%);
   color: hsl(120 60% 25%);
+  border-color: hsl(120 60% 70%);
 }
 
 .status-indicator.upcoming {
   background-color: hsl(30 80% 90%);
   color: hsl(30 80% 25%);
+  border-color: hsl(30 80% 70%);
 }
 
 .status-indicator.today {
   background-color: hsl(var(--primary) / 0.1);
   color: hsl(var(--primary));
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+/* Dark mode improvements for appointment text */
+.dark .appointment-text-ensure-visible {
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Appointment cards in primary background - force white text */
+.appointment-primary-bg {
+  background-color: hsl(var(--primary)) !important;
+  color: white !important;
+}
+
+.appointment-primary-bg * {
+  color: white !important;
+}
+
+.appointment-primary-bg .text-muted-foreground {
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.appointment-primary-bg .text-foreground {
+  color: white !important;
 }

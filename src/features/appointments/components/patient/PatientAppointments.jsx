@@ -212,7 +212,7 @@ export default function PatientAppointments() {
       case 'completed': return 'bg-blue-100 text-blue-800';
       case 'cancelled': return 'bg-red-100 text-red-800';
       case 'reschedule_requested': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 

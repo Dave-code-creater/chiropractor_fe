@@ -214,12 +214,12 @@ export default function LocationSelector({
 
       {/* Location Benefits */}
       {selectedLocationData && (
-        <Card className="bg-gray-50 border-gray-200">
+        <Card className="bg-muted/30 border-muted">
           <CardContent className="p-4">
-            <h4 className="text-sm font-medium text-gray-900 mb-2">
+            <h4 className="text-sm font-medium text-foreground mb-2">
               Location Benefits:
             </h4>
-            <ul className="text-sm text-gray-700 space-y-1">
+            <ul className="text-sm text-foreground/80 space-y-1">
               {selectedLocationData.features?.map((feature, index) => (
                 <li key={index}>• {feature}</li>
               ))}

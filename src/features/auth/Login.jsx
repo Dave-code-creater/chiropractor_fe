@@ -240,8 +240,8 @@ export default function Login() {
     return (
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="text-center">
-          <div className="text-lg text-gray-600">🔄 Loading...</div>
-          <div className="text-sm text-gray-500 mt-2">Checking your session</div>
+          <div className="text-lg text-muted-foreground">🔄 Loading...</div>
+          <div className="text-sm text-muted-foreground mt-2">Checking your session</div>
         </div>
       </div>
     );
@@ -254,17 +254,17 @@ export default function Login() {
         <div className="text-center">
           <div className="mb-4">
             <div className="text-4xl mb-4">👋</div>
-            <div className="text-xl font-semibold text-gray-900 mb-2">
+            <div className="text-xl font-semibold text-foreground mb-2">
               Welcome back!
             </div>
-            <div className="text-lg text-gray-600 mb-4">
+            <div className="text-lg text-muted-foreground mb-4">
               You're already signed in as {userRole}
             </div>
           </div>
           <div className="flex justify-center mb-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
           </div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-muted-foreground">
             Taking you to your dashboard...
           </div>
         </div>
@@ -273,19 +273,19 @@ export default function Login() {
   }
 
   return (
-    <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-gray-900">
+    <div className="min-h-screen bg-background flex flex-1 flex-col justify-center px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 className="mt-10 text-center text-2xl font-bold tracking-tight text-foreground">
           Sign In to Your Account
         </h2>
       </div>
 
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+      <div className="mt-6 sm:mt-10 sm:mx-auto sm:w-full sm:max-w-md">
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-900"
+              className="block text-sm font-medium text-foreground"
             >
               Email Address
             </label>
@@ -299,7 +299,7 @@ export default function Login() {
               onChange={(e) => setEmail(e.target.value)}
               onBlur={handleEmailBlur}
               placeholder="Enter your email address"
-              className="mt-2 block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
+              className="mt-2 block w-full rounded-md border border-border bg-background px-3 py-2.5 sm:py-1.5 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring appointment-input"
             />
             {errorEmail && <p className="text-red-500 text-sm mt-1">{errorEmail}</p>}
           </div>
@@ -308,14 +308,14 @@ export default function Login() {
             <div className="flex items-center justify-between">
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-900"
+                className="block text-sm font-medium text-foreground"
               >
                 Password
               </label>
               <div className="text-sm">
                 <Link
                   to="/forgot-password"
-                  className="font-semibold text-indigo-600 hover:text-indigo-500"
+                  className="font-semibold text-primary hover:text-primary/80 transition-colors"
                 >
                   Forgot Password?
                 </Link>
@@ -328,7 +328,7 @@ export default function Login() {
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={handlePwBlur}
                 placeholder="Enter your password"
-                className="block w-full rounded-md border px-3 py-1.5 text-base text-gray-900 placeholder:text-gray-400 focus:outline-indigo-600"
+                className="block w-full rounded-md border border-border bg-background px-3 py-2.5 sm:py-1.5 text-base text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring appointment-input"
                 required
               />
             </div>
@@ -339,7 +339,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading || isOAuthLoading}
-              className="w-full rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-md bg-primary px-3 py-2.5 sm:py-1.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors appointment-button"
             >
               {isLoading ? "Signing In..." : "Sign In"}
             </button>
@@ -356,11 +356,11 @@ export default function Login() {
           />
         </div>
 
-        <p className="mt-10 text-center text-sm text-gray-500">
+        <p className="mt-6 sm:mt-10 text-center text-sm text-muted-foreground">
           Not a Member?{" "}
           <Link
             to="/register"
-            className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+            className="font-semibold leading-6 text-primary hover:text-primary/80 transition-colors"
           >
             Register Now
           </Link>

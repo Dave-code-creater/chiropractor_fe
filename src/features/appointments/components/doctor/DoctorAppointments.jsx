@@ -294,7 +294,7 @@ const DoctorAppointments = () => {
       case 'cancelled': return 'bg-red-100 text-red-800';
       case 'scheduled': return 'bg-cyan-100 text-cyan-800';
       case 'reschedule_requested': return 'bg-purple-100 text-purple-800';
-      default: return 'bg-gray-100 text-gray-800';
+      default: return 'bg-muted text-muted-foreground';
     }
   };
 
