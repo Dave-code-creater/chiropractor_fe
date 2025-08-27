@@ -1,5 +1,5 @@
 import React from "react";
-import { StarIcon } from "@heroicons/react/24/solid";
+import { Star as StarIcon } from "lucide-react";
 
 const testimonials = [
     {

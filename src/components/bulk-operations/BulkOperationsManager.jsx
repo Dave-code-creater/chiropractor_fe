@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -58,7 +58,7 @@ const BulkOperationsManager = () => {
   const [operationProgress, setOperationProgress] = useState(0);
   const [isProcessing, setIsProcessing] = useState(false);
   const [operationResults, setOperationResults] = useState(null);
-  const [filterOptions, setFilterOptions] = useState({
+  const [filterOptions] = useState({
     type: "all",
     status: "all",
     dateRange: "all",
@@ -207,7 +207,7 @@ const BulkOperationsManager = () => {
   };
 
   const currentData = getCurrentData();
-  const isLoading = appointmentsLoading || postsLoading;
+  const _isLoading = appointmentsLoading || postsLoading;
 
   // Filter operations based on current tab
   const availableOperations = useMemo(() => {
@@ -218,7 +218,7 @@ const BulkOperationsManager = () => {
 
   // Process bulk operation
   const processBulkOperation = useCallback(
-    async (operationId, items, inputValue = null) => {
+    async (operationId, items, _inputValue = null) => {
       const operation = bulkOperations.find((op) => op.id === operationId);
       if (!operation || items.length === 0) return;
 

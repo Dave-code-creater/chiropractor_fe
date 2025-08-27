@@ -1,11 +1,11 @@
 import {
-  AdjustmentsHorizontalIcon,
-  CubeIcon,
-  FilmIcon,
-  ClockIcon,
-  ChartBarIcon,
-  ChatBubbleLeftRightIcon
-} from "@heroicons/react/24/outline";
+  Settings as AdjustmentsHorizontalIcon,
+  Package as CubeIcon,
+  Video as FilmIcon,
+  Clock as ClockIcon,
+  BarChart as ChartBarIcon,
+  MessageSquareMore as ChatBubbleLeftRightIcon
+} from "lucide-react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { selectUserId, selectIsAuthenticated } from "../../../state/data/authSlice";

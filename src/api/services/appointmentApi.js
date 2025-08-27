@@ -68,7 +68,7 @@ export const appointmentApi = createApi({
         body: data,
       }),
       invalidatesTags: ["Appointments", "Availability"],
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(arg, { dispatch: _dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
         } catch (error) {
@@ -130,7 +130,7 @@ export const appointmentApi = createApi({
         { type: "Appointments", id },
         "Availability",
       ],
-      async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ id: _id }, { dispatch: _dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
         } catch (error) {

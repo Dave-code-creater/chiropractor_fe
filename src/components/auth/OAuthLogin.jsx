@@ -3,7 +3,6 @@ import { GoogleLogin } from '@react-oauth/google';
 import { toast } from 'sonner';
 
 const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
-    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
     const handleGoogleSuccess = (credentialResponse) => {
         try {

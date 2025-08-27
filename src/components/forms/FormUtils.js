@@ -252,7 +252,7 @@ export function validateEmail(email) {
   }
 
   const emailStr = String(email).trim().toLowerCase();
-  const emailRegex = /^[A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
+  const emailRegex = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
 
   if (!emailRegex.test(emailStr)) {
     throw new Error("Invalid Email Address format");
@@ -285,7 +285,7 @@ export function validatePassword(password, isRegistration = false) {
     if (!/[0-9]/.test(pw)) {
       throw new Error("Password must include at least one digit");
     }
-    if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]\\/~`+=;]/.test(pw)) {
+    if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]/~`+=;]/.test(pw)) {
       throw new Error("Password must include at least one special character");
     }
     if (/\s/.test(pw)) {
@@ -306,7 +306,7 @@ export function renderGmailExprs(email) {
   }
 
   const emailStr = String(email).trim().toLowerCase();
-  const emailRegex = /^[A-Za-z0-9.!#$%&'*+\/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
+  const emailRegex = /^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*$/;
 
   if (!emailRegex.test(emailStr)) {
     throw new Error("Invalid Email Address format");
@@ -338,7 +338,7 @@ export function renderPwRegister(password) {
   if (!/[0-9]/.test(pw)) {
     throw new Error("Password must include at least one digit");
   }
-  if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]\\/~`+=;]/.test(pw)) {
+  if (!/[!@#$%^&*(),.?":{}|<>_\-\\[\]/~`+=;]/.test(pw)) {
     throw new Error("Password must include at least one special character");
   }
   if (/\s/.test(pw)) {

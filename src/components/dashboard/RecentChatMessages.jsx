@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Clock, User, Stethoscope, Eye, Users, AlertCircle } from "lucide-react";
+import { MessageCircle, Clock, User, Stethoscope, Eye, AlertCircle } from "lucide-react";
 import { useGetConversationsQuery } from "@/api/services/chatApi";
 import { useGetDoctorsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
@@ -18,7 +18,7 @@ export default function RecentChatMessages({
   className = "",
   height = "h-[400px]" 
 }) {
-  const userId = useSelector(selectUserId);
+  const _userId = useSelector(selectUserId);
   const userRole = useSelector(selectUserRole);
   const { data: conversationsData, isLoading, error } = useGetConversationsQuery(
     { 

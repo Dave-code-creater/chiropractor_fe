@@ -1,11 +1,10 @@
-import { Description } from "@headlessui/react";
 import {
-  ArrowPathIcon,
-  HeartIcon,
-  HomeIcon,
-  DevicePhoneMobileIcon,
-  BuildingOffice2Icon,
-} from "@heroicons/react/24/outline";
+  ArrowPath as ArrowPathIcon,
+  Heart as HeartIcon,
+  Home as HomeIcon,
+  Smartphone as DevicePhoneMobileIcon,
+  Building2 as BuildingOffice2Icon,
+} from "lucide-react";
 
 const NAV_LINKS = [
   { name: "Home", href: "/" },

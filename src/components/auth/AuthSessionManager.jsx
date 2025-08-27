@@ -20,9 +20,6 @@ const AuthSessionManager = ({ children }) => {
     // Auth-related pages that authenticated users shouldn't access
     const authPages = ['/login', '/register', '/forgot-password', '/reset-password'];
 
-    // Public pages that authenticated users can access
-    const publicPages = ['/', '/about', '/contact', '/faq', '/terms-of-service', '/privacy-policy', '/blog'];
-
     useEffect(() => {
         // Only proceed if auth state is ready
         if (!isReady) return;

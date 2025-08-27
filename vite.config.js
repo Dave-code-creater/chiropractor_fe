@@ -25,7 +25,7 @@ export default defineConfig({
           vendor: ['react', 'react-dom'],
           router: ['react-router-dom'],
           redux: ['react-redux', '@reduxjs/toolkit'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@headlessui/react'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu'],
         }
       }
     }

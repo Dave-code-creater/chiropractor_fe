@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   Card,
   CardContent,
@@ -16,10 +16,8 @@ import {
   Users,
   Calendar,
   FileText,
-  MessageSquare,
   Activity,
   DollarSign,
-  Clock,
   AlertCircle,
   CheckCircle,
   XCircle,
@@ -45,16 +43,16 @@ import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useGetPatientsQuery } from "@/api/services/userApi";
 import { useGetIncidentsQuery } from "@/api/services/reportApi";
 
-const DashboardStats = ({ userRole = "admin" }) => {
+const DashboardStats = ({ userRole: _userRole = "admin" }) => {
   const [timeRange, setTimeRange] = useState("7d");
 
   // Fetch data from APIs - using the same API as appointment components
-  const { data: appointmentsData, isLoading: isLoadingAppointments } = useGetAppointmentsQuery({
+  const { data: appointmentsData, isLoading: _isLoadingAppointments } = useGetAppointmentsQuery({
     status_not: 'cancelled',
     limit: 100
   });
-  const { data: patientsData, isLoading: isLoadingPatients } = useGetPatientsQuery();
-  const { data: incidentsData, isLoading: isLoadingIncidents } = useGetIncidentsQuery();
+  const { data: patientsData, isLoading: _isLoadingPatients } = useGetPatientsQuery();
+  const { data: incidentsData, isLoading: _isLoadingIncidents } = useGetIncidentsQuery();
 
   // Process appointments data - same logic as other appointment components
   const appointments = useMemo(() => {
@@ -327,7 +325,7 @@ const DashboardStats = ({ userRole = "admin" }) => {
     title,
     value,
     change,
-    icon: Icon,
+    icon: _Icon,
     trend,
     subtitle,
     color = "blue",

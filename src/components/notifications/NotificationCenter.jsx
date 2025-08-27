@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,19 +8,13 @@ import {
     Bell,
     BellRing,
     X,
-    Check,
     CheckCheck,
     Calendar,
     MessageSquare,
     Shield,
     Clock,
-    AlertTriangle,
     Info,
-    Settings,
-    Filter,
-    Archive,
-    Star,
-    Trash2
+    Settings
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -43,7 +37,7 @@ const PRIORITY_LEVELS = {
 const NotificationCenter = ({
     isOpen,
     onClose,
-    userId,
+    userId: _userId,
     className = "",
     maxHeight = "h-[600px]"
 }) => {

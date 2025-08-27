@@ -88,7 +88,7 @@ export const authApi = createApi({
         try {
           await queryFulfilled;
           dispatch(logOut());
-        } catch (error) {
+        } catch {
           // Even if logout fails on server, clear local state
           dispatch(logOut());
         }

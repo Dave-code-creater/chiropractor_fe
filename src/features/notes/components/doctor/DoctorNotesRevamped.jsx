@@ -1,5 +1,4 @@
 import React, { useState, useMemo } from "react";
-import PropTypes from "prop-types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -844,12 +843,5 @@ const DoctorNotesRevamped = ({ doctorId }) => {
     );
 };
 
-// PropTypes validation
-DoctorNotesRevamped.propTypes = {
-    doctorId: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number
-    ]).isRequired,
-};
 
 export default DoctorNotesRevamped;

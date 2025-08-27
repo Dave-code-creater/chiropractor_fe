@@ -61,7 +61,7 @@ setTimeout(() => { appInitialized = true; }, 2000);
 const baseQuery = fetchBaseQuery({
   baseUrl: getBaseUrl(),
   timeout: API_CONFIG.REQUEST.TIMEOUT,
-  prepareHeaders: (headers, { getState, endpoint }) => {
+  prepareHeaders: (headers, { getState: _getState, endpoint }) => {
     const isAuthEndpoint = endpoint?.includes('auth/');
 
     if (!isAuthEndpoint) {

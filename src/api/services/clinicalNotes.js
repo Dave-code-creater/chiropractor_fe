@@ -233,13 +233,6 @@ export const clinicalNotesApi = createBaseApi({
       ]
     }),
 
-    // Get incident details (keeping existing functionality)
-    getIncidentDetails: builder.query({
-      query: (incidentId) => `/incidents/${incidentId}`,
-      providesTags: (result, error, incidentId) => [
-        { type: 'IncidentDetails', id: incidentId }
-      ]
-    }),
 
     // Get doctor patients
     getDoctorPatients: builder.query({
