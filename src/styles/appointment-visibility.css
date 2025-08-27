@@ -1,0 +1,103 @@
+/* Enhanced visibility styles for appointment booking */
+
+/* Improve button contrast and visibility */
+.appointment-button {
+  @apply transition-all duration-200 ease-in-out;
+  border-width: 1.5px !important;
+}
+
+.appointment-button:hover {
+  @apply transform scale-[1.02] shadow-md;
+  border-color: hsl(var(--primary)) !important;
+}
+
+.appointment-button:focus {
+  @apply ring-2 ring-primary/20;
+  border-color: hsl(var(--primary)) !important;
+}
+
+/* Enhanced doctor card visibility */
+.doctor-card {
+  @apply border-2 transition-all duration-200;
+  border-color: hsl(var(--border));
+}
+
+.doctor-card:hover {
+  @apply shadow-lg;
+  border-color: hsl(var(--primary) / 0.3);
+  background-color: hsl(var(--primary) / 0.02);
+}
+
+/* Improved time slot buttons */
+.time-slot-button {
+  @apply border-2 transition-all duration-200;
+  border-color: hsl(var(--border));
+}
+
+.time-slot-button:hover {
+  @apply shadow-sm;
+  border-color: hsl(var(--primary) / 0.5);
+  background-color: hsl(var(--primary) / 0.05);
+}
+
+.time-slot-button.selected {
+  @apply shadow-md;
+  border-color: hsl(var(--primary)) !important;
+  background-color: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+}
+
+/* Enhanced text contrast */
+.enhanced-text {
+  color: hsl(var(--foreground) / 0.85) !important;
+}
+
+.enhanced-muted-text {
+  color: hsl(var(--foreground) / 0.65) !important;
+}
+
+/* Better calendar visibility */
+.calendar-day {
+  @apply transition-colors duration-150;
+}
+
+.calendar-day:hover {
+  background-color: hsl(var(--primary) / 0.1) !important;
+}
+
+/* Improved form inputs */
+.appointment-input {
+  @apply border-2 transition-all duration-200;
+  border-color: hsl(var(--border));
+}
+
+.appointment-input:focus {
+  @apply ring-2 ring-primary/20;
+  border-color: hsl(var(--primary)) !important;
+}
+
+/* Enhanced dropdown/popover visibility */
+.appointment-popover {
+  @apply shadow-xl border-2;
+  border-color: hsl(var(--border));
+}
+
+/* Status indicators with better contrast */
+.status-indicator {
+  @apply font-medium px-2 py-1 rounded-md text-xs;
+}
+
+.status-indicator.completed {
+  background-color: hsl(120 60% 90%);
+  color: hsl(120 60% 25%);
+}
+
+.status-indicator.upcoming {
+  background-color: hsl(30 80% 90%);
+  color: hsl(30 80% 25%);
+}
+
+.status-indicator.today {
+  background-color: hsl(var(--primary) / 0.1);
+  color: hsl(var(--primary));
+}

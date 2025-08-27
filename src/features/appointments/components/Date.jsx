@@ -112,7 +112,7 @@ export default function DateSelector({
       {/* Header with Doctor Info */}
       <div>
         <h2 className="text-lg sm:text-xl font-semibold mb-1">Select Date & Time</h2>
-        <p className="text-sm sm:text-base text-muted-foreground">
+        <p className="text-sm sm:text-base text-foreground/70">
           Choose your preferred appointment date and time
           {selectedDoctor && (
             <span className="ml-1">
@@ -187,15 +187,15 @@ export default function DateSelector({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs sm:text-sm">
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-foreground/60">
                 <div className="w-3 h-3 bg-primary rounded"></div>
                 <span>Selected date</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-foreground/60">
                 <div className="w-3 h-3 bg-accent rounded"></div>
                 <span>Today</span>
               </div>
-              <div className="flex items-center gap-2 text-muted-foreground">
+              <div className="flex items-center gap-2 text-foreground/60">
                 <div className="w-3 h-3 bg-muted rounded"></div>
                 <span>Unavailable</span>
               </div>
@@ -221,7 +221,7 @@ export default function DateSelector({
             {isLoadingAvailability && (
               <div className="flex items-center justify-center py-6 sm:py-8">
                 <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
-                <span className="ml-2 text-xs sm:text-sm text-muted-foreground">
+                <span className="ml-2 text-xs sm:text-sm text-foreground/60">
                   Loading available times...
                 </span>
               </div>
@@ -240,8 +240,8 @@ export default function DateSelector({
             {/* No Date Selected */}
             {!selectedDate && !isLoadingAvailability && (
               <div className="text-center py-8">
-                <Clock className="h-12 w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-muted-foreground">
+                <Clock className="h-12 w-12 text-foreground/40 mx-auto mb-3" />
+                <p className="text-foreground/60">
                   Please select a date to view available times
                 </p>
               </div>
@@ -250,8 +250,8 @@ export default function DateSelector({
             {/* No Doctor Selected */}
             {!bookingData.doctor && selectedDate && !isLoadingAvailability && (
               <div className="text-center py-6 sm:py-8">
-                <User className="h-10 w-10 sm:h-12 sm:w-12 text-muted-foreground mx-auto mb-3" />
-                <p className="text-xs sm:text-sm text-muted-foreground">
+                <User className="h-10 w-10 sm:h-12 sm:w-12 text-foreground/40 mx-auto mb-3" />
+                <p className="text-xs sm:text-sm text-foreground/60">
                   Please select a doctor to view available times
                 </p>
               </div>
@@ -267,7 +267,7 @@ export default function DateSelector({
                   {/* Morning */}
                   {morning.length > 0 && (
                     <div>
-                      <Label className="text-xs sm:text-sm font-medium text-muted-foreground mb-2 block">
+                      <Label className="text-xs sm:text-sm font-medium text-foreground/80 mb-2 block">
                         Morning
                       </Label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -302,7 +302,7 @@ export default function DateSelector({
                   {/* Afternoon */}
                   {afternoon.length > 0 && (
                     <div>
-                      <Label className="text-xs sm:text-sm font-medium text-muted-foreground mb-2 block">
+                      <Label className="text-xs sm:text-sm font-medium text-foreground/80 mb-2 block">
                         Afternoon
                       </Label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -337,7 +337,7 @@ export default function DateSelector({
                   {/* Evening */}
                   {evening.length > 0 && (
                     <div>
-                      <Label className="text-xs sm:text-sm font-medium text-muted-foreground mb-2 block">
+                      <Label className="text-xs sm:text-sm font-medium text-foreground/80 mb-2 block">
                         Evening
                       </Label>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">

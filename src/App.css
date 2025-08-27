@@ -36,9 +36,9 @@
     --secondary: 25 50% 86%;
     --secondary-foreground: 25 25% 18%;
 
-    /* Muted colors - sandstone tones #c9a78d */
-    --muted: 30 30% 68%;
-    --muted-foreground: 25 20% 35%;
+    /* Muted colors - improved contrast */
+    --muted: 30 20% 85%;
+    --muted-foreground: 25 25% 25%;
 
     /* Accent colors - warm brown #7b4b2a */
     --accent: 25 50% 32%;
@@ -48,9 +48,9 @@
     --destructive: 0 65% 55%;
     --destructive-foreground: 35 60% 98%;
 
-    /* Border and input colors - sandstone blend */
-    --border: 30 25% 78%;
-    --input: 30 25% 78%;
+    /* Border and input colors - improved visibility */
+    --border: 30 15% 70%;
+    --input: 30 15% 70%;
     --ring: 7 42% 44%;
 
     --radius: 0.5rem;

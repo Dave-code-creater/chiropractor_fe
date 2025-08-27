@@ -48,7 +48,7 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
 
   if (isEmpty) {
     return (
-      <div className="text-center py-4 sm:py-8 text-muted-foreground">
+      <div className="text-center py-4 sm:py-8 text-foreground/60">
         <CalendarDays className="h-8 w-8 sm:h-12 sm:w-12 mx-auto mb-2 sm:mb-3 opacity-50" />
         <p className="text-xs sm:text-sm">
           Your appointment details will appear here as you make selections.
@@ -77,7 +77,7 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
                 <p className="text-xs sm:text-sm font-medium">
                   Dr. {selectedDoctor.firstName} {selectedDoctor.lastName}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-foreground/70">
                   {selectedDoctor.specializations?.primary ||
                     selectedDoctor.specialization}
                 </p>
@@ -105,10 +105,10 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
             <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-xs sm:text-sm">Location</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-foreground/70">
                 {getLocationDetails(bookingData.location)?.label || bookingData.location}
               </p>
-              <p className="text-xs text-muted-foreground mt-1">
+              <p className="text-xs text-foreground/60 mt-1">
                 {getLocationDetails(bookingData.location)?.address || "1385 W Alameda Ave, Denver, CO 80223"}
               </p>
             </div>
@@ -126,7 +126,7 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
                 <CalendarDays className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-xs sm:text-sm">Date</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-foreground/70">
                     {formatDate(bookingData.date)}
                   </p>
                 </div>
@@ -138,7 +138,7 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
                 <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="font-medium text-xs sm:text-sm">Time</p>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-foreground/70">
                     {formatTime(bookingData.time)}
                   </p>
                 </div>
@@ -156,7 +156,7 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
             <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-xs sm:text-sm">Reason for Visit</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-foreground/70">
                 {bookingData.reason}
               </p>
             </div>
@@ -172,7 +172,7 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
             <FileText className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
             <div>
               <p className="font-medium text-sm">Additional Notes</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-foreground/70">
                 {bookingData.notes}
               </p>
             </div>
@@ -191,7 +191,7 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
               <Clock className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
               <div>
                 <p className="font-medium text-sm">Duration</p>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground/70">
                   30 minutes (estimated)
                 </p>
               </div>
@@ -204,11 +204,11 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
         bookingData.location ||
         bookingData.date ||
         bookingData.time) && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-4">
-            <h4 className="text-sm font-medium text-blue-900 mb-2">
+          <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 mt-4">
+            <h4 className="text-sm font-medium text-primary mb-2">
               Important Reminders:
             </h4>
-            <ul className="text-xs text-blue-800 space-y-1">
+            <ul className="text-xs text-foreground/80 space-y-1">
               <li>• Please arrive 15 minutes early for check-in</li>
               <li>• Bring a valid ID and insurance card</li>
               <li>• Wear comfortable clothing</li>

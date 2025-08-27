@@ -62,13 +62,12 @@ export default function DoctorSelector({
 
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
-            <Button
-              id="doctor-select"
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-full justify-between h-12 sm:h-14 p-3 sm:p-4 text-sm sm:text-base"
-            >
+                      <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            className="w-full justify-between h-12 text-left border-2 hover:border-primary/50 focus:border-primary"
+          >
               {selectedDoctor ? (
                 <div className="flex items-center gap-2 sm:gap-3">
                   <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
@@ -82,17 +81,17 @@ export default function DoctorSelector({
                     <div className="font-medium text-sm sm:text-base">
                       Dr. {selectedDoctor.firstName} {selectedDoctor.lastName}
                     </div>
-                    <div className="text-xs sm:text-sm text-muted-foreground">
+                    <div className="text-xs sm:text-sm text-foreground/70">
                       {selectedDoctor.specializations?.primary ||
                         selectedDoctor.specialization}
                     </div>
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-2 text-muted-foreground">
-                  <User className="h-4 w-4" />
-                  Select a doctor...
-                </div>
+                  <div className="flex items-center gap-2 text-foreground/60">
+                    <User className="h-4 w-4" />
+                    Select a doctor...
+                  </div>
               )}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
@@ -117,13 +116,13 @@ export default function DoctorSelector({
                     {isLoading ? (
                       <>
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                        <p className="text-sm text-muted-foreground">Loading available doctors...</p>
+                        <p className="text-sm text-foreground/60">Loading available doctors...</p>
                       </>
                     ) : isError ? (
                       <>
                         <User className="h-8 w-8 text-red-500" />
-                        <p className="text-sm text-muted-foreground">Unable to load doctors</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-foreground/60">Unable to load doctors</p>
+                        <p className="text-xs text-foreground/50">
                           {error?.status === 500 ? 'Backend server unavailable' :
                             error?.status === 404 ? 'Doctors endpoint not found' :
                               'Please check your connection and try again'}
@@ -135,8 +134,8 @@ export default function DoctorSelector({
                     ) : (
                       <>
                         <User className="h-8 w-8 text-muted-foreground" />
-                        <p className="text-sm text-muted-foreground">No doctors found.</p>
-                        <p className="text-xs text-muted-foreground">Try searching by name, specialization, or certification</p>
+                        <p className="text-sm text-foreground/60">No doctors found.</p>
+                        <p className="text-xs text-foreground/50">Try searching by name, specialization, or certification</p>
                       </>
                     )}
                   </div>
@@ -163,7 +162,7 @@ export default function DoctorSelector({
                         key={doctor.id}
                         value={searchString}
                         onSelect={() => handleSelect(doctor.id)}
-                        className="p-4 cursor-pointer hover:bg-muted/50 border-b border-border/50 last:border-b-0"
+                        className="p-4 cursor-pointer hover:bg-primary/5 border-b border-border/50 last:border-b-0 transition-colors"
                       >
                         <div className="flex items-center gap-4 w-full">
                           <Check
@@ -187,13 +186,13 @@ export default function DoctorSelector({
                                 Dr. {doctor.firstName} {doctor.lastName}
                               </div>
                             </div>
-                            <div className="text-sm text-muted-foreground truncate">
+                            <div className="text-sm text-foreground/70 truncate">
                               {doctor.specializations?.primary || doctor.specialization}
                             </div>
-                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-3 text-xs text-foreground/60">
                               {doctor.languages?.length > 0 && (
                                 <span className="flex items-center gap-1">
-                                  <span className="w-1 h-1 bg-muted-foreground rounded-full"></span>
+                                  <span className="w-1 h-1 bg-foreground/40 rounded-full"></span>
                                   {doctor.languages.slice(0, 2).join(', ')}
                                   {doctor.languages.length > 2 && ` +${doctor.languages.length - 2}`}
                                 </span>
@@ -230,7 +229,7 @@ export default function DoctorSelector({
                     <h3 className="text-lg font-semibold text-primary">
                       Dr. {selectedDoctor.firstName} {selectedDoctor.lastName}
                     </h3>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-foreground/70">
                       {selectedDoctor.specializations?.primary ||
                         selectedDoctor.specialization}
                     </p>
@@ -275,7 +274,7 @@ export default function DoctorSelector({
                       (cert, index) => (
                         <div
                           key={index}
-                          className="text-sm text-muted-foreground flex items-center gap-1"
+                          className="text-sm text-foreground/70 flex items-center gap-1"
                         >
                           <Check className="h-3 w-3 text-primary" />
                           {cert}
@@ -294,7 +293,7 @@ export default function DoctorSelector({
                     {selectedDoctor.education.map((edu, index) => (
                       <div
                         key={index}
-                        className="text-sm text-muted-foreground"
+                        className="text-sm text-foreground/70"
                       >
                         <div className="font-medium">{edu.degree}</div>
                         <div>

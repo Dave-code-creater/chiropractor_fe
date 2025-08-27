@@ -42,7 +42,7 @@ export default function LocationSelector({
       {/* Header with Doctor Info */}
       <div>
         <h2 className="text-lg sm:text-xl font-semibold mb-1">Select Location</h2>
-        <p className="text-sm sm:text-base text-muted-foreground">
+        <p className="text-sm sm:text-base text-foreground/70">
           Choose your preferred clinic location
           {selectedDoctor && (
             <span className="ml-1">
@@ -93,7 +93,7 @@ export default function LocationSelector({
               className="w-full justify-between h-12"
             >
               <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-muted-foreground" />
+                <MapPin className="w-4 h-4 text-foreground/60" />
                 {selected
                   ? getLocationByValue(selected)?.label
                   : "Select clinic location"}
@@ -129,7 +129,7 @@ export default function LocationSelector({
                       />
                       <div>
                         <div className="font-medium">{loc.label}</div>
-                        <div className="text-sm text-muted-foreground">
+                        <div className="text-sm text-foreground/70">
                           {loc.address}
                         </div>
                       </div>
