@@ -4,14 +4,14 @@ import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 export const appointmentApi = createApi({
   reducerPath: "appointmentApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Appointments", "Doctors", "Availability", "Patients"],
+  tagTypes: ["Appointments", "Doctors", "Availability"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
   refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
   refetchOnFocus: false,            // Prevent automatic refetch on window focus
   refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
     // Public routes (no authentication required)
-    getDoctors: builder.query({
+    getAvailableDoctors: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
 
@@ -41,24 +41,6 @@ export const appointmentApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.MEDIUM,
     }),
 
-    // Get patients for doctors to select when making appointments
-    getPatients: builder.query({
-      query: (params = {}) => {
-        const queryParams = new URLSearchParams();
-
-        if (params.search) queryParams.append("search", params.search);
-        if (params.page) queryParams.append("page", params.page.toString());
-        if (params.limit) queryParams.append("limit", params.limit.toString());
-        if (params.is_active !== undefined) queryParams.append("is_active", params.is_active.toString());
-
-        return {
-          url: `patients?${queryParams}`,
-          method: "GET",
-        };
-      },
-      providesTags: ["Patients"],
-      keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-    }),
 
     // Protected routes (authentication required)
     createAppointment: builder.mutation({
@@ -219,19 +201,15 @@ export const appointmentApi = createApi({
       }),
       invalidatesTags: ["Appointments", "Availability"],
     }),
-
-
-
   }),
 });
 
 export const {
   // Public queries
-  useGetDoctorsQuery,
+  useGetAvailableDoctorsQuery,
   useGetDoctorAvailabilityQuery,
 
   // Patient queries
-  useGetPatientsQuery,
   useGetMyAppointmentsQuery,
 
   // Staff/Doctor queries

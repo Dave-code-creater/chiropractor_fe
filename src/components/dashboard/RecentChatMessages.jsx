@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { MessageCircle, Clock, User, Stethoscope, Eye, AlertCircle } from "lucide-react";
 import { useGetConversationsQuery } from "@/api/services/chatApi";
-import { useGetDoctorsQuery } from "@/api/services/appointmentApi";
+import { useGetAvailableDoctorsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { selectUserId, selectUserRole } from "../../state/data/authSlice";
@@ -32,7 +32,7 @@ export default function RecentChatMessages({
       refetchOnReconnect: false,
     }
   );
-  const { data: appointmentDoctors } = useGetDoctorsQuery(
+  const { data: appointmentDoctors } = useGetAvailableDoctorsQuery(
     { is_available: true },
     {
       // Prevent constant refetching on error

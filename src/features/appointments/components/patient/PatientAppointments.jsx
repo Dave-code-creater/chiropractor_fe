@@ -10,7 +10,7 @@ import {
   useCreateAppointmentMutation,
   useCancelAppointmentMutation,
   useRescheduleAppointmentMutation,
-  useGetDoctorsQuery,
+  useGetAvailableDoctorsQuery,
   useUpdateAppointmentMutation,
 } from "@/api/services/appointmentApi";
 import { useSelector } from 'react-redux';
@@ -52,7 +52,7 @@ export default function PatientAppointments() {
   });
 
   // Fetch doctors separately to get full doctor information
-  const { data: doctorsData } = useGetDoctorsQuery();
+  const { data: doctorsData } = useGetAvailableDoctorsQuery();
 
   // Mutations
   const [updateAppointment] = useUpdateAppointmentMutation();

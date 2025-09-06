@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   useCreateAppointmentMutation,
-  useGetDoctorsQuery,
+  useGetAvailableDoctorsQuery,
 } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -38,7 +38,7 @@ export default function DoctorBooking() {
     isLoading: doctorsLoading,
     isError: doctorsError,
     error: doctorsErrorDetails,
-  } = useGetDoctorsQuery();
+  } = useGetAvailableDoctorsQuery();
 
 
 

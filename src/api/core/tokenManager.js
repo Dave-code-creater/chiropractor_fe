@@ -142,8 +142,15 @@ export const stopPeriodicTokenCheck = () => {
 
 /**
  * Get the current access token from the Redux store
+ * When using httpOnly cookies, this is mainly for client-side token validation
  */
 export const getToken = () => {
+  // When using httpOnly cookies, tokens are not accessible via JavaScript
+  if (API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
+    console.warn('Token access not available when using httpOnly cookies');
+    return null;
+  }
+
   try {
     const store = window.__REDUX_STORE__;
     if (!store) {
@@ -161,8 +168,15 @@ export const getToken = () => {
 
 /**
  * Get the current refresh token from the Redux store
+ * When using httpOnly cookies, this is mainly for client-side token validation
  */
 export const getRefreshToken = () => {
+  // When using httpOnly cookies, tokens are not accessible via JavaScript
+  if (API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
+    console.warn('Refresh token access not available when using httpOnly cookies');
+    return null;
+  }
+
   try {
     const store = window.__REDUX_STORE__;
     if (!store) {
@@ -289,9 +303,24 @@ export const getTokenInfo = (token) => {
 };
 
 /**
- * Store tokens in localStorage
+ * Store tokens in localStorage (only when not using httpOnly cookies)
  */
 export const storeTokens = (accessToken, refreshToken, userData) => {
+  // When using httpOnly cookies, tokens are handled by the browser automatically
+  if (API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
+    console.info('Token storage handled by httpOnly cookies');
+    // Only store user data in localStorage for client-side access
+    try {
+      if (userData) {
+        localStorage.setItem('userData', JSON.stringify(userData));
+      }
+      return true;
+    } catch (error) {
+      console.error('Failed to store user data:', error);
+      return false;
+    }
+  }
+
   try {
     if (accessToken) {
       localStorage.setItem('accessToken', accessToken);
@@ -310,13 +339,28 @@ export const storeTokens = (accessToken, refreshToken, userData) => {
 };
 
 /**
- * Clear stored tokens
+ * Clear stored tokens (and logout from httpOnly cookies if applicable)
  */
 export const clearTokens = () => {
   try {
+    // Clear localStorage tokens
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('userData');
+
+    // When using httpOnly cookies, make a logout request to clear server-side cookies
+    if (API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
+      fetch(`${getBaseUrl()}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include', // Include cookies in the request
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }).catch(error => {
+        console.warn('Failed to clear httpOnly cookies on server:', error);
+      });
+    }
+
     return true;
   } catch (error) {
     console.error('Failed to clear tokens:', error);

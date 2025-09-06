@@ -167,14 +167,6 @@ export const clinicalNotesApi = createBaseApi({
       ],
     }),
 
-    // Get patients for clinical notes
-    getPatients: builder.query({
-      query: ({ search, status, limit, offset } = {}) => ({
-        url: '/patients',
-        params: { search, status, limit, offset }
-      }),
-      providesTags: ['DoctorPatients'],
-    }),
 
     // Get patient case
     getPatientCase: builder.query({
@@ -262,8 +254,7 @@ export const {
   useGetPatientIncidentsQuery,
   useGetIncidentDetailsQuery,
   useGetDoctorPatientsQuery,
-  // New patient management endpoints
-  useGetPatientsQuery,
+  // Patient management endpoints
   useGetPatientCaseQuery,
   useGetPatientNotesQuery,
   useCreatePatientNoteMutation,

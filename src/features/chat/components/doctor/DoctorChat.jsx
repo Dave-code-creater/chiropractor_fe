@@ -92,7 +92,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     isLoading: isLoadingUsers,
   } = useGetConversationUsersQuery({
     search_term: debouncedSearchTerm,
-    role: roleFilter === 'all' ? undefined : roleFilter,
+    role: roleFilter === 'all' ? 'patient' : roleFilter, // Default to 'patient' for doctors
     per_page: 50
   }, {
     skip: !isOpen,

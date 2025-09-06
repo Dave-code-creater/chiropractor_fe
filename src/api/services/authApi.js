@@ -1,6 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 import { setCredentials, logOut, updateUserProfile } from "../../state/data/authSlice";
+import { startPeriodicTokenCheck, stopPeriodicTokenCheck, setLoggingOut } from "../core/tokenManager";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -17,10 +18,13 @@ export const authApi = createApi({
         method: "POST",
         body: credentials,
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(arg, { dispatch, queryFulfilled, getState }) {
         try {
           const { data } = await queryFulfilled;
           dispatch(setCredentials(data));
+
+          // Start periodic token checking after successful login
+          startPeriodicTokenCheck({ dispatch, getState });
 
           // Update user profile if additional data is available
           if (data.user) {
@@ -50,11 +54,14 @@ export const authApi = createApi({
         method: "POST",
         body: userData,
       }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
+      async onQueryStarted(arg, { dispatch, queryFulfilled, getState }) {
         try {
           const { data } = await queryFulfilled;
           if (data.user && data.token) {
             dispatch(setCredentials(data));
+
+            // Start periodic token checking after successful registration
+            startPeriodicTokenCheck({ dispatch, getState });
 
             // Update user profile if additional data is available
             if (data.user) {
@@ -86,17 +93,24 @@ export const authApi = createApi({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
+          // Set logging out flag to prevent token refresh attempts
+          setLoggingOut(true);
+          
+          // Stop periodic token checking
+          stopPeriodicTokenCheck();
+          
           await queryFulfilled;
           dispatch(logOut());
         } catch {
           // Even if logout fails on server, clear local state
           dispatch(logOut());
+        } finally {
+          // Reset logging out flag
+          setLoggingOut(false);
         }
       },
       invalidatesTags: ["User"],
     }),
-
-
 
     forgotPassword: builder.mutation({
       query: (email) => ({

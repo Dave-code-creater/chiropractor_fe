@@ -18,7 +18,7 @@ import {
   useCancelAppointmentMutation,
   useRescheduleAppointmentMutation,
   useGetAppointmentStatsQuery,
-  useGetDoctorsQuery
+  useGetAvailableDoctorsQuery
 } from '@/api/services/appointmentApi';
 import { useGetPatientsQuery } from '@/api/services/userApi';
 import {
@@ -95,7 +95,7 @@ const AdminAppointments = () => {
 
   // API queries
   const { data: appointmentsData, isLoading, error, refetch } = useGetAppointmentsQuery(queryParams);
-  const { data: doctorsData } = useGetDoctorsQuery();
+  const { data: doctorsData } = useGetAvailableDoctorsQuery();
   const { data: patientsData } = useGetPatientsQuery();
 
   // Mutations

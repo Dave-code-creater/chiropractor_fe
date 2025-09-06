@@ -4,12 +4,21 @@ import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Patients", "Vitals"],
+  tagTypes: ["User", "Patients", "Vitals"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
   refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
   refetchOnFocus: false,            // Prevent automatic refetch on window focus
   refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
+    // User Profile Management
+    getUserProfile: builder.query({
+      query: () => ({
+        url: "users/profile",
+        method: "GET",
+      }),
+      providesTags: ["User"],
+    }),
+
     // Patient Management
     createPatient: builder.mutation({
       query: (data) => ({
@@ -59,6 +68,7 @@ export const userApi = createApi({
 });
 
 export const {
+  useGetUserProfileQuery,
   useCreatePatientMutation,
   useGetPatientsQuery,
   useGetPatientByIdQuery,

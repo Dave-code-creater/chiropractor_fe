@@ -1,5 +1,5 @@
 import { validateSession, restoreSession } from '../state/data/authSlice';
-import { getTokenInfo, isValidTokenFormat } from '../api/core/tokenManager';
+import { getTokenInfo, isValidTokenFormat, startPeriodicTokenCheck } from '../api/core/tokenManager';
 
 /**
  * Session Restoration Utility
@@ -44,7 +44,11 @@ export const attemptSessionRestore = (store) => {
         // Session data looks good, ensure state is marked as authenticated
         store.dispatch(validateSession());
 
+        // Start periodic token checking for automatic logout when tokens expire
+        startPeriodicTokenCheck(store);
+
         console.log('Session restored successfully for user:', auth.userID, 'role:', auth.role);
+        console.log('Periodic token checking started');
         return true;
 
     } catch (error) {

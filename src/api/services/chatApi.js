@@ -183,7 +183,7 @@ export const chatApi = createApi({
 
     // Long-polling endpoint to get new messages (replaces regular GET messages)
     pollForNewMessages: builder.query({
-      query: ({ conversationId, last_message_timestamp, timeout_seconds = 30, max_messages = 50 }) => {
+      query: ({ conversationId, last_message_timestamp, timeout_seconds = 5, max_messages = 50 }) => {
         const queryParams = new URLSearchParams();
 
         if (last_message_timestamp) queryParams.append("last_message_timestamp", last_message_timestamp);

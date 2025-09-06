@@ -110,7 +110,7 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     selectedConversation && lastMessageTimestamp && isPolling ? {
       conversationId: selectedConversation?.conversation_id || selectedConversation?.id,
       last_message_timestamp: lastMessageTimestamp,
-      timeout_seconds: 30,
+      timeout_seconds: 5, // Reduced from 30 to 5 seconds to avoid timeout
       max_messages: 50
     } : undefined,
     {

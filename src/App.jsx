@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import AppRoutes from "./routes/AppRoutes";
 import ThemeProvider from "./contexts/ThemeContext";
 import AuthSessionManager from "./components/auth/AuthSessionManager";
+import TokenExpirationMonitor from "./components/auth/TokenExpirationMonitor";
 import { attemptSessionRestore } from "./utils/sessionUtils";
 import store from "./store/store";
 
@@ -22,6 +23,8 @@ const App = () => {
     <ThemeProvider>
       <div className="App">
         <AuthSessionManager>
+          {/* Monitor token expiration and force logout if needed */}
+          <TokenExpirationMonitor />
           <AppRoutes />
         </AuthSessionManager>
       </div>

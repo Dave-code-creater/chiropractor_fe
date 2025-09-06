@@ -61,10 +61,13 @@ setTimeout(() => { appInitialized = true; }, 2000);
 const baseQuery = fetchBaseQuery({
   baseUrl: getBaseUrl(),
   timeout: API_CONFIG.REQUEST.TIMEOUT,
+  credentials: 'include', // Include httpOnly cookies with requests
   prepareHeaders: (headers, { getState: _getState, endpoint }) => {
     const isAuthEndpoint = endpoint?.includes('auth/');
 
-    if (!isAuthEndpoint) {
+    // When using httpOnly cookies, we don't need to manually set Authorization headers
+    // The browser will automatically include the secure cookies
+    if (!isAuthEndpoint && !API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
       const token = getToken();
       if (token) {
         headers.set("authorization", `Bearer ${token}`);
@@ -114,6 +117,12 @@ const baseQueryWithRetry = retry(
 
     // Handle authentication errors with automatic refresh
     if (result.error?.status === 401) {
+      // Dispatch global unauthorized event for immediate logout
+      const unauthorizedEvent = new CustomEvent('unauthorized', { 
+        detail: { status: 401, url: args.url } 
+      });
+      window.dispatchEvent(unauthorizedEvent);
+
       const state = api.getState();
       const hasToken = state?.auth?.accessToken;
       const refreshToken = state?.auth?.refreshToken;

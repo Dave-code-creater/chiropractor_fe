@@ -46,7 +46,8 @@ import {
     Zap,
 } from "lucide-react";
 
-import { useGetPatientsQuery, useGetIncidentDetailsQuery, useGetTreatmentPlanQuery } from "@/api/services/clinicalNotes";
+import { useGetIncidentDetailsQuery, useGetTreatmentPlanQuery } from "@/api/services/clinicalNotes";
+import { useGetPatientsQuery } from "@/api/services/userApi";
 import InitialReportDisplay from "../InitialReportDisplay";
 import TreatmentPlanForm from "../TreatmentPlanForm";
 

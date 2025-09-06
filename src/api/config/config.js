@@ -9,7 +9,7 @@ export const API_CONFIG = {
 
   // Request configuration
   REQUEST: {
-    TIMEOUT: 10000,
+    TIMEOUT: 15000, // Increased from 10s to 15s for chat polling
     RETRY_ATTEMPTS: 3,
   },
 
@@ -25,6 +25,13 @@ export const API_CONFIG = {
   TOKEN: {
     REFRESH_BUFFER: 300,  // 5 minutes before expiry
     CHECK_INTERVAL: 5 * 60 * 1000, // Check every 5 minutes
+  },
+
+  // Security configuration for httpOnly cookies
+  SECURITY: {
+    USE_HTTP_ONLY: true,
+    SAME_SITE: 'strict',
+    SECURE: true, // Only send cookies over HTTPS
   }
 };
 
