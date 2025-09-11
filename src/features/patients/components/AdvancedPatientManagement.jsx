@@ -62,7 +62,6 @@ import {
   BarChart3,
 } from "lucide-react";
 import { format } from "date-fns";
-import TutorialLauncher from "@/components/tutorial/TutorialLauncher";
 
 const AdvancedPatientManagement = () => {
   const [patients, setPatients] = useState([]);
@@ -1071,7 +1070,6 @@ const AdvancedPatientManagement = () => {
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <TutorialLauncher variant="inline" feature="patients" />
           <Button variant="outline">
             <Download className="h-4 w-4 mr-2" />
             Export

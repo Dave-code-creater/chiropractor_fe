@@ -13,8 +13,6 @@ import PrivacyPolicy from "../pages/PrivacyPolicy";
 import TermsOfService from "../pages/TermsOfService";
 import NotFound from "../pages/NotFound";
 import Unauthorized from "../pages/Unauthorized";
-import UnderDevelopment from "../pages/UnderDevelopment";
-
 // Auth Pages
 import Login from "../features/auth/Login";
 import Register from "../features/auth/Register";
@@ -37,25 +35,18 @@ import ChatRouter from "../features/chat/ChatRouter";
 import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
 import PatientManagement from "../features/patients/components/PatientManagement";
 
-// Theme Preview
-import ThemePreview from "../pages/ThemePreview";
-
 import { getRouteStatus, RouteStatus } from "../config/routes";
 
 const RouteWrapper = ({ element: Element, ...props }) => {
   const location = useLocation();
   const routeStatus = getRouteStatus(location.pathname);
 
-  // If route is under development or coming soon, show appropriate page
+  // If route is under development, coming soon, or not found, show 404
   if (
     routeStatus === RouteStatus.UNDER_DEVELOPMENT ||
-    routeStatus === RouteStatus.COMING_SOON
+    routeStatus === RouteStatus.COMING_SOON ||
+    routeStatus === null
   ) {
-    return <UnderDevelopment />;
-  }
-
-  // If route is not found in our config, show 404
-  if (routeStatus === null) {
     return <NotFound />;
   }
 
@@ -77,8 +68,7 @@ const AppRoutes = () => {
         <Route path="/privacy-policy" element={<RouteWrapper element={PrivacyPolicy} />} />
 
         {/* Public Blog Routes - WordPress-like */}
-        <Route path="blog/*" element={<BlogRouter />} />        {/* Theme Preview Route */}
-        <Route path="/theme-preview" element={<RouteWrapper element={ThemePreview} />} />
+        <Route path="blog/*" element={<BlogRouter />} />
 
         {/* Auth routes */}
         <Route path="/login" element={<RouteWrapper element={Login} />} />

@@ -11,7 +11,6 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import TutorialLauncher from "@/components/tutorial/TutorialLauncher";
 import {
   BarChart3,
   Users,
@@ -443,7 +442,6 @@ const AdminDashboard = () => {
           </p>
         </div>
         <div className="flex items-center space-x-3">
-          <TutorialLauncher variant="inline" className="mr-2" />
           <Button variant="outline" size="sm">
             <Download className="h-4 w-4 mr-2" />
             Export Data
