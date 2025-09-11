@@ -4,7 +4,7 @@ import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["User", "Patients", "Vitals"],
+  tagTypes: ["User", "Patients", "Vitals", "Profile"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
   refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
   refetchOnFocus: false,            // Prevent automatic refetch on window focus
@@ -64,6 +64,64 @@ export const userApi = createApi({
         { type: "Patients", id },
       ],
     }),
+
+    // Profile Management (merged from profileApi)
+    updateProfile: builder.mutation({
+      query: (profileData) => ({
+        url: "users/profile/personal",
+        method: "PUT",
+        body: profileData,
+      }),
+      invalidatesTags: ["Profile", "User"],
+      transformResponse: (response) => {
+        if (response.success) {
+          return {
+            success: true,
+            message: response.message || "Profile updated successfully",
+            data: response.data,
+          };
+        }
+        return response;
+      },
+    }),
+
+    updateContactInfo: builder.mutation({
+      query: (contactData) => ({
+        url: "users/profile/contact",
+        method: "PUT",
+        body: contactData,
+      }),
+      invalidatesTags: ["Profile", "User"],
+      transformResponse: (response) => {
+        if (response.success) {
+          return {
+            success: true,
+            message: response.message || "Contact information updated successfully",
+            data: response.data,
+          };
+        }
+        return response;
+      },
+    }),
+
+    updateMedicalInfo: builder.mutation({
+      query: (medicalData) => ({
+        url: "users/profile/medical",
+        method: "PUT",
+        body: medicalData,
+      }),
+      invalidatesTags: ["Profile", "User"],
+      transformResponse: (response) => {
+        if (response.success) {
+          return {
+            success: true,
+            message: response.message || "Medical information updated successfully",
+            data: response.data,
+          };
+        }
+        return response;
+      },
+    }),
   }),
 });
 
@@ -73,4 +131,7 @@ export const {
   useGetPatientsQuery,
   useGetPatientByIdQuery,
   useUpdatePatientMutation,
+  useUpdateProfileMutation,
+  useUpdateContactInfoMutation,
+  useUpdateMedicalInfoMutation,
 } = userApi; 

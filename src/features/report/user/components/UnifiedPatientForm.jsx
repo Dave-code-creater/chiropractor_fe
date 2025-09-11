@@ -24,6 +24,7 @@ import {
   useSubmitLifestyleImpactFormNewMutation,
   useGetIncidentsQuery
 } from "@/api";
+import { useGetAvailableDoctorsQuery } from "@/api/services/appointmentApi";
 
 export default function UnifiedPatientForm({
   userId,
@@ -37,6 +38,9 @@ export default function UnifiedPatientForm({
 
   // All form data in one object
   const [formData, setFormData] = useState({
+    // Doctor assignment
+    doctor_id: "",
+    
     // Patient Info fields
     first_name: "",
     middle_name: "",
@@ -126,6 +130,7 @@ export default function UnifiedPatientForm({
 
   // API hooks
   const { data: userIncidents } = useGetIncidentsQuery(userId, { skip: !userId });
+  const { data: doctorsData, isLoading: isDoctorsLoading } = useGetAvailableDoctorsQuery();
   const [createIncident] = useCreateIncidentMutation();
   const [submitPatientInfo] = useSubmitPatientInfoFormMutation();
   const [submitHealthInsurance] = useSubmitHealthInsuranceFormMutation();
@@ -183,6 +188,13 @@ export default function UnifiedPatientForm({
       return;
     }
 
+    // Validate doctor selection
+    if (!formData.doctor_id) {
+      setErrors({ doctor_id: "Please select a doctor" });
+      return;
+    }
+    setErrors({});
+
     setIsSubmitting(true);
 
     try {
@@ -192,7 +204,8 @@ export default function UnifiedPatientForm({
         incident_type: "general_pain",
         title: reportName,
         description: "Complete patient information form submission",
-        incident_date: new Date().toISOString().split('T')[0]
+        incident_date: new Date().toISOString().split('T')[0],
+        doctor_id: formData.doctor_id
       };
 
       const incidentResponse = await createIncident(incidentData).unwrap();
@@ -364,6 +377,31 @@ export default function UnifiedPatientForm({
             <CardTitle>Personal Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
+            {/* Doctor Selection */}
+            <div>
+              <Label htmlFor="doctor_id">Select Doctor*</Label>
+              <Select value={formData.doctor_id} onValueChange={(value) => handleChange("doctor_id", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a doctor for your care" />
+                </SelectTrigger>
+                <SelectContent>
+                  {isDoctorsLoading ? (
+                    <SelectItem disabled value="loading">Loading doctors...</SelectItem>
+                  ) : doctorsData?.data?.length > 0 ? (
+                    doctorsData.data.map((doctor) => (
+                      <SelectItem key={doctor.id} value={doctor.id.toString()}>
+                        Dr. {doctor.first_name} {doctor.last_name}
+                        {doctor.specialization && ` - ${doctor.specialization}`}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem disabled value="no-doctors">No doctors available</SelectItem>
+                  )}
+                </SelectContent>
+              </Select>
+              {errors.doctor_id && <p className="text-red-500 text-sm mt-1">{errors.doctor_id}</p>}
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="first_name">First Name*</Label>

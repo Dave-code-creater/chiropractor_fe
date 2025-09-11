@@ -11,12 +11,13 @@ export const clinicalNotesApi = createBaseApi({
         page = 1,
         limit = 20,
         patient_id,
+        doctor_id,
         type,
         date_from,
         date_to,
       } = {}) => ({
         url: API_ENDPOINTS.CLINICAL_NOTES.BASE,
-        params: { page, limit, patient_id, type, date_from, date_to },
+        params: { page, limit, patient_id, doctor_id, type, date_from, date_to },
       }),
       providesTags: ["ClinicalNote"],
     }),
@@ -159,6 +160,17 @@ export const clinicalNotesApi = createBaseApi({
       ],
     }),
 
+    // Get doctor's assigned incidents
+    getDoctorIncidents: builder.query({
+      query: ({ doctorId, ...params }) => ({
+        url: '/incidents',
+        params: { doctor_id: doctorId, ...params }
+      }),
+      providesTags: (result, error, { doctorId }) => [
+        { type: 'PatientIncidents', id: `doctor-${doctorId}` },
+      ],
+    }),
+
     // Get incident details
     getIncidentDetails: builder.query({
       query: (incidentId) => `/incidents/${incidentId}`,
@@ -252,6 +264,7 @@ export const {
   useUpdateTreatmentPlanMutation,
   useCreateTreatmentPlanMutation,
   useGetPatientIncidentsQuery,
+  useGetDoctorIncidentsQuery,
   useGetIncidentDetailsQuery,
   useGetDoctorPatientsQuery,
   // Patient management endpoints
