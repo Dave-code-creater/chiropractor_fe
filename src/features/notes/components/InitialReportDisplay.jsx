@@ -28,12 +28,12 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
     const [expanded, setExpanded] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
 
-    // Smart fetching with caching and prefetch on hover
+    // Always fetch basic incident data for surface-level display
     const {
         data: detailedIncidentData,
         isLoading: isLoadingDetails,
         error: detailsError
-    } = useSmartReportFetch(basicIncident?.id, expanded, {
+    } = useSmartReportFetch(basicIncident?.id, true, { // Always fetch detailed data
         refetchOnMount: false,
         refetchOnFocus: false,
         refetchOnReconnect: false,
@@ -189,7 +189,11 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Contact</p>
-                                        <p className="font-medium text-sm">{formatPhoneNumber(patientInfo.home_phone || patientInfo.cell_phone)}</p>
+                                        {isLoadingDetails ? (
+                                            <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                                        ) : (
+                                            <p className="font-medium text-sm">{formatPhoneNumber(patientInfo.home_phone || patientInfo.cell_phone)}</p>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>
@@ -203,9 +207,13 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Location</p>
-                                        <p className="font-medium text-sm">{patientInfo.city && patientInfo.state ?
-                                            `${patientInfo.city}, ${patientInfo.state}` : 'N/A'
-                                        }</p>
+                                        {isLoadingDetails ? (
+                                            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse"></div>
+                                        ) : (
+                                            <p className="font-medium text-sm">{patientInfo.city && patientInfo.state ?
+                                                `${patientInfo.city}, ${patientInfo.state}` : 'Not provided'
+                                            }</p>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>
@@ -219,7 +227,11 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Insurance</p>
-                                        <p className="font-medium text-sm">{healthInsurance.insurance_type || 'Not provided'}</p>
+                                        {isLoadingDetails ? (
+                                            <div className="h-4 w-16 bg-gray-200 rounded animate-pulse"></div>
+                                        ) : (
+                                            <p className="font-medium text-sm">{healthInsurance.insurance_type || 'Not provided'}</p>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>
@@ -233,7 +245,12 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Employment</p>
-                                        <p className="font-medium text-sm">{medicalHistory.currently_working === 'yes' ? 'Employed' : 'Not working'}</p>
+                                        {isLoadingDetails ? (
+                                            <div className="h-4 w-20 bg-gray-200 rounded animate-pulse"></div>
+                                        ) : (
+                                            <p className="font-medium text-sm">{medicalHistory.currently_working === 'yes' ? 'Employed' : 
+                                                medicalHistory.currently_working === 'no' ? 'Not working' : 'Not specified'}</p>
+                                        )}
                                     </div>
                                 </div>
                             </CardContent>

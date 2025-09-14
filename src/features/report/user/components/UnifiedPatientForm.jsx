@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -130,7 +130,7 @@ export default function UnifiedPatientForm({
 
   // API hooks
   const { data: userIncidents } = useGetIncidentsQuery(userId, { skip: !userId });
-  const { data: doctorsData, isLoading: isDoctorsLoading } = useGetAvailableDoctorsQuery();
+  const { data: doctorsData, isLoading: isDoctorsLoading, isError: isDoctorsError, error: doctorsError } = useGetAvailableDoctorsQuery();
   const [createIncident] = useCreateIncidentMutation();
   const [submitPatientInfo] = useSubmitPatientInfoFormMutation();
   const [submitHealthInsurance] = useSubmitHealthInsuranceFormMutation();
@@ -138,6 +138,41 @@ export default function UnifiedPatientForm({
   const [submitPainAssessment] = useSubmitPainAssessmentFormNewMutation();
   const [submitMedicalHistory] = useSubmitMedicalHistoryFormNewMutation();
   const [submitLifestyleImpact] = useSubmitLifestyleImpactFormNewMutation();
+
+  // Process doctors data - same logic as Booking component
+  const doctors = useMemo(() => {
+    let rawDoctors = [];
+
+    // Handle the actual backend response structure
+    if (doctorsData?.data) {
+      // Backend returns { success: true, data: [...] }
+      if (Array.isArray(doctorsData.data)) {
+        rawDoctors = doctorsData.data;
+      } else if (doctorsData.data.doctors && Array.isArray(doctorsData.data.doctors)) {
+        rawDoctors = doctorsData.data.doctors;
+      }
+    }
+    // Fallback to other possible structures
+    else if (doctorsData?.metadata) rawDoctors = doctorsData.metadata;
+    else if (doctorsData?.doctors) rawDoctors = doctorsData.doctors;
+    else if (Array.isArray(doctorsData)) rawDoctors = doctorsData;
+
+    // Transform snake_case API response to camelCase for component compatibility
+    const transformedDoctors = rawDoctors.map(doctor => ({
+      ...doctor,
+      firstName: doctor.first_name || doctor.firstName,
+      lastName: doctor.last_name || doctor.lastName,
+      profileImage: doctor.profile_image || doctor.profileImage,
+      yearsOfExperience: doctor.years_of_experience || doctor.yearsOfExperience,
+      // Handle specialization data
+      specialization: doctor.specialization || doctor.specialty || 'Chiropractor',
+      specializations: doctor.specializations || {
+        primary: doctor.specialization || doctor.specialty || 'Chiropractor'
+      }
+    }));
+
+    return transformedDoctors;
+  }, [doctorsData]);
 
   // Set default report name
   useEffect(() => {
@@ -169,6 +204,13 @@ export default function UnifiedPatientForm({
   }, [formData.currentlyWorking]);
 
   const handleChange = (field, value) => {
+    if (field === 'doctor_id') {
+      console.log("=== DEBUG: Doctor Selection ===");
+      console.log("Selected doctor ID:", value);
+      console.log("Available doctors:", doctors);
+      console.log("==============================");
+    }
+    
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -207,6 +249,14 @@ export default function UnifiedPatientForm({
         incident_date: new Date().toISOString().split('T')[0],
         doctor_id: formData.doctor_id
       };
+
+      console.log("=== DEBUG: Incident Data Being Sent ===");
+      console.log("Full incident data:", incidentData);
+      console.log("Doctor ID being sent:", formData.doctor_id);
+      console.log("Doctor ID type:", typeof formData.doctor_id);
+      console.log("Form data doctor_id:", formData.doctor_id);
+      console.log("Available doctors:", doctors);
+      console.log("========================================");
 
       const incidentResponse = await createIncident(incidentData).unwrap();
       const incidentId = incidentResponse.data.id;
@@ -387,10 +437,14 @@ export default function UnifiedPatientForm({
                 <SelectContent>
                   {isDoctorsLoading ? (
                     <SelectItem disabled value="loading">Loading doctors...</SelectItem>
-                  ) : doctorsData?.data?.length > 0 ? (
-                    doctorsData.data.map((doctor) => (
+                  ) : isDoctorsError ? (
+                    <SelectItem disabled value="error">
+                      Error loading doctors - {doctorsError?.status === 500 ? 'Server unavailable' : 'Please try again'}
+                    </SelectItem>
+                  ) : doctors?.length > 0 ? (
+                    doctors.map((doctor) => (
                       <SelectItem key={doctor.id} value={doctor.id.toString()}>
-                        Dr. {doctor.first_name} {doctor.last_name}
+                        Dr. {doctor.firstName || doctor.first_name} {doctor.lastName || doctor.last_name}
                         {doctor.specialization && ` - ${doctor.specialization}`}
                       </SelectItem>
                     ))
