@@ -3,154 +3,343 @@ import {
   Calendar,
   FileText,
   MessageSquare,
-  Users,
   Settings,
+  Users,
   ClipboardList,
-  Edit,
+  BookOpen,
+  Activity,
+  UserCog,
+  Shield,
+  Building2,
+  Stethoscope
 } from "lucide-react";
 
-// Core features available to all users
-const coreNavigation = {
-  main: {
-    label: "Main",
-    items: [
-      {
-        name: "Dashboard",
-        path: "", // Will be set dynamically to /dashboard/{role}/{id}
-        icon: Home,
-        description: "Overview of your health records and activities",
-      },
-      {
-        name: "Appointments",
-        path: "appointments",
-        icon: Calendar,
-        description: "Schedule and manage your appointments",
-      },
-      {
-        name: "Blogs",
-        path: "blog/management", // Updated path for blog management
-        icon: FileText,
-        description: "Manage and create blog posts",
-      },
-      {
-        name: "Messages",
-        path: "chat",
-        icon: MessageSquare,
-        description: "Communicate with your healthcare providers",
-      },
-    ],
+// Base navigation items for different roles
+const baseNavigation = {
+  dashboard: {
+    label: "Dashboard",
+    items: []
   },
   clinical: {
     label: "Clinical",
-    items: [
-      {
-        name: "Patient Records",
-        path: "reports",
-        icon: Users,
-        description: "Access and manage patient records",
-      },
-      {
-        name: "Clinical Notes",
-        path: "notes",
-        icon: ClipboardList,
-        description: "Create and manage clinical notes",
-      },
-    ],
+    items: []
   },
-  personal: {
-    label: "Personal",
-    items: [
-      {
-        name: "Settings",
-        path: "settings",
-        icon: Settings,
-        description: "Customize your account settings",
-      },
-    ],
+  management: {
+    label: "Management",
+    items: []
   },
-};
-
-// Function to build full path based on role and user ID
-const buildPath = (basePath, role, userId) => {
-  if (basePath === "") {
-    // Dashboard root
-    return `/dashboard/${role}/${userId}`;
+  communication: {
+    label: "Communication",
+    items: []
+  },
+  settings: {
+    label: "Settings",
+    items: []
   }
-  return `/dashboard/${role}/${userId}/${basePath}`;
 };
 
-// Function to get navigation with proper paths based on role and user ID
-export const getNavigationByRole = (role, userId) => {
-  // Create a deep copy to avoid mutating the original coreNavigation
-  const navigation = {
-    main: {
-      ...coreNavigation.main,
-      items: [...coreNavigation.main.items.map(item => ({ ...item }))]
+// Navigation items by role
+const navigationByRole = {
+  patient: {
+    dashboard: {
+      label: "Dashboard",
+      items: [
+        {
+          name: "Home",
+          path: "/dashboard",
+          icon: Home
+        }
+      ]
     },
     clinical: {
-      ...coreNavigation.clinical,
-      items: [...coreNavigation.clinical.items.map(item => ({ ...item }))]
+      label: "My Health",
+      items: [
+        {
+          name: "Appointments",
+          path: "/appointments",
+          icon: Calendar
+        },
+        {
+          name: "Medical Reports",
+          path: "/reports",
+          icon: FileText
+        },
+        {
+          name: "Notes",
+          path: "/notes",
+          icon: ClipboardList
+        }
+      ]
     },
-    personal: {
-      ...coreNavigation.personal,
-      items: [...coreNavigation.personal.items.map(item => ({ ...item }))]
+    communication: {
+      label: "Communication",
+      items: [
+        {
+          name: "Messages",
+          path: "/chat",
+          icon: MessageSquare
+        }
+      ]
+    },
+    settings: {
+      label: "Account",
+      items: [
+        {
+          name: "Profile",
+          path: "/profile",
+          icon: UserCog
+        },
+        {
+          name: "Settings",
+          path: "/settings",
+          icon: Settings
+        }
+      ]
     }
-  };
+  },
 
-  // Customize blog navigation based on role
-  if (role === 'doctor') {
-    // For doctors, update the existing Blogs item and add Blog Management
-    navigation.main.items = navigation.main.items.map(item => {
-      if (item.name === 'Blogs') {
-        return {
-          ...item,
-          name: 'Blogs',
-          path: 'blog',
-          description: 'Read and discover blog posts'
-        };
-      }
-      return item;
-    });
-
-    // Find the index of the Blogs item and add Blog Management after it
-    const blogsIndex = navigation.main.items.findIndex(item => item.name === 'Blogs');
-    if (blogsIndex !== -1) {
-      navigation.main.items.splice(blogsIndex + 1, 0, {
-        name: "Blog Management",
-        path: "blog/management",
-        icon: Edit,
-        description: "Create and manage your blog posts",
-      });
+  doctor: {
+    dashboard: {
+      label: "Dashboard",
+      items: [
+        {
+          name: "Dashboard",
+          path: "/dashboard",
+          icon: Home
+        }
+      ]
+    },
+    clinical: {
+      label: "Clinical Work",
+      items: [
+        {
+          name: "Appointments",
+          path: "/appointments",
+          icon: Calendar
+        },
+        {
+          name: "Patient Management",
+          path: "/patients",
+          icon: Users
+        },
+        {
+          name: "Clinical Notes",
+          path: "/notes",
+          icon: ClipboardList
+        },
+        {
+          name: "Reports",
+          path: "/reports",
+          icon: FileText
+        }
+      ]
+    },
+    communication: {
+      label: "Communication",
+      items: [
+        {
+          name: "Chat",
+          path: "/chat",
+          icon: MessageSquare
+        },
+        {
+          name: "Blog",
+          path: "/blog",
+          icon: BookOpen
+        }
+      ]
+    },
+    settings: {
+      label: "Account",
+      items: [
+        {
+          name: "Profile",
+          path: "/profile",
+          icon: UserCog
+        },
+        {
+          name: "Settings",
+          path: "/settings",
+          icon: Settings
+        }
+      ]
     }
+  },
 
-  } else {
-    // For patients, just update the existing Blogs item
-    navigation.main.items = navigation.main.items.map(item => {
-      if (item.name === 'Blogs') {
-        return {
-          ...item,
-          path: 'blog',
-          description: 'View your recommended blogs'
-        };
-      }
-      return item;
-    });
+  admin: {
+    dashboard: {
+      label: "Dashboard",
+      items: [
+        {
+          name: "Dashboard",
+          path: "/dashboard",
+          icon: Home
+        }
+      ]
+    },
+    clinical: {
+      label: "Clinical Management",
+      items: [
+        {
+          name: "Appointments",
+          path: "/appointments",
+          icon: Calendar
+        },
+        {
+          name: "Patient Management",
+          path: "/patients",
+          icon: Users
+        },
+        {
+          name: "Doctor Management",
+          path: "/doctors",
+          icon: Stethoscope
+        },
+        {
+          name: "Clinical Notes",
+          path: "/notes",
+          icon: ClipboardList
+        },
+        {
+          name: "Reports",
+          path: "/reports",
+          icon: FileText
+        }
+      ]
+    },
+    communication: {
+      label: "Communication",
+      items: [
+        {
+          name: "Chat",
+          path: "/chat",
+          icon: MessageSquare
+        },
+        {
+          name: "Blog",
+          path: "/blog",
+          icon: BookOpen
+        }
+      ]
+    },
+    settings: {
+      label: "Account",
+      items: [
+        {
+          name: "Settings",
+          path: "/settings",
+          icon: Settings
+        }
+      ]
+    }
+  },
+
+  staff: {
+    dashboard: {
+      label: "Dashboard",
+      items: [
+        {
+          name: "Dashboard",
+          path: "/dashboard",
+          icon: Home
+        }
+      ]
+    },
+    clinical: {
+      label: "Clinical Support",
+      items: [
+        {
+          name: "Appointments",
+          path: "/appointments",
+          icon: Calendar
+        },
+        {
+          name: "Patient Management",
+          path: "/patients",
+          icon: Users
+        },
+        {
+          name: "Notes",
+          path: "/notes",
+          icon: ClipboardList
+        }
+      ]
+    },
+    communication: {
+      label: "Communication",
+      items: [
+        {
+          name: "Chat",
+          path: "/chat",
+          icon: MessageSquare
+        }
+      ]
+    },
+    settings: {
+      label: "Account",
+      items: [
+        {
+          name: "Profile",
+          path: "/profile",
+          icon: UserCog
+        },
+        {
+          name: "Settings",
+          path: "/settings",
+          icon: Settings
+        }
+      ]
+    }
   }
-
-  // Build proper paths for all navigation items
-  const navigationWithPaths = {};
-  Object.keys(navigation).forEach(sectionKey => {
-    navigationWithPaths[sectionKey] = {
-      ...navigation[sectionKey],
-      items: navigation[sectionKey].items.map(item => ({
-        ...item,
-        path: buildPath(item.path, role, userId)
-      }))
-    };
-  });
-
-  return navigationWithPaths;
 };
 
-// Export for direct access if needed
-export { coreNavigation }; 
+/**
+ * Get navigation structure based on user role and ID
+ * @param {string} role - User role (patient, doctor, admin, staff)
+ * @param {string|number} userId - User ID for dynamic routes
+ * @returns {object} Navigation structure for the role
+ */
+export const getNavigationByRole = (role, userId) => {
+  if (!role || !navigationByRole[role]) {
+    return {};
+  }
+
+  const roleNavigation = navigationByRole[role];
+
+  // Build the base dashboard path based on role
+  // Map staff to admin for routing purposes since staff routes don't exist
+  const routeRole = role === 'staff' ? 'admin' : role;
+  const baseDashboardPath = `/dashboard/${routeRole}/${userId}`;
+
+  // Filter out empty sections and return only sections with items
+  const filteredNavigation = {};
+
+  Object.entries(roleNavigation).forEach(([key, section]) => {
+    if (section.items && section.items.length > 0) {
+      filteredNavigation[key] = {
+        ...section,
+        items: section.items.map(item => {
+          let updatedPath = item.path;
+
+          // Update paths based on role-specific routing structure
+          if (item.path === '/dashboard') {
+            updatedPath = baseDashboardPath;
+          } else if (item.path.startsWith('/')) {
+            // Remove leading slash and append to base dashboard path
+            const relativePath = item.path.substring(1);
+            updatedPath = `${baseDashboardPath}/${relativePath}`;
+          }
+
+          return {
+            ...item,
+            path: updatedPath
+          };
+        })
+      };
+    }
+  });
+
+  return filteredNavigation;
+};
+
+export default navigationByRole;

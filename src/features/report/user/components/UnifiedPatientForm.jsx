@@ -204,13 +204,6 @@ export default function UnifiedPatientForm({
   }, [formData.currentlyWorking]);
 
   const handleChange = (field, value) => {
-    if (field === 'doctor_id') {
-      console.log("=== DEBUG: Doctor Selection ===");
-      console.log("Selected doctor ID:", value);
-      console.log("Available doctors:", doctors);
-      console.log("==============================");
-    }
-    
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -241,7 +234,6 @@ export default function UnifiedPatientForm({
 
     try {
       // Step 1: Create an incident first
-      console.log("Creating incident...");
       const incidentData = {
         incident_type: "general_pain",
         title: reportName,
@@ -250,17 +242,8 @@ export default function UnifiedPatientForm({
         doctor_id: formData.doctor_id
       };
 
-      console.log("=== DEBUG: Incident Data Being Sent ===");
-      console.log("Full incident data:", incidentData);
-      console.log("Doctor ID being sent:", formData.doctor_id);
-      console.log("Doctor ID type:", typeof formData.doctor_id);
-      console.log("Form data doctor_id:", formData.doctor_id);
-      console.log("Available doctors:", doctors);
-      console.log("========================================");
-
       const incidentResponse = await createIncident(incidentData).unwrap();
       const incidentId = incidentResponse.data.id;
-      console.log("Incident created with ID:", incidentId);
 
       // Step 2: Submit all forms to the created incident
       const submissions = await Promise.all([
@@ -379,7 +362,6 @@ export default function UnifiedPatientForm({
         }).unwrap(),
       ]);
 
-      console.log("All forms submitted successfully:", submissions);
       onComplete();
     } catch (error) {
       console.error("Error submitting complete form:", error);

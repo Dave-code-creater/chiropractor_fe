@@ -174,8 +174,6 @@ const NotificationCenter = ({
     }, [notifications]);
 
     const handleAction = (notification, action) => {
-        console.log(`Action ${action.action} for notification ${notification.id}`);
-
         // Mark as read when action is taken
         if (!notification.read) {
             markAsRead(notification.id);
@@ -430,7 +428,7 @@ const NotificationCenter = ({
                         className="w-full text-xs text-gray-600"
                         onClick={() => {
                             // Navigate to full notifications page
-                            console.log('Navigate to notification settings');
+                            // TODO: Implement navigation to notification settings
                         }}
                     >
                         <Settings className="h-3 w-3 mr-2" />

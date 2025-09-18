@@ -34,6 +34,8 @@ import BlogRouter from "../features/blog/BlogRouter";
 import ChatRouter from "../features/chat/ChatRouter";
 import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
 import PatientManagement from "../features/patients/components/PatientManagement";
+import DoctorPatientManagement from "../features/notes/components/doctor/DoctorPatientManagement";
+import { useParams } from "react-router-dom";
 
 import { getRouteStatus, RouteStatus } from "../config/routes";
 
@@ -52,6 +54,12 @@ const RouteWrapper = ({ element: Element, ...props }) => {
 
   // Otherwise, render the component
   return <Element {...props} />;
+};
+
+// Wrapper component to pass doctorId to DoctorPatientManagement
+const DoctorPatientWrapper = () => {
+  const { id: doctorId } = useParams();
+  return <DoctorPatientManagement doctorId={doctorId} />;
 };
 
 const AppRoutes = () => {
@@ -101,10 +109,10 @@ const AppRoutes = () => {
             <Route path="/dashboard/doctor/:id">
               <Route index element={<DoctorDashboard />} />
               <Route path="appointments" element={<Appointments />} />
-              <Route path="patients" element={<PatientManagement />} />
+              <Route path="patients" element={<RouteWrapper element={DoctorPatientWrapper} />} />
               <Route path="notes" element={<Notes />} />
-              <Route path="reports" element={<PatientManagement />} />
-              <Route path="medical-records" element={<PatientManagement />} />
+              <Route path="reports" element={<RouteWrapper element={DoctorPatientWrapper} />} />
+              <Route path="medical-records" element={<RouteWrapper element={DoctorPatientWrapper} />} />
               <Route path="chat/*" element={<ChatRouter />} />
               <Route path="profile" element={<Profile />} />
               <Route path="settings" element={<Setting />} />

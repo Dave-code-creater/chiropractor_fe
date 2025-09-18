@@ -510,7 +510,9 @@ const AdminDashboard = () => {
         <TabsContent value="search">
           <div className="space-y-6">
             <GlobalSearch
-              onResultSelect={(result) => console.log("Selected:", result)}
+              onResultSelect={(result) => {
+                // TODO: Implement result selection handler
+              }}
               userRole="admin"
             />
           </div>

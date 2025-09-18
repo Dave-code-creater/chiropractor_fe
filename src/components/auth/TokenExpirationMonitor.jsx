@@ -43,8 +43,6 @@ const TokenExpirationMonitor = () => {
       lastValidationCheck.current = now;
       
       try {
-        console.log('🔍 Validating token with server...');
-        
         // Make a simple API call to test token validity
         const response = await fetch(`${getBaseUrl()}/users/profile`, {
           method: 'GET',
@@ -56,23 +54,18 @@ const TokenExpirationMonitor = () => {
         });
 
         if (response.status === 401) {
-          console.log('🚨 Server rejected token (401) - forcing logout');
           forceLogout();
           return;
         }
 
         if (!response.ok) {
-          console.log('⚠️ Server validation failed with status:', response.status);
           // Don't logout for 5xx errors, only auth errors
           if (response.status >= 400 && response.status < 500) {
             forceLogout();
             return;
           }
         }
-        
-        console.log('✅ Token validated successfully with server');
       } catch (error) {
-        console.log('⚠️ Server validation error (network issue):', error.message);
         // Don't logout for network errors, only auth failures
       }
     };
@@ -80,24 +73,19 @@ const TokenExpirationMonitor = () => {
     const checkTokenExpiration = async () => {
       // If no access token, force logout
       if (!accessToken) {
-        console.log('🚨 No access token found - forcing logout');
         forceLogout();
         return;
       }
 
       // Check if access token is expired (client-side check)
       if (isTokenExpired(accessToken)) {
-        console.log('🚨 Access token expired - checking refresh token');
-        
         // If no refresh token or refresh token is also expired, force logout
         if (!refreshToken || isTokenExpired(refreshToken)) {
-          console.log('🚨 Refresh token expired or missing - forcing logout');
           forceLogout();
           return;
         }
-        
+
         // If refresh token exists and is valid, let the normal refresh flow handle it
-        console.log('💡 Refresh token available, normal refresh flow should handle this');
         return;
       }
 
@@ -106,8 +94,6 @@ const TokenExpirationMonitor = () => {
     };
 
     const forceLogout = () => {
-      console.log('🔴 FORCING LOGOUT - Invalid token detected');
-      
       // Clear tokens immediately
       clearTokens();
       
@@ -130,7 +116,6 @@ const TokenExpirationMonitor = () => {
     const handleGlobalError = (event) => {
       // Check if this is a fetch error with 401 status
       if (event.detail && event.detail.status === 401) {
-        console.log('🚨 Global 401 error detected - forcing logout');
         forceLogout();
       }
     };
@@ -145,7 +130,6 @@ const TokenExpirationMonitor = () => {
 
     // Also check when user focuses back on the browser tab
     const handleWindowFocus = async () => {
-      console.log('👁️ Window focused - checking token validity');
       await checkTokenExpiration();
     };
 

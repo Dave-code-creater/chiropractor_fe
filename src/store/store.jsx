@@ -19,8 +19,6 @@ import loginFormReducer from "../state/forms/loginFormSlice";
 import registerFormReducer from "../state/forms/registerFormSlice";
 import passwordResetFormReducer from "../state/forms/passwordResetFormSlice";
 import appointmentFormReducer from "../state/forms/appointmentFormSlice";
-import patientsIntakeFormReducer from "../state/forms/patientsIntakeFormSlice";
-import accidentsInsuranceReducer from "../state/forms/accidentsInsurance";
 
 import loadingReducer from "../state/ui/loadingSlice";
 import uiErrorsReducer from "../state/ui/errorsSlice";
@@ -70,8 +68,6 @@ const rootReducer = combineReducers({
     registerForm: registerFormReducer,
     passwordResetForm: passwordResetFormReducer,
     appointmentForm: appointmentFormReducer,
-    patientsIntake: patientsIntakeFormReducer,
-    accidentsInsurance: accidentsInsuranceReducer,
   }),
   ui: combineReducers({
     loading: loadingReducer,

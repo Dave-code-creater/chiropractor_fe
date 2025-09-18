@@ -177,8 +177,6 @@ export default function DoctorBooking() {
         clinic_hours: selectedLocation.hours,
       };
 
-      console.log('� [Patient Form] Appointment form data:', appointmentData);
-
       const result = await createAppointment(appointmentData).unwrap();
 
       if (result.success) {

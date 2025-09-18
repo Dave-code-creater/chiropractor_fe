@@ -16,13 +16,11 @@ export const attemptSessionRestore = (store) => {
 
         // Check if we have basic auth data
         if (!auth.accessToken || !auth.userID || !auth.role) {
-            console.log('No valid session data found');
             return false;
         }
 
         // Validate token format
         if (!isValidTokenFormat(auth.accessToken)) {
-            console.log('Invalid token format detected');
             store.dispatch(validateSession());
             return false;
         }
@@ -30,14 +28,12 @@ export const attemptSessionRestore = (store) => {
         // Check token expiration
         const tokenInfo = getTokenInfo(auth.accessToken);
         if (!tokenInfo.isValid) {
-            console.log('Token validation failed:', tokenInfo.error);
             store.dispatch(validateSession());
             return false;
         }
 
         // If token is expired, we need to refresh (handled by token manager)
         if (tokenInfo.isExpired) {
-            console.log('Token expired, refresh will be attempted automatically');
             // Don't return false here, let the refresh logic handle it
         }
 
@@ -47,8 +43,6 @@ export const attemptSessionRestore = (store) => {
         // Start periodic token checking for automatic logout when tokens expire
         startPeriodicTokenCheck(store);
 
-        console.log('Session restored successfully for user:', auth.userID, 'role:', auth.role);
-        console.log('Periodic token checking started');
         return true;
 
     } catch (error) {
@@ -69,8 +63,6 @@ export const clearInvalidSession = (store) => {
         // Also clear localStorage tokens
         const { clearTokens } = require('../api/core/tokenManager');
         clearTokens();
-
-        console.log('Invalid session cleared');
     } catch (error) {
         console.error('Failed to clear invalid session:', error);
     }

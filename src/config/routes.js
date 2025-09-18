@@ -32,10 +32,31 @@ export const routeStatuses = {
   "/theme-preview": RouteStatus.ACTIVE,
   "/report": RouteStatus.ACTIVE,
 
+  // Patient dashboard routes with dynamic IDs
+  "/dashboard/patient/:id": RouteStatus.ACTIVE,
+  "/dashboard/patient/:id/appointments": RouteStatus.ACTIVE,
+  "/dashboard/patient/:id/reports": RouteStatus.ACTIVE,
+  "/dashboard/patient/:id/notes": RouteStatus.ACTIVE,
+  "/dashboard/patient/:id/profile": RouteStatus.ACTIVE,
+  "/dashboard/patient/:id/settings": RouteStatus.ACTIVE,
+  "/dashboard/patient/:id/blog": RouteStatus.ACTIVE,
+  "/dashboard/patient/:id/chat": RouteStatus.ACTIVE,
+  "/dashboard/patient/:id/medical-records": RouteStatus.ACTIVE,
+
   // Admin routes
   "/admin": RouteStatus.ACTIVE,
   "/admin/dashboard": RouteStatus.ACTIVE,
   "/doctor-report": RouteStatus.ACTIVE,
+
+  // Admin dashboard routes with dynamic IDs
+  "/dashboard/admin/:id": RouteStatus.ACTIVE,
+  "/dashboard/admin/:id/appointments": RouteStatus.ACTIVE,
+  "/dashboard/admin/:id/patients": RouteStatus.ACTIVE,
+  "/dashboard/admin/:id/notes": RouteStatus.ACTIVE,
+  "/dashboard/admin/:id/reports": RouteStatus.ACTIVE,
+  "/dashboard/admin/:id/doctors": RouteStatus.ACTIVE,
+  "/dashboard/admin/:id/chat": RouteStatus.ACTIVE,
+  "/dashboard/admin/:id/settings": RouteStatus.ACTIVE,
 
   // Doctor routes
   "/doctor": RouteStatus.ACTIVE,
@@ -47,6 +68,18 @@ export const routeStatuses = {
   "/doctor/reports": RouteStatus.ACTIVE,
   "/doctor/profile": RouteStatus.ACTIVE,
   "/doctor/settings": RouteStatus.ACTIVE,
+
+  // Doctor dashboard routes with dynamic IDs
+  "/dashboard/doctor/:id": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/appointments": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/patients": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/notes": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/reports": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/medical-records": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/chat": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/profile": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/settings": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/blog": RouteStatus.ACTIVE,
 
 
 };

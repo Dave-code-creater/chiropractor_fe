@@ -236,7 +236,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
 
     try {
       const result = await sendMessage(messageData).unwrap();
-      console.log('✅ Message sent successfully:', result);
 
       setMessageInput("");
 

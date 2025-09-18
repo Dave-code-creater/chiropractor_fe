@@ -347,20 +347,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
         content: blocks, // Send blocks as content
       };
 
-      // Console log everything for PostgreSQL JSONB implementation
-      console.log("=== BLOG POST DATA FOR POSTGRESQL JSONB ===");
-      console.log("Is Draft:", isDraft);
-      console.log("Form Data Structure:", {
-        title: formData.title,
-        excerpt: formData.excerpt,
-        slug: formData.slug,
-        meta_description: formData.meta_description,
-        featured_image: formData.featured_image,
-        is_published: isDraft ? false : formData.is_published,
-        category: formData.category,
-        tags: formData.tags,
-        content: blocks // content is now the blocks structure
-      });
 
 
       let result;

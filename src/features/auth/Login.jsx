@@ -161,8 +161,6 @@ export default function Login() {
   // Handle OAuth login success
   const handleOAuthSuccess = async (userData) => {
     try {
-      console.log('OAuth userData:', userData);
-
       const response = await oauthLoginMutation(userData).unwrap();
 
       // Validate response

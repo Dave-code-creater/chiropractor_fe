@@ -328,8 +328,6 @@ const DoctorAppointments = () => {
         additional_notes: formData.additional_notes
       };
 
-      console.log('🩺 [Doctor Form] Appointment form data:', appointmentData);
-
       try {
         if (appointment) {
           const updateData = { id: appointment.id, ...appointmentData };

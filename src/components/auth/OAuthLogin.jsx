@@ -16,7 +16,6 @@ const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
                 picture: decoded.picture,
                 token: credentialResponse.credential
             };
-            console.log('Google login success:', userData);
             onLoginSuccess(userData);
         } catch (error) {
             console.error('Google login error:', error);
