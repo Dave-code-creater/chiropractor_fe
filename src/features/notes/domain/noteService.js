@@ -9,11 +9,12 @@ import {
   useGetSOAPNotesQuery,
   useGetPatientIncidentsQuery,
   useGetIncidentDetailsQuery,
-  useGetDoctorPatientsQuery,
   useGetTreatmentPlanQuery,
   useCreateTreatmentPlanMutation,
   useUpdateTreatmentPlanMutation
 } from "@/api/services/clinicalNotes";
+import { useGetDoctorPatientsQuery } from "@/api/services/doctorApi";
+import { extractList } from "@/utils/apiResponse";
 import { useMemo } from "react";
 
 // Note type constants
@@ -145,34 +146,29 @@ export const useDoctorPatientManagement = (doctorId) => {
     data: patientsData = [],
     isLoading: isLoadingPatients
   } = useGetDoctorPatientsQuery(
-    doctorId,
+    { doctorId, limit: 50 },
     { skip: !doctorId }
   );
 
   // Process patients data structure
   const patients = useMemo(() => {
-    if (!patientsData) return [];
+    let rawPatients = extractList(patientsData, "patients");
 
-    // Handle different possible API response structures
-    if (Array.isArray(patientsData)) {
-      return patientsData;
+    if (!Array.isArray(rawPatients) || rawPatients.length === 0) {
+      rawPatients = extractList(patientsData);
     }
 
-    if (patientsData.data && Array.isArray(patientsData.data)) {
-      return patientsData.data.map(patient => ({
-        ...patient,
-        id: patient.patient_id || patient.id, // Handle both ID formats
-        incidents: patient.recent_incidents || [],
-        total_incidents: parseInt(patient.total_incidents || 0),
-        active_incidents: parseInt(patient.active_incidents || 0)
-      }));
+    if (!Array.isArray(rawPatients)) {
+      return [];
     }
 
-    if (patientsData.patients && Array.isArray(patientsData.patients)) {
-      return patientsData.patients;
-    }
-
-    return [];
+    return rawPatients.map((patient) => ({
+      ...patient,
+      id: patient.patient_id || patient.id,
+      incidents: patient.recent_incidents || [],
+      total_incidents: parseInt(patient.total_incidents || 0, 10),
+      active_incidents: parseInt(patient.active_incidents || 0, 10),
+    }));
   }, [patientsData]);
 
   return {

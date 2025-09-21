@@ -118,19 +118,9 @@ const navigationByRole = {
           icon: Calendar
         },
         {
-          name: "Patient Management",
+          name: "Patients",
           path: "/patients",
           icon: Users
-        },
-        {
-          name: "Clinical Notes",
-          path: "/notes",
-          icon: ClipboardList
-        },
-        {
-          name: "Reports",
-          path: "/reports",
-          icon: FileText
         }
       ]
     },
