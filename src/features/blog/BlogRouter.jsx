@@ -23,7 +23,7 @@ const BlogRouter = () => {
   return (
     <Routes>
       {/* Blog viewing routes - same for all users */}
-      <Route path="/" element={<BlogListing />} />
+      <Route index element={<BlogListing />} />
       <Route path="post/:id" element={<BlogViewer />} />
       <Route path=":slug" element={<BlogViewer />} />
 
@@ -60,7 +60,7 @@ const BlogRouter = () => {
                 ? "admin"
                 : canAccessManagement
                   ? "manage"
-                  : "/"
+                  : "."
             }
             replace
           />
@@ -74,7 +74,7 @@ const BlogRouter = () => {
           canAccessEditor ? (
             <Navigate to="editor" replace />
           ) : (
-            <Navigate to="/" replace />
+            <Navigate to="." replace />
           )
         }
       />
@@ -85,7 +85,7 @@ const BlogRouter = () => {
           canAccessManagement ? (
             <Navigate to="manage" replace />
           ) : (
-            <Navigate to="/" replace />
+            <Navigate to="." replace />
           )
         }
       />
@@ -96,13 +96,13 @@ const BlogRouter = () => {
           canAccessAdmin ? (
             <Navigate to="admin" replace />
           ) : (
-            <Navigate to="/" replace />
+            <Navigate to="." replace />
           )
         }
       />
 
       {/* Catch all - redirect to main blog */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="." replace />} />
     </Routes>
   );
 };

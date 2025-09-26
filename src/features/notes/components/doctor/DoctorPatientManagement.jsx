@@ -31,6 +31,7 @@ import {
   Trash2,
   Save,
   CalendarPlus,
+  Users
 } from "lucide-react";
 
 import {
@@ -80,11 +81,10 @@ const DoctorPatientManagement = ({ doctorId }) => {
     });
   }, [patients, searchTerm, filterStatus]);
 
-  const { incidentDetails, isLoading: isLoadingIncident } = useIncidentDetails(selectedIncident?.id);
+  const activeIncident = selectedIncident || selectedPatient?.recent_incidents?.[0] || null;
+  const activeIncidentId = activeIncident?.id;
 
-  // Get the most recent incident for treatment plan (moved to top level)
-  const recentIncident = selectedPatient?.recent_incidents?.[0];
-  const incidentId = recentIncident?.id;
+  const { incidentDetails, isLoading: isLoadingIncident } = useIncidentDetails(selectedIncident?.id);
 
   // Use treatment plan management hook from domain layer
   const {
@@ -95,7 +95,7 @@ const DoctorPatientManagement = ({ doctorId }) => {
     updateTreatmentPlan,
     isCreating: isCreatingTreatmentPlan,
     isUpdating: isUpdatingTreatmentPlan
-  } = useTreatmentPlanManagement(incidentId);
+  } = useTreatmentPlanManagement(activeIncidentId);
 
   const hasTreatmentPlan = existingTreatmentPlan && existingTreatmentPlan.data && !treatmentPlanError;
   const isEditingTreatmentPlan = showTreatmentPlan && hasTreatmentPlan;
@@ -197,6 +197,85 @@ const DoctorPatientManagement = ({ doctorId }) => {
     }));
   };
 
+  const parseFormData = (form) => {
+    if (!form || !form.form_data) return {};
+    if (typeof form.form_data === 'string') {
+      try {
+        return JSON.parse(form.form_data);
+      } catch (error) {
+        console.error('Failed to parse incident form data:', error);
+        return {};
+      }
+    }
+    return form.form_data;
+  };
+
+  const formatPhoneNumber = (phone) => {
+    if (!phone) return 'N/A';
+    const digits = phone.replace(/\D/g, '');
+    if (digits.length === 10) {
+      return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
+    return phone;
+  };
+
+  const formatBooleanValue = (value) => {
+    if (value === undefined || value === null || value === '') return 'N/A';
+    if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+    const normalized = String(value).toLowerCase();
+    if (['yes', 'y', 'true'].includes(normalized)) return 'Yes';
+    if (['no', 'n', 'false'].includes(normalized)) return 'No';
+    return value;
+  };
+
+  const formatListValue = (value) => {
+    if (!value) return 'N/A';
+    if (Array.isArray(value)) {
+      return value.length > 0 ? value.join(', ') : 'N/A';
+    }
+    return String(value).trim() || 'N/A';
+  };
+
+  const formatEmploymentStatus = (value) => {
+    if (!value) return 'Not specified';
+    const normalized = String(value).toLowerCase();
+    if (normalized === 'yes') return 'Employed';
+    if (normalized === 'no') return 'Not working';
+    return value;
+  };
+
+  const getHighestPainLevel = (levels) => {
+    if (!Array.isArray(levels) || levels.length === 0) return 'N/A';
+    const parsed = levels
+      .map(level => {
+        if (typeof level === 'number') return level;
+        const parts = String(level).split(':');
+        const rating = parts.length > 1 ? parseInt(parts[1], 10) : parseInt(parts[0], 10);
+        return Number.isNaN(rating) ? null : rating;
+      })
+      .filter(value => value !== null);
+
+    if (parsed.length === 0) return 'N/A';
+    return Math.max(...parsed).toString();
+  };
+
+  const getFieldValue = (data, ...keys) => {
+    if (!data) return undefined;
+    for (const key of keys) {
+      if (data[key] !== undefined && data[key] !== null && data[key] !== '') {
+        return data[key];
+      }
+    }
+    return undefined;
+  };
+
+  const humanize = (value) => {
+    if (!value) return 'Untitled';
+    return String(value)
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, char => char.toUpperCase());
+  };
+
   const renderIncidentDetails = () => {
     if (isLoadingIncident) {
       return (
@@ -213,11 +292,130 @@ const DoctorPatientManagement = ({ doctorId }) => {
           <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-gray-600 mb-2">Incident Details Not Found</h3>
           <p className="text-gray-500">
-            The incident with ID {selectedIncident?.id} was not found.
+            We could not locate the selected incident. Please return to the patient overview and try again.
           </p>
         </div>
       );
     }
+
+    const forms = Array.isArray(incidentDetails.forms) ? incidentDetails.forms : [];
+    const parsedForms = forms.map(form => ({
+      ...form,
+      form_data: parseFormData(form)
+    }));
+
+    const formMap = parsedForms.reduce((acc, form) => {
+      acc[form.form_type] = form.form_data || {};
+      return acc;
+    }, {});
+
+    const patientInfo = formMap.patient_info || {};
+    const medicalHistory = formMap.medical_history || {};
+    const painAssessment = formMap.pain_assessment || {};
+    const painDescription = formMap.pain_description || {};
+    const healthInsurance = formMap.health_insurance || {};
+    const lifestyleImpact = formMap.lifestyle_impact || {};
+
+    const incidentDateValue = getFieldValue(incidentDetails, 'incident_date') ||
+      getFieldValue(healthInsurance, 'accident_date', 'accidentDate') ||
+      getFieldValue(patientInfo, 'incident_date', 'incidentDate') ||
+      activeIncident?.incident_date;
+    const formattedIncidentDate = formatNoteDate(incidentDateValue);
+
+    const incidentTimeValue = (() => {
+      const storedTime = getFieldValue(incidentDetails, 'incident_time');
+      if (storedTime) return storedTime;
+      const time = getFieldValue(healthInsurance, 'accident_time', 'accidentTime');
+      const period = getFieldValue(healthInsurance, 'accident_time_period', 'accidentTimePeriod');
+      const combined = [time, period].filter(Boolean).join(' ');
+      return combined || 'N/A';
+    })();
+
+    const incidentLocationValue = getFieldValue(incidentDetails, 'incident_location') ||
+      getFieldValue(healthInsurance, 'accident_location', 'accidentLocation') ||
+      [getFieldValue(patientInfo, 'city'), getFieldValue(patientInfo, 'state')].filter(Boolean).join(', ') ||
+      getFieldValue(patientInfo, 'address') ||
+      'N/A';
+
+    const incidentStatus = incidentDetails.status || activeIncident?.status || 'N/A';
+    const incidentStatusClass = getStatusColor((incidentStatus || '').toLowerCase());
+
+    const incidentDescriptionValue = getFieldValue(incidentDetails, 'description', 'incident_description') ||
+      getFieldValue(painDescription, 'main_complaints', 'symptom_details', 'symptomDetails') ||
+      getFieldValue(healthInsurance, 'accident_description', 'accidentDescription') ||
+      'N/A';
+
+    const primaryConcern = getFieldValue(painDescription, 'main_complaints', 'symptom_details', 'symptomDetails') ||
+      incidentDescriptionValue;
+
+    const fullName = `${getFieldValue(patientInfo, 'first_name', 'firstName') || ''} ${getFieldValue(patientInfo, 'last_name', 'lastName') || ''}`.trim() || 'Unknown Patient';
+    const dateOfBirth = getFieldValue(patientInfo, 'date_of_birth', 'dateOfBirth');
+    const gender = getFieldValue(patientInfo, 'gender');
+    const maritalStatus = getFieldValue(patientInfo, 'marital_status', 'maritalStatus');
+
+    const phoneNumber = formatPhoneNumber(getFieldValue(patientInfo, 'cell_phone', 'home_phone', 'phone', 'phone_number'));
+    const addressParts = [
+      getFieldValue(patientInfo, 'address'),
+      getFieldValue(patientInfo, 'city'),
+      getFieldValue(patientInfo, 'state'),
+      getFieldValue(patientInfo, 'zip_code', 'zipCode')
+    ].filter(Boolean);
+    const address = addressParts.length ? addressParts.join(', ') : 'Not provided';
+
+    const emergencyContactName = getFieldValue(patientInfo, 'emergency_contact_name');
+    const emergencyContactPhone = formatPhoneNumber(getFieldValue(patientInfo, 'emergency_contact_phone'));
+    const emergencyContactRelationship = getFieldValue(patientInfo, 'emergency_contact_relationship');
+
+    const insuranceType = getFieldValue(healthInsurance, 'insurance_type', 'insuranceType') || 'Not provided';
+    const accidentDateRaw = getFieldValue(healthInsurance, 'accident_date', 'accidentDate');
+    const accidentDateDisplay = accidentDateRaw ? formatNoteDate(accidentDateRaw) : null;
+    const accidentTimeDisplay = (() => {
+      const time = getFieldValue(healthInsurance, 'accident_time', 'accidentTime');
+      const period = getFieldValue(healthInsurance, 'accident_time_period', 'accidentTimePeriod');
+      const combined = [time, period].filter(Boolean).join(' ');
+      return combined || 'N/A';
+    })();
+    const accidentLocationDisplay = getFieldValue(healthInsurance, 'accident_location', 'accidentLocation') || incidentLocationValue;
+    const accidentDescription = getFieldValue(healthInsurance, 'accident_description', 'accidentDescription');
+
+    const highestPainLevel = getHighestPainLevel(painAssessment.pain_level);
+    const painLevelList = formatListValue(painAssessment.pain_level);
+    const painTiming = formatListValue(getFieldValue(painAssessment, 'pain_timing', 'painTiming'));
+    const painTriggers = formatListValue(getFieldValue(painAssessment, 'pain_triggers', 'painTriggers'));
+    const radiatingPain = formatBooleanValue(getFieldValue(painAssessment, 'radiating_pain', 'radiatingPain'));
+    const painChanges = formatListValue(getFieldValue(painAssessment, 'pain_changes', 'painChanges'));
+
+    const medications = formatBooleanValue(getFieldValue(medicalHistory, 'medication'));
+    const medicationNames = formatListValue(getFieldValue(medicalHistory, 'medication_names', 'medicationNames'));
+    const hasCondition = formatBooleanValue(getFieldValue(medicalHistory, 'has_condition', 'hasCondition'));
+    const conditionDetails = formatListValue(getFieldValue(medicalHistory, 'condition_details', 'conditionDetails'));
+    const hasSurgicalHistory = formatBooleanValue(getFieldValue(medicalHistory, 'has_surgical_history', 'hasSurgicalHistory'));
+    const surgicalDetails = formatListValue(getFieldValue(medicalHistory, 'surgical_history_details', 'surgicalHistoryDetails'));
+    const employmentStatus = formatEmploymentStatus(getFieldValue(medicalHistory, 'currently_working', 'currentlyWorking'));
+    const workType = formatListValue(getFieldValue(medicalHistory, 'work_type', 'workType'));
+    const workActivities = formatListValue(getFieldValue(medicalHistory, 'work_activities', 'workActivities'));
+
+    const lifestyleSmoking = formatBooleanValue(getFieldValue(lifestyleImpact, 'smoking'));
+    const lifestyleSmokingDetails = formatListValue(getFieldValue(lifestyleImpact, 'smoking_details', 'smokingDetails'));
+    const lifestyleDrinking = formatBooleanValue(getFieldValue(lifestyleImpact, 'drinking'));
+    const lifestyleDrinkingDetails = formatListValue(getFieldValue(lifestyleImpact, 'drinking_details', 'drinkingDetails'));
+    const lifestyleExercise = formatBooleanValue(getFieldValue(lifestyleImpact, 'exercise'));
+    const lifestyleExerciseDetails = formatListValue(getFieldValue(lifestyleImpact, 'exercise_details', 'exerciseDetails'));
+    const lifestyleSleep = formatListValue(getFieldValue(lifestyleImpact, 'sleep_quality', 'sleepQuality'));
+
+    const reports = incidentDetails.reports && incidentDetails.reports.length > 0
+      ? incidentDetails.reports
+      : parsedForms.map(form => ({
+          id: form.id,
+          incident_type: incidentDetails.incident_type,
+          title: humanize(form.form_type),
+          status: form.is_completed ? 'completed' : 'pending',
+          created_at: form.created_at,
+          updated_at: form.updated_at
+        }));
+
+    const totalReports = incidentDetails.total_reports || reports.length;
+    const planData = hasTreatmentPlan ? existingTreatmentPlan.data : incidentDetails.treatment_plan || null;
 
     return (
       <div className="space-y-6">
@@ -230,43 +428,269 @@ const DoctorPatientManagement = ({ doctorId }) => {
             <ChevronLeft className="w-4 h-4" />
             Back to Patient
           </Button>
-
         </div>
 
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-blue-700">
               <Calendar className="w-5 h-5" />
-              Incident Details
+              Incident Overview
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Incident Type</Label>
+                <p className="text-sm text-gray-600">Incident Type</p>
                 <p className="font-medium">{getIncidentTypeLabel(incidentDetails.incident_type)}</p>
               </div>
               <div>
-                <Label>Incident Date</Label>
-                <p className="font-medium">{formatNoteDate(incidentDetails.incident_date)}</p>
+                <p className="text-sm text-gray-600">Incident Date</p>
+                <p className="font-medium">{formattedIncidentDate}</p>
               </div>
               <div>
-                <Label>Incident Time</Label>
-                <p className="font-medium">{incidentDetails.incident_time || 'N/A'}</p>
+                <p className="text-sm text-gray-600">Incident Time</p>
+                <p className="font-medium">{incidentTimeValue}</p>
               </div>
               <div>
-                <Label>Incident Location</Label>
-                <p className="font-medium">{incidentDetails.incident_location || 'N/A'}</p>
+                <p className="text-sm text-gray-600">Incident Location</p>
+                <p className="font-medium">{incidentLocationValue}</p>
               </div>
               <div>
-                <Label>Incident Description</Label>
-                <p className="font-medium">{incidentDetails.incident_description || 'N/A'}</p>
-              </div>
-              <div>
-                <Label>Incident Status</Label>
-                <Badge className={getStatusColor(incidentDetails.status)}>
-                  {incidentDetails.status}
+                <p className="text-sm text-gray-600">Incident Status</p>
+                <Badge className={incidentStatusClass}>
+                  {incidentStatus}
                 </Badge>
+              </div>
+            </div>
+            <div>
+              <p className="text-sm text-gray-600">Incident Description</p>
+              <p className="font-medium mt-1">{incidentDescriptionValue}</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-earthfire-brick-700">
+              <User className="w-5 h-5" />
+              Patient Summary
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <p className="text-sm text-gray-600">Personal Information</p>
+                <div className="mt-2 space-y-1 text-sm text-gray-700">
+                  <p className="font-semibold text-gray-900">{fullName}</p>
+                  <p>Date of Birth: {formatNoteDate(dateOfBirth)}</p>
+                  <p>Gender: {gender || 'N/A'}</p>
+                  <p>Marital Status: {maritalStatus || 'N/A'}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Contact Information</p>
+                <div className="mt-2 space-y-1 text-sm text-gray-700">
+                  <p>Phone: {phoneNumber}</p>
+                  <p>Address: {address}</p>
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Emergency Contact</p>
+                <div className="mt-2 space-y-1 text-sm text-gray-700">
+                  <p>Name: {emergencyContactName || 'Not provided'}</p>
+                  <p>Relationship: {emergencyContactRelationship || 'N/A'}</p>
+                  <p>Phone: {emergencyContactPhone}</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-earthfire-brick-700">
+                <AlertCircle className="w-5 h-5" />
+                Chief Complaint & Primary Concern
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <p className="text-sm font-medium text-gray-800">
+                  {primaryConcern || 'Patient reported pain and discomfort requiring assessment.'}
+                </p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
+                <div>
+                  <p className="font-semibold text-gray-800">Incident Type</p>
+                  <p>{getIncidentTypeLabel(incidentDetails.incident_type)}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Incident Date</p>
+                  <p>{formattedIncidentDate}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Report Status</p>
+                  <Badge className={incidentStatusClass}>
+                    {incidentStatus}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-green-700">
+                <FileText className="w-5 h-5" />
+                Insurance & Accident Details
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div>
+                  <p className="font-semibold text-gray-800">Insurance Type</p>
+                  <p>{insuranceType}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Accident Date</p>
+                  <p>{accidentDateDisplay || formattedIncidentDate}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Accident Time</p>
+                  <p>{accidentTimeDisplay}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Accident Location</p>
+                  <p>{accidentLocationDisplay}</p>
+                </div>
+                {accidentDescription && (
+                  <div className="md:col-span-2">
+                    <p className="font-semibold text-gray-800">Accident Description</p>
+                    <p className="mt-1 text-gray-700">{accidentDescription}</p>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-purple-700">
+                <Activity className="w-5 h-5" />
+                Medical Status
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div>
+                  <p className="font-semibold text-gray-800">Pre-existing Conditions</p>
+                  <p>{hasCondition}</p>
+                  {conditionDetails !== 'N/A' && (
+                    <p className="mt-1 text-gray-700">{conditionDetails}</p>
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Current Medications</p>
+                  <p>{medications}</p>
+                  {medicationNames !== 'N/A' && (
+                    <p className="mt-1 text-gray-700">{medicationNames}</p>
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Surgical History</p>
+                  <p>{hasSurgicalHistory}</p>
+                  {surgicalDetails !== 'N/A' && (
+                    <p className="mt-1 text-gray-700">{surgicalDetails}</p>
+                  )}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Employment Status</p>
+                  <p>{employmentStatus}</p>
+                  {workType !== 'N/A' && (
+                    <p className="mt-1 text-gray-700">Role: {workType}</p>
+                  )}
+                  {workActivities !== 'N/A' && (
+                    <p className="mt-1 text-gray-700">Activities: {workActivities}</p>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-rose-700">
+                <Heart className="w-5 h-5" />
+                Pain Overview
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
+                <div>
+                  <p className="font-semibold text-gray-800">Highest Pain Level</p>
+                  <p>{highestPainLevel}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Pain Ratings</p>
+                  <p>{painLevelList}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Pain Timing</p>
+                  <p>{painTiming}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Pain Triggers</p>
+                  <p>{painTriggers}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Radiating Pain</p>
+                  <p>{radiatingPain}</p>
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-800">Changes Over Time</p>
+                  <p>{painChanges}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-amber-700">
+              <Users className="w-5 h-5" />
+              Lifestyle Impact
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm text-gray-600">
+              <div>
+                <p className="font-semibold text-gray-800">Smoking</p>
+                <p>{lifestyleSmoking}</p>
+                {lifestyleSmokingDetails !== 'N/A' && (
+                  <p className="mt-1 text-gray-700">{lifestyleSmokingDetails}</p>
+                )}
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Alcohol</p>
+                <p>{lifestyleDrinking}</p>
+                {lifestyleDrinkingDetails !== 'N/A' && (
+                  <p className="mt-1 text-gray-700">{lifestyleDrinkingDetails}</p>
+                )}
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Exercise</p>
+                <p>{lifestyleExercise}</p>
+                {lifestyleExerciseDetails !== 'N/A' && (
+                  <p className="mt-1 text-gray-700">{lifestyleExerciseDetails}</p>
+                )}
+              </div>
+              <div>
+                <p className="font-semibold text-gray-800">Sleep Quality</p>
+                <p>{lifestyleSleep}</p>
               </div>
             </div>
           </CardContent>
@@ -274,26 +698,26 @@ const DoctorPatientManagement = ({ doctorId }) => {
 
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-green-700">
+            <CardTitle className="flex items-center gap-2 text-emerald-700">
               <CheckCircle className="w-5 h-5" />
               Treatment Plan
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {incidentDetails.treatment_plan ? (
+            {planData ? (
               <div className="space-y-3">
                 <div>
                   <p className="text-sm text-gray-600">Diagnosis</p>
-                  <p className="font-medium">{incidentDetails.treatment_plan.diagnosis}</p>
+                  <p className="font-medium">{planData.diagnosis}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Treatment Goals</p>
-                  <p className="font-medium">{incidentDetails.treatment_plan.treatment_goals}</p>
+                  <p className="font-medium">{planData.treatment_goals}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Phases</p>
                   <div className="space-y-2">
-                    {incidentDetails.treatment_plan.treatment_phases?.map((phase, index) => (
+                    {planData.treatment_phases?.map((phase, index) => (
                       <div key={index} className="p-2 bg-gray-50 rounded text-sm">
                         <strong>Phase {index + 1}:</strong> {phase.frequency} visits {phase.frequency_type?.replace('_', ' ')} for {phase.duration} {phase.duration_type}
                         {phase.description && ` - ${phase.description}`}
@@ -301,10 +725,12 @@ const DoctorPatientManagement = ({ doctorId }) => {
                     ))}
                   </div>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Additional Notes</p>
-                  <p className="font-medium">{incidentDetails.treatment_plan.additional_notes}</p>
-                </div>
+                {planData.additional_notes && (
+                  <div>
+                    <p className="text-sm text-gray-600">Additional Notes</p>
+                    <p className="font-medium">{planData.additional_notes}</p>
+                  </div>
+                )}
               </div>
             ) : (
               <div className="text-center py-8">
@@ -317,17 +743,18 @@ const DoctorPatientManagement = ({ doctorId }) => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Initial Reports ({incidentDetails.total_reports || 0})</CardTitle>
+            <CardTitle>Initial Reports ({totalReports})</CardTitle>
           </CardHeader>
           <CardContent>
-            {incidentDetails.reports && incidentDetails.reports.length > 0 ? (
+            {reports && reports.length > 0 ? (
               <div className="space-y-3">
-                {incidentDetails.reports.map(report => {
-                  const Icon = getIncidentIcon(report.incident_type);
+                {reports.map(report => {
+                  const Icon = getIncidentIcon(report.incident_type || incidentDetails.incident_type);
+                  const statusLabel = humanize(report.status || 'pending');
                   return (
                     <div
                       key={report.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 cursor-pointer"
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
                     >
                       <div className="flex items-center gap-3">
                         <Icon className="w-5 h-5 text-blue-600" />
@@ -337,8 +764,8 @@ const DoctorPatientManagement = ({ doctorId }) => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Badge className={getStatusColor(report.status)}>
-                          {report.status}
+                        <Badge className={getStatusColor((report.status || 'pending').toLowerCase())}>
+                          {statusLabel}
                         </Badge>
                         <ChevronRight className="w-4 h-4 text-gray-400" />
                       </div>
@@ -364,7 +791,7 @@ const DoctorPatientManagement = ({ doctorId }) => {
 
   if (selectedPatient) {
     const handleSubmitTreatmentPlan = async () => {
-      if (!incidentId) {
+      if (!activeIncidentId) {
         alert("No incident found for this patient. Cannot create treatment plan.");
         return;
       }
@@ -451,7 +878,7 @@ const DoctorPatientManagement = ({ doctorId }) => {
         return (
           <Card className="mt-4">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-green-700">
+              <CardTitle className="flex items-center gap-2 text-earthfire-brick-700">
                 <CheckCircle className="w-5 h-5" />
                 Existing Treatment Plan
               </CardTitle>
@@ -512,7 +939,7 @@ const DoctorPatientManagement = ({ doctorId }) => {
         {/* Action Buttons */}
         <div className="flex gap-3">
 
-          {!incidentId && (
+          {!activeIncidentId && (
             <div className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
               <AlertCircle className="w-4 h-4 inline mr-1" />
               No recent incident found. Treatment plan requires an incident.
@@ -645,8 +1072,8 @@ const DoctorPatientManagement = ({ doctorId }) => {
 
                         {/* Phase Summary */}
                         {phase.duration && phase.frequency && (
-                          <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                            <p className="text-sm text-blue-800">
+                          <div className="mt-3 p-3 bg-earthfire-clay-50 rounded-lg">
+                            <p className="text-sm text-earthfire-brick-700">
                               <strong>Summary:</strong> {phase.frequency} visits {phase.frequencyType.replace('_', ' ')} for {phase.duration} {phase.durationType}
                               {phase.description && ` - ${phase.description}`}
                             </p>
@@ -768,10 +1195,10 @@ const DoctorPatientManagement = ({ doctorId }) => {
             <SelectItem value="all">All Status</SelectItem>
             <SelectItem value="active">Active</SelectItem>
             <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="pending">Pending</SelectItem>
           </SelectContent>
         </Select>
       </div>
-
       {/* Patient List */}
       <Card>
         <CardHeader>
@@ -835,4 +1262,4 @@ const DoctorPatientManagement = ({ doctorId }) => {
   );
 };
 
-export default DoctorPatientManagement; 
+export default DoctorPatientManagement;

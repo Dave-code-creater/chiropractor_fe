@@ -43,6 +43,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, isToday, isPast, isFuture } from 'date-fns';
+import { extractList } from '@/utils/apiResponse';
 
 const DoctorAppointments = () => {
   const currentUserId = useSelector(selectUserId);
@@ -81,47 +82,15 @@ const DoctorAppointments = () => {
   const [cancelAppointment] = useCancelAppointmentMutation();
 
   // Process appointments data - same logic as PatientAppointments
-  const appointments = useMemo(() => {
-    if (!appointmentsData) return [];
+  const appointments = useMemo(
+    () => extractList(appointmentsData, 'appointments'),
+    [appointmentsData]
+  );
 
-    // Based on your API structure: { data: { appointments: [...] } }
-    if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
-      return appointmentsData.data.appointments;
-    }
-
-    // Fallback: Handle if data is directly in data array
-    if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
-      return appointmentsData.data;
-    }
-
-    // Fallback: Handle if appointments are at root level
-    if (Array.isArray(appointmentsData)) {
-      return appointmentsData;
-    }
-
-    return [];
-  }, [appointmentsData]);
-
-  const patients = useMemo(() => {
-    if (!patientsData) return [];
-
-    // Handle the nested structure: { data: { patients: [...] } }
-    if (patientsData.data && Array.isArray(patientsData.data.patients)) {
-      return patientsData.data.patients;
-    }
-
-    // Fallback: Handle if data is directly in data array
-    if (Array.isArray(patientsData?.data)) {
-      return patientsData.data;
-    }
-
-    // Fallback: Handle if patients are at root level
-    if (Array.isArray(patientsData)) {
-      return patientsData;
-    }
-
-    return [];
-  }, [patientsData]);
+  const patients = useMemo(
+    () => extractList(patientsData, 'patients'),
+    [patientsData]
+  );
 
   // Categorize appointments - same logic as PatientAppointments
   const categorizedAppointments = useMemo(() => {

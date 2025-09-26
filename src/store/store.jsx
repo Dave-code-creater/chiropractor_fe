@@ -28,7 +28,7 @@ import { reportApi } from "../api/services/reportApi";
 import { blogApi } from "../api/services/blogApi";
 import { appointmentApi } from "../api/services/appointmentApi";
 import { chatApi } from "../api/services/chatApi";
-import { clinicalNotesApi, doctorScheduleApi } from "../api";
+import { clinicalNotesApi, doctorScheduleApi, doctorApi } from "../api";
 import { userApi } from "../api/services/userApi";
 
 // Enhanced persist config for better performance
@@ -81,6 +81,7 @@ const rootReducer = combineReducers({
   [chatApi.reducerPath]: chatApi.reducer,
   [clinicalNotesApi.reducerPath]: clinicalNotesApi.reducer,
   [doctorScheduleApi.reducerPath]: doctorScheduleApi.reducer,
+  [doctorApi.reducerPath]: doctorApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
 });
 
@@ -107,6 +108,7 @@ export const store = configureStore({
       chatApi.middleware,
       clinicalNotesApi.middleware,
       doctorScheduleApi.middleware,
+      doctorApi.middleware,
       userApi.middleware
     );
 

@@ -10,9 +10,6 @@ export const chatApi = createApi({
   refetchOnFocus: false,            // Prevent automatic refetch on window focus
   refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
-    // ===============================================
-    // CONVERSATION ROUTES
-    // ===============================================
 
     // Create a new conversation
     createConversation: builder.mutation({
@@ -124,9 +121,6 @@ export const chatApi = createApi({
       invalidatesTags: ["Conversations"],
     }),
 
-    // ===============================================
-    // MESSAGE ROUTES
-    // ===============================================
 
     // Get messages for a conversation (fallback for initial load)
     getMessages: builder.query({
@@ -177,9 +171,6 @@ export const chatApi = createApi({
       ],
     }),
 
-    // ===============================================
-    // LONG-POLLING AND REAL-TIME MESSAGING
-    // ===============================================
 
     // Long-polling endpoint to get new messages (replaces regular GET messages)
     pollForNewMessages: builder.query({
@@ -221,9 +212,6 @@ export const chatApi = createApi({
       keepUnusedDataFor: 30,
     }),
 
-    // ===============================================
-    // LEGACY USER ROUTES
-    // ===============================================
 
     // Get available users (legacy endpoint)
     getAvailableUsers: builder.query({

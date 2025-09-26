@@ -42,6 +42,7 @@ import {
 import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useGetPatientsQuery } from "@/api/services/userApi";
 import { useGetIncidentsQuery } from "@/api/services/reportApi";
+import { extractList } from '@/utils/apiResponse';
 
 const DashboardStats = ({ userRole: _userRole = "admin" }) => {
   const [timeRange, setTimeRange] = useState("7d");
@@ -55,40 +56,20 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
   const { data: incidentsData, isLoading: _isLoadingIncidents } = useGetIncidentsQuery();
 
   // Process appointments data - same logic as other appointment components
-  const appointments = useMemo(() => {
-    if (!appointmentsData) return [];
+  const appointments = useMemo(
+    () => extractList(appointmentsData, 'appointments'),
+    [appointmentsData]
+  );
 
-    // Based on your API structure: { data: { appointments: [...] } }
-    if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
-      return appointmentsData.data.appointments;
-    }
+  const patients = useMemo(
+    () => extractList(patientsData, 'patients'),
+    [patientsData]
+  );
 
-    // Fallback: Handle if data is directly in data array
-    if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
-      return appointmentsData.data;
-    }
-
-    // Fallback: Handle if appointments are at root level
-    if (Array.isArray(appointmentsData)) {
-      return appointmentsData;
-    }
-
-    return [];
-  }, [appointmentsData]);
-
-  // Process patients data
-  const patients = useMemo(() => {
-    if (!patientsData) return [];
-    return Array.isArray(patientsData?.metadata) ? patientsData.metadata :
-      Array.isArray(patientsData) ? patientsData : [];
-  }, [patientsData]);
-
-  // Process incidents data
-  const incidents = useMemo(() => {
-    if (!incidentsData) return [];
-    return Array.isArray(incidentsData?.data) ? incidentsData.data :
-      Array.isArray(incidentsData) ? incidentsData : [];
-  }, [incidentsData]);
+  const incidents = useMemo(
+    () => extractList(incidentsData, 'incidents'),
+    [incidentsData]
+  );
 
   // Calculate stats from real data
   const stats = useMemo(() => {

@@ -10,7 +10,6 @@ export const reportApi = createApi({
   refetchOnFocus: false,            // Prevent automatic refetch on window focus
   refetchOnReconnect: true,         // Keep this for actual network issues
   endpoints: (builder) => ({
-    // ===== INCIDENT-BASED ENDPOINTS (NEW SYSTEM) =====
 
     // 1.1 Create Incident
     createIncident: builder.mutation({
@@ -174,7 +173,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // ===== SIMPLE FORM SUBMISSION ENDPOINTS (NEW) =====
 
     // Submit Patient Info Form
     submitPatientInfoForm: builder.mutation({

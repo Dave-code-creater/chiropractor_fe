@@ -205,6 +205,11 @@ export default function UnifiedPatientForm({
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setErrors(prevErrors => {
+      if (!prevErrors[field]) return prevErrors;
+      const { [field]: _, ...rest } = prevErrors;
+      return rest;
+    });
   };
 
   const handleCheckboxChange = (field, option, checked) => {
@@ -216,6 +221,41 @@ export default function UnifiedPatientForm({
     }));
   };
 
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!formData.doctor_id) {
+      newErrors.doctor_id = "Please select a doctor";
+    }
+
+    const workDaysValue = (formData.workDaysPerWeek ?? "").toString().trim();
+    if (workDaysValue !== "") {
+      const parsedDays = Number(workDaysValue);
+      if (Number.isNaN(parsedDays)) {
+        newErrors.workDaysPerWeek = "Days per week must be a number.";
+      } else if (parsedDays < 0) {
+        newErrors.workDaysPerWeek = "Days per week cannot be negative.";
+      } else if (parsedDays > 7) {
+        newErrors.workDaysPerWeek = "Days per week cannot exceed 7.";
+      }
+    }
+
+    const workHoursValue = (formData.workHoursPerDay ?? "").toString().trim();
+    if (workHoursValue !== "") {
+      const parsedHours = Number(workHoursValue);
+      if (Number.isNaN(parsedHours)) {
+        newErrors.workHoursPerDay = "Hours per day must be a number.";
+      } else if (parsedHours < 0) {
+        newErrors.workHoursPerDay = "Hours per day cannot be negative.";
+      } else if (parsedHours > 24) {
+        newErrors.workHoursPerDay = "Hours per day cannot exceed 24.";
+      }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!userId) {
@@ -223,12 +263,9 @@ export default function UnifiedPatientForm({
       return;
     }
 
-    // Validate doctor selection
-    if (!formData.doctor_id) {
-      setErrors({ doctor_id: "Please select a doctor" });
+    if (!validateForm()) {
       return;
     }
-    setErrors({});
 
     setIsSubmitting(true);
 
@@ -948,6 +985,9 @@ export default function UnifiedPatientForm({
                       onChange={(e) => handleChange("workHoursPerDay", e.target.value)}
                       placeholder="e.g., 8"
                     />
+                    {errors.workHoursPerDay && (
+                      <p className="text-red-500 text-sm mt-1">{errors.workHoursPerDay}</p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="workDaysPerWeek">Days per week</Label>
@@ -960,6 +1000,9 @@ export default function UnifiedPatientForm({
                       onChange={(e) => handleChange("workDaysPerWeek", e.target.value)}
                       placeholder="e.g., 5"
                     />
+                    {errors.workDaysPerWeek && (
+                      <p className="text-red-500 text-sm mt-1">{errors.workDaysPerWeek}</p>
+                    )}
                   </div>
                   <div>
                     <Label>Work Type</Label>

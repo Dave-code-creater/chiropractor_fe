@@ -1,33 +1,44 @@
 import { toast } from 'sonner';
 
+const buildOptions = (options, defaultDuration) => {
+    const baseOptions = { duration: defaultDuration };
+
+    if (options === undefined || options === null) {
+        return baseOptions;
+    }
+
+    if (typeof options === 'string') {
+        return { ...baseOptions, description: options };
+    }
+
+    if (typeof options === 'object') {
+        const { description, ...rest } = options;
+        return {
+            ...baseOptions,
+            ...(description !== undefined ? { description } : {}),
+            ...rest
+        };
+    }
+
+    return baseOptions;
+};
+
 // Simple, clean toast notifications that actually work
 export const enhancedToast = {
-    success: (message, description) => {
-        return toast.success(message, {
-            description: description,
-            duration: 4000
-        });
+    success: (message, options) => {
+        return toast.success(message, buildOptions(options, 4000));
     },
 
-    error: (message, description) => {
-        return toast.error(message, {
-            description: description,
-            duration: 6000
-        });
+    error: (message, options) => {
+        return toast.error(message, buildOptions(options, 6000));
     },
 
-    warning: (message, description) => {
-        return toast.warning(message, {
-            description: description,
-            duration: 5000
-        });
+    warning: (message, options) => {
+        return toast.warning(message, buildOptions(options, 5000));
     },
 
-    info: (message, description) => {
-        return toast.info(message, {
-            description: description,
-            duration: 4000
-        });
+    info: (message, options) => {
+        return toast.info(message, buildOptions(options, 4000));
     },
 
     // Authentication specific

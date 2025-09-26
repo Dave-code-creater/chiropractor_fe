@@ -94,20 +94,13 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
         }
     };
 
-    const getIncidentColor = (incidentType) => {
-        switch (incidentType) {
-            case 'car_accident':
-                return 'bg-red-50 text-red-700 border-red-200';
-            case 'work_injury':
-                return 'bg-orange-50 text-orange-700 border-orange-200';
-            case 'sports_injury':
-                return 'bg-green-50 text-green-700 border-green-200';
-            case 'general_pain':
-                return 'bg-blue-50 text-blue-700 border-blue-200';
-            default:
-                return 'bg-gray-50 text-gray-700 border-gray-200';
-        }
-    };
+    const getIncidentColor = () => 'bg-primary/10 text-primary border border-border';
+
+    const getResponseBadgeClass = (value) => (
+        value === 'yes'
+            ? 'border border-border bg-background text-foreground'
+            : 'border border-border bg-background text-muted-foreground'
+    );
 
     const Icon = getIncidentIcon(incident.incident_type);
     const patientName = `${patientInfo.first_name || ''} ${patientInfo.last_name || ''}`.trim() || 'Unknown Patient';
@@ -119,7 +112,7 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                 <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
                         <div className="flex items-start gap-4">
-                            <div className={`p-3 rounded-xl ${getIncidentColor(incident.incident_type).replace('text-', 'text-').replace('bg-', 'bg-')}`}>
+                            <div className={`p-3 rounded-xl ${getIncidentColor()}`}>
                                 <Icon className="w-6 h-6" />
                             </div>
                             <div className="space-y-2">
@@ -128,20 +121,20 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                     <p className="text-lg font-semibold text-primary">Initial Patient Report</p>
                                 </div>
                                 <div className="flex flex-wrap gap-2">
-                                    <Badge className={`${getIncidentColor(incident.incident_type)} border`}>
+                                    <Badge className={getIncidentColor()}>
                                         <Icon className="w-3 h-3 mr-1" />
                                         {incident.incident_type?.replace('_', ' ').toUpperCase()}
                                     </Badge>
-                                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                    <Badge variant="outline" className="border border-border bg-background text-primary">
                                         <CheckCircle className="w-3 h-3 mr-1" />
                                         {incident.status?.toUpperCase() || 'SUBMITTED'}
                                     </Badge>
-                                    <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                                    <Badge variant="outline" className="border border-border bg-background text-muted-foreground">
                                         <Calendar className="w-3 h-3 mr-1" />
                                         {formatDate(incident.incident_date)}
                                     </Badge>
                                     {incident.forms && incident.forms.length > 0 && (
-                                        <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
+                                        <Badge variant="outline" className="border border-border bg-background text-muted-foreground">
                                             <FileText className="w-3 h-3 mr-1" />
                                             {incident.completed_forms || incident.forms.length} sections completed
                                         </Badge>
@@ -181,11 +174,11 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                 {/* Quick Overview Cards - Always Visible */}
                 <CardContent className="pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <Card className="bg-white/50 border-0 shadow-sm">
+                        <Card className="bg-muted border border-border shadow-sm">
                             <CardContent className="p-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-blue-100">
-                                        <User className="w-4 h-4 text-blue-600" />
+                                    <div className="p-2 rounded-lg bg-primary/10">
+                                        <User className="w-4 h-4 text-primary" />
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Contact</p>
@@ -199,11 +192,11 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-white/50 border-0 shadow-sm">
+                        <Card className="bg-muted border border-border shadow-sm">
                             <CardContent className="p-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-green-100">
-                                        <MapPin className="w-4 h-4 text-green-600" />
+                                    <div className="p-2 rounded-lg bg-primary/10">
+                                        <MapPin className="w-4 h-4 text-primary" />
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Location</p>
@@ -219,11 +212,11 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-white/50 border-0 shadow-sm">
+                        <Card className="bg-muted border border-border shadow-sm">
                             <CardContent className="p-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-purple-100">
-                                        <Shield className="w-4 h-4 text-purple-600" />
+                                    <div className="p-2 rounded-lg bg-primary/10">
+                                        <Shield className="w-4 h-4 text-primary" />
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Insurance</p>
@@ -237,11 +230,11 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                             </CardContent>
                         </Card>
 
-                        <Card className="bg-white/50 border-0 shadow-sm">
+                        <Card className="bg-muted border border-border shadow-sm">
                             <CardContent className="p-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-orange-100">
-                                        <Briefcase className="w-4 h-4 text-orange-600" />
+                                    <div className="p-2 rounded-lg bg-primary/10">
+                                        <Briefcase className="w-4 h-4 text-primary" />
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Employment</p>
@@ -264,7 +257,7 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                     <CardContent className="p-6">
                                                 {isLoadingDetails && (
                             <div className="text-center py-12">
-                                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
+                                <div className="inline-flex items-center justify-center w-16 h-16 bg-background rounded-full border border-border mb-4">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                                 </div>
                                 <h3 className="text-lg font-semibold text-gray-700 mb-2">Loading detailed report...</h3>
@@ -275,13 +268,13 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                         {detailsError && (
                             <div className="text-center py-12">
                                 <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-                                <h3 className="text-lg font-semibold text-red-600 mb-2">Failed to load detailed report</h3>
+                                <h3 className="text-lg font-semibold text-muted-foreground mb-2">Failed to load detailed report</h3>
                                 <p className="text-sm text-muted-foreground mb-4">Please try refreshing the page or contact support</p>
                                 <Button 
                                     variant="outline" 
                                     size="sm"
                                     onClick={() => window.location.reload()}
-                                    className="text-red-600 border-red-300 hover:bg-red-50"
+                                    className="text-muted-foreground border-red-300 hover:bg-muted"
                                 >
                                     <RefreshCw className="w-4 h-4 mr-2" />
                                     Retry
@@ -323,9 +316,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                     {/* Overview Tab - Quick Summary */}
                                     <TabsContent value="overview" className="space-y-6">
                                         {/* Patient Summary Card */}
-                                        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                                        <Card className="border border-border bg-muted">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-blue-800">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <User className="w-5 h-5" />
                                                     Patient Summary
                                                 </CardTitle>
@@ -334,7 +327,7 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-blue-700 mb-1">Personal Information</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-1">Personal Information</h4>
                                                             <div className="space-y-2 text-sm">
                                                                 <p><strong>Full Name:</strong> {patientName}</p>
                                                                 <p><strong>Date of Birth:</strong> {formatDate(patientInfo.date_of_birth)}</p>
@@ -343,7 +336,7 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                             </div>
                                                         </div>
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-blue-700 mb-1">Contact Information</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-1">Contact Information</h4>
                                                             <div className="space-y-2 text-sm">
                                                                 <p><strong>Phone:</strong> {formatPhoneNumber(patientInfo.home_phone || patientInfo.cell_phone)}</p>
                                                                 <p><strong>Address:</strong> {patientInfo.address ?
@@ -355,7 +348,7 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                     <div className="space-y-4">
                                                         {patientInfo.emergency_contact_name && (
                                                             <div>
-                                                                <h4 className="font-medium text-sm text-blue-700 mb-1">Emergency Contact</h4>
+                                                                <h4 className="font-medium text-sm text-muted-foreground mb-1">Emergency Contact</h4>
                                                                 <div className="space-y-2 text-sm">
                                                                     <p><strong>Name:</strong> {patientInfo.emergency_contact_name}</p>
                                                                     <p><strong>Relationship:</strong> {patientInfo.emergency_contact_relationship || 'N/A'}</p>
@@ -369,34 +362,34 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                         </Card>
 
                                         {/* Chief Complaint Card */}
-                                        <Card className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200">
+                                        <Card className="border border-border bg-muted">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-red-800">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <AlertCircle className="w-5 h-5" />
                                                     Chief Complaint & Primary Concern
                                                 </CardTitle>
                                             </CardHeader>
                                             <CardContent>
                                                 <div className="space-y-4">
-                                                    <div className="bg-white/70 p-4 rounded-lg border border-red-100">
-                                                        <p className="text-sm font-medium text-red-900">
+                                                    <div className="bg-background p-4 rounded-lg border border-border">
+                                                        <p className="text-sm font-medium text-foreground">
                                                             {painDescription.main_complaints || painDescription.symptom_details || incident.description || "Patient reported pain and discomfort requiring assessment"}
                                                         </p>
                                                     </div>
                                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-red-700 mb-1">Incident Type</h4>
-                                                            <Badge className={`${getIncidentColor(incident.incident_type)}`}>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-1">Incident Type</h4>
+                                                            <Badge className={getIncidentColor()}>
                                                                 {incident.incident_type?.replace('_', ' ').toUpperCase()}
                                                             </Badge>
                                                         </div>
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-red-700 mb-1">Incident Date</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-1">Incident Date</h4>
                                                             <p className="text-sm">{formatDate(incident.incident_date)}</p>
                                                         </div>
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-red-700 mb-1">Report Status</h4>
-                                                            <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-1">Report Status</h4>
+                                                            <Badge variant="outline" className="border border-border bg-background text-primary">
                                                                 {incident.status?.toUpperCase() || 'SUBMITTED'}
                                                             </Badge>
                                                         </div>
@@ -407,9 +400,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
 
                                         {/* Quick Medical Summary */}
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+                                            <Card className="border border-border bg-muted">
                                                 <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2 text-green-800">
+                                                    <CardTitle className="flex items-center gap-2 text-foreground">
                                                         <Activity className="w-5 h-5" />
                                                         Medical Status
                                                     </CardTitle>
@@ -417,28 +410,28 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                 <CardContent>
                                                     <div className="space-y-3 text-sm">
                                                         <div className="flex justify-between">
-                                                            <span className="text-green-700">Pre-existing Conditions:</span>
+                                                            <span className="text-muted-foreground">Pre-existing Conditions:</span>
                                                             <span className="font-medium">{medicalHistory.has_condition === 'yes' ? 'Yes' : 'No'}</span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-green-700">Current Medications:</span>
+                                                            <span className="text-muted-foreground">Current Medications:</span>
                                                             <span className="font-medium">{medicalHistory.medication === 'yes' ? 'Yes' : 'No'}</span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-green-700">Surgical History:</span>
+                                                            <span className="text-muted-foreground">Surgical History:</span>
                                                             <span className="font-medium">{medicalHistory.has_surgical_history === 'yes' ? 'Yes' : 'No'}</span>
                                                         </div>
                                                         <div className="flex justify-between">
-                                                            <span className="text-green-700">Employment Status:</span>
+                                                            <span className="text-muted-foreground">Employment Status:</span>
                                                             <span className="font-medium">{medicalHistory.currently_working === 'yes' ? 'Working' : 'Not Working'}</span>
                                                         </div>
                                                     </div>
                                                 </CardContent>
                                             </Card>
 
-                                            <Card className="bg-gradient-to-r from-purple-50 to-violet-50 border-purple-200">
+                                            <Card className="border border-border bg-muted">
                                                 <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2 text-purple-800">
+                                                    <CardTitle className="flex items-center gap-2 text-foreground">
                                                         <Heart className="w-5 h-5" />
                                                         Pain Overview
                                                     </CardTitle>
@@ -447,20 +440,18 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                     <div className="space-y-3">
                                                         {painAssessment.pain_level && painAssessment.pain_level.length > 0 && (
                                                             <div>
-                                                                <h4 className="font-medium text-sm text-purple-700 mb-2">Pain Levels</h4>
+                                                                <h4 className="font-medium text-sm text-muted-foreground mb-2">Pain Levels</h4>
                                                                 <div className="space-y-1">
                                                                     {painAssessment.pain_level.slice(0, 3).map((level, index) => {
                                                                         const [condition, rating] = level.split(':');
                                                                         const numRating = parseInt(rating);
-                                                                        const colorClass = numRating >= 7 ? 'bg-red-100 text-red-800' :
-                                                                            numRating >= 4 ? 'bg-yellow-100 text-yellow-800' :
-                                                                                'bg-green-100 text-green-800';
+                                                                        const colorClass = numRating >= 7 ? 'text-destructive' :
+                                                                            numRating >= 4 ? 'text-amber-600' :
+                                                                                'text-muted-foreground';
                                                                         return (
-                                                                            <div key={index} className="flex justify-between items-center">
-                                                                                <span className="text-sm text-purple-700">{condition}:</span>
-                                                                                <Badge className={`${colorClass} text-xs`}>
-                                                                                    {rating}/10
-                                                                                </Badge>
+                                                                            <div key={index} className="flex justify-between items-center rounded border border-border bg-background p-2">
+                                                                                <span className="text-sm text-muted-foreground">{condition}:</span>
+                                                                                <span className={`text-sm font-medium ${colorClass}`}>{rating}/10</span>
                                                                             </div>
                                                                         );
                                                                     })}
@@ -469,10 +460,10 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                         )}
                                                         {painAssessment.pain_type && painAssessment.pain_type.length > 0 && (
                                                             <div>
-                                                                <h4 className="font-medium text-sm text-purple-700 mb-2">Pain Types</h4>
+                                                                <h4 className="font-medium text-sm text-muted-foreground mb-2">Pain Types</h4>
                                                                 <div className="flex flex-wrap gap-1">
                                                                     {painAssessment.pain_type.slice(0, 4).map((type, index) => (
-                                                                        <Badge key={index} variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                                                        <Badge key={index} variant="outline" className="text-xs border border-border bg-background text-muted-foreground">
                                                                             {type}
                                                                         </Badge>
                                                                     ))}
@@ -487,9 +478,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
 
                                     {/* Patient Info Tab - Dedicated Patient Information */}
                                     <TabsContent value="patient-info" className="space-y-6">
-                                        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+                                        <Card className="border border-border bg-muted">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-blue-800">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <User className="w-5 h-5" />
                                                     Patient Information
                                                 </CardTitle>
@@ -498,30 +489,30 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-blue-700 mb-3">Personal Details</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Personal Details</h4>
                                                             <div className="space-y-3 text-sm">
-                                                                <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">Full Name:</span>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Full Name:</span>
                                                                     <span>{patientName}</span>
                                                                 </div>
-                                                                <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">Date of Birth:</span>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Date of Birth:</span>
                                                                     <span>{formatDate(patientInfo.date_of_birth)}</span>
                                                                 </div>
-                                                                <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">Gender:</span>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Gender:</span>
                                                                     <span>{patientInfo.gender || 'N/A'}</span>
                                                                 </div>
-                                                                <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">Race:</span>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Race:</span>
                                                                     <span>{patientInfo.race || 'N/A'}</span>
                                                                 </div>
-                                                                <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">Marital Status:</span>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Marital Status:</span>
                                                                     <span>{patientInfo.marital_status || 'N/A'}</span>
                                                                 </div>
-                                                                <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">SSN:</span>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">SSN:</span>
                                                                     <span>{patientInfo.ssn ? `***-**-${patientInfo.ssn.slice(-4)}` : 'N/A'}</span>
                                                                 </div>
                                                             </div>
@@ -529,18 +520,18 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                     </div>
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-blue-700 mb-3">Contact Information</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Contact Information</h4>
                                                             <div className="space-y-3 text-sm">
-                                                                <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">Home Phone:</span>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Home Phone:</span>
                                                                     <span>{formatPhoneNumber(patientInfo.home_phone)}</span>
                                                                 </div>
-                                                                <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">Cell Phone:</span>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Cell Phone:</span>
                                                                     <span>{formatPhoneNumber(patientInfo.cell_phone)}</span>
                                                                 </div>
-                                                                <div className="py-2 border-b border-blue-100">
-                                                                    <span className="text-blue-600 font-medium">Address:</span>
+                                                                <div className="py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Address:</span>
                                                                     <div className="mt-1">
                                                                         <div>{patientInfo.address}</div>
                                                                         <div>{patientInfo.city}, {patientInfo.state} {patientInfo.zip_code}</div>
@@ -555,25 +546,25 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
 
                                         {/* Emergency Contact */}
                                         {patientInfo.emergency_contact_name && (
-                                            <Card className="bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
+                                            <Card className="border border-border bg-muted">
                                                 <CardHeader>
-                                                    <CardTitle className="flex items-center gap-2 text-orange-800">
+                                                    <CardTitle className="flex items-center gap-2 text-foreground">
                                                         <AlertCircle className="w-5 h-5" />
                                                         Emergency Contact
                                                     </CardTitle>
                                                 </CardHeader>
                                                 <CardContent>
                                                     <div className="space-y-3 text-sm">
-                                                        <div className="flex justify-between py-2 border-b border-orange-100">
-                                                            <span className="text-orange-600 font-medium">Name:</span>
+                                                        <div className="flex justify-between py-2 border-b border-border">
+                                                            <span className="text-muted-foreground font-medium">Name:</span>
                                                             <span>{patientInfo.emergency_contact_name}</span>
                                                         </div>
-                                                        <div className="flex justify-between py-2 border-b border-orange-100">
-                                                            <span className="text-orange-600 font-medium">Relationship:</span>
+                                                        <div className="flex justify-between py-2 border-b border-border">
+                                                            <span className="text-muted-foreground font-medium">Relationship:</span>
                                                             <span>{patientInfo.emergency_contact_relationship || 'N/A'}</span>
                                                         </div>
-                                                        <div className="flex justify-between py-2 border-b border-orange-100">
-                                                            <span className="text-orange-600 font-medium">Phone:</span>
+                                                        <div className="flex justify-between py-2 border-b border-border">
+                                                            <span className="text-muted-foreground font-medium">Phone:</span>
                                                             <span>{formatPhoneNumber(patientInfo.emergency_contact_phone)}</span>
                                                         </div>
                                                     </div>
@@ -584,9 +575,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
 
                                     {/* Medical History Tab */}
                                     <TabsContent value="medical-history" className="space-y-6">
-                                        <Card className="bg-gradient-to-r from-green-50 to-emerald-50 border-green-200">
+                                        <Card className="border border-border bg-muted">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-green-800">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <Activity className="w-5 h-5" />
                                                     Medical History & Health Status
                                                 </CardTitle>
@@ -595,30 +586,30 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-green-700 mb-3">Current Health Status</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Current Health Status</h4>
                                                             <div className="space-y-3 text-sm">
-                                                                <div className="flex justify-between py-2 border-b border-green-100">
-                                                                    <span className="text-green-600 font-medium">Pre-existing Conditions:</span>
-                                                                    <Badge className={medicalHistory.has_condition === 'yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Pre-existing Conditions:</span>
+                                                                    <Badge className={getResponseBadgeClass(medicalHistory.has_condition)}>
                                                                         {medicalHistory.has_condition === 'yes' ? 'Yes' : 'No'}
                                                                     </Badge>
                                                                 </div>
                                                                 {medicalHistory.condition_details && (
-                                                                    <div className="bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
-                                                                        <strong className="text-yellow-800">Details:</strong>
-                                                                        <div className="mt-1 text-yellow-700">{medicalHistory.condition_details}</div>
+                                                                    <div className="bg-background p-3 rounded border border-border">
+                                                                        <strong className="text-muted-foreground">Details:</strong>
+                                                                        <div className="mt-1 text-muted-foreground">{medicalHistory.condition_details}</div>
                                                                     </div>
                                                                 )}
-                                                                <div className="flex justify-between py-2 border-b border-green-100">
-                                                                    <span className="text-green-600 font-medium">Current Medications:</span>
-                                                                    <Badge className={medicalHistory.medication === 'yes' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Current Medications:</span>
+                                                                    <Badge className={getResponseBadgeClass(medicalHistory.medication)}>
                                                                         {medicalHistory.medication === 'yes' ? 'Yes' : 'No'}
                                                                     </Badge>
                                                                 </div>
                                                                 {medicalHistory.medication_names && (
-                                                                    <div className="bg-blue-50 p-3 rounded border-l-4 border-blue-400">
-                                                                        <strong className="text-blue-800">Medications:</strong>
-                                                                        <div className="mt-1 text-blue-700">{medicalHistory.medication_names}</div>
+                                                                    <div className="bg-background p-3 rounded border border-border">
+                                                                        <strong className="text-foreground">Medications:</strong>
+                                                                        <div className="mt-1 text-muted-foreground">{medicalHistory.medication_names}</div>
                                                                     </div>
                                                                 )}
                                                             </div>
@@ -626,37 +617,37 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                     </div>
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-green-700 mb-3">Surgical & Pregnancy History</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Surgical & Pregnancy History</h4>
                                                             <div className="space-y-3 text-sm">
-                                                                <div className="flex justify-between py-2 border-b border-green-100">
-                                                                    <span className="text-green-600 font-medium">Surgical History:</span>
-                                                                    <Badge className={medicalHistory.has_surgical_history === 'yes' ? 'bg-orange-100 text-orange-800' : 'bg-green-100 text-green-800'}>
+                                                                <div className="flex justify-between py-2 border-b border-border">
+                                                                    <span className="text-muted-foreground font-medium">Surgical History:</span>
+                                                                    <Badge className={getResponseBadgeClass(medicalHistory.has_surgical_history)}>
                                                                         {medicalHistory.has_surgical_history === 'yes' ? 'Yes' : 'No'}
                                                                     </Badge>
                                                                 </div>
                                                                 {medicalHistory.surgical_history_details && (
-                                                                    <div className="bg-orange-50 p-3 rounded border-l-4 border-orange-400">
-                                                                        <strong className="text-orange-800">Surgical Details:</strong>
-                                                                        <div className="mt-1 text-orange-700">{medicalHistory.surgical_history_details}</div>
+                                                                    <div className="bg-background p-3 rounded border border-border">
+                                                                        <strong className="text-foreground">Surgical Details:</strong>
+                                                                        <div className="mt-1 text-muted-foreground">{medicalHistory.surgical_history_details}</div>
                                                                     </div>
                                                                 )}
                                                                 {patientInfo.gender?.toLowerCase() === 'female' && (
                                                                     <>
-                                                                        <div className="flex justify-between py-2 border-b border-green-100">
-                                                                            <span className="text-green-600 font-medium">Currently Pregnant:</span>
-                                                                            <Badge className={medicalHistory.is_pregnant_now === 'yes' ? 'bg-pink-100 text-pink-800' : 'bg-green-100 text-green-800'}>
+                                                                        <div className="flex justify-between py-2 border-b border-border">
+                                                                            <span className="text-muted-foreground font-medium">Currently Pregnant:</span>
+                                                                            <Badge className={getResponseBadgeClass(medicalHistory.is_pregnant_now)}>
                                                                                 {medicalHistory.is_pregnant_now === 'yes' ? 'Yes' : 'No'}
                                                                             </Badge>
                                                                         </div>
                                                                         {medicalHistory.weeks_pregnant && (
-                                                                            <div className="flex justify-between py-2 border-b border-green-100">
-                                                                                <span className="text-green-600 font-medium">Weeks Pregnant:</span>
+                                                                            <div className="flex justify-between py-2 border-b border-border">
+                                                                                <span className="text-muted-foreground font-medium">Weeks Pregnant:</span>
                                                                                 <span>{medicalHistory.weeks_pregnant}</span>
                                                                             </div>
                                                                         )}
                                                                         {medicalHistory.last_menstrual_period && (
-                                                                            <div className="flex justify-between py-2 border-b border-green-100">
-                                                                                <span className="text-green-600 font-medium">Last Menstrual Period:</span>
+                                                                            <div className="flex justify-between py-2 border-b border-border">
+                                                                                <span className="text-muted-foreground font-medium">Last Menstrual Period:</span>
                                                                                 <span>{formatDate(medicalHistory.last_menstrual_period)}</span>
                                                                             </div>
                                                                         )}
@@ -670,9 +661,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                         </Card>
 
                                         {/* Employment Information */}
-                                        <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 border-indigo-200">
+                                        <Card className="border border-border bg-muted">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-indigo-800">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <Briefcase className="w-5 h-5" />
                                                     Employment Information
                                                 </CardTitle>
@@ -680,36 +671,36 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                             <CardContent>
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="space-y-3 text-sm">
-                                                        <div className="flex justify-between py-2 border-b border-indigo-100">
-                                                            <span className="text-indigo-600 font-medium">Currently Working:</span>
-                                                            <Badge className={medicalHistory.currently_working === 'yes' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                                                        <div className="flex justify-between py-2 border-b border-border">
+                                                            <span className="text-muted-foreground font-medium">Currently Working:</span>
+                                                            <Badge className={getResponseBadgeClass(medicalHistory.currently_working)}>
                                                                 {medicalHistory.currently_working === 'yes' ? 'Yes' : 'No'}
                                                             </Badge>
                                                         </div>
                                                         {medicalHistory.job_description && (
                                                             <div>
-                                                                <span className="text-indigo-600 font-medium">Job Description:</span>
-                                                                <div className="mt-1 p-2 bg-indigo-50 rounded">{medicalHistory.job_description}</div>
+                                                                <span className="text-muted-foreground font-medium">Job Description:</span>
+                                                                <div className="mt-1 p-2 bg-background rounded border border-border">{medicalHistory.job_description}</div>
                                                             </div>
                                                         )}
                                                     </div>
                                                     <div className="space-y-3 text-sm">
                                                         {medicalHistory.work_days_per_week && (
-                                                            <div className="flex justify-between py-2 border-b border-indigo-100">
-                                                                <span className="text-indigo-600 font-medium">Work Days/Week:</span>
+                                                            <div className="flex justify-between py-2 border-b border-border">
+                                                                <span className="text-muted-foreground font-medium">Work Days/Week:</span>
                                                                 <span>{medicalHistory.work_days_per_week}</span>
                                                             </div>
                                                         )}
                                                         {medicalHistory.work_hours_per_day && (
-                                                            <div className="flex justify-between py-2 border-b border-indigo-100">
-                                                                <span className="text-indigo-600 font-medium">Work Hours/Day:</span>
+                                                            <div className="flex justify-between py-2 border-b border-border">
+                                                                <span className="text-muted-foreground font-medium">Work Hours/Day:</span>
                                                                 <span>{medicalHistory.work_hours_per_day}</span>
                                                             </div>
                                                         )}
                                                         {medicalHistory.work_times && (
                                                             <div>
-                                                                <span className="text-indigo-600 font-medium">Work Schedule:</span>
-                                                                <div className="mt-1 p-2 bg-indigo-50 rounded">{medicalHistory.work_times}</div>
+                                                                <span className="text-muted-foreground font-medium">Work Schedule:</span>
+                                                                <div className="mt-1 p-2 bg-background rounded border border-border">{medicalHistory.work_times}</div>
                                                             </div>
                                                         )}
                                                     </div>
@@ -721,9 +712,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                     {/* Pain Assessment Tab */}
                                     {/* Pain Assessment Tab */}
                                     <TabsContent value="pain-assessment" className="space-y-6">
-                                        <Card className="bg-gradient-to-r from-red-50 to-pink-50 border-red-200">
+                                        <Card className="border border-border bg-muted">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-red-800">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <Heart className="w-5 h-5" />
                                                     Pain Assessment & Impact
                                                 </CardTitle>
@@ -732,37 +723,60 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-red-700 mb-3">Pain Characteristics</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Pain Characteristics</h4>
                                                             <div className="space-y-3 text-sm">
                                                                 {painAssessment.pain_type && (
-                                                                    <div className="flex justify-between py-2 border-b border-red-100">
-                                                                        <span className="text-red-600 font-medium">Pain Type:</span>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Pain Type:</span>
                                                                         <div className="text-right">
                                                                             {Array.isArray(painAssessment.pain_type)
                                                                                 ? painAssessment.pain_type.map(type => (
-                                                                                    <Badge key={type} className="ml-1 bg-red-100 text-red-800">{type}</Badge>
+                                                                                    <Badge
+                                                                                        key={type}
+                                                                                        variant="outline"
+                                                                                        className="ml-1 border border-border text-xs text-foreground"
+                                                                                    >
+                                                                                        {type}
+                                                                                    </Badge>
                                                                                 ))
-                                                                                : <Badge className="bg-red-100 text-red-800">{painAssessment.pain_type}</Badge>
+                                                                                : (
+                                                                                    <Badge
+                                                                                        variant="outline"
+                                                                                        className="border border-border text-xs text-foreground"
+                                                                                    >
+                                                                                        {painAssessment.pain_type}
+                                                                                    </Badge>
+                                                                                )
                                                                             }
                                                                         </div>
                                                                     </div>
                                                                 )}
                                                                 {painAssessment.pain_scale && (
-                                                                    <div className="flex justify-between py-2 border-b border-red-100">
-                                                                        <span className="text-red-600 font-medium">Pain Scale:</span>
-                                                                        <Badge className="bg-red-200 text-red-900 text-base px-3">{painAssessment.pain_scale}/10</Badge>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Pain Scale:</span>
+                                                                        <Badge
+                                                                            variant="outline"
+                                                                            className="text-base border border-border bg-background text-foreground px-3"
+                                                                        >
+                                                                            {painAssessment.pain_scale}/10
+                                                                        </Badge>
                                                                     </div>
                                                                 )}
                                                                 {painAssessment.pain_frequency && (
-                                                                    <div className="flex justify-between py-2 border-b border-red-100">
-                                                                        <span className="text-red-600 font-medium">Frequency:</span>
-                                                                        <Badge className="bg-orange-100 text-orange-800">{painAssessment.pain_frequency}</Badge>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Frequency:</span>
+                                                                        <Badge
+                                                                            variant="outline"
+                                                                            className="border border-border bg-background text-foreground"
+                                                                        >
+                                                                            {painAssessment.pain_frequency}
+                                                                        </Badge>
                                                                     </div>
                                                                 )}
                                                                 {painAssessment.pain_location && (
                                                                     <div>
-                                                                        <span className="text-red-600 font-medium">Pain Location:</span>
-                                                                        <div className="mt-1 p-2 bg-red-50 rounded border-l-4 border-red-400">
+                                                                        <span className="text-muted-foreground font-medium">Pain Location:</span>
+                                                                        <div className="mt-1 p-2 bg-background rounded border border-border">
                                                                             {Array.isArray(painAssessment.pain_location)
                                                                                 ? painAssessment.pain_location.join(', ')
                                                                                 : painAssessment.pain_location
@@ -775,36 +789,36 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                     </div>
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-red-700 mb-3">Pain Impact & Management</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Pain Impact & Management</h4>
                                                             <div className="space-y-3 text-sm">
                                                                 {painAssessment.pain_description && (
                                                                     <div>
-                                                                        <span className="text-red-600 font-medium">Description:</span>
-                                                                        <div className="mt-1 p-3 bg-red-50 rounded border-l-4 border-red-400">
+                                                                        <span className="text-muted-foreground font-medium">Description:</span>
+                                                                        <div className="mt-1 p-3 bg-background rounded border border-border">
                                                                             {painAssessment.pain_description}
                                                                         </div>
                                                                     </div>
                                                                 )}
                                                                 {painAssessment.aggravating_factors && (
                                                                     <div>
-                                                                        <span className="text-red-600 font-medium">Aggravating Factors:</span>
-                                                                        <div className="mt-1 p-2 bg-yellow-50 rounded border-l-4 border-yellow-400 text-yellow-800">
+                                                                        <span className="text-muted-foreground font-medium">Aggravating Factors:</span>
+                                                                        <div className="mt-1 p-2 bg-background rounded border border-border text-muted-foreground">
                                                                             {painAssessment.aggravating_factors}
                                                                         </div>
                                                                     </div>
                                                                 )}
                                                                 {painAssessment.relieving_factors && (
                                                                     <div>
-                                                                        <span className="text-red-600 font-medium">Relieving Factors:</span>
-                                                                        <div className="mt-1 p-2 bg-green-50 rounded border-l-4 border-green-400 text-green-800">
+                                                                        <span className="text-muted-foreground font-medium">Relieving Factors:</span>
+                                                                        <div className="mt-1 p-2 bg-background rounded border border-border text-muted-foreground">
                                                                             {painAssessment.relieving_factors}
                                                                         </div>
                                                                     </div>
                                                                 )}
                                                                 {painAssessment.previous_treatment && (
                                                                     <div>
-                                                                        <span className="text-red-600 font-medium">Previous Treatment:</span>
-                                                                        <div className="mt-1 p-2 bg-blue-50 rounded border-l-4 border-blue-400 text-blue-800">
+                                                                        <span className="text-muted-foreground font-medium">Previous Treatment:</span>
+                                                                        <div className="mt-1 p-2 bg-background rounded border border-border text-muted-foreground">
                                                                             {painAssessment.previous_treatment}
                                                                         </div>
                                                                     </div>
@@ -819,9 +833,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
 
                                     {/* Insurance Tab */}
                                     <TabsContent value="insurance" className="space-y-6">
-                                        <Card className="bg-gradient-to-r from-blue-50 to-cyan-50 border-blue-200">
+                                        <Card className="border border-border bg-muted">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-blue-800">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <ClipboardCheck className="w-5 h-5" />
                                                     Insurance & Accident Details
                                                 </CardTitle>
@@ -830,33 +844,33 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-blue-700 mb-3">Insurance Coverage</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Insurance Coverage</h4>
                                                             <div className="space-y-3 text-sm">
                                                                 {healthInsurance.insurance_type && (
-                                                                    <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                        <span className="text-blue-600 font-medium">Insurance Type:</span>
-                                                                        <Badge className="bg-blue-100 text-blue-800">
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Insurance Type:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {healthInsurance.insurance_type}
                                                                         </Badge>
                                                                     </div>
                                                                 )}
                                                                 {healthInsurance.covered && (
-                                                                    <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                        <span className="text-blue-600 font-medium">Coverage Status:</span>
-                                                                        <Badge className={healthInsurance.covered === 'yes' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Coverage Status:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {healthInsurance.covered === 'yes' ? 'Covered' : 'Not Covered'}
                                                                         </Badge>
                                                                     </div>
                                                                 )}
                                                                 {healthInsurance.attorney_name && (
-                                                                    <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                        <span className="text-blue-600 font-medium">Attorney:</span>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Attorney:</span>
                                                                         <span>{healthInsurance.attorney_name}</span>
                                                                     </div>
                                                                 )}
                                                                 {healthInsurance.attorney_phone && (
-                                                                    <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                        <span className="text-blue-600 font-medium">Attorney Phone:</span>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Attorney Phone:</span>
                                                                         <span className="font-mono text-sm">{healthInsurance.attorney_phone}</span>
                                                                     </div>
                                                                 )}
@@ -865,25 +879,25 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                     </div>
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-blue-700 mb-3">Accident Information</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Accident Information</h4>
                                                             <div className="space-y-3 text-sm">
                                                                 {healthInsurance.accident_date && (
-                                                                    <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                        <span className="text-blue-600 font-medium">Accident Date:</span>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Accident Date:</span>
                                                                         <span>{formatDate(healthInsurance.accident_date)}</span>
                                                                     </div>
                                                                 )}
                                                                 {healthInsurance.lost_work_yes_no && (
-                                                                    <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                        <span className="text-blue-600 font-medium">Lost Work:</span>
-                                                                        <Badge className={healthInsurance.lost_work_yes_no === 'yes' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Lost Work:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {healthInsurance.lost_work_yes_no === 'yes' ? 'Yes' : 'No'}
                                                                         </Badge>
                                                                     </div>
                                                                 )}
                                                                 {healthInsurance.lost_work_dates && (
-                                                                    <div className="flex justify-between py-2 border-b border-blue-100">
-                                                                        <span className="text-blue-600 font-medium">Work Loss Dates:</span>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Work Loss Dates:</span>
                                                                         <span className="text-sm">{healthInsurance.lost_work_dates}</span>
                                                                     </div>
                                                                 )}
@@ -892,9 +906,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                     </div>
                                                 </div>
                                                 {healthInsurance.accident_description && (
-                                                    <div className="mt-6 p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-                                                        <h4 className="font-medium text-yellow-800 mb-2">Accident Description</h4>
-                                                        <div className="text-sm text-yellow-700">{healthInsurance.accident_description}</div>
+                                                    <div className="mt-6 p-4 bg-background rounded-lg border border-border">
+                                                        <h4 className="font-medium text-muted-foreground mb-2">Accident Description</h4>
+                                                        <div className="text-sm text-muted-foreground">{healthInsurance.accident_description}</div>
                                                     </div>
                                                 )}
                                             </CardContent>
@@ -903,9 +917,9 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
 
                                     {/* Lifestyle Tab */}
                                     <TabsContent value="lifestyle" className="space-y-6">
-                                        <Card className="bg-gradient-to-r from-green-50 to-teal-50 border-green-200">
+                                        <Card className="border border-border bg-muted">
                                             <CardHeader>
-                                                <CardTitle className="flex items-center gap-2 text-green-800">
+                                                <CardTitle className="flex items-center gap-2 text-foreground">
                                                     <Activity className="w-5 h-5" />
                                                     Lifestyle Impact & Habits
                                                 </CardTitle>
@@ -914,40 +928,36 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-green-700 mb-3">Work & Stress</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Work & Stress</h4>
                                                             <div className="space-y-3 text-sm">
                                                                 {lifestyleImpact.work_type && (
-                                                                    <div className="flex justify-between py-2 border-b border-green-100">
-                                                                        <span className="text-green-600 font-medium">Work Type:</span>
-                                                                        <Badge className="bg-blue-100 text-blue-800">
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Work Type:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {lifestyleImpact.work_type}
                                                                         </Badge>
                                                                     </div>
                                                                 )}
                                                                 {lifestyleImpact.work_stress && (
-                                                                    <div className="flex justify-between py-2 border-b border-green-100">
-                                                                        <span className="text-green-600 font-medium">Work Stress Level:</span>
-                                                                        <Badge className={
-                                                                            lifestyleImpact.work_stress?.toLowerCase().includes('high') ? 'bg-red-100 text-red-800' :
-                                                                                lifestyleImpact.work_stress?.toLowerCase().includes('medium') ? 'bg-yellow-100 text-yellow-800' :
-                                                                                    'bg-green-100 text-green-800'
-                                                                        }>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Work Stress Level:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {lifestyleImpact.work_stress}
                                                                         </Badge>
                                                                     </div>
                                                                 )}
                                                                 {lifestyleImpact.exercise && (
-                                                                    <div className="flex justify-between py-2 border-b border-green-100">
-                                                                        <span className="text-green-600 font-medium">Exercise:</span>
-                                                                        <Badge className="bg-purple-100 text-purple-800">
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Exercise:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {lifestyleImpact.exercise}
                                                                         </Badge>
                                                                     </div>
                                                                 )}
                                                                 {lifestyleImpact.exercise_details && (
                                                                     <div>
-                                                                        <span className="text-green-600 font-medium">Exercise Details:</span>
-                                                                        <div className="mt-1 p-2 bg-green-50 rounded border-l-4 border-green-400">
+                                                                        <span className="text-muted-foreground font-medium">Exercise Details:</span>
+                                                                        <div className="mt-1 p-2 bg-background rounded border border-border">
                                                                             {lifestyleImpact.exercise_details}
                                                                         </div>
                                                                     </div>
@@ -957,52 +967,44 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                                     </div>
                                                     <div className="space-y-4">
                                                         <div>
-                                                            <h4 className="font-medium text-sm text-green-700 mb-3">Health Habits</h4>
+                                                            <h4 className="font-medium text-sm text-muted-foreground mb-3">Health Habits</h4>
                                                             <div className="space-y-3 text-sm">
                                                                 {lifestyleImpact.smoking && (
-                                                                    <div className="flex justify-between py-2 border-b border-green-100">
-                                                                        <span className="text-green-600 font-medium">Smoking Status:</span>
-                                                                        <Badge className={
-                                                                            lifestyleImpact.smoking?.toLowerCase().includes('yes') || lifestyleImpact.smoking?.toLowerCase().includes('current') ? 'bg-red-100 text-red-800' :
-                                                                                lifestyleImpact.smoking?.toLowerCase().includes('former') ? 'bg-yellow-100 text-yellow-800' :
-                                                                                    'bg-green-100 text-green-800'
-                                                                        }>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Smoking Status:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {lifestyleImpact.smoking}
                                                                         </Badge>
                                                                     </div>
                                                                 )}
                                                                 {lifestyleImpact.smoking_details && (
                                                                     <div>
-                                                                        <span className="text-green-600 font-medium">Smoking Details:</span>
-                                                                        <div className="mt-1 p-2 bg-yellow-50 rounded border-l-4 border-yellow-400 text-yellow-800">
+                                                                        <span className="text-muted-foreground font-medium">Smoking Details:</span>
+                                                                        <div className="mt-1 p-2 bg-background rounded border border-border text-muted-foreground">
                                                                             {lifestyleImpact.smoking_details}
                                                                         </div>
                                                                     </div>
                                                                 )}
                                                                 {lifestyleImpact.drinking && (
-                                                                    <div className="flex justify-between py-2 border-b border-green-100">
-                                                                        <span className="text-green-600 font-medium">Alcohol Use:</span>
-                                                                        <Badge className="bg-orange-100 text-orange-800">
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Alcohol Use:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {lifestyleImpact.drinking}
                                                                         </Badge>
                                                                     </div>
                                                                 )}
                                                                 {lifestyleImpact.drinking_details && (
                                                                     <div>
-                                                                        <span className="text-green-600 font-medium">Drinking Details:</span>
-                                                                        <div className="mt-1 p-2 bg-orange-50 rounded border-l-4 border-orange-400 text-orange-800">
+                                                                        <span className="text-muted-foreground font-medium">Drinking Details:</span>
+                                                                        <div className="mt-1 p-2 bg-background rounded border border-border text-muted-foreground">
                                                                             {lifestyleImpact.drinking_details}
                                                                         </div>
                                                                     </div>
                                                                 )}
                                                                 {lifestyleImpact.sleep_quality && (
-                                                                    <div className="flex justify-between py-2 border-b border-green-100">
-                                                                        <span className="text-green-600 font-medium">Sleep Quality:</span>
-                                                                        <Badge className={
-                                                                            lifestyleImpact.sleep_quality?.toLowerCase().includes('poor') ? 'bg-red-100 text-red-800' :
-                                                                                lifestyleImpact.sleep_quality?.toLowerCase().includes('fair') ? 'bg-yellow-100 text-yellow-800' :
-                                                                                    'bg-green-100 text-green-800'
-                                                                        }>
+                                                                    <div className="flex justify-between py-2 border-b border-border">
+                                                                        <span className="text-muted-foreground font-medium">Sleep Quality:</span>
+                                                                        <Badge variant="outline" className="border border-border bg-background text-foreground">
                                                                             {lifestyleImpact.sleep_quality}
                                                                         </Badge>
                                                                     </div>

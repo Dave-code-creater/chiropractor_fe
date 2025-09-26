@@ -37,7 +37,6 @@ export {
   useCreateTreatmentPlanMutation,
   useGetPatientIncidentsQuery,
   useGetIncidentDetailsQuery,
-  useGetDoctorPatientsQuery,
 } from './services/clinicalNotes';
 
 export {
@@ -50,6 +49,13 @@ export {
   useGetDoctorConflictsQuery,
   useGetScheduleStatisticsQuery,
 } from './services/doctorScheduleApi';
+
+export {
+  doctorApi,
+  useGetDoctorPatientsQuery,
+  useGetPatientDetailsForDoctorQuery,
+  useGetDoctorStatsQuery,
+} from './services/doctorApi';
 
 // Report/Incident API exports
 export {

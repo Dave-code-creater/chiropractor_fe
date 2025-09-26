@@ -15,6 +15,7 @@ import {
 } from "@/api/services/appointmentApi";
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@/state/data/authSlice';
+import { extractList } from '@/utils/apiResponse';
 import {
   Calendar,
   Clock,
@@ -58,42 +59,16 @@ export default function PatientAppointments() {
   const [updateAppointment] = useUpdateAppointmentMutation();
 
   // Process appointments data
-  const appointments = useMemo(() => {
-    if (!appointmentsData) return [];
-
-    // Handle different response structures
-    if (Array.isArray(appointmentsData)) {
-      return appointmentsData;
-    }
-
-    if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
-      return appointmentsData.data;
-    }
-
-    if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
-      return appointmentsData.data.appointments;
-    }
-
-    return [];
-  }, [appointmentsData]);
+  const appointments = useMemo(
+    () => extractList(appointmentsData, 'appointments'),
+    [appointmentsData]
+  );
 
   // Process doctors data
-  const doctors = useMemo(() => {
-    if (!doctorsData) return [];
-
-    // Handle different response structures (same as in Booking.jsx)
-    if (doctorsData?.data) {
-      if (Array.isArray(doctorsData.data)) {
-        return doctorsData.data;
-      }
-    }
-
-    if (Array.isArray(doctorsData)) {
-      return doctorsData;
-    }
-
-    return [];
-  }, [doctorsData]);
+  const doctors = useMemo(
+    () => extractList(doctorsData, 'doctors'),
+    [doctorsData]
+  );
 
   // Helper function to get doctor by ID
   const getDoctorById = (doctorId) => {

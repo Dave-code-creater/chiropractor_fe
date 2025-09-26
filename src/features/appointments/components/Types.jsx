@@ -162,14 +162,14 @@ export default function DoctorSelector({
                         key={doctor.id}
                         value={searchString}
                         onSelect={() => handleSelect(doctor.id)}
-                        className="p-4 cursor-pointer hover:bg-primary/5 border-b border-border/50 last:border-b-0 transition-colors"
+                        className="group p-4 cursor-pointer hover:bg-primary/5 border-b border-border/50 last:border-b-0 transition-colors"
                       >
-                        <div className="flex items-center gap-4 w-full">
+                        <div className="flex items-center gap-4 w-full group-data-[selected=true]:text-accent-foreground">
                           <Check
                             className={cn(
                               "h-4 w-4 flex-shrink-0",
                               selectedDoctorId === doctor.id
-                                ? "opacity-100 text-primary"
+                                ? "opacity-100 text-primary group-data-[selected=true]:text-accent-foreground"
                                 : "opacity-0",
                             )}
                           />
@@ -182,14 +182,14 @@ export default function DoctorSelector({
                           </Avatar>
                           <div className="flex-1 min-w-0 space-y-1">
                             <div className="flex items-center justify-between">
-                              <div className="font-semibold text-base truncate">
+                              <div className="font-semibold text-base truncate group-data-[selected=true]:text-accent-foreground">
                                 Dr. {doctor.firstName} {doctor.lastName}
                               </div>
                             </div>
-                            <div className="text-sm text-foreground/70 truncate">
+                            <div className="text-sm text-foreground/70 truncate group-data-[selected=true]:text-accent-foreground/90">
                               {doctor.specializations?.primary || doctor.specialization}
                             </div>
-                            <div className="flex items-center gap-3 text-xs text-foreground/60">
+                            <div className="flex items-center gap-3 text-xs text-foreground/60 group-data-[selected=true]:text-accent-foreground/80">
                               {doctor.languages?.length > 0 && (
                                 <span className="flex items-center gap-1">
                                   <span className="w-1 h-1 bg-foreground/40 rounded-full"></span>

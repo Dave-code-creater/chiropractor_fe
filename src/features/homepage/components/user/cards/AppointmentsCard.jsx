@@ -6,6 +6,7 @@ import { useGetMyAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
 import CompactAppointmentCard from "@/components/CompactAppointmentCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { extractList } from '@/utils/apiResponse';
 
 export default function AppointmentsCard() {
   const [rescheduling, setRescheduling] = useState(false);
@@ -26,24 +27,10 @@ export default function AppointmentsCard() {
 
   // Extract appointments from the correct API response structure
   const appointments = useMemo(() => {
-    if (!data) return [];
+    const rawAppointments = extractList(data, 'appointments');
 
-    let rawAppointments = [];
-    if (data?.data?.appointments && Array.isArray(data.data.appointments)) {
-      rawAppointments = data.data.appointments;
-    } else if (Array.isArray(data)) {
-      rawAppointments = data;
-    } else if (data.appointments && Array.isArray(data.appointments)) {
-      rawAppointments = data.appointments;
-    }
+    const activeAppointments = rawAppointments.filter(appt => !appt.is_cancel && !appt.is_cancelled && appt.status !== 'cancelled');
 
-    // Filter out canceled appointments for the main dashboard view
-    const activeAppointments = rawAppointments.filter(appt => {
-      // Filter out appointments that are canceled
-      return !appt.is_cancel && !appt.is_cancelled && appt.status !== 'cancelled';
-    });
-
-    // Transform the appointment data to match the card format and limit to 3 for dashboard
     return activeAppointments.slice(0, 3).map(appt => ({
       id: appt.id,
       doctorName: appt.doctor

@@ -67,9 +67,7 @@ export default function Login() {
     }
   }, [isReady, isAuthenticated, userID, userRole, navigate]);
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-
+  const executeLogin = async () => {
     // Clear any existing errors
     dispatch(clearEmailError());
     dispatch(clearPasswordError());
@@ -81,31 +79,27 @@ export default function Login() {
 
     try {
       const response = await loginMutation({ email, password }).unwrap();
+      const user = response?.user;
 
-      // Validate response
-      if (!response?.user?.id || !response?.user?.role) {
+      if (!user?.id || !user?.role) {
         console.error('Invalid login response:', response);
         enhancedToast.error(
           "Login system error",
           {
-            description: "There was a problem with the authentication system. Please try again.",
-            action: () => handleLogin(event),
-            actionLabel: "Retry Login"
+            description: "There was a problem with the authentication system. Please try again."
           }
         );
         return;
       }
 
-      // Show success message
-      enhancedToast.auth.success(`Successfully signed in as ${response.user.role}`);
-
-      // Navigate to the appropriate dashboard
-      navigate(`/dashboard/${response.user.role.toLowerCase()}/${response.user.id}`);
+      enhancedToast.auth.success(`Successfully signed in as ${user.role}`);
+      navigate(`/dashboard/${user.role.toLowerCase()}/${user.id}`);
     } catch (error) {
       console.error('Login error:', error);
 
-      // Handle different types of authentication errors
-      if (error?.status === 401 || error?.data?.message?.toLowerCase().includes('invalid')) {
+      const message = error?.data?.message || '';
+
+      if (error?.status === 401 || message.toLowerCase().includes('invalid')) {
         enhancedToast.auth.invalid("Please check your email and password and try again");
       } else if (error?.status === 403) {
         enhancedToast.error(
@@ -131,9 +125,7 @@ export default function Login() {
         enhancedToast.error(
           "Server temporarily unavailable",
           {
-            description: "Our servers are experiencing issues. Please try again in a few moments.",
-            action: () => handleLogin(event),
-            actionLabel: "Retry"
+            description: "Our servers are experiencing issues. Please try again in a few moments."
           }
         );
       } else if (!navigator.onLine) {
@@ -149,13 +141,16 @@ export default function Login() {
         enhancedToast.error(
           "Login failed",
           {
-            description: error?.data?.message || "An unexpected error occurred. Please try again.",
-            action: () => handleLogin(event),
-            actionLabel: "Try Again"
+            description: message || "An unexpected error occurred. Please try again."
           }
         );
       }
     }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    executeLogin();
   };
 
   // Handle OAuth login success

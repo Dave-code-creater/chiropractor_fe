@@ -42,18 +42,22 @@ export default function SimplePatientRecords({ onBack }) {
   if (showSuccess) {
     return (
       <div className="max-w-2xl mx-auto p-6">
-        <Card>
+        <Card className="border-earthfire-clay-200 bg-earthfire-clay-50 text-earthfire-brown-800">
           <CardContent className="pt-6">
             <div className="text-center space-y-4">
-              <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-              <h2 className="text-2xl font-bold text-green-700">
+              <CheckCircle className="h-16 w-16 mx-auto text-earthfire-brick-500" />
+              <h2 className="text-2xl font-bold text-earthfire-brick-700">
                 Forms Submitted Successfully!
               </h2>
-              <p className="text-muted-foreground">
+              <p className="text-earthfire-brown-600">
                 Your complete patient information has been submitted. Thank you for providing all the necessary details.
               </p>
               <div className="flex justify-center gap-4 pt-4">
-                <Button onClick={onBack} variant="outline">
+                <Button
+                  onClick={onBack}
+                  variant="outline"
+                  className="border-earthfire-brown-200 text-earthfire-brown-700 hover:bg-earthfire-clay-100 hover:text-earthfire-brown-800"
+                >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Back to Dashboard
                 </Button>
@@ -78,7 +82,7 @@ export default function SimplePatientRecords({ onBack }) {
 
   // Main form
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto py-6">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">

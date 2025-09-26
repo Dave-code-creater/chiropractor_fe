@@ -51,6 +51,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, isToday, isTomorrow, isYesterday, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
+import { extractList } from '@/utils/apiResponse';
 
 const AdminAppointments = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -104,20 +105,20 @@ const AdminAppointments = () => {
   const [cancelAppointment] = useCancelAppointmentMutation();
 
   // Process data
-  const appointments = useMemo(() => {
-    if (!appointmentsData?.data) return [];
-    return Array.isArray(appointmentsData.data) ? appointmentsData.data : [];
-  }, [appointmentsData]);
+  const appointments = useMemo(
+    () => extractList(appointmentsData, 'appointments'),
+    [appointmentsData]
+  );
 
-  const doctors = useMemo(() => {
-    if (!doctorsData?.data) return [];
-    return Array.isArray(doctorsData.data) ? doctorsData.data : [];
-  }, [doctorsData]);
+  const doctors = useMemo(
+    () => extractList(doctorsData, 'doctors'),
+    [doctorsData]
+  );
 
-  const patients = useMemo(() => {
-    if (!patientsData?.data) return [];
-    return Array.isArray(patientsData.data) ? patientsData.data : [];
-  }, [patientsData]);
+  const patients = useMemo(
+    () => extractList(patientsData, 'patients'),
+    [patientsData]
+  );
 
   // Admin-specific analytics
   const adminStats = useMemo(() => {

@@ -47,6 +47,12 @@ export default defineConfig({
       // 'styled-components'
     ]
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setupTests.js',
+    css: true
+  },
   // Vite automatically exposes VITE_ prefixed variables safely
   // Removed unsafe define that exposed all environment variables
 })

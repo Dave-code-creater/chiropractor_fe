@@ -5,17 +5,28 @@ import { Link, useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { Heart, Stethoscope } from "lucide-react";
 import { useSelector } from "react-redux";
-import { selectUserId, selectIsAuthenticated } from "@/state/data/authSlice";
+import {
+  selectUserId,
+  selectIsAuthenticated,
+  selectUserRole,
+} from "@/state/data/authSlice";
 
 const Footer = () => {
 
   const navigate = useNavigate();
   const user = useSelector(selectUserId);
+  const userRole = useSelector(selectUserRole);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
   const handleBookAppointment = () => {
     if (isAuthenticated && user) {
-      navigate(`/dashboard/user/${user}/appointments`);
+      if (userRole === "doctor") {
+        navigate(`/dashboard/doctor/${user}/appointments`);
+      } else if (userRole === "admin") {
+        navigate(`/dashboard/admin/${user}/appointments`);
+      } else {
+        navigate(`/dashboard/patient/${user}/appointments`);
+      }
     } else {
       navigate("/login");
     }

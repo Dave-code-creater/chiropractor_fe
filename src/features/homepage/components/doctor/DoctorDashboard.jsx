@@ -18,9 +18,10 @@ import {
 import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { Link } from "react-router-dom";
 import { selectCurrentUser, selectUserId } from "../../../../state/data/authSlice";
-import { useGetPatientsQuery } from '@/api/services/userApi';
+import { useGetDoctorPatientsQuery, useGetDoctorStatsQuery } from '@/api/services/doctorApi';
 import { useGetConversationsQuery } from '@/api/services/chatApi';
 import { useGetBlogPostsQuery } from '@/api/services/blogApi';
+import { extractList } from '@/utils/apiResponse';
 
 export default function DoctorDashboard() {
   const user = useSelector(selectCurrentUser);
@@ -37,8 +38,17 @@ export default function DoctorDashboard() {
     limit: 50,
   });
 
-  // Fetch patients
-  const { data: patientsData, isLoading: isLoadingPatients } = useGetPatientsQuery();
+  // Fetch doctor's patients using doctor-specific API
+  const { data: patientsData, isLoading: isLoadingPatients } = useGetDoctorPatientsQuery({
+    doctorId: userID,
+    limit: 50
+  });
+
+  // Fetch doctor's dashboard stats
+  const { data: statsData, isLoading: isLoadingStats } = useGetDoctorStatsQuery({
+    doctorId: userID,
+    range: "last_30_days"
+  });
 
   // Fetch conversations
   const { data: conversationsData, isLoading: isLoadingConversations } = useGetConversationsQuery({
@@ -46,34 +56,32 @@ export default function DoctorDashboard() {
   });
 
   // Process appointments data - same logic as other appointment components
-  const appointments = React.useMemo(() => {
-    if (isLoadingAppointments || error || !appointmentsData) return [];
+  const appointments = React.useMemo(
+    () => (isLoadingAppointments || error ? [] : extractList(appointmentsData, 'appointments')),
+    [appointmentsData, isLoadingAppointments, error]
+  );
 
-    // Based on your API structure: { data: { appointments: [...] } }
-    if (appointmentsData.data && appointmentsData.data.appointments && Array.isArray(appointmentsData.data.appointments)) {
-      return appointmentsData.data.appointments;
-    }
+  // Process patients data from doctor API
+  const patients = React.useMemo(
+    () => (isLoadingPatients ? [] : extractList(patientsData, 'patients')),
+    [patientsData, isLoadingPatients]
+  );
 
-    // Fallback: Handle if data is directly in data array
-    if (appointmentsData.data && Array.isArray(appointmentsData.data)) {
-      return appointmentsData.data;
-    }
-
-    // Fallback: Handle if appointments are at root level
-    if (Array.isArray(appointmentsData)) {
-      return appointmentsData;
-    }
-
-    return [];
-  }, [appointmentsData, isLoadingAppointments, error]);
-
-  // Process patients data
-  const patients = React.useMemo(() => {
-    if (isLoadingPatients || !patientsData) return [];
-    if (Array.isArray(patientsData?.data)) return patientsData.data;
-    if (Array.isArray(patientsData)) return patientsData;
-    return [];
-  }, [patientsData, isLoadingPatients]);
+  // Process dashboard stats
+  const stats = React.useMemo(() => {
+    if (isLoadingStats || !statsData) return {
+      total_patients: 0,
+      active_patients: 0,
+      total_incidents: 0,
+      active_incidents: 0,
+      total_appointments: 0,
+      scheduled_appointments: 0,
+      upcoming_appointments: 0,
+      incidents_this_week: 0,
+      appointments_this_week: 0
+    };
+    return statsData?.data || statsData;
+  }, [statsData, isLoadingStats]);
 
   // Process conversations data
   const conversations = React.useMemo(() => {
@@ -99,7 +107,15 @@ export default function DoctorDashboard() {
     return appointmentDate >= today && (apt.status === "confirmed" || apt.status === "scheduled");
   }).slice(0, 5);
 
-  const activePatients = new Set(appointments.map(apt => apt.patient_id)).size;
+  // Use stats from API instead of calculated values
+  const activePatients = stats.active_patients || 0;
+  const totalPatients = stats.total_patients || 0;
+  const totalIncidents = stats.total_incidents || 0;
+  const scheduledAppointments = stats.scheduled_appointments || 0;
+  const upcomingAppointmentsCount = stats.upcoming_appointments || 0;
+  const incidentsThisWeek = stats.incidents_this_week || 0;
+  const appointmentsThisWeek = stats.appointments_this_week || 0;
+
   const unreadMessages = conversations.filter(conv => conv.unread_count > 0).length;
 
   useEffect(() => {
@@ -119,15 +135,15 @@ export default function DoctorDashboard() {
     switch (status) {
       case "confirmed":
       case "scheduled":
-        return "bg-green-100 text-green-800";
+        return "bg-earthfire-clay-100 text-earthfire-brick-700 border border-earthfire-clay-200";
       case "pending":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-earthfire-brown-100 text-earthfire-brown-700 border border-earthfire-brown-200";
       case "completed":
-        return "bg-blue-100 text-blue-800";
+        return "bg-earthfire-umber-100 text-earthfire-umber-700 border border-earthfire-umber-200";
       case "cancelled":
-        return "bg-red-100 text-red-800";
+        return "bg-earthfire-brick-100 text-earthfire-brick-700 border border-earthfire-brick-200";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-earthfire-brown-50 text-earthfire-brown-700 border border-earthfire-brown-200";
     }
   };
 
@@ -139,7 +155,7 @@ export default function DoctorDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-4 md:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-earthfire-clay-50 via-white to-earthfire-brown-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -158,13 +174,17 @@ export default function DoctorDashboard() {
           </div>
           <div className="flex flex-wrap gap-2">
             <Link to={`/dashboard/doctor/${userID}/appointments`}>
-              <Button size="sm" className="bg-primary hover:bg-primary/90">
+              <Button size="sm" className="bg-earthfire-brick-600 hover:bg-earthfire-brick-500">
                 <Plus className="w-4 h-4 mr-2" />
                 New Appointment
               </Button>
             </Link>
             <Link to={`/dashboard/doctor/${userID}/patients`}>
-              <Button size="sm" variant="outline">
+              <Button
+                size="sm"
+                variant="outline"
+                className="border-earthfire-clay-200 text-earthfire-brown-700 hover:bg-earthfire-clay-50 hover:text-earthfire-brick-700"
+              >
                 <Users className="w-4 h-4 mr-2" />
                 Patients
               </Button>
@@ -182,8 +202,8 @@ export default function DoctorDashboard() {
                   <p className="text-2xl font-bold text-foreground">{todayAppointments.length}</p>
                   <p className="text-xs text-muted-foreground">Appointments</p>
                 </div>
-                <div className="p-2 rounded-full bg-blue-50">
-                  <Calendar className="w-5 h-5 text-blue-600" />
+                <div className="p-2 rounded-full bg-earthfire-clay-100">
+                  <Calendar className="w-5 h-5 text-earthfire-brick-600" />
                 </div>
               </div>
             </CardContent>
@@ -197,8 +217,8 @@ export default function DoctorDashboard() {
                   <p className="text-2xl font-bold text-foreground">{activePatients}</p>
                   <p className="text-xs text-muted-foreground">Patients</p>
                 </div>
-                <div className="p-2 rounded-full bg-green-50">
-                  <Users className="w-5 h-5 text-green-600" />
+                <div className="p-2 rounded-full bg-earthfire-brown-100">
+                  <Users className="w-5 h-5 text-earthfire-brown-700" />
                 </div>
               </div>
             </CardContent>
@@ -212,8 +232,8 @@ export default function DoctorDashboard() {
                   <p className="text-2xl font-bold text-foreground">{unreadMessages}</p>
                   <p className="text-xs text-muted-foreground">Messages</p>
                 </div>
-                <div className="p-2 rounded-full bg-purple-50">
-                  <MessageSquare className="w-5 h-5 text-purple-600" />
+                <div className="p-2 rounded-full bg-earthfire-umber-100">
+                  <MessageSquare className="w-5 h-5 text-earthfire-umber-700" />
                 </div>
               </div>
             </CardContent>
@@ -224,11 +244,11 @@ export default function DoctorDashboard() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">Upcoming</p>
-                  <p className="text-2xl font-bold text-foreground">{upcomingAppointments.length}</p>
-                  <p className="text-xs text-muted-foreground">This Week</p>
+                  <p className="text-2xl font-bold text-foreground">{upcomingAppointmentsCount}</p>
+                  <p className="text-xs text-muted-foreground">Upcoming</p>
                 </div>
-                <div className="p-2 rounded-full bg-orange-50">
-                  <Clock className="w-5 h-5 text-orange-600" />
+                <div className="p-2 rounded-full bg-earthfire-brick-100">
+                  <Clock className="w-5 h-5 text-earthfire-brick-600" />
                 </div>
               </div>
             </CardContent>
@@ -240,7 +260,7 @@ export default function DoctorDashboard() {
           {/* Today's Schedule */}
           <Card className="lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xl font-semibold">Today's Schedule</CardTitle>
+              <CardTitle className="text-xl font-semibold text-earthfire-brick-700">Today's Schedule</CardTitle>
               <Link to={`/dashboard/doctor/${userID}/appointments`}>
                 <Button variant="ghost" size="sm">
                   View All
@@ -251,7 +271,7 @@ export default function DoctorDashboard() {
             <CardContent>
               {isLoadingAppointments ? (
                 <div className="flex items-center justify-center h-32">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-earthfire-brick-600"></div>
                 </div>
               ) : todayAppointments.length === 0 ? (
                 <div className="text-center py-8">
@@ -261,7 +281,7 @@ export default function DoctorDashboard() {
               ) : (
                 <div className="space-y-3">
                   {todayAppointments.map((apt) => (
-                    <div key={apt.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div key={apt.id} className="flex items-center justify-between p-3 bg-earthfire-clay-50/80 rounded-lg border border-earthfire-clay-100">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-2">
                           <Clock className="w-4 h-4 text-muted-foreground" />
@@ -283,40 +303,55 @@ export default function DoctorDashboard() {
           {/* Quick Actions */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl font-semibold">Quick Actions</CardTitle>
+              <CardTitle className="text-xl font-semibold text-earthfire-brick-700">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Link to={`/dashboard/doctor/${userID}/appointments`} className="block">
-                <Button variant="outline" className="w-full justify-start">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-earthfire-clay-200 text-earthfire-brown-700 hover:bg-earthfire-clay-50 hover:text-earthfire-brick-700"
+                >
                   <Calendar className="w-4 h-4 mr-2" />
                   Manage Appointments
                 </Button>
               </Link>
               <Link to={`/dashboard/doctor/${userID}/patients`} className="block">
-                <Button variant="outline" className="w-full justify-start">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-earthfire-clay-200 text-earthfire-brown-700 hover:bg-earthfire-clay-50 hover:text-earthfire-brick-700"
+                >
                   <Users className="w-4 h-4 mr-2" />
                   Patient Records
                 </Button>
               </Link>
               <Link to={`/dashboard/doctor/${userID}/chat`} className="block">
-                <Button variant="outline" className="w-full justify-start">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-earthfire-clay-200 text-earthfire-brown-700 hover:bg-earthfire-clay-50 hover:text-earthfire-brick-700"
+                >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Messages
                   {unreadMessages > 0 && (
-                    <Badge className="ml-auto bg-red-500 text-white text-xs">
+                    <Badge className="ml-auto bg-earthfire-brick-500 text-white text-xs">
                       {unreadMessages}
                     </Badge>
                   )}
                 </Button>
               </Link>
               <Link to={`/dashboard/doctor/${userID}/blog/management`} className="block">
-                <Button variant="outline" className="w-full justify-start">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-earthfire-clay-200 text-earthfire-brown-700 hover:bg-earthfire-clay-50 hover:text-earthfire-brick-700"
+                >
                   <FileText className="w-4 h-4 mr-2" />
                   Write Blog Post
                 </Button>
               </Link>
               <Link to={`/dashboard/doctor/${userID}/notes`} className="block">
-                <Button variant="outline" className="w-full justify-start">
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-earthfire-clay-200 text-earthfire-brown-700 hover:bg-earthfire-clay-50 hover:text-earthfire-brick-700"
+                >
                   <Activity className="w-4 h-4 mr-2" />
                   Clinical Notes
                 </Button>
@@ -330,7 +365,7 @@ export default function DoctorDashboard() {
           {/* Recent Patients */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-semibold">Recent Patients</CardTitle>
+              <CardTitle className="text-lg font-semibold text-earthfire-brick-700">Recent Patients</CardTitle>
               <Link to={`/dashboard/doctor/${userID}/patients`}>
                 <Button variant="ghost" size="sm">
                   View All
@@ -341,25 +376,28 @@ export default function DoctorDashboard() {
             <CardContent>
               {isLoadingPatients ? (
                 <div className="flex items-center justify-center h-24">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-earthfire-brick-600"></div>
                 </div>
               ) : patients.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">No patients found</p>
               ) : (
                 <div className="space-y-3">
                   {patients.slice(0, 3).map((patient) => (
-                    <div key={patient.id} className="flex items-center justify-between">
+                    <div key={patient.patient_id} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={patient.avatar} />
-                          <AvatarFallback>{patient.firstName?.[0]}{patient.lastName?.[0]}</AvatarFallback>
+                          <AvatarFallback>{patient.first_name?.[0]}{patient.last_name?.[0]}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium">{patient.firstName} {patient.lastName}</p>
+                          <p className="font-medium">{patient.first_name} {patient.last_name}</p>
                           <p className="text-sm text-muted-foreground">{patient.email}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {patient.total_incidents} incidents | {patient.total_appointments} appointments
+                          </p>
                         </div>
                       </div>
-                      <Link to={`/dashboard/doctor/${userID}/patients/${patient.id}`}>
+                      <Link to={`/dashboard/doctor/${userID}/patients/${patient.patient_id}`}>
                         <Button size="sm" variant="ghost">
                           View
                         </Button>
@@ -374,7 +412,7 @@ export default function DoctorDashboard() {
           {/* Recent Messages */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-lg font-semibold">Recent Messages</CardTitle>
+              <CardTitle className="text-lg font-semibold text-earthfire-brick-700">Recent Messages</CardTitle>
               <Link to={`/dashboard/doctor/${userID}/chat`}>
                 <Button variant="ghost" size="sm">
                   View All
@@ -385,7 +423,7 @@ export default function DoctorDashboard() {
             <CardContent>
               {isLoadingConversations ? (
                 <div className="flex items-center justify-center h-24">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-earthfire-brick-600"></div>
                 </div>
               ) : conversations.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">No recent messages</p>
@@ -407,7 +445,7 @@ export default function DoctorDashboard() {
                       </div>
                       <div className="flex items-center gap-2">
                         {conv.unread_count > 0 && (
-                          <Badge className="bg-red-500 text-white text-xs">
+                          <Badge className="bg-earthfire-brick-500 text-white text-xs">
                             {conv.unread_count}
                           </Badge>
                         )}

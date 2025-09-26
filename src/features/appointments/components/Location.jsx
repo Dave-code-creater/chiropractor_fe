@@ -120,6 +120,7 @@ export default function LocationSelector({
                       key={loc.value}
                       value={loc.value}
                       onSelect={handleSelect}
+                      className="group"
                     >
                       <Check
                         className={cn(
@@ -127,9 +128,11 @@ export default function LocationSelector({
                           selected === loc.value ? "opacity-100" : "opacity-0",
                         )}
                       />
-                      <div>
-                        <div className="font-medium">{loc.label}</div>
-                        <div className="text-sm text-foreground/70">
+                      <div className="group-data-[selected=true]:text-accent-foreground">
+                        <div className="font-medium group-data-[selected=true]:text-accent-foreground">
+                          {loc.label}
+                        </div>
+                        <div className="text-sm text-foreground/70 group-data-[selected=true]:text-accent-foreground/90">
                           {loc.address}
                         </div>
                       </div>

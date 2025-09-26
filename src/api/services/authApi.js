@@ -3,6 +3,27 @@ import { baseQueryWithReauth, CACHE_TIMES } from "../core/baseApi";
 import { setCredentials, logOut, updateUserProfile } from "../../state/data/authSlice";
 import { startPeriodicTokenCheck, stopPeriodicTokenCheck, setLoggingOut } from "../core/tokenManager";
 
+const normalizeAuthResponse = (response) => {
+  if (!response) return {};
+
+  const container = response.data ?? response;
+
+  const user = container.user ?? container.profile ?? container.patient ?? null;
+  const tokens = container.tokens ?? {
+    accessToken: container.accessToken ?? response.accessToken ?? response.token ?? null,
+    refreshToken: container.refreshToken ?? response.refreshToken ?? null,
+  };
+
+  return {
+    success: response.success ?? container.success ?? null,
+    message: response.message ?? container.message ?? null,
+    user,
+    tokens,
+    profile: container.profile ?? container.patient ?? null,
+    raw: response,
+  };
+};
+
 export const authApi = createApi({
   reducerPath: "authApi",
   baseQuery: baseQueryWithReauth,
@@ -18,27 +39,42 @@ export const authApi = createApi({
         method: "POST",
         body: credentials,
       }),
+      transformResponse: (response) => normalizeAuthResponse(response),
       async onQueryStarted(arg, { dispatch, queryFulfilled, getState }) {
         try {
           const { data } = await queryFulfilled;
-          dispatch(setCredentials(data));
+
+          if (!data?.user) {
+            console.error("normalizeAuthResponse returned no user", data);
+            return;
+          }
+
+          dispatch(
+            setCredentials({
+              user: data.user,
+              accessToken: data.tokens?.accessToken ?? data.token ?? null,
+              refreshToken: data.tokens?.refreshToken ?? null,
+            })
+          );
 
           // Start periodic token checking after successful login
           startPeriodicTokenCheck({ dispatch, getState });
 
           // Update user profile if additional data is available
-          if (data.user) {
+          const profileSource = data.profile ?? data.user;
+
+          if (profileSource) {
             dispatch(updateUserProfile({
-              firstName: data.user.first_name,
-              lastName: data.user.last_name,
-              fullName: data.user.full_name,
-              phoneNumber: data.user.phone_number,
-              dateOfBirth: data.user.date_of_birth,
-              gender: data.user.gender,
-              marriageStatus: data.user.marriage_status,
-              race: data.user.race,
-              isVerified: data.user.is_verified,
-              phoneVerified: data.user.phone_verified,
+              firstName: profileSource.first_name,
+              lastName: profileSource.last_name,
+              fullName: profileSource.full_name,
+              phoneNumber: profileSource.phone_number,
+              dateOfBirth: profileSource.date_of_birth,
+              gender: profileSource.gender,
+              marriageStatus: profileSource.marriage_status,
+              race: profileSource.race,
+              isVerified: profileSource.is_verified,
+              phoneVerified: profileSource.phone_verified,
             }));
           }
         } catch (error) {
