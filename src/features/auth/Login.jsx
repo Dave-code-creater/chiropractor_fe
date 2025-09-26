@@ -16,7 +16,6 @@ import { toast } from "sonner";
 import { enhancedToast } from "@/components/notifications/SimpleToast";
 import { selectUserId, selectUserRole } from "../../state/data/authSlice";
 
-// Role-based redirect paths
 const ROLE_REDIRECTS = {
   admin: (id) => `/dashboard/admin/${id}`,
   doctor: (id) => `/dashboard/doctor/${id}`,
@@ -55,10 +54,8 @@ export default function Login() {
     }
   };
 
-  // Handle already authenticated users
   useEffect(() => {
     if (isReady && isAuthenticated && userID && userRole) {
-      // Use setTimeout to prevent navigation during render
       const timer = setTimeout(() => {
         navigate(`/dashboard/${userRole.toLowerCase()}/${userID}`, { replace: true });
       }, 100);
@@ -68,7 +65,6 @@ export default function Login() {
   }, [isReady, isAuthenticated, userID, userRole, navigate]);
 
   const executeLogin = async () => {
-    // Clear any existing errors
     dispatch(clearEmailError());
     dispatch(clearPasswordError());
 
@@ -153,12 +149,10 @@ export default function Login() {
     executeLogin();
   };
 
-  // Handle OAuth login success
   const handleOAuthSuccess = async (userData) => {
     try {
       const response = await oauthLoginMutation(userData).unwrap();
 
-      // Validate response
       if (!response?.user?.id || !response?.user?.role) {
         console.error('Invalid OAuth login response:', response);
         enhancedToast.error(
@@ -171,15 +165,12 @@ export default function Login() {
         return;
       }
 
-      // Show success message
       enhancedToast.auth.success(`Successfully signed in with ${userData.provider} as ${response.user.role}`);
 
-      // Navigate to the appropriate dashboard
       navigate(`/dashboard/${response.user.role.toLowerCase()}/${response.user.id}`);
     } catch (error) {
       console.error('OAuth login error:', error);
 
-      // Handle OAuth-specific errors
       if (error?.status === 409) {
         enhancedToast.error(
           "Account already exists",
@@ -188,7 +179,6 @@ export default function Login() {
             action: {
               label: "Try Regular Login",
               onClick: () => {
-                // Focus on email input if the userData contains email
                 if (userData.email) {
                   setEmail(userData.email);
                 }
@@ -216,7 +206,6 @@ export default function Login() {
     }
   };
 
-  // Handle OAuth login error
   const handleOAuthError = (message, error) => {
     console.error('OAuth Error:', message, error);
     enhancedToast.error(
@@ -228,7 +217,6 @@ export default function Login() {
     );
   };
 
-  // Show loading while auth state is being rehydrated
   if (!isReady) {
     return (
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -240,7 +228,6 @@ export default function Login() {
     );
   }
 
-  // If already authenticated, show Facebook-like redirecting message
   if (isAuthenticated && userID && userRole) {
     return (
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -272,7 +259,6 @@ export default function Login() {
           Sign In to Your Account
         </h2>
       </div>
-
       <div className="mt-6 sm:mt-10 sm:mx-auto sm:w-full sm:max-w-md">
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
@@ -341,7 +327,6 @@ export default function Login() {
 
 
 
-        {/* OAuth Login Component */}
         <div className="mt-6">
           <OAuthLogin
             onLoginSuccess={handleOAuthSuccess}

@@ -19,7 +19,6 @@ const About = () => {
   return (
     <section className=" py-24 px-6 sm:py-28 lg:px-8">
       <div className="mx-auto max-w-7xl grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        {/* Left: Text Content */}
         <div className="space-y-6">
           <h2 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Meet Dr. Dieu Phan
@@ -82,7 +81,6 @@ const About = () => {
           </div>
         </div>
 
-        {/* Right: Image */}
         <div>
           <img
             src={dr}

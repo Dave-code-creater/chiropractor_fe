@@ -36,7 +36,6 @@ const PatientNotes = ({ userId }) => {
     permissions
   } = useNoteManagement(userId, 'patient');
 
-  // Filter notes based on search and type
   const filteredNotes = notes.filter(note => {
     const matchesSearch = note.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          note.title?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -140,15 +139,12 @@ const PatientNotes = ({ userId }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h2 className="text-2xl font-bold">My Clinical Notes</h2>
         <p className="text-muted-foreground">
           View your treatment history and progress
         </p>
       </div>
-
-      {/* Filters */}
       <div className="flex items-center gap-4">
         <div className="flex-1">
           <Input
@@ -173,8 +169,6 @@ const PatientNotes = ({ userId }) => {
           </SelectContent>
         </Select>
       </div>
-
-      {/* Notes List */}
       <div className="space-y-4">
         {isLoading ? (
           <Card>

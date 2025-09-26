@@ -64,7 +64,6 @@ const BulkOperationsManager = () => {
     dateRange: "all",
   });
 
-  // Available bulk operations
   const [bulkOperations] = useState([
     {
       id: "update-status",
@@ -155,10 +154,8 @@ const BulkOperationsManager = () => {
     },
   ]);
 
-  // Get all records based on current tab
   const [currentTab, setCurrentTab] = useState("patients");
 
-  // Fetch data based on current tab
   const { data: appointmentsData, isLoading: appointmentsLoading } = useGetAppointmentsQuery(
     {},
     { skip: currentTab !== "appointments" }
@@ -169,7 +166,6 @@ const BulkOperationsManager = () => {
     { skip: currentTab !== "reports" }
   );
 
-  // Mock patients data (replace with actual patient API when available)
   const mockPatients = [
     {
       id: "PAT-001",
@@ -193,7 +189,6 @@ const BulkOperationsManager = () => {
     },
   ];
 
-  // Get current data based on tab
   const getCurrentData = () => {
     switch (currentTab) {
       case "appointments":
@@ -202,21 +197,19 @@ const BulkOperationsManager = () => {
         return postsData?.posts || postsData || [];
       case "patients":
       default:
-        return mockPatients; // Replace with real patient API call when available
+        return mockPatients;
     }
   };
 
   const currentData = getCurrentData();
   const _isLoading = appointmentsLoading || postsLoading;
 
-  // Filter operations based on current tab
   const availableOperations = useMemo(() => {
     return bulkOperations.filter((op) =>
       op.supportedTypes.includes(currentTab),
     );
   }, [bulkOperations, currentTab]);
 
-  // Process bulk operation
   const processBulkOperation = useCallback(
     async (operationId, items, _inputValue = null) => {
       const operation = bulkOperations.find((op) => op.id === operationId);
@@ -237,7 +230,6 @@ const BulkOperationsManager = () => {
 
       try {
         for (let i = 0; i < items.length; i++) {
-          // Simulate processing delay
           await new Promise((resolve) => setTimeout(resolve, 500));
 
           const item = items[i];
@@ -245,8 +237,7 @@ const BulkOperationsManager = () => {
           setOperationProgress(progress);
 
           try {
-            // Simulate operation success/failure
-            const success = Math.random() > 0.1; // 90% success rate
+            const success = Math.random() > 0.1;
 
             if (success) {
               results.successful++;
@@ -417,7 +408,6 @@ const BulkOperationsManager = () => {
             </Alert>
           )}
 
-          {/* Selected Items Summary */}
           <div className="space-y-3">
             <h4 className="font-medium">
               Selected Items ({selectedItems.length})
@@ -448,7 +438,6 @@ const BulkOperationsManager = () => {
 
           <Separator />
 
-          {/* Operation Input */}
           {operation.requiresInput && (
             <div className="space-y-3">
               <Label>Operation Parameters</Label>
@@ -484,7 +473,6 @@ const BulkOperationsManager = () => {
             </div>
           )}
 
-          {/* Progress Bar */}
           {isProcessing && (
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
@@ -495,7 +483,6 @@ const BulkOperationsManager = () => {
             </div>
           )}
 
-          {/* Action Buttons */}
           <div className="flex items-center space-x-2">
             <Button
               onClick={() =>
@@ -697,7 +684,6 @@ const BulkOperationsManager = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
@@ -714,8 +700,6 @@ const BulkOperationsManager = () => {
           </Button>
         </div>
       </div>
-
-      {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -768,10 +752,7 @@ const BulkOperationsManager = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Data Selection */}
         <div className="lg:col-span-1 space-y-4">
           <Tabs value={currentTab} onValueChange={setCurrentTab}>
             <TabsList className="grid w-full grid-cols-3">
@@ -785,9 +766,7 @@ const BulkOperationsManager = () => {
           </Tabs>
         </div>
 
-        {/* Operations and Execution */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Available Operations */}
           <Card>
             <CardHeader>
               <CardTitle>Available Operations</CardTitle>
@@ -806,10 +785,8 @@ const BulkOperationsManager = () => {
             </CardContent>
           </Card>
 
-          {/* Operation Panel */}
           <BulkOperationPanel />
 
-          {/* Results Panel */}
           <ResultsPanel />
         </div>
       </div>

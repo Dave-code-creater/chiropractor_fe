@@ -35,9 +35,7 @@ const Footer = () => {
   return (
     <footer className="mt-auto border-t border-border/40 bg-gradient-to-r from-background/95 to-muted/20 backdrop-blur-sm">
       <div className="container px-4 py-8 lg:px-8">
-        {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
-          {/* Brand Section */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <div className="p-2 rounded-xl bg-primary/10">
@@ -58,7 +56,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Quick Links */}
           <div className="space-y-4">
             <h4 className="text-sm font-semibold text-foreground">
               Quick Links
@@ -91,7 +88,6 @@ const Footer = () => {
             </nav>
           </div>
 
-          {/* Legal & Support */}
           <div className="space-y-4">
             <h4 className="text-sm font-semibold text-foreground">
               Legal & Support
@@ -121,7 +117,6 @@ const Footer = () => {
 
         <Separator className="my-6 opacity-50" />
 
-        {/* Bottom Footer */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-2 text-sm text-muted-foreground">
             <span>

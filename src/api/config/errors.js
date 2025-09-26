@@ -1,4 +1,3 @@
-// API Response Types
 export const API_RESPONSE_TYPES = {
   SUCCESS: "success",
   ERROR: "error",
@@ -7,7 +6,6 @@ export const API_RESPONSE_TYPES = {
   NOT_FOUND: "not_found",
 };
 
-// Standard API Error Class
 export class ApiError extends Error {
   constructor(message, status, code, details = null) {
     super(message);
@@ -18,7 +16,6 @@ export class ApiError extends Error {
   }
 }
 
-// Response Interceptor Helper
 export const handleApiResponse = (response) => {
   if (response.success) {
     return response.data;

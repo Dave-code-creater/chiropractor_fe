@@ -6,11 +6,10 @@ export const doctorScheduleApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["DoctorSchedule", "WorkingHours", "TimeOff", "DoctorProfiles"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
-  refetchOnFocus: false,            // Prevent automatic refetch on window focus
-  refetchOnReconnect: true,         // Keep this for actual network issues
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
-    // Get doctor profiles with working hours
     getDoctorProfiles: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -29,7 +28,6 @@ export const doctorScheduleApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.LONG,
     }),
 
-    // Get specific doctor profile
     getDoctorProfile: builder.query({
       query: (doctor_id) => ({
         url: `doctors/${doctor_id}/profile`,
@@ -40,7 +38,6 @@ export const doctorScheduleApi = createApi({
       ],
     }),
 
-    // Update doctor profile
     updateDoctorProfile: builder.mutation({
       query: ({ doctor_id, ...data }) => ({
         url: `doctors/${doctor_id}/profile`,
@@ -53,7 +50,6 @@ export const doctorScheduleApi = createApi({
       ],
     }),
 
-    // Get doctor working hours
     getDoctorWorkingHours: builder.query({
       query: (doctor_id) => ({
         url: `doctors/${doctor_id}/working-hours`,
@@ -64,7 +60,6 @@ export const doctorScheduleApi = createApi({
       ],
     }),
 
-    // Update doctor working hours
     updateDoctorWorkingHours: builder.mutation({
       query: ({ doctor_id, workingHours }) => ({
         url: `doctors/${doctor_id}/working-hours`,
@@ -78,7 +73,6 @@ export const doctorScheduleApi = createApi({
       ],
     }),
 
-    // Get doctor schedule for a date range
     getDoctorSchedule: builder.query({
       query: ({ doctor_id, start_date, end_date }) => {
         const queryParams = new URLSearchParams();
@@ -95,7 +89,6 @@ export const doctorScheduleApi = createApi({
       ],
     }),
 
-    // Get all doctors schedules for a date range
     getAllDoctorsSchedule: builder.query({
       query: ({ start_date, end_date, doctor_ids = [] }) => {
         const queryParams = new URLSearchParams();
@@ -111,7 +104,6 @@ export const doctorScheduleApi = createApi({
       providesTags: ["DoctorSchedule"],
     }),
 
-    // Get time-off requests
     getTimeOffRequests: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -131,7 +123,6 @@ export const doctorScheduleApi = createApi({
       providesTags: ["TimeOff"],
     }),
 
-    // Create time-off request
     createTimeOffRequest: builder.mutation({
       query: (data) => ({
         url: "doctors/time-off",
@@ -141,7 +132,6 @@ export const doctorScheduleApi = createApi({
       invalidatesTags: ["TimeOff", "DoctorSchedule"],
     }),
 
-    // Update time-off request
     updateTimeOffRequest: builder.mutation({
       query: ({ requestId, ...data }) => ({
         url: `doctors/time-off/${requestId}`,
@@ -155,7 +145,6 @@ export const doctorScheduleApi = createApi({
       ],
     }),
 
-    // Delete time-off request
     deleteTimeOffRequest: builder.mutation({
       query: (requestId) => ({
         url: `doctors/time-off/${requestId}`,
@@ -164,7 +153,6 @@ export const doctorScheduleApi = createApi({
       invalidatesTags: ["TimeOff", "DoctorSchedule"],
     }),
 
-    // Approve/reject time-off request (admin only)
     approveTimeOffRequest: builder.mutation({
       query: ({ requestId, status, notes }) => ({
         url: `doctors/time-off/${requestId}/approve`,
@@ -178,7 +166,6 @@ export const doctorScheduleApi = createApi({
       ],
     }),
 
-    // Get doctor availability conflicts
     getDoctorConflicts: builder.query({
       query: ({ doctor_id, start_date, end_date }) => {
         const queryParams = new URLSearchParams();
@@ -195,7 +182,6 @@ export const doctorScheduleApi = createApi({
       ],
     }),
 
-    // Get schedule statistics
     getScheduleStatistics: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();

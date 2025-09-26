@@ -45,7 +45,6 @@ import {
   Search,
 } from "lucide-react";
 
-// Helper function to extract data from API response
 const extractDataFromResponse = (data) => {
   if (!data) return [];
   if (Array.isArray(data)) return data;
@@ -55,7 +54,6 @@ const extractDataFromResponse = (data) => {
   return [];
 };
 
-// Helper function to get role display name
 const getRoleDisplayName = (role) => {
   const roleNames = {
     patient: "Patient",
@@ -65,7 +63,6 @@ const getRoleDisplayName = (role) => {
   return roleNames[role?.toLowerCase()] || role || "User";
 };
 
-// New Conversation Modal Component for Doctors
 const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUserRole }) => {
   const [formData, setFormData] = useState({
     target_user_id: "",
@@ -78,7 +75,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
-  // Debounce search term to prevent excessive API calls
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -86,13 +82,12 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Get available users - doctors can chat with anyone
   const {
     data: availableUsersData,
     isLoading: isLoadingUsers,
   } = useGetConversationUsersQuery({
     search_term: debouncedSearchTerm,
-    role: roleFilter === 'all' ? 'patient' : roleFilter, // Default to 'patient' for doctors
+    role: roleFilter === 'all' ? 'patient' : roleFilter,
     per_page: 50
   }, {
     skip: !isOpen,
@@ -103,7 +98,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
 
   const availableUsers = useMemo(() => {
     const users = extractDataFromResponse(availableUsersData);
-    // Doctors can chat with anyone - no filtering needed
     return users;
   }, [availableUsersData]);
 
@@ -125,7 +119,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   };
 
   const handleSubmit = async () => {
-    // Validate form data
     const validation = validateConversationData(formData);
 
     if (!validation.isValid) {
@@ -133,7 +126,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
       return;
     }
 
-    // Find selected user
     const selectedUser = availableUsers.find(user => user.id.toString() === formData.target_user_id.toString());
 
     if (!selectedUser) {
@@ -150,7 +142,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     onClose();
   };
 
-  // Role filter options for doctors (can chat with anyone)
   const roleFilterOptions = [
     { value: "all", label: "All Users", icon: Users },
     { value: "patient", label: "Patients Only", icon: Users },
@@ -171,7 +162,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0">
 
-          {/* Role Info Alert */}
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -179,7 +169,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </AlertDescription>
           </Alert>
 
-          {/* Role Filter */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Filter by Role</label>
             <Select
@@ -205,7 +194,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </Select>
           </div>
 
-          {/* User Search */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Search Users</label>
             <div className="relative">
@@ -219,7 +207,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </div>
           </div>
 
-          {/* Available Users */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Select Recipient *</label>
             <div className="max-h-32 sm:max-h-48 overflow-y-auto border rounded-lg">
@@ -264,7 +251,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </div>
           </div>
 
-          {/* Priority Selection for Doctors */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Priority</label>
             <Select
@@ -297,7 +283,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </Select>
           </div>
 
-          {/* Subject */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Subject *</label>
             <Input
@@ -312,7 +297,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </div>
           </div>
 
-          {/* Initial Message */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Initial Message</label>
             <Textarea
@@ -328,7 +312,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 pt-2 sm:pt-4">
             <Button variant="outline" onClick={handleClose} className="flex-1 h-8 sm:h-10 text-xs sm:text-sm">
               Cancel
@@ -352,15 +335,12 @@ const DoctorChat = () => {
   const [priorityFilter, setPriorityFilter] = useState("all");
   const [showNewConversationModal, setShowNewConversationModal] = useState(false);
 
-  // Get current user from Redux store
   const user = useSelector((state) => state?.auth);
   const userRole = user?.role || 'doctor';
 
-  // Create conversation mutation
   const [createConversation, { isLoading: creatingConversation }] = useCreateConversationMutation();
 
   const {
-    // Extract all needed props from BaseChat
     selectedConversation,
     setSelectedConversation,
     messageInput,
@@ -377,7 +357,6 @@ const DoctorChat = () => {
     handleSendMessage,
     formatMessageTime,
     isPolling,
-    // Components
     Button: BaseChatButton,
     Input,
     Textarea,
@@ -386,7 +365,6 @@ const DoctorChat = () => {
     AvatarFallback,
     Card,
     CardContent,
-    // Icons
     Send,
     MessageCircle,
     Clock,
@@ -397,14 +375,12 @@ const DoctorChat = () => {
   } = BaseChat({
     roleSpecificProps: {
       conversationQueryParams: {
-        // Remove role filter to get all conversations for the doctor
         status: statusFilter,
         priority: priorityFilter !== "all" ? priorityFilter : undefined,
       },
     },
   });
 
-  // Handle creating new conversation
   const handleCreateConversation = async (formData) => {
     if (!isBackendAvailable) {
       toast.error("Chat service is currently unavailable.");
@@ -416,7 +392,6 @@ const DoctorChat = () => {
       toast.success("Conversation created successfully!");
       setShowNewConversationModal(false);
 
-      // Handle different response structures from backend
       if (result?.conversation) {
         setSelectedConversation(result.conversation);
       } else if (result?.data?.conversation) {
@@ -425,7 +400,6 @@ const DoctorChat = () => {
         setSelectedConversation(result);
       }
 
-      // Force refresh of conversations list
       window.location.reload();
     } catch (error) {
       console.error('Failed to create conversation:', error);
@@ -446,7 +420,6 @@ const DoctorChat = () => {
     <div className="flex flex-col h-[calc(100vh-8rem)]">
       <Card className="flex-1 shadow-xl border-0 overflow-hidden">
         <div className="flex h-full">
-          {/* Conversations Sidebar */}
           <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
             <div className="p-3 sm:p-4 lg:p-6 border-b bg-background/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4 sm:mb-6">
@@ -477,7 +450,6 @@ const DoctorChat = () => {
                 </Button>
               </div>
 
-              {/* Filters */}
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex gap-1 sm:gap-2">
                   <DropdownMenu>
@@ -601,7 +573,6 @@ const DoctorChat = () => {
             </ScrollArea>
           </div>
 
-          {/* Chat Area */}
           <div className={`${selectedConversation ? 'flex' : 'hidden lg:flex'} flex-1 flex-col bg-gradient-to-br from-background to-muted/20`}>
             {!selectedConversation ? (
               <div className="flex-1 flex items-center justify-center">
@@ -615,11 +586,9 @@ const DoctorChat = () => {
               </div>
             ) : (
               <>
-                {/* Chat Header */}
                 <div className="p-3 sm:p-4 border-b bg-background/80 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      {/* Back button for mobile */}
                       <BaseChatButton
                         variant="ghost"
                         size="sm"
@@ -671,7 +640,6 @@ const DoctorChat = () => {
                   </div>
                 </div>
 
-                {/* Messages */}
                 <ScrollArea className="flex-1 p-4">
                   {(() => {
                     if (messagesLoading) {
@@ -727,7 +695,6 @@ const DoctorChat = () => {
                   })()}
                 </ScrollArea>
 
-                {/* Message Input */}
                 <div className="p-4 border-t bg-background/80 backdrop-blur-sm">
                   <form onSubmit={handleSendMessage} className="flex gap-3">
                     <Textarea
@@ -761,8 +728,6 @@ const DoctorChat = () => {
           </div>
         </div>
       </Card>
-
-      {/* New Conversation Modal */}
       <NewConversationModal
         isOpen={showNewConversationModal}
         onClose={() => setShowNewConversationModal(false)}

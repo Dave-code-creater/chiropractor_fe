@@ -1,4 +1,3 @@
-// src/features/report/user/Report.jsx
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +23,6 @@ export default function Report() {
     setShowSimpleRecords(false);
   };
 
-  // If viewing simple patient records, show the SimplePatientRecords component
   if (showSimpleRecords) {
     return (
       <SimplePatientRecords
@@ -35,7 +33,6 @@ export default function Report() {
 
   return (
     <div className="flex flex-col h-full bg-background">
-      {/* Header */}
       <div className="border-b px-3 sm:px-4 lg:px-6 py-3 sm:py-4 bg-white">
         <div className="flex items-center justify-between">
           <div>
@@ -46,8 +43,6 @@ export default function Report() {
           </div>
         </div>
       </div>
-
-      {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="p-3 sm:p-4 lg:p-6 bg-gradient-to-r from-earthfire-clay-50 to-earthfire-brown-50">
           <div className="max-w-4xl mx-auto">
@@ -62,7 +57,6 @@ export default function Report() {
               </div>
             </div>
 
-            {/* Simple Patient Records Card */}
             <Card
               className="cursor-pointer transition-all hover:shadow-lg group border-2 border-earthfire-clay-200 bg-white hover:border-earthfire-brick-300 max-w-2xl mx-auto"
               onClick={handleOpenSimpleRecords}
@@ -109,7 +103,6 @@ export default function Report() {
               </CardContent>
             </Card>
 
-            {/* Features */}
             <div className="mt-6 sm:mt-8 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-4xl mx-auto">
               <Card className="bg-white/80">
                 <CardContent className="p-3 sm:p-4 text-center">

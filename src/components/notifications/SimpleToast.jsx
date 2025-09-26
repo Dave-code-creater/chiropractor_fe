@@ -23,7 +23,6 @@ const buildOptions = (options, defaultDuration) => {
     return baseOptions;
 };
 
-// Simple, clean toast notifications that actually work
 export const enhancedToast = {
     success: (message, options) => {
         return toast.success(message, buildOptions(options, 4000));
@@ -41,20 +40,17 @@ export const enhancedToast = {
         return toast.info(message, buildOptions(options, 4000));
     },
 
-    // Authentication specific
     auth: {
         success: (message) => enhancedToast.success("Login Successful", message),
         error: (message) => enhancedToast.error("Login Failed", message),
         invalid: (message) => enhancedToast.error("Invalid Credentials", message)
     },
 
-    // Chat specific  
     chat: {
         sent: () => enhancedToast.success("Message Sent", "Your message was delivered successfully"),
         error: (message) => enhancedToast.error("Message Failed", message || "Could not send message")
     },
 
-    // Validation specific
     validation: {
         invalid: (field, message) => enhancedToast.error(`${field} Invalid`, message),
         required: (field) => enhancedToast.warning("Required Field", `${field} is required`)

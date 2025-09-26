@@ -36,12 +36,9 @@ export default function UnifiedPatientForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [painMap, setPainMap] = useState({});
 
-  // All form data in one object
   const [formData, setFormData] = useState({
-    // Doctor assignment
     doctor_id: "",
     
-    // Patient Info fields
     first_name: "",
     middle_name: "",
     last_name: "",
@@ -60,7 +57,6 @@ export default function UnifiedPatientForm({
     emergency_contact_phone: "",
     emergency_contact_relationship: "",
 
-    // Health Condition fields
     hasCondition: "",
     conditionDetails: "",
     hasSurgicalHistory: "",
@@ -76,7 +72,6 @@ export default function UnifiedPatientForm({
     isPregnantNow: "",
     weeksPregnant: "",
 
-    // Pain Evaluation fields
     painType: [],
     painLevel: [],
     painTiming: "",
@@ -84,12 +79,10 @@ export default function UnifiedPatientForm({
     painTriggers: [],
     radiatingPain: "",
 
-    // Detailed Description fields
     symptomDetails: "",
     mainComplaints: "",
     previousHealthcare: "",
 
-    // Insurance/Accident fields
     typeCar: "",
     accidentDate: "",
     accidentTime: "",
@@ -110,13 +103,11 @@ export default function UnifiedPatientForm({
     covered: "",
     insuranceType: "",
 
-    // Work Impact fields
     workActivities: [],
     lostWork: "",
     workType: "",
     workStress: "",
 
-    // Lifestyle fields
     smoking: "",
     smokingDetails: "",
     drinking: "",
@@ -128,7 +119,6 @@ export default function UnifiedPatientForm({
 
   const [errors, setErrors] = useState({});
 
-  // API hooks
   const { data: userIncidents } = useGetIncidentsQuery(userId, { skip: !userId });
   const { data: doctorsData, isLoading: isDoctorsLoading, isError: isDoctorsError, error: doctorsError } = useGetAvailableDoctorsQuery();
   const [createIncident] = useCreateIncidentMutation();
@@ -139,32 +129,25 @@ export default function UnifiedPatientForm({
   const [submitMedicalHistory] = useSubmitMedicalHistoryFormNewMutation();
   const [submitLifestyleImpact] = useSubmitLifestyleImpactFormNewMutation();
 
-  // Process doctors data - same logic as Booking component
   const doctors = useMemo(() => {
     let rawDoctors = [];
 
-    // Handle the actual backend response structure
     if (doctorsData?.data) {
-      // Backend returns { success: true, data: [...] }
       if (Array.isArray(doctorsData.data)) {
         rawDoctors = doctorsData.data;
       } else if (doctorsData.data.doctors && Array.isArray(doctorsData.data.doctors)) {
         rawDoctors = doctorsData.data.doctors;
       }
-    }
-    // Fallback to other possible structures
-    else if (doctorsData?.metadata) rawDoctors = doctorsData.metadata;
+    } else if (doctorsData?.metadata) rawDoctors = doctorsData.metadata;
     else if (doctorsData?.doctors) rawDoctors = doctorsData.doctors;
     else if (Array.isArray(doctorsData)) rawDoctors = doctorsData;
 
-    // Transform snake_case API response to camelCase for component compatibility
     const transformedDoctors = rawDoctors.map(doctor => ({
       ...doctor,
       firstName: doctor.first_name || doctor.firstName,
       lastName: doctor.last_name || doctor.lastName,
       profileImage: doctor.profile_image || doctor.profileImage,
       yearsOfExperience: doctor.years_of_experience || doctor.yearsOfExperience,
-      // Handle specialization data
       specialization: doctor.specialization || doctor.specialty || 'Chiropractor',
       specializations: doctor.specializations || {
         primary: doctor.specialization || doctor.specialty || 'Chiropractor'
@@ -174,7 +157,6 @@ export default function UnifiedPatientForm({
     return transformedDoctors;
   }, [doctorsData]);
 
-  // Set default report name
   useEffect(() => {
     if (!reportName) {
       const currentDate = new Date().toLocaleDateString('en-US', {
@@ -186,7 +168,6 @@ export default function UnifiedPatientForm({
     }
   }, []);
 
-  // Auto-handle work fields when employment status changes
   useEffect(() => {
     if (formData.currentlyWorking === "no") {
       setFormData(prev => ({
@@ -270,7 +251,6 @@ export default function UnifiedPatientForm({
     setIsSubmitting(true);
 
     try {
-      // Step 1: Create an incident first
       const incidentData = {
         incident_type: "general_pain",
         title: reportName,
@@ -282,9 +262,7 @@ export default function UnifiedPatientForm({
       const incidentResponse = await createIncident(incidentData).unwrap();
       const incidentId = incidentResponse.data.id;
 
-      // Step 2: Submit all forms to the created incident
       const submissions = await Promise.all([
-        // Patient Information
         submitPatientInfo({
           incidentId,
           formData: {
@@ -308,7 +286,6 @@ export default function UnifiedPatientForm({
           }
         }).unwrap(),
 
-        // Medical History
         submitMedicalHistory({
           incidentId,
           formData: {
@@ -329,7 +306,6 @@ export default function UnifiedPatientForm({
           }
         }).unwrap(),
 
-        // Pain Assessment
         submitPainAssessment({
           incidentId,
           formData: {
@@ -343,7 +319,6 @@ export default function UnifiedPatientForm({
           }
         }).unwrap(),
 
-        // Pain Description
         submitPainDescription({
           incidentId,
           formData: {
@@ -353,7 +328,6 @@ export default function UnifiedPatientForm({
           }
         }).unwrap(),
 
-        // Health Insurance
         submitHealthInsurance({
           incidentId,
           formData: {
@@ -379,7 +353,6 @@ export default function UnifiedPatientForm({
           }
         }).unwrap(),
 
-        // Lifestyle Impact
         submitLifestyleImpact({
           incidentId,
           formData: {
@@ -409,7 +382,6 @@ export default function UnifiedPatientForm({
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
-      {/* Header */}
       <div className="text-center mb-8">
         {editingName ? (
           <Input
@@ -438,15 +410,12 @@ export default function UnifiedPatientForm({
           Complete Patient Information Form
         </p>
       </div>
-
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Patient Information Section */}
         <Card>
           <CardHeader>
             <CardTitle>Personal Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Doctor Selection */}
             <div>
               <Label htmlFor="doctor_id">Select Doctor*</Label>
               <Select value={formData.doctor_id} onValueChange={(value) => handleChange("doctor_id", value)}>
@@ -573,7 +542,6 @@ export default function UnifiedPatientForm({
               </div>
             </div>
 
-            {/* Address Section */}
             <fieldset className="border rounded-md p-4 space-y-4">
               <legend className="text-sm font-medium text-muted-foreground px-2">
                 Home Address
@@ -637,7 +605,6 @@ export default function UnifiedPatientForm({
               </div>
             </fieldset>
 
-            {/* Emergency Contact Section */}
             <fieldset className="border rounded-md p-4 space-y-4">
               <legend className="text-sm font-medium text-muted-foreground px-2">
                 Emergency Contact Information
@@ -685,14 +652,12 @@ export default function UnifiedPatientForm({
           </CardContent>
         </Card>
 
-        {/* Pain & Symptoms Section */}
         <Card>
           <CardHeader>
             <CardTitle>Pain & Symptoms</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Body Diagram - 2/3 width */}
               <div className="lg:col-span-2">
                 <HumanBody
                   gender={formData.gender}
@@ -703,7 +668,6 @@ export default function UnifiedPatientForm({
                 />
               </div>
 
-              {/* Selected Pain Areas - 1/3 width */}
               <div className="lg:col-span-1">
                 <Card>
                   <CardHeader>
@@ -774,7 +738,6 @@ export default function UnifiedPatientForm({
           </CardContent>
         </Card>
 
-        {/* Medical History Section */}
         <Card>
           <CardHeader>
             <CardTitle>Medical History</CardTitle>
@@ -870,7 +833,6 @@ export default function UnifiedPatientForm({
               </div>
             )}
 
-            {/* Female-specific fields */}
             {formData.gender === "Female" && (
               <fieldset className="border rounded-md p-4 space-y-4">
                 <legend className="text-sm font-medium text-muted-foreground px-2">
@@ -916,20 +878,17 @@ export default function UnifiedPatientForm({
           </CardContent>
         </Card>
 
-        {/* Work & Lifestyle Section */}
         <Card>
           <CardHeader>
             <CardTitle>Work & Lifestyle</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Employment Status */}
             <div>
               <Label>Currently Working?*</Label>
               <Select
                 value={formData.currentlyWorking}
                 onValueChange={(val) => {
                   handleChange("currentlyWorking", val);
-                  // Auto-fill work-related fields if not working
                   if (val === "no") {
                     handleChange("workTimes", "");
                     handleChange("workHoursPerDay", "0");
@@ -950,7 +909,6 @@ export default function UnifiedPatientForm({
               </Select>
             </div>
 
-            {/* Work Details - Only show if working */}
             {formData.currentlyWorking === "yes" && (
               <fieldset className="border rounded-md p-4 space-y-4">
                 <legend className="text-sm font-medium text-muted-foreground px-2">
@@ -1054,7 +1012,6 @@ export default function UnifiedPatientForm({
                   </Select>
                 </div>
 
-                {/* Work Activities Affected */}
                 <div>
                   <Label className="text-base font-medium mb-3 block">Work Activities Affected (Select all that apply)</Label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
@@ -1102,7 +1059,6 @@ export default function UnifiedPatientForm({
               </fieldset>
             )}
 
-            {/* Lifestyle Habits */}
             <fieldset className="border rounded-md p-4 space-y-4">
               <legend className="text-sm font-medium text-muted-foreground px-2">
                 Lifestyle Habits
@@ -1220,7 +1176,6 @@ export default function UnifiedPatientForm({
           </CardContent>
         </Card>
 
-        {/* Insurance & Accident Section */}
         <Card>
           <CardHeader>
             <CardTitle>Insurance & Accident Details</CardTitle>
@@ -1396,7 +1351,6 @@ export default function UnifiedPatientForm({
           </CardContent>
         </Card>
 
-        {/* Submit Button */}
         <div className="flex justify-between pt-6 pb-20">
           {onBack && (
             <Button type="button" variant="outline" onClick={onBack}>

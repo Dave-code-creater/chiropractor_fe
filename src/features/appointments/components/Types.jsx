@@ -1,5 +1,4 @@
-// src/features/appointments/components/DoctorSelector.jsx
-"use client";
+"use client"
 
 import { useState } from "react";
 import { Check, ChevronsUpDown, User } from "lucide-react";
@@ -34,7 +33,6 @@ export default function DoctorSelector({
   const [open, setOpen] = useState(false);
   const selectedDoctorId = bookingData.doctor;
 
-  // Find the selected doctor
   const selectedDoctor = doctors.find((doc) => doc.id === selectedDoctorId);
 
   const handleSelect = (doctorId) => {
@@ -44,7 +42,6 @@ export default function DoctorSelector({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
       <div>
         <h2 className="text-lg sm:text-xl font-semibold mb-1">
           Select Healthcare Provider
@@ -53,8 +50,6 @@ export default function DoctorSelector({
           Choose your preferred doctor for this appointment
         </p>
       </div>
-
-      {/* Doctor Selection */}
       <div className="space-y-3">
         <Label htmlFor="doctor-select" className="text-sm font-medium">
           Available Doctors
@@ -142,7 +137,6 @@ export default function DoctorSelector({
                 </CommandEmpty>
                 <CommandGroup>
                   {doctors.map((doctor) => {
-                    // Create comprehensive search string including all doctor information
                     const searchString = [
                       doctor.firstName,
                       doctor.lastName,
@@ -152,8 +146,8 @@ export default function DoctorSelector({
                       doctor.languages?.join(' '),
                       doctor.education?.map(edu => `${edu.degree} ${edu.institution}`).join(' '),
                       doctor.email,
-                      'chiropractor', // Default searchable term
-                      'doctor',
+                      "chiropractor",
+                      "doctor",
                       'dr'
                     ].filter(Boolean).join(' ').toLowerCase();
 
@@ -209,8 +203,6 @@ export default function DoctorSelector({
           </PopoverContent>
         </Popover>
       </div>
-
-      {/* Selected Doctor Details */}
       {selectedDoctor && (
         <Card className="border-primary/20 bg-primary/5">
           <CardContent className="p-6">
@@ -245,7 +237,6 @@ export default function DoctorSelector({
                 </div>
               </div>
 
-              {/* Specializations */}
               {selectedDoctor.specializations?.specializations?.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium mb-2">Specializations:</h4>
@@ -265,7 +256,6 @@ export default function DoctorSelector({
                 </div>
               )}
 
-              {/* Certifications */}
               {selectedDoctor.specializations?.certifications?.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium mb-2">Certifications:</h4>
@@ -285,7 +275,6 @@ export default function DoctorSelector({
                 </div>
               )}
 
-              {/* Education */}
               {selectedDoctor.education?.length > 0 && (
                 <div>
                   <h4 className="text-sm font-medium mb-2">Education:</h4>

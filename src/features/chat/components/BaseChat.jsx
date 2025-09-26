@@ -29,7 +29,6 @@ import { toast } from "sonner";
 import { MESSAGE_TYPES } from "../constants/roles";
 
 const BaseChat = ({ roleSpecificProps = {} }) => {
-  // State management
   const [selectedConversation, setSelectedConversation] = useState(null);
   const [messageInput, setMessageInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -39,11 +38,9 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
   const messagesEndRef = useRef(null);
   const pollingTimeoutRef = useRef(null);
 
-  // Get current user from Redux store
   const user = useSelector((state) => state?.auth);
   const userRole = user?.role || 'patient';
 
-  // API hooks
   const {
     data: conversationsData,
     isLoading: conversationsLoading,
@@ -55,7 +52,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     ...roleSpecificProps.conversationQueryParams
   });
 
-  // Initial messages load using polling endpoint (since no regular GET messages endpoint exists)
   const {
     data: initialMessagesData,
     isLoading: messagesLoading,
@@ -63,16 +59,14 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
   } = usePollForNewMessagesQuery(
     selectedConversation?.conversation_id || selectedConversation?.id ? {
       conversationId: selectedConversation?.conversation_id || selectedConversation?.id,
-      last_message_timestamp: "1970-01-01T00:00:00.000Z", // Get all messages from beginning
-      timeout_seconds: 5, // Short timeout for initial load
+      last_message_timestamp: "1970-01-01T00:00:00.000Z",
+      timeout_seconds: 5,
       max_messages: 100
     } : undefined,
     { skip: !selectedConversation?.conversation_id && !selectedConversation?.id }
   );
 
-  // Handle initial messages load
   useEffect(() => {
-    // Handle different response formats
     let messagesToLoad = [];
 
     if (initialMessagesData?.messages && Array.isArray(initialMessagesData.messages)) {
@@ -90,19 +84,17 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
       const sortedMessages = [...messagesToLoad].sort((a, b) => {
         const timeA = new Date(a.sent_at || a.created_at || a.timestamp);
         const timeB = new Date(b.sent_at || b.created_at || b.timestamp);
-        return timeA - timeB; // Oldest first
+        return timeA - timeB;
       });
 
       setMessages(sortedMessages);
 
-      // Set last message timestamp for polling
       const lastMessage = sortedMessages[sortedMessages.length - 1];
       const timestamp = lastMessage.sent_at || lastMessage.created_at || lastMessage.timestamp;
       setLastMessageTimestamp(timestamp);
     }
   }, [initialMessagesData]);
 
-  // Real-time polling for new messages (separate from initial load)
   const {
     data: realtimePollingData,
     refetch: refetchRealtimePolling,
@@ -110,7 +102,7 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     selectedConversation && lastMessageTimestamp && isPolling ? {
       conversationId: selectedConversation?.conversation_id || selectedConversation?.id,
       last_message_timestamp: lastMessageTimestamp,
-      timeout_seconds: 5, // Reduced from 30 to 5 seconds to avoid timeout
+      timeout_seconds: 5,
       max_messages: 50
     } : undefined,
     {
@@ -118,12 +110,10 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     }
   );
 
-  // Mutation hooks
   const [sendMessage, { isLoading: sendingMessage }] = useSendMessageMutation();
   const [updateConversationStatus] = useUpdateConversationStatusMutation();
   const [deleteConversation] = useDeleteConversationMutation();
 
-  // Extract conversations data
   const conversations = useMemo(() => {
     if (!conversationsData?.conversations) {
       return [];
@@ -132,36 +122,31 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     return conversationsData.conversations;
   }, [conversationsData]);
 
-  // Handle new messages from polling
   useEffect(() => {
     if (realtimePollingData?.messages && realtimePollingData.messages.length > 0) {
       setMessages(prevMessages => {
         const newMessages = [...prevMessages];
 
         realtimePollingData.messages.forEach(newMessage => {
-          // Check if message already exists to avoid duplicates
           const exists = newMessages.some(msg => msg.id === newMessage.id);
           if (!exists) {
             newMessages.push(newMessage);
           }
         });
 
-        // Sort messages by timestamp
         return newMessages.sort((a, b) => {
           const timeA = new Date(a.sent_at || a.created_at || a.timestamp);
           const timeB = new Date(b.sent_at || b.created_at || b.timestamp);
-          return timeA - timeB; // Oldest first
+          return timeA - timeB;
         });
       });
 
-      // Update last message timestamp
       const lastMessage = realtimePollingData.messages[realtimePollingData.messages.length - 1];
       const timestamp = lastMessage.sent_at || lastMessage.created_at || lastMessage.timestamp;
       setLastMessageTimestamp(timestamp);
     }
   }, [realtimePollingData]);
 
-  // Start/stop long-polling based on conversation selection
   useEffect(() => {
     if (selectedConversation && messages.length > 0) {
       setIsPolling(true);
@@ -177,7 +162,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     }
   }, [selectedConversation, messages.length]);
 
-  // Continuous polling loop
   useEffect(() => {
     if (isPolling && selectedConversation && lastMessageTimestamp) {
       const startPolling = () => {
@@ -185,15 +169,14 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
           try {
             await refetchRealtimePolling();
             if (isPolling) {
-              startPolling(); // Continue polling
+              startPolling();
             }
           } catch (error) {
-            // Retry after a short delay
             if (isPolling) {
               pollingTimeoutRef.current = setTimeout(startPolling, 5000);
             }
           }
-        }, 1000); // Short delay between polls
+        }, 1000);
       };
 
       startPolling();
@@ -206,7 +189,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     }
   }, [isPolling, selectedConversation, lastMessageTimestamp, refetchRealtimePolling]);
 
-  // Reset messages when conversation changes
   useEffect(() => {
     setMessages([]);
     setLastMessageTimestamp(null);
@@ -215,12 +197,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
 
   const isBackendAvailable = !conversationsError || conversationsError?.status !== 404;
 
-  // REMOVED: Auto-scroll functionality - users can manually scroll
-  // useEffect(() => {
-  //   messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  // }, [messages.length]);
-
-  // Event handlers
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!messageInput.trim() || !selectedConversation || !isBackendAvailable) {
@@ -239,34 +215,30 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
 
       setMessageInput("");
 
-      // Add the sent message to local state immediately for better UX
       if (result.message) {
         setMessages(prev => [...prev, result.message]);
 
-        // Update timestamp for polling
         const timestamp = result.message.sent_at || result.message.created_at || new Date().toISOString();
         setLastMessageTimestamp(timestamp);
       }
 
-      await refetchConversations(); // Update conversation list
+      await refetchConversations();
     } catch (error) {
       console.error('Failed to send message:', error);
       toast.error("Failed to send message. Please try again.");
     }
   };
 
-  // Custom hook to get message status for a specific message
   const useMessageStatus = (conversationId, messageId) => {
     return useGetMessageStatusQuery(
       conversationId && messageId ? { conversationId, messageId } : undefined,
       {
         skip: !conversationId || !messageId,
-        pollingInterval: 10000, // Check status every 10 seconds
+        pollingInterval: 10000,
       }
     );
   };
 
-  // Format message time
   const formatMessageTime = (timestamp) => {
     const date = new Date(timestamp);
     return date.toLocaleTimeString('en-US', {
@@ -277,7 +249,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
   };
 
   return {
-    // State
     selectedConversation,
     setSelectedConversation,
     messageInput,
@@ -286,7 +257,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     setSearchTerm,
     messagesEndRef,
 
-    // Data
     conversations,
     messages,
     isBackendAvailable,
@@ -295,12 +265,10 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     sendingMessage,
     isPolling,
 
-    // Event handlers
     handleSendMessage,
     formatMessageTime,
     useMessageStatus,
 
-    // Components
     Button,
     Input,
     Textarea,
@@ -311,7 +279,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     Card,
     CardContent,
 
-    // Icons
     Send,
     MessageCircle,
     Clock,

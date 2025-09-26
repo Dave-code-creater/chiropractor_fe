@@ -12,22 +12,18 @@ export const RouteProvider = () => {
   const hasNavigated = useRef(false);
 
   useEffect(() => {
-    // Reset navigation flag when location changes
     hasNavigated.current = false;
   }, [location.pathname]);
 
   useEffect(() => {
-    // Prevent infinite loops by checking if we've already navigated
     if (hasNavigated.current) {
       return;
     }
 
-    // Only redirect if we have all required data and the URL needs fixing
     if (userId && userRole && (!id || id === 'undefined')) {
       const expectedPath = `/dashboard/${userRole.toLowerCase()}/${userId}`;
       const currentPath = location.pathname;
       
-      // Check if we need to navigate to the correct path
       if (!currentPath.includes(expectedPath)) {
         hasNavigated.current = true;
         navigate(expectedPath, { replace: true });

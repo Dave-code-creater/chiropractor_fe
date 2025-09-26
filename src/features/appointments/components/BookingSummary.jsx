@@ -1,5 +1,4 @@
-// src/features/appointments/components/BookingSummary.jsx
-"use client";
+"use client"
 
 import {
   CalendarDays,
@@ -27,8 +26,8 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
   };
 
   const formatTime = (time) => {
-    if (!time) return "Not selected";
-    // Convert 24-hour format to 12-hour format
+    if (!time)
+      return "Not selected";
     const [hours, minutes] = time.split(":");
     const hour = parseInt(hours);
     const ampm = hour >= 12 ? "PM" : "AM";
@@ -59,7 +58,6 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
 
   return (
     <div className="space-y-2 sm:space-y-4">
-      {/* Doctor - First in the flow */}
       {selectedDoctor && (
         <div className="flex items-start gap-2 sm:gap-3">
           <User className="h-4 w-4 sm:h-5 sm:w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -96,8 +94,6 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
           </div>
         </div>
       )}
-
-      {/* Location - Second in the flow */}
       {bookingData.location && (
         <>
           {selectedDoctor && <Separator className="my-2 sm:my-3" />}
@@ -115,8 +111,6 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
           </div>
         </>
       )}
-
-      {/* Date & Time - Third in the flow */}
       {(bookingData.date || bookingData.time) && (
         <>
           {(selectedDoctor || bookingData.location) && <Separator className="my-2 sm:my-3" />}
@@ -147,8 +141,6 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
           </div>
         </>
       )}
-
-      {/* Reason for Visit */}
       {bookingData.reason && (
         <>
           <Separator className="my-2 sm:my-3" />
@@ -163,8 +155,6 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
           </div>
         </>
       )}
-
-      {/* Additional Notes */}
       {bookingData.notes && (
         <>
           <Separator className="my-2 sm:my-3" />
@@ -179,8 +169,6 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
           </div>
         </>
       )}
-
-      {/* Estimated Duration */}
       {(selectedDoctor ||
         bookingData.location ||
         bookingData.date ||
@@ -198,8 +186,6 @@ export default function BookingSummary({ bookingData, doctors = [] }) {
             </div>
           </>
         )}
-
-      {/* Important Notes */}
       {(selectedDoctor ||
         bookingData.location ||
         bookingData.date ||

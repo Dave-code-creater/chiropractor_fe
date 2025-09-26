@@ -16,8 +16,6 @@ import {
   useUpdateAppointmentMutation,
   useCreateAppointmentMutation,
   useCancelAppointmentMutation,
-  useRescheduleAppointmentMutation,
-  useGetAppointmentStatsQuery,
   useGetAvailableDoctorsQuery
 } from '@/api/services/appointmentApi';
 import { useGetPatientsQuery } from '@/api/services/userApi';
@@ -32,47 +30,34 @@ import {
   Phone,
   Edit,
   Trash2,
-  Filter,
   Download,
   RefreshCw,
   Mail,
-  AlertCircle,
-  FileText,
   UserCheck,
-  PhoneCall,
   BarChart3,
   TrendingUp,
   AlertTriangle,
-  Settings,
-  Eye,
-  MessageSquare,
-  Star,
-  Activity
+  Eye
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { format, isToday, isTomorrow, isYesterday, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
+import { format, isToday, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { extractList } from '@/utils/apiResponse';
 
 const AdminAppointments = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [doctorFilter, setDoctorFilter] = useState('all');
   const [selectedAppointments, setSelectedAppointments] = useState([]);
-  const [activeTab, setActiveTab] = useState('overview');
   const [dateRange, setDateRange] = useState('today');
 
-  // Modal states
   const [createModal, setCreateModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, appointment: null });
   const [bulkActionModal, setBulkActionModal] = useState({ isOpen: false, action: null });
-  const [analyticsModal, setAnalyticsModal] = useState(false);
 
-  // Query parameters based on active tab and filters
   const queryParams = useMemo(() => {
     const params = {};
 
-    // Date range filtering
     if (dateRange === 'today') {
       params.date = selectedDate;
     } else if (dateRange === 'week') {
@@ -92,19 +77,16 @@ const AdminAppointments = () => {
     }
 
     return params;
-  }, [activeTab, selectedDate, statusFilter, doctorFilter, dateRange]);
+  }, [selectedDate, statusFilter, doctorFilter, dateRange]);
 
-  // API queries
-  const { data: appointmentsData, isLoading, error, refetch } = useGetAppointmentsQuery(queryParams);
+  const { data: appointmentsData, refetch } = useGetAppointmentsQuery(queryParams);
   const { data: doctorsData } = useGetAvailableDoctorsQuery();
   const { data: patientsData } = useGetPatientsQuery();
 
-  // Mutations
   const [updateAppointment] = useUpdateAppointmentMutation();
   const [createAppointment] = useCreateAppointmentMutation();
   const [cancelAppointment] = useCancelAppointmentMutation();
 
-  // Process data
   const appointments = useMemo(
     () => extractList(appointmentsData, 'appointments'),
     [appointmentsData]
@@ -120,7 +102,6 @@ const AdminAppointments = () => {
     [patientsData]
   );
 
-  // Admin-specific analytics
   const adminStats = useMemo(() => {
     const todayAppointments = appointments.filter(apt =>
       isToday(new Date(apt.appointment_date))
@@ -202,7 +183,6 @@ const AdminAppointments = () => {
     ];
   }, [appointments]);
 
-  // Filter appointments based on search
   const filteredAppointments = useMemo(() => {
     if (!searchTerm) return appointments;
 
@@ -214,20 +194,6 @@ const AdminAppointments = () => {
     );
   }, [appointments, searchTerm]);
 
-  // Handle actions
-  const handleStatusUpdate = async (appointmentId, newStatus) => {
-    try {
-      await updateAppointment({
-        id: appointmentId,
-        status: newStatus
-      }).unwrap();
-      toast.success(`Appointment ${newStatus} successfully`);
-      refetch();
-    } catch (error) {
-      toast.error('Failed to update appointment status');
-    }
-  };
-
   const handleBulkAction = async (action) => {
     if (selectedAppointments.length === 0) {
       toast.error('Please select appointments first');
@@ -235,7 +201,6 @@ const AdminAppointments = () => {
     }
 
     try {
-      // Since we don't have a bulk update API, we'll update each appointment individually
       const updatePromises = selectedAppointments.map(appointmentId => {
         if (action === 'confirm') {
           return updateAppointment({ id: appointmentId, status: 'confirmed' }).unwrap();
@@ -251,6 +216,7 @@ const AdminAppointments = () => {
       setBulkActionModal({ isOpen: false, action: null });
       refetch();
     } catch (error) {
+      console.error('Failed to perform bulk appointment action', error);
       toast.error('Failed to perform bulk action');
     }
   };
@@ -261,11 +227,15 @@ const AdminAppointments = () => {
       toast.success('Appointment cancelled successfully');
       refetch();
     } catch (error) {
+      console.error('Failed to cancel appointment', error);
       toast.error('Failed to cancel appointment');
     }
   };
 
-  // Table columns for admin view
+  const handleAnalyticsClick = () => {
+    toast.info('Analytics dashboard coming soon.');
+  };
+
   const columns = [
     {
       id: "select",
@@ -308,7 +278,6 @@ const AdminAppointments = () => {
       cell: ({ row }) => {
         const appointment = row.original;
 
-        // Check if appointment has a patient object (patient API structure)
         const patientName = appointment.patient
           ? `${appointment.patient.first_name} ${appointment.patient.last_name}`
           : appointment.patient_name || 'Unknown Patient';
@@ -343,7 +312,6 @@ const AdminAppointments = () => {
       cell: ({ row }) => {
         const appointment = row.original;
 
-        // Check if appointment has a doctor object (patient API structure)
         if (appointment.doctor) {
           return (
             <div className="space-y-1">
@@ -357,7 +325,6 @@ const AdminAppointments = () => {
           );
         }
 
-        // Fallback to admin API structure
         const doctor = doctors.find(d => d.id === appointment.doctor_id);
         return (
           <div className="space-y-1">
@@ -441,7 +408,6 @@ const AdminAppointments = () => {
     }
   ];
 
-  // Appointment Form for admin
   const AppointmentForm = ({ appointment, onClose }) => {
     const [formData, setFormData] = useState({
       patient_id: appointment?.patient_id || '',
@@ -469,6 +435,7 @@ const AdminAppointments = () => {
         onClose();
         refetch();
       } catch (error) {
+        console.error('Failed to save appointment', error);
         toast.error('Failed to save appointment');
       }
     };
@@ -613,7 +580,7 @@ const AdminAppointments = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">System Appointment Management</h1>
         <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={() => setAnalyticsModal(true)}>
+          <Button variant="outline" onClick={handleAnalyticsClick}>
             <BarChart3 className="w-4 h-4 mr-2" />
             Analytics
           </Button>
@@ -631,8 +598,6 @@ const AdminAppointments = () => {
           </Button>
         </div>
       </div>
-
-      {/* Admin Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {adminStats.map((stat, index) => {
           const IconComponent = stat.icon;
@@ -654,8 +619,6 @@ const AdminAppointments = () => {
           );
         })}
       </div>
-
-      {/* Filters and Controls */}
       <div className="flex flex-wrap gap-4 items-center">
         <div className="flex items-center gap-2">
           <Search className="w-4 h-4" />
@@ -729,8 +692,6 @@ const AdminAppointments = () => {
           </div>
         )}
       </div>
-
-      {/* Appointments Table */}
       <Card>
         <CardHeader>
           <CardTitle>All Appointments</CardTitle>
@@ -743,8 +704,6 @@ const AdminAppointments = () => {
           />
         </CardContent>
       </Card>
-
-      {/* Create Appointment Modal */}
       <Dialog open={createModal} onOpenChange={setCreateModal}>
         <DialogContent className="sm:max-w-[700px]">
           <DialogHeader>
@@ -758,8 +717,6 @@ const AdminAppointments = () => {
           />
         </DialogContent>
       </Dialog>
-
-      {/* Edit Appointment Modal */}
       <Dialog open={editModal.isOpen} onOpenChange={(open) => setEditModal({ isOpen: open, appointment: null })}>
         <DialogContent className="sm:max-w-[700px]">
           <DialogHeader>
@@ -774,8 +731,6 @@ const AdminAppointments = () => {
           />
         </DialogContent>
       </Dialog>
-
-      {/* Bulk Action Confirmation Modal */}
       <Dialog open={bulkActionModal.isOpen} onOpenChange={(open) => setBulkActionModal({ isOpen: open, action: null })}>
         <DialogContent>
           <DialogHeader>
@@ -803,4 +758,4 @@ const AdminAppointments = () => {
   );
 };
 
-export default AdminAppointments; 
+export default AdminAppointments;

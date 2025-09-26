@@ -165,7 +165,6 @@ const DesktopPainDetailDialog = ({
 
                 <div className="flex-1 overflow-y-auto p-6">
                     <div className="space-y-8">
-                        {/* Pain Level Section */}
                         <Card>
                             <CardContent className="p-6">
                                 <h3 className="text-xl font-semibold mb-4">
@@ -202,7 +201,6 @@ const DesktopPainDetailDialog = ({
                             </CardContent>
                         </Card>
 
-                        {/* Additional Information Section */}
                         <div className="space-y-6">
                             <h3 className="text-xl font-semibold">
                                 Additional Information
@@ -220,7 +218,6 @@ const DesktopPainDetailDialog = ({
                     </div>
                 </div>
 
-                {/* Bottom Actions */}
                 <div className="flex-shrink-0 border-t border-gray-200 p-6 bg-gray-50">
                     <div className="flex justify-between items-center">
                         <div>

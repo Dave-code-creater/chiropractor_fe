@@ -46,13 +46,11 @@ export default function Register() {
     (state) => state.forms.registerForm.errors.confirmPassword,
   );
 
-  // RTK Query mutation hook
   const [registerMutation, { isLoading, error: registerError }] =
     useRegisterMutation();
 
   useEffect(() => {
     if (isAuthenticated && userID && role) {
-      // After successful registration, navigate to the appropriate dashboard
       const path = `/dashboard/${role.toLowerCase()}/${userID}`;
       navigate(path);
     }
@@ -109,10 +107,7 @@ export default function Register() {
 
     try {
       await registerMutation(userData).unwrap();
-      // On success, RTK Query's onQueryStarted will dispatch setCredentials
-    } catch {
-      // Validation or network errors will be shown below
-    }
+    } catch {}
   };
   return (
     <section className="min-h-screen bg-background flex items-center justify-center px-4 sm:px-6 lg:px-8">

@@ -11,11 +11,6 @@ export default function DoctorNotesCard() {
   const user = useSelector((state) => state?.auth);
   const userRole = user?.role || 'patient';
   
-  // Remove API call and notes logic
-  // const { data: notesData, isLoading, error } = useGetRecentClinicalNotesQuery(...);
-  // const notes = React.useMemo(() => { ... }, [notesData]);
-
-  // Instead, show a placeholder message
   return (
     <Card className="w-full h-[400px] border-0 shadow-lg bg-gradient-to-br from-card to-muted/20 hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02] backdrop-blur-sm flex flex-col">
       <CardHeader className="pb-3 flex-shrink-0">

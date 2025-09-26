@@ -37,7 +37,6 @@ const DoctorNotes = ({ patientId, patientName }) => {
   const [isAddingNote, setIsAddingNote] = useState(false);
   const [selectedNoteType, setSelectedNoteType] = useState(null);
 
-  // Get current user's ID to use as doctorId
   const currentUserId = useSelector(selectUserId);
 
   const {
@@ -50,7 +49,6 @@ const DoctorNotes = ({ patientId, patientName }) => {
     deleteNote
   } = useNoteManagement(patientId, 'doctor');
 
-  // Filter notes based on search and type
   const filteredNotes = notes.filter(note => {
     const matchesSearch = note.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          note.title?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -96,7 +94,6 @@ const DoctorNotes = ({ patientId, patientName }) => {
             }}
           />
         );
-      // Add other note type forms here
       default:
         return null;
     }
@@ -108,9 +105,6 @@ const DoctorNotes = ({ patientId, patientName }) => {
 
   return (
     <div className="space-y-6">
-
-
-      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsContent value="patients" className="space-y-6">
           <DoctorPatientManagement doctorId={currentUserId} />
@@ -119,7 +113,6 @@ const DoctorNotes = ({ patientId, patientName }) => {
         <TabsContent value="notes" className="space-y-6">
           {patientId ? (
             <>
-              {/* Notes Header */}
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-xl font-semibold">Clinical Notes</h3>
@@ -149,7 +142,6 @@ const DoctorNotes = ({ patientId, patientName }) => {
                 </div>
               </div>
 
-              {/* Filters */}
               <div className="flex items-center gap-4">
                 <div className="flex-1">
                   <Input
@@ -175,7 +167,6 @@ const DoctorNotes = ({ patientId, patientName }) => {
                 </Select>
               </div>
 
-              {/* Notes List */}
               <div className="space-y-4">
                 {isLoading ? (
                   <Card>

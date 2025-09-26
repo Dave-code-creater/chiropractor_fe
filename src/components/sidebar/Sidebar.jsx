@@ -41,7 +41,6 @@ const AppSidebar = () => {
   const userId = useSelector(selectUserId);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  // Get navigation based on role and user ID
   const navigation = React.useMemo(() => {
     if (userRole && userId) {
       return getNavigationByRole(userRole, userId);
@@ -72,7 +71,6 @@ const AppSidebar = () => {
       }
     }
 
-    // If name is longer than 10 characters, truncate it
     if (displayName.length > 10) {
       return `${displayName.substring(0, 10)}...`;
     }
@@ -109,14 +107,11 @@ const AppSidebar = () => {
 
   return (
     <>
-      {/* Mobile Trigger - only show on mobile */}
       {isMobile && (
         <div className="fixed left-3 top-3 z-50 lg:hidden">
           <SidebarTrigger className="h-10 w-10 rounded-lg bg-background/80 backdrop-blur-sm border border-border shadow-lg" />
         </div>
       )}
-
-      {/* Sidebar - shows on desktop, collapsible on mobile */}
       <Sidebar variant="sidebar" collapsible={isMobile ? "offcanvas" : "none"} className="sidebar-full-height">
         <SidebarHeader className="p-6 border-b bg-gradient-to-br from-card to-muted/20">
           <div className="flex items-start gap-4">

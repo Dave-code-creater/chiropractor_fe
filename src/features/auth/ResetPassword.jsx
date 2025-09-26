@@ -44,7 +44,6 @@ export default function ResetPassword() {
     (state) => state.forms.passwordResetForm.errors.confirmPassword,
   );
 
-  // Verify token on component mount
   const {
     data: tokenData,
     error: tokenError,
@@ -57,7 +56,6 @@ export default function ResetPassword() {
     useResetPasswordMutation();
 
   useEffect(() => {
-    // Redirect to forgot password if no token
     if (!token) {
       navigate("/forgot-password");
     }
@@ -85,7 +83,6 @@ export default function ResetPassword() {
     dispatch(clearPasswordError());
     dispatch(clearConfirmPasswordError());
 
-    // Validate password
     try {
       renderPwRegister(password);
     } catch (err) {
@@ -93,7 +90,6 @@ export default function ResetPassword() {
       return;
     }
 
-    // Check password confirmation
     if (confirmPassword !== password) {
       dispatch(setConfirmPasswordError("Passwords do not match"));
       return;
@@ -111,7 +107,6 @@ export default function ResetPassword() {
     }
   };
 
-  // Loading state while verifying token
   if (isVerifyingToken) {
     return (
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -129,7 +124,6 @@ export default function ResetPassword() {
     );
   }
 
-  // Invalid or expired token
   if (tokenError || !tokenData) {
     return (
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -166,7 +160,6 @@ export default function ResetPassword() {
     );
   }
 
-  // Success state
   if (isResetSuccessful) {
     return (
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
@@ -199,7 +192,6 @@ export default function ResetPassword() {
     );
   }
 
-  // Reset password form
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">

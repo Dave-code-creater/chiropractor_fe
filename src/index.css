@@ -4,60 +4,47 @@
 
 @layer base {
   :root {
-    /* Earthfire Elegance Theme - Light Mode */
-    /* Background: Creamy warmth #fdf9f6 */
+
     --background: 35 60% 98%;
     --foreground: 25 25% 18%;
-    /* Deep espresso brown #3d2e24 */
 
-    /* Card colors - soft clay tones */
     --card: 25 50% 97%;
     --card-foreground: 25 25% 18%;
 
-    /* Popover colors */
     --popover: 25 50% 97%;
     --popover-foreground: 25 25% 18%;
 
-    /* Primary colors - muted brick red #a94438 */
     --primary: 7 42% 44%;
     --primary-foreground: 35 60% 98%;
 
-    /* Secondary colors - soft clay #f4d4c3 */
     --secondary: 25 50% 86%;
     --secondary-foreground: 25 25% 18%;
 
-    /* Muted colors - improved contrast */
     --muted: 30 20% 85%;
     --muted-foreground: 25 25% 25%;
 
-    /* Accent colors - warm brown #7b4b2a */
     --accent: 25 50% 32%;
     --accent-foreground: 35 60% 98%;
 
-    /* Destructive colors - keeping red theme */
     --destructive: 0 65% 55%;
     --destructive-foreground: 35 60% 98%;
 
-    /* Border and input colors - improved visibility */
     --border: 30 15% 70%;
     --input: 30 15% 70%;
     --ring: 7 42% 44%;
 
-    /* Chart colors - earthfire harmonies */
     --chart-1: 7 42% 44%;
-    /* Brick red */
+
     --chart-2: 25 50% 32%;
-    /* Warm brown */
+
     --chart-3: 15 45% 25%;
-    /* Burnt umber */
+
     --chart-4: 30 30% 68%;
-    /* Sandstone */
+
     --chart-5: 25 50% 86%;
-    /* Soft clay */
 
     --radius: 0.5rem;
 
-    /* Sidebar colors - warm earth tones */
     --sidebar-background: 30 40% 94%;
     --sidebar-foreground: 25 25% 18%;
     --sidebar-primary: 7 42% 44%;
@@ -69,58 +56,45 @@
   }
 
   .dark {
-    /* Earthfire Elegance Theme - Dark Mode */
-    /* Background: Deep burnt umber #5a1f18 */
+
     --background: 15 55% 22%;
     --foreground: 25 50% 86%;
-    /* Soft clay for text */
 
-    /* Card colors - slightly lighter burnt tones */
     --card: 15 45% 26%;
     --card-foreground: 25 50% 86%;
 
-    /* Popover colors */
     --popover: 15 45% 26%;
     --popover-foreground: 25 50% 86%;
 
-    /* Primary colors - enhanced brick red for dark mode */
     --primary: 7 55% 55%;
     --primary-foreground: 15 55% 22%;
 
-    /* Secondary colors - darker warm brown */
     --secondary: 25 35% 25%;
     --secondary-foreground: 25 50% 86%;
 
-    /* Muted colors - medium brown blend */
     --muted: 25 30% 35%;
     --muted-foreground: 30 30% 68%;
 
-    /* Accent colors - warm brown with good contrast */
     --accent: 25 45% 38%;
     --accent-foreground: 25 50% 86%;
 
-    /* Destructive colors */
     --destructive: 0 70% 55%;
     --destructive-foreground: 25 50% 86%;
 
-    /* Border and input colors - medium earth tones */
     --border: 25 25% 32%;
     --input: 25 25% 32%;
     --ring: 7 55% 55%;
 
-    /* Chart colors - vibrant earthfire palette for dark mode */
     --chart-1: 7 60% 58%;
-    /* Bright brick red */
-    --chart-2: 25 55% 45%;
-    /* Medium warm brown */
-    --chart-3: 15 50% 35%;
-    /* Deep earth brown */
-    --chart-4: 30 45% 52%;
-    /* Rich sandstone */
-    --chart-5: 25 40% 68%;
-    /* Light clay */
 
-    /* Sidebar colors - deep earth theme */
+    --chart-2: 25 55% 45%;
+
+    --chart-3: 15 50% 35%;
+
+    --chart-4: 30 45% 52%;
+
+    --chart-5: 25 40% 68%;
+
     --sidebar-background: 20 40% 18%;
     --sidebar-foreground: 30 30% 78%;
     --sidebar-primary: 7 55% 55%;
@@ -143,7 +117,6 @@
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   }
 
-  /* Ensure all text elements use proper colors for dark mode */
   h1,
   h2,
   h3,
@@ -161,13 +134,11 @@
     @apply text-foreground;
   }
 
-  /* Enhanced sidebar styling */
   .sidebar-enhanced {
     min-width: 20rem;
     width: 20rem;
   }
 
-  /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 6px;
   }
@@ -187,7 +158,6 @@
 
 @layer components {
 
-  /* Sidebar enhancements */
   .sidebar-content {
     @apply flex flex-col h-full min-w-0;
   }
@@ -224,7 +194,6 @@
     @apply border-t bg-gradient-to-br from-card to-muted/20 p-4;
   }
 
-  /* User profile section */
   .user-profile {
     @apply flex items-start gap-4;
   }
@@ -249,7 +218,6 @@
     @apply bg-primary/5 text-primary border-primary/20 text-sm;
   }
 
-  /* Theme toggle in sidebar */
   .theme-toggle-sidebar {
     @apply flex-shrink-0;
   }

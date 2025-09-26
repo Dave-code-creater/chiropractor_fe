@@ -26,7 +26,6 @@ export default function RecentChatMessages({
       status: 'active'
     },
     {
-      // Prevent constant refetching on error
       refetchOnMountOrArgChange: false,
       refetchOnFocus: false,
       refetchOnReconnect: false,
@@ -35,14 +34,12 @@ export default function RecentChatMessages({
   const { data: appointmentDoctors } = useGetAvailableDoctorsQuery(
     { is_available: true },
     {
-      // Prevent constant refetching on error
       refetchOnMountOrArgChange: false,
       refetchOnFocus: false,
       refetchOnReconnect: false,
     }
   );
   
-  // Extract conversations from response
   const conversations = useMemo(() => {
     if (!conversationsData) return [];
     
@@ -58,11 +55,9 @@ export default function RecentChatMessages({
       conversationsArray = conversationsData.conversations;
     }
     
-    // Filter to only show active conversations
     return conversationsArray.filter(conv => conv.status === 'active');
   }, [conversationsData]);
 
-  // Get available doctors for name resolution
   const availableDoctors = useMemo(() => {
     let doctors = [];
     
@@ -84,11 +79,10 @@ export default function RecentChatMessages({
     }));
   }, [appointmentDoctors]);
 
-  // Helper function to get participant info
   const getParticipantInfo = (conversation) => {
-    if (!conversation) return { name: "Unknown", avatar: null, type: "user", status: "offline" };
+    if (!conversation)
+      return { name: "Unknown", avatar: null, type: "user", status: "offline" };
     
-    // First, try to get doctor info from available doctors list if we have a doctor ID
     if (conversation.metadata?.doctorId) {
       const doctorId = conversation.metadata.doctorId;
       const matchedDoctor = availableDoctors.find(doc => doc.id === doctorId || doc.userID === doctorId);
@@ -102,11 +96,9 @@ export default function RecentChatMessages({
       }
     }
     
-    // Look for doctor participant in the participants array
     if (conversation.participants && Array.isArray(conversation.participants)) {
       const doctor = conversation.participants.find(p => p.role === "doctor");
       if (doctor) {
-        // Try to match with available doctors list using userId
         if (doctor.userId) {
           const matchedDoctor = availableDoctors.find(doc => doc.id === doctor.userId || doc.userID === doctor.userId);
           if (matchedDoctor) {
@@ -119,7 +111,6 @@ export default function RecentChatMessages({
           }
         }
         
-        // Handle different name formats from backend
         let doctorName = "Healthcare Provider";
         
         if (doctor.firstName && doctor.lastName && doctor.firstName !== "Dr." && doctor.lastName !== "Doctor 1") {
@@ -138,7 +129,6 @@ export default function RecentChatMessages({
         };
       }
       
-      // Look for patient participant if current user is doctor/admin
       if ((userRole === "doctor" || userRole === "admin") && conversation.participants.length > 0) {
         const patient = conversation.participants.find(p => p.role === "patient" || p.role === "user");
         if (patient) {
@@ -152,7 +142,6 @@ export default function RecentChatMessages({
       }
     }
     
-    // Fallback to existing logic
     return {
       name: conversation.participant_name || "Healthcare Provider",
       avatar: conversation.participant_avatar,
@@ -161,7 +150,6 @@ export default function RecentChatMessages({
     };
   };
 
-  // Format time helper
   const formatMessageTime = (timestamp) => {
     if (!timestamp) return "";
     
@@ -181,7 +169,6 @@ export default function RecentChatMessages({
     }
   };
 
-  // Sort conversations by most recent activity
   const sortedConversations = useMemo(() => {
     return [...conversations].sort((a, b) => {
       const aTime = new Date(a.updated_at || a.updatedAt || a.created_at || a.createdAt);
@@ -190,7 +177,6 @@ export default function RecentChatMessages({
     });
   }, [conversations]);
 
-  // Get the role-specific icon
   const getParticipantIcon = (type) => {
     switch (type) {
       case "doctor":

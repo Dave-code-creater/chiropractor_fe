@@ -50,7 +50,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
   });
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-  // Sample data for search results
   const [sampleData] = useState({
     patients: [
       {
@@ -112,9 +111,7 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
         location: "Room 101",
       },
     ],
-    clinicalNotes: [
-      // Clinical notes will be loaded from API
-    ],
+    clinicalNotes: [],
     reports: [
       {
         id: "RPT-001",
@@ -148,7 +145,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
     ],
   });
 
-  // Combine all data for search
   const allData = useMemo(
     () => [
       ...sampleData.patients,
@@ -160,7 +156,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
     [sampleData],
   );
 
-  // Search function
   const performSearch = useCallback(
     (query, filters = activeFilters) => {
       if (!query.trim()) {
@@ -170,7 +165,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
 
       setIsSearching(true);
 
-      // Simulate API delay
       setTimeout(() => {
         let results = allData.filter((item) => {
           const matchesQuery =
@@ -191,7 +185,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
             filters.assignedTo === "all" ||
             item.assignedTo.includes(filters.assignedTo);
 
-          // Date range filter
           let matchesDateRange = true;
           if (filters.dateRange !== "all") {
             const now = new Date();
@@ -220,9 +213,7 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
           );
         });
 
-        // Sort by relevance and date
         results.sort((a, b) => {
-          // Prioritize exact title matches
           const aExactMatch = a.title
             .toLowerCase()
             .includes(query.toLowerCase());
@@ -230,25 +221,23 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
             .toLowerCase()
             .includes(query.toLowerCase());
           if (aExactMatch && !bExactMatch) return -1;
-          if (!aExactMatch && bExactMatch) return 1;
+          if (!aExactMatch && bExactMatch)
+            return 1;
 
-          // Then by date
           return new Date(b.lastUpdated) - new Date(a.lastUpdated);
         });
 
         setSearchResults(results);
         setIsSearching(false);
 
-        // Add to search history
         if (query.trim() && !searchHistory.includes(query.trim())) {
           setSearchHistory((prev) => [query.trim(), ...prev.slice(0, 9)]);
         }
       }, 300);
     },
-    [allData, activeFilters],
+    [allData, activeFilters, searchHistory],
   );
 
-  // Handle search input
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       performSearch(searchQuery);
@@ -257,7 +246,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
     return () => clearTimeout(debounceTimer);
   }, [searchQuery, performSearch]);
 
-  // Handle filter changes
   const handleFilterChange = (filterType, value) => {
     const newFilters = { ...activeFilters, [filterType]: value };
     setActiveFilters(newFilters);
@@ -414,7 +402,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
 
   return (
     <div className="space-y-6">
-      {/* Search Header */}
       <div className="flex items-center space-x-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -455,8 +442,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
           </Button>
         )}
       </div>
-
-      {/* Advanced Filters */}
       {showAdvancedFilters && (
         <Card>
           <CardHeader>
@@ -575,8 +560,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
           </CardContent>
         </Card>
       )}
-
-      {/* Search Results */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3">
           <Card>
@@ -639,9 +622,7 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
           </Card>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-4">
-          {/* Search History */}
           {searchHistory.length > 0 && (
             <Card>
               <CardHeader>
@@ -669,7 +650,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
             </Card>
           )}
 
-          {/* Saved Searches */}
           {savedSearches.length > 0 && (
             <Card>
               <CardHeader>
@@ -702,7 +682,6 @@ const GlobalSearch = ({ onResultSelect, userRole: _userRole = "admin" }) => {
             </Card>
           )}
 
-          {/* Quick Filters */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center text-sm">

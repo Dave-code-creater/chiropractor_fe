@@ -1,8 +1,3 @@
-/**
- * Chat Role-Based Access Rules
- * These rules define who can chat with whom and what actions they can perform
- */
-
 export const CHAT_ROLES = {
   PATIENT: 'patient',
   DOCTOR: 'doctor', 
@@ -46,9 +41,6 @@ export const MESSAGE_TYPES = {
   SYSTEM: 'system'
 };
 
-/**
- * Check if a user can start a conversation with another user based on their roles
- */
 export const canStartConversation = (currentUserRole, targetUserRole) => {
   if (!currentUserRole || !targetUserRole) {
     return false;
@@ -66,9 +58,6 @@ export const canStartConversation = (currentUserRole, targetUserRole) => {
   return accessRules.canChatWith.includes(normalizedTargetRole);
 };
 
-/**
- * Get allowed roles for a given user role
- */
 export const getAllowedRoles = (userRole) => {
   if (!userRole) {
     return [];
@@ -80,9 +69,6 @@ export const getAllowedRoles = (userRole) => {
   return accessRules ? accessRules.canChatWith : [];
 };
 
-/**
- * Get role description for display
- */
 export const getRoleDescription = (userRole) => {
   if (!userRole) {
     return "Unknown role";
@@ -94,9 +80,6 @@ export const getRoleDescription = (userRole) => {
   return accessRules ? accessRules.description : "Unknown role";
 };
 
-/**
- * Validate conversation data before sending to API
- */
 export const validateConversationData = (conversationData) => {
   const { target_user_id, subject, conversation_type, priority } = conversationData;
 
@@ -141,9 +124,6 @@ export const validateConversationData = (conversationData) => {
   };
 };
 
-/**
- * Get error message for role restriction
- */
 export const getRoleRestrictionError = (currentUserRole, targetUserRole) => {
   const normalizedCurrentRole = currentUserRole?.toLowerCase();
   const normalizedTargetRole = targetUserRole?.toLowerCase();
@@ -155,25 +135,16 @@ export const getRoleRestrictionError = (currentUserRole, targetUserRole) => {
   return "You are not authorized to start a conversation with this user";
 };
 
-/**
- * Format conversation type for display
- */
 export const formatConversationType = (type) => {
   if (!type) return 'General';
   return type.charAt(0).toUpperCase() + type.slice(1).replace('-', ' ');
 };
 
-/**
- * Format priority level for display
- */
 export const formatPriority = (priority) => {
   if (!priority) return 'Normal';
   return priority.charAt(0).toUpperCase() + priority.slice(1);
 };
 
-/**
- * Get role icon name for display
- */
 export const getRoleIcon = (role) => {
   switch (role?.toLowerCase()) {
     case CHAT_ROLES.PATIENT:
@@ -188,9 +159,6 @@ export const getRoleIcon = (role) => {
   }
 };
 
-/**
- * Check if user can update conversation status
- */
 export const canUpdateConversationStatus = (userRole) => {
   const normalizedRole = userRole?.toLowerCase();
   return [CHAT_ROLES.DOCTOR, CHAT_ROLES.ADMIN].includes(normalizedRole);

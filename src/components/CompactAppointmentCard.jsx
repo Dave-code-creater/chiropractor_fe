@@ -11,11 +11,9 @@ export default function CompactAppointmentCard({ appointment, showLocation = tru
         ? 'bg-muted/30 opacity-60' 
         : 'bg-background/50'
     }`}>
-      {/* Small cancelled indicator - positioned subtly on the left */}
       {isCanceled && (
         <div className="absolute -left-1 top-2 sm:top-3 bottom-2 sm:bottom-3 w-1 bg-red-400 rounded-r-sm"></div>
       )}
-      
       <div className="flex items-center gap-2 sm:gap-3">
         <Avatar className={`h-8 w-8 sm:h-10 sm:w-10 border-2 ${
           isCanceled ? 'border-muted grayscale' : 'border-primary/20'

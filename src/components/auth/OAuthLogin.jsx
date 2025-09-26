@@ -6,7 +6,6 @@ const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
 
     const handleGoogleSuccess = (credentialResponse) => {
         try {
-            // Decode the JWT token to get user info
             const decoded = JSON.parse(atob(credentialResponse.credential.split('.')[1]));
             const userData = {
                 provider: 'google',
@@ -29,13 +28,10 @@ const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
     };
 
     const handleFacebookLogin = () => {
-        // For now, show a coming soon message
         toast.info('Facebook Sign-In coming soon!');
     };
 
     const handleAppleLogin = () => {
-        // Apple Sign-In for web requires specific setup
-        // For now, we'll show a toast that it's under development
         toast.info('Apple Sign-In coming soon!');
     };
 
@@ -44,9 +40,7 @@ const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
             <div className="text-center text-sm text-gray-500 mb-4">
                 Or continue with
             </div>
-
             <div className="oauth-buttons space-y-3">
-                {/* Google Login */}
                 <div className="oauth-button w-full">
                     <GoogleLogin
                         onSuccess={handleGoogleSuccess}
@@ -62,7 +56,6 @@ const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
                     />
                 </div>
 
-                {/* Facebook Login - Placeholder */}
                 <div className="oauth-button w-full">
                     <button
                         onClick={handleFacebookLogin}
@@ -75,7 +68,6 @@ const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
                     </button>
                 </div>
 
-                {/* Apple Login - Placeholder */}
                 <div className="oauth-button w-full">
                     <button
                         onClick={handleAppleLogin}

@@ -67,15 +67,14 @@ import { toast } from "sonner";
 
 const BlogManagement = () => {
   const navigate = useNavigate();
-  const { id: doctorId } = useParams(); // Get the doctor's ID from URL params
+  const { id: doctorId } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [deletePostId, setDeletePostId] = useState(null);
-  const [activeTab, setActiveTab] = useState("published"); // "published" or "drafts"
+  const [activeTab, setActiveTab] = useState("published");
   const [draftSearchTerm, setDraftSearchTerm] = useState("");
 
-  // Helper function for blog routes
   const getBlogPath = (path) => `/dashboard/doctor/${doctorId}/blog/${path}`;
 
   const {
@@ -85,7 +84,7 @@ const BlogManagement = () => {
     refetch,
   } = useGetBlogPostsQuery({
     search: searchTerm || undefined,
-    status: "published", // Only fetch published posts
+    status: "published",
     category: categoryFilter === "all" ? undefined : categoryFilter,
   });
 
@@ -96,7 +95,7 @@ const BlogManagement = () => {
     refetch: refetchDrafts,
   } = useGetBlogPostsQuery({
     search: draftSearchTerm || undefined,
-    status: "draft", // Only fetch draft posts
+    status: "draft",
     category: categoryFilter === "all" ? undefined : categoryFilter,
   });
 
@@ -106,8 +105,6 @@ const BlogManagement = () => {
 
   const posts = postsData?.data?.posts || [];
   const drafts = draftsData?.data?.posts || [];
-
-  // Blog management data processing
 
   const handleDelete = async () => {
     if (!deletePostId) return;
@@ -223,7 +220,6 @@ const BlogManagement = () => {
 
   return (
     <div className="h-full w-full p-8">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-4xl font-bold tracking-tight">Blog Management</h1>
@@ -231,8 +227,6 @@ const BlogManagement = () => {
         </div>
 
       </div>
-
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card className="shadow-md">
           <CardContent className="p-6">
@@ -293,8 +287,6 @@ const BlogManagement = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Tabbed Interface for Published Posts and Drafts */}
       <Tabs defaultValue="published" className="w-full">
         <div className="flex items-center justify-between mb-6">
           <TabsList className="grid w-[400px] grid-cols-2">
@@ -307,7 +299,6 @@ const BlogManagement = () => {
           </Button>
         </div>
 
-        {/* Published Posts Tab */}
         <TabsContent value="published">
           <Card className="shadow-md mb-8">
             <CardContent className="p-6">
@@ -457,7 +448,6 @@ const BlogManagement = () => {
           </Card>
         </TabsContent>
 
-        {/* Draft Posts Tab */}
         <TabsContent value="drafts">
           <Card className="shadow-md mb-8">
             <CardContent className="p-6">
@@ -618,8 +608,6 @@ const BlogManagement = () => {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deletePostId} onOpenChange={() => setDeletePostId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

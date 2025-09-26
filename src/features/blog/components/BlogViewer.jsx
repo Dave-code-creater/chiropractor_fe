@@ -41,15 +41,12 @@ const BlogViewer = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Get user info from Redux state
     const userID = useSelector(selectUserId);
     const userRole = useSelector(selectUserRole);
     const isAuthenticated = useSelector(selectIsAuthenticated);
 
-    // Determine which parameter to use for fetching
     const postIdentifier = id || slug;
 
-    // Fetch the specific blog post
     const {
         data: postData,
         isLoading: postLoading,
@@ -60,7 +57,6 @@ const BlogViewer = () => {
 
     const post = postData?.data || postData;
 
-    // Helper functions
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString("en-US", {
             year: "numeric",
@@ -74,15 +70,11 @@ const BlogViewer = () => {
         const wordsPerMinute = 200;
         let text = '';
 
-        // If it's a string, use it directly
         if (typeof content === 'string') {
             text = content.replace(/<[^>]*>/g, "");
-        }
-        // If it's structured content, extract text recursively
-        else if (content?.type === 'doc' && content?.content) {
+        } else if (content?.type === 'doc' && content?.content) {
             text = extractTextFromContent(content.content);
         }
-        // Fallback
         else {
             text = JSON.stringify(content || '');
         }
@@ -132,11 +124,9 @@ const BlogViewer = () => {
     };
 
     const getBlogListUrl = () => {
-        // Use current context - if in dashboard, stay in dashboard
         if (location.pathname.includes('/dashboard/')) {
             return `/dashboard/${userRole}/${userID}/blog`;
         }
-        // Otherwise use public blog URL
         return `/blog`;
     };
 
@@ -154,7 +144,6 @@ const BlogViewer = () => {
         }
     };
 
-    // Loading state
     if (postLoading) {
         return (
             <div className="max-w-4xl mx-auto p-6">
@@ -173,7 +162,6 @@ const BlogViewer = () => {
         );
     }
 
-    // Error state
     if (postError || !post) {
         return (
             <div className="max-w-4xl mx-auto p-6">
@@ -209,7 +197,6 @@ const BlogViewer = () => {
     return (
         <div className="max-w-4xl mx-auto p-6">
             <div className="space-y-6">
-                {/* Back to Blog Button */}
                 <Button
                     variant="ghost"
                     onClick={() => navigate(getBlogListUrl())}
@@ -219,9 +206,7 @@ const BlogViewer = () => {
                     Back to Blog
                 </Button>
 
-                {/* Post Content */}
                 <article className="bg-white rounded-lg shadow-sm border overflow-hidden">
-                    {/* Featured Image */}
                     {post.featured_image && (
                         <div className="w-full h-64 md:h-80 overflow-hidden">
                             <img
@@ -233,7 +218,6 @@ const BlogViewer = () => {
                     )}
 
                     <div className="p-6 md:p-8">
-                        {/* Category Badge */}
                         {post.category && (
                             <Badge
                                 className="mb-4"
@@ -246,22 +230,18 @@ const BlogViewer = () => {
                             </Badge>
                         )}
 
-                        {/* Title */}
                         <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
                             {post.title}
                         </h1>
 
-                        {/* Excerpt */}
                         {post.excerpt && (
                             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
                                 {post.excerpt}
                             </p>
                         )}
 
-                        {/* Meta Information */}
                         <div className="flex items-center justify-between border-b border-gray-200 pb-6 mb-8">
                             <div className="flex items-center gap-6 text-sm text-gray-500">
-                                {/* Author */}
                                 <div className="flex items-center gap-2">
                                     <Avatar className="w-8 h-8">
                                         <AvatarFallback>
@@ -275,19 +255,16 @@ const BlogViewer = () => {
                                     </div>
                                 </div>
 
-                                {/* Date */}
                                 <div className="flex items-center gap-1">
                                     <Calendar className="w-4 h-4" />
                                     {formatDate(post.published_at || post.created_at)}
                                 </div>
 
-                                {/* Read Time */}
                                 <div className="flex items-center gap-1">
                                     <Clock className="w-4 h-4" />
                                     {formatReadTime(post.content)}
                                 </div>
 
-                                {/* Views */}
                                 {post.view_count !== undefined && (
                                     <div className="flex items-center gap-1">
                                         <Eye className="w-4 h-4" />
@@ -296,7 +273,6 @@ const BlogViewer = () => {
                                 )}
                             </div>
 
-                            {/* Actions */}
                             <div className="flex items-center gap-2">
                                 <Button
                                     variant="outline"
@@ -310,14 +286,12 @@ const BlogViewer = () => {
                             </div>
                         </div>
 
-                        {/* Content */}
                         <div className="prose prose-lg max-w-none">
                             {post.content && (
                                 <BlogContentRenderer content={post.content} />
                             )}
                         </div>
 
-                        {/* Tags */}
                         {post.tags && post.tags.length > 0 && (
                             <div className="mt-8 pt-6 border-t border-gray-200">
                                 <h3 className="text-sm font-medium text-gray-900 mb-3">Tags</h3>
@@ -333,7 +307,6 @@ const BlogViewer = () => {
                     </div>
                 </article>
 
-                {/* Back to Blog Button (Bottom) */}
                 <div className="text-center">
                     <Button
                         variant="outline"

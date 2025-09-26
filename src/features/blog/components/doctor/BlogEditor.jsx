@@ -68,13 +68,12 @@ const BLOG_CATEGORIES = [
 
 const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
   const navigate = useNavigate();
-  const { id: userId } = useParams(); // Get user ID from URL params
+  const { id: userId } = useParams();
   const userRole = useSelector((state) => state.auth.role);
   const editorRef = useRef(null);
   const [createPost, { isLoading: isCreating }] = useCreateBlogPostMutation();
   const [updatePost, { isLoading: isUpdating }] = useUpdateBlogPostMutation();
 
-  // Form state
   const [formData, setFormData] = useState({
     title: initialPost?.title || "",
     content: initialPost?.content || "",
@@ -93,7 +92,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
   const [imageUrl, setImageUrl] = useState("");
   const [editorContent, setEditorContent] = useState(initialPost?.content || "");
 
-  // Auto-generate slug from title
   useEffect(() => {
     if (formData.title && !initialPost) {
       const slug = formData.title
@@ -105,7 +103,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
     }
   }, [formData.title, initialPost]);
 
-  // Initialize editor content only once
   useEffect(() => {
     if (editorRef.current) {
       const content = initialPost?.content || '';
@@ -114,16 +111,10 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
     }
   }, [initialPost]);
 
-  // Initialize blog editor
-
-  // Restore content when switching back from preview mode
   useEffect(() => {
-    // Only restore content when toggling *out* of preview mode
     if (!showPreview && editorRef.current) {
-      // Rehydrate the editor HTML
       editorRef.current.innerHTML = editorContent;
   
-      // 🖋️ Move the caret to the end so the user can continue typing naturally
       const range = document.createRange();
       range.selectNodeContents(editorRef.current);
       range.collapse(false);
@@ -133,52 +124,49 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
     }
   }, [showPreview]);
 
-  // Rich text editor functions
   const formatText = (command, value = null) => {
     if (!editorRef.current) return;
     
     editorRef.current.focus();
     
-    // Handle different formatting commands
     switch (command) {
-      case 'bold':
-        document.execCommand('bold', false, null);
-        break;
-      case 'italic':
-        document.execCommand('italic', false, null);
-        break;
-      case 'underline':
-        document.execCommand('underline', false, null);
-        break;
-      case 'insertUnorderedList':
-        document.execCommand('insertUnorderedList', false, null);
-        break;
-      case 'insertOrderedList':
-        document.execCommand('insertOrderedList', false, null);
-        break;
-      case 'h1':
-        document.execCommand('formatBlock', false, 'h1');
-        break;
-      case 'h2':
-        document.execCommand('formatBlock', false, 'h2');
-        break;
-      case 'h3':
-        document.execCommand('formatBlock', false, 'h3');
-        break;
-      case 'blockquote':
-        document.execCommand('formatBlock', false, 'blockquote');
-        break;
-      case 'pre':
-        document.execCommand('formatBlock', false, 'pre');
-        break;
-      case 'paragraph':
-        document.execCommand('formatBlock', false, 'p');
-        break;
-      default:
-    document.execCommand(command, false, value);
+    case 'bold':
+      document.execCommand('bold', false, null);
+      break;
+    case 'italic':
+      document.execCommand('italic', false, null);
+      break;
+    case 'underline':
+      document.execCommand('underline', false, null);
+      break;
+    case 'insertUnorderedList':
+      document.execCommand('insertUnorderedList', false, null);
+      break;
+    case 'insertOrderedList':
+      document.execCommand('insertOrderedList', false, null);
+      break;
+    case 'h1':
+      document.execCommand('formatBlock', false, 'h1');
+      break;
+    case 'h2':
+      document.execCommand('formatBlock', false, 'h2');
+      break;
+    case 'h3':
+      document.execCommand('formatBlock', false, 'h3');
+      break;
+    case 'blockquote':
+      document.execCommand('formatBlock', false, 'blockquote');
+      break;
+    case 'pre':
+      document.execCommand('formatBlock', false, 'pre');
+      break;
+    case 'paragraph':
+      document.execCommand('formatBlock', false, 'p');
+      break;
+    default:
+  document.execCommand(command, false, value);
     }
     
-    // Update content after formatting
     handleContentChange();
   };
 
@@ -203,12 +191,11 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
 
   const handleTagAdd = () => {
     if (currentTag.trim()) {
-      // Split by comma and process each tag
       const newTags = currentTag
         .split(',')
         .map(tag => tag.trim())
         .filter(tag => tag.length > 0)
-        .filter(tag => !formData.tags.includes(tag)); // Remove duplicates
+        .filter(tag => !formData.tags.includes(tag));
       
       if (newTags.length > 0) {
         setFormData(prev => {
@@ -250,85 +237,81 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
     }
   };
 
-  // Function to parse HTML content into blocks
   const parseContentToBlocks = (htmlContent) => {
-    if (!htmlContent) return [];
+    if (!htmlContent)
+      return [];
     
-    // Create a temporary div to parse HTML
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = htmlContent;
     
     const blocks = [];
     
-    // Process each child element
     Array.from(tempDiv.children).forEach(element => {
       const tagName = element.tagName.toLowerCase();
       const text = element.textContent.trim();
       
-      if (!text) return; // Skip empty elements
+      if (!text)
+        return;
       
       switch (tagName) {
-        case 'h1':
-          blocks.push({ type: 'heading', level: 1, text });
-          break;
-        case 'h2':
-          blocks.push({ type: 'heading', level: 2, text });
-          break;
-        case 'h3':
-          blocks.push({ type: 'heading', level: 3, text });
-          break;
-        case 'ul':
-          const ulItems = Array.from(element.querySelectorAll('li')).map(li => li.textContent.trim());
-          if (ulItems.length > 0) {
-            blocks.push({ type: 'list', ordered: false, items: ulItems });
-          }
-          break;
-        case 'ol':
-          const olItems = Array.from(element.querySelectorAll('li')).map(li => li.textContent.trim());
-          if (olItems.length > 0) {
-            blocks.push({ type: 'list', ordered: true, items: olItems });
-          }
-          break;
-        case 'blockquote':
-          blocks.push({ type: 'blockquote', text });
-          break;
-        case 'pre':
-          blocks.push({ type: 'code', text });
-          break;
-        case 'img':
+      case 'h1':
+        blocks.push({ type: 'heading', level: 1, text });
+        break;
+      case 'h2':
+        blocks.push({ type: 'heading', level: 2, text });
+        break;
+      case 'h3':
+        blocks.push({ type: 'heading', level: 3, text });
+        break;
+      case 'ul':
+        const ulItems = Array.from(element.querySelectorAll('li')).map(li => li.textContent.trim());
+        if (ulItems.length > 0) {
+          blocks.push({ type: 'list', ordered: false, items: ulItems });
+        }
+        break;
+      case 'ol':
+        const olItems = Array.from(element.querySelectorAll('li')).map(li => li.textContent.trim());
+        if (olItems.length > 0) {
+          blocks.push({ type: 'list', ordered: true, items: olItems });
+        }
+        break;
+      case 'blockquote':
+        blocks.push({ type: 'blockquote', text });
+        break;
+      case 'pre':
+        blocks.push({ type: 'code', text });
+        break;
+      case 'img':
+        blocks.push({ 
+          type: 'image', 
+          src: element.getAttribute('src') || '', 
+          alt: element.getAttribute('alt') || '' 
+        });
+        break;
+      case 'p':
+      default:
+        if (element.innerHTML !== element.textContent) {
+          const hasLinks = element.querySelectorAll('a').length > 0;
+          const hasStrong = element.querySelectorAll('strong').length > 0;
+          const hasEm = element.querySelectorAll('em').length > 0;
+          
           blocks.push({ 
-            type: 'image', 
-            src: element.getAttribute('src') || '', 
-            alt: element.getAttribute('alt') || '' 
+            type: 'paragraph', 
+            text,
+            formatting: {
+              hasLinks,
+              hasStrong,
+              hasEm
+            },
+            html: element.innerHTML
           });
-          break;
-        case 'p':
-        default:
-          // Check if paragraph contains links or formatting
-          if (element.innerHTML !== element.textContent) {
-            // Contains HTML formatting, preserve some structure
-            const hasLinks = element.querySelectorAll('a').length > 0;
-            const hasStrong = element.querySelectorAll('strong').length > 0;
-            const hasEm = element.querySelectorAll('em').length > 0;
-            
-            blocks.push({ 
-              type: 'paragraph', 
-              text,
-              formatting: {
-                hasLinks,
-                hasStrong,
-                hasEm
-              },
-              html: element.innerHTML // Keep original HTML for rich formatting
-            });
-          } else {
-            blocks.push({ type: 'paragraph', text });
-    }
-          break;
+        } else {
+          blocks.push({ type: 'paragraph', text });
+  }
+        break;
       }
     });
     
-    // If no blocks were created (e.g., plain text), create a paragraph
     if (blocks.length === 0 && htmlContent.trim()) {
       blocks.push({ type: 'paragraph', text: tempDiv.textContent.trim() });
     }
@@ -344,7 +327,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
       const postData = {
         ...formData,
         is_published: isDraft ? false : formData.is_published,
-        content: blocks, // Send blocks as content
+        content: blocks,
       };
 
 
@@ -363,7 +346,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
       if (onSave) {
         onSave(result);
       } else {
-        // Navigate back to the user's blog management page
         navigate(`/dashboard/${userRole}/${userId}/blog/management`);
       }
     } catch (error) {
@@ -410,9 +392,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
           </Button>
         </div>
       </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* Main Editor */}
         <div className="lg:col-span-3 space-y-6">
           <Card className="shadow-md">
             <CardHeader className="p-6">
@@ -448,7 +428,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
                 <div className="space-y-3">
                   <Label className="text-lg">Content</Label>
                   
-                  {/* Rich Text Toolbar */}
                   <div className="border border-gray-200 rounded-t-md p-3 bg-gray-50 flex flex-wrap gap-2">
                     <Button
                       variant="ghost"
@@ -557,7 +536,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
                     </Button>
                   </div>
 
-                  {/* Rich Text Editor */}
                   <div
                     ref={editorRef}
                     contentEditable
@@ -601,12 +579,9 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
           </Card>
         </div>
 
-        {/* Sidebar */}
         <div className="space-y-6">
-          {/* Publish Settings */}
           
 
-          {/* Category */}
           <Card className="shadow-md">
             <CardHeader className="p-6">
               <CardTitle className="text-xl">Category</CardTitle>
@@ -633,7 +608,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
             </CardContent>
           </Card>
 
-          {/* Tags */}
           <Card className="shadow-md">
             <CardHeader className="p-6">
               <CardTitle className="text-xl">Tags</CardTitle>
@@ -660,7 +634,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
                 <p className="text-sm text-gray-500">
                   Example: "health, wellness, chiropractic, pain relief"
                 </p>
-                {/* Preview of tags being typed */}
                 {currentTag.trim() && (
                   <div className="flex flex-wrap gap-2 p-2 bg-gray-50 rounded-md">
                     <span className="text-sm text-gray-600">Preview:</span>
@@ -668,7 +641,7 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
                       .split(',')
                       .map(tag => tag.trim())
                       .filter(tag => tag.length > 0)
-                      .filter((tag, index, array) => array.indexOf(tag) === index) // Remove duplicates
+                      .filter((tag, index, array) => array.indexOf(tag) === index)
                       .map((tag, index) => (
                         <Badge key={`preview-${index}`} variant="outline" className="text-xs">
                           {tag}
@@ -693,7 +666,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
             </CardContent>
           </Card>
 
-          {/* Featured Image */}
           <Card className="shadow-md">
             <CardHeader className="p-6">
               <CardTitle className="text-xl">Featured Image</CardTitle>
@@ -715,7 +687,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
             </CardContent>
           </Card>
 
-          {/* SEO */}
           <Card className="shadow-md">
             <CardHeader className="p-6">
               <CardTitle className="text-xl">SEO</CardTitle>
@@ -736,8 +707,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
           </Card>
         </div>
       </div>
-
-      {/* Image Dialog */}
       <Dialog open={showImageDialog} onOpenChange={setShowImageDialog}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>

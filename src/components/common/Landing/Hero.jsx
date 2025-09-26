@@ -16,7 +16,6 @@ export default function Hero() {
   const user = useSelector(selectUserId);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  // Use your local images for the rotating background
   const backgroundImages = [
     { url: background1 },
     { url: background2 },
@@ -27,7 +26,6 @@ export default function Hero() {
 
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Auto-rotate background images every 5 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) =>
@@ -48,7 +46,6 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {/* Rotating Background Images */}
       {backgroundImages.map((image, index) => (
         <div
           key={index}
@@ -57,31 +54,23 @@ export default function Hero() {
           style={{ backgroundImage: `url(${image.url})` }}
         />
       ))}
-
-      {/* Enhanced Overlay for readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40 z-0" />
-
-      {/* Content Wrapper */}
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center py-20 sm:py-32 lg:py-40">
-        {/* Badge or sub-heading */}
         <div className="mb-6 inline-block rounded-full bg-white/10 px-4 py-1 text-sm font-medium text-earthfire-clay-200 backdrop-blur-sm ring-1 ring-white/20">
           Expert Chiropractic Care That Moves You Forward
         </div>
 
-        {/* Main Heading */}
         <h1 className="text-4xl sm:text-6xl font-bold text-white tracking-tight leading-tight">
           Move Better, <br className="hidden sm:inline" />
           Live Stronger
         </h1>
 
-        {/* Subheading */}
         <p className="mt-6 text-lg sm:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
           We provide clinically validated chiropractic care starting with an
           expert diagnosis and tailored therapy plan. Let's get you pain-free
           and moving again.
         </p>
 
-        {/* CTA Buttons */}
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <button
             onClick={handleBookAppointment}
@@ -97,8 +86,6 @@ export default function Hero() {
           </a>
         </div>
       </div>
-
-      {/* Progress Indicators */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-10">
         {backgroundImages.map((_, index) => (
           <div

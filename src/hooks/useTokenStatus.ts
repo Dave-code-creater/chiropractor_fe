@@ -2,10 +2,6 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { getTokenExpiration, isTokenExpired, willExpireSoon } from '../api/core/tokenManager';
 
-/**
- * Custom hook to monitor token status and provide real-time information
- * about token expiration and authentication state
- */
 export const useTokenStatus = () => {
   const accessToken = useSelector((state) => state?.auth?.accessToken);
   const refreshToken = useSelector((state) => state?.auth?.refreshToken);
@@ -35,7 +31,7 @@ export const useTokenStatus = () => {
       }
 
       const expired = isTokenExpired(accessToken);
-      const expiringSoon = willExpireSoon(accessToken, 300); // 5 minutes
+      const expiringSoon = willExpireSoon(accessToken, 300);
       const expirationDate = getTokenExpiration(accessToken);
       const timeUntilExpiry = expirationDate ? expirationDate.getTime() - Date.now() : null;
 
@@ -49,10 +45,8 @@ export const useTokenStatus = () => {
       });
     };
 
-    // Update immediately
     updateTokenStatus();
 
-    // Update every minute
     const interval = setInterval(updateTokenStatus, 60000);
 
     return () => clearInterval(interval);
@@ -60,7 +54,6 @@ export const useTokenStatus = () => {
 
   return {
     ...tokenStatus,
-    // Helper functions
     getTimeUntilExpiryString: () => {
       if (!tokenStatus.timeUntilExpiry || tokenStatus.timeUntilExpiry <= 0) {
         return 'Expired';

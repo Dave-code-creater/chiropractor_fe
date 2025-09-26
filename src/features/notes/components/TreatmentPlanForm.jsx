@@ -58,7 +58,6 @@ const TreatmentPlanForm = ({
 
   const [errors, setErrors] = useState({});
 
-  // Calculate totals
   const totalWeeks = formData.phases.reduce((sum, phase) => sum + parseInt(phase.duration || 0), 0);
   const totalAppointmentsCalculated = formData.phases.reduce((sum, phase) => {
     const weeks = parseInt(phase.duration || 0);
@@ -94,7 +93,6 @@ const TreatmentPlanForm = ({
       phases: [...prev.phases, newPhase]
     }));
 
-    // Reset current phase
     setCurrentPhase({
       name: "",
       duration: "",
@@ -126,7 +124,6 @@ const TreatmentPlanForm = ({
       [phases[index], phases[index + 1]] = [phases[index + 1], phases[index]];
     }
 
-    // Update order numbers
     phases.forEach((phase, idx) => {
       phase.order = idx + 1;
     });
@@ -180,7 +177,6 @@ const TreatmentPlanForm = ({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">Treatment Plan</h2>
@@ -199,8 +195,6 @@ const TreatmentPlanForm = ({
           </Button>
         </div>
       </div>
-
-      {/* Basic Information */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -264,8 +258,6 @@ const TreatmentPlanForm = ({
           </div>
         </CardContent>
       </Card>
-
-      {/* Treatment Phases */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -277,7 +269,6 @@ const TreatmentPlanForm = ({
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Add New Phase */}
           <div className="border rounded-lg p-4 bg-muted/20">
             <h4 className="font-semibold mb-4">Add New Phase</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -362,7 +353,6 @@ const TreatmentPlanForm = ({
             </Button>
           </div>
 
-          {/* Existing Phases */}
           {formData.phases.length > 0 && (
             <div className="space-y-4">
               <h4 className="font-semibold">Treatment Phases ({formData.phases.length})</h4>
@@ -435,8 +425,6 @@ const TreatmentPlanForm = ({
           {errors.phases && <p className="text-red-500 text-sm">{errors.phases}</p>}
         </CardContent>
       </Card>
-
-      {/* Summary */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -461,8 +449,6 @@ const TreatmentPlanForm = ({
           </div>
         </CardContent>
       </Card>
-
-      {/* Additional Notes */}
       <Card>
         <CardHeader>
           <CardTitle>Additional Notes</CardTitle>

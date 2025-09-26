@@ -1,9 +1,7 @@
-// FAQ Types and Categories
 export const FAQ_TYPES_QUESTION = {
   types: ["General", "Technical", "Account", "Privacy", "Other"],
 };
 
-// General FAQ Questions
 export const FAQ_QUESTION_GENERAL = [
   {
     question: "What is chiropractic care?",
@@ -31,7 +29,6 @@ export const FAQ_QUESTION_GENERAL = [
   }
 ];
 
-// Technical FAQ Questions
 export const FAQ_QUESTION_TECHNICAL = [
   {
     question: "How do I access my patient portal?",
@@ -59,7 +56,6 @@ export const FAQ_QUESTION_TECHNICAL = [
   }
 ];
 
-// Account FAQ Questions
 export const FAQ_QUESTION_ACCOUNT = [
   {
     question: "How do I create a patient account?",
@@ -87,7 +83,6 @@ export const FAQ_QUESTION_ACCOUNT = [
   }
 ];
 
-// Privacy FAQ Questions
 export const FAQ_QUESTION_PRIVACY = [
   {
     question: "How is my personal health information protected?",
@@ -115,11 +110,10 @@ export const FAQ_QUESTION_PRIVACY = [
   }
 ];
 
-// Default export
 export default {
   FAQ_TYPES_QUESTION,
   FAQ_QUESTION_GENERAL,
   FAQ_QUESTION_TECHNICAL,
   FAQ_QUESTION_ACCOUNT,
-  FAQ_QUESTION_PRIVACY,
+  FAQ_QUESTION_PRIVACY
 };

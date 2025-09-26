@@ -27,7 +27,7 @@ const PasswordInput = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`${className} pr-12`} // Add padding for the button
+        className={`${className} pr-12`}
         disabled={disabled}
         required={required}
         id={id}
@@ -41,7 +41,7 @@ const PasswordInput = ({
         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
         onClick={togglePasswordVisibility}
         disabled={disabled}
-        tabIndex={-1} // Prevent tab focus on the button
+        tabIndex={-1}
       >
         {showPassword ? (
           <EyeOff className="h-4 w-4 text-muted-foreground" />

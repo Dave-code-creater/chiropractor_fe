@@ -77,11 +77,10 @@ import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 const DoctorAvailabilitySystem = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedDoctor, setSelectedDoctor] = useState("all");
-  const [viewMode, setViewMode] = useState("week"); // week, day, month
+  const [viewMode, setViewMode] = useState("week");
   const [showConflicts, setShowConflicts] = useState(true);
   const [editingSchedule, setEditingSchedule] = useState(null);
 
-  // Calculate date range for queries
   const dateRange = useMemo(() => {
     const start = startOfWeek(selectedDate);
     const end = endOfWeek(selectedDate);
@@ -91,7 +90,6 @@ const DoctorAvailabilitySystem = () => {
     };
   }, [selectedDate]);
 
-  // API Queries
   const {
     data: doctorsData,
     isLoading: doctorsLoading,
@@ -147,11 +145,9 @@ const DoctorAvailabilitySystem = () => {
     }
   );
 
-  // Mutations
   const [createTimeOffRequest] = useCreateTimeOffRequestMutation();
   const [updateWorkingHours] = useUpdateDoctorWorkingHoursMutation();
 
-  // Transform API data
   const doctors = useMemo(() => {
     if (!doctorsData) return [];
     return doctorsData.data || doctorsData || [];
@@ -180,7 +176,6 @@ const DoctorAvailabilitySystem = () => {
     return statisticsData.data || statisticsData;
   }, [statisticsData, doctors]);
 
-  // Generate time slots for a doctor on a specific date
   const generateTimeSlots = useCallback(
     (doctor, date) => {
       if (!doctor?.working_hours && !doctor?.workingHours) return [];
@@ -202,9 +197,8 @@ const DoctorAvailabilitySystem = () => {
       let currentTime = startTime;
 
       while (currentTime < endTime) {
-        const slotEnd = new Date(currentTime.getTime() + 30 * 60000); // 30-minute slots
+        const slotEnd = new Date(currentTime.getTime() + 30 * 60000);
 
-        // Check if this slot conflicts with existing appointments
         const conflict = appointments.find(
           (apt) =>
             apt.doctor_id === doctor.id &&
@@ -213,7 +207,6 @@ const DoctorAvailabilitySystem = () => {
             apt.appointment_time + apt.duration_minutes > format(currentTime, "HH:mm"),
         );
 
-        // Check if this slot conflicts with time-off
         const timeOff = timeOffRequests.find(
           (to) =>
             to.doctor_id === doctor.id &&
@@ -240,13 +233,11 @@ const DoctorAvailabilitySystem = () => {
     [appointments, timeOffRequests],
   );
 
-  // Get filtered doctors based on selection
   const filteredDoctors = useMemo(() => {
     if (selectedDoctor === "all") return doctors;
     return doctors.filter((doc) => doc.id === selectedDoctor);
   }, [doctors, selectedDoctor]);
 
-  // Get week dates for week view
   const weekDates = useMemo(() => {
     const start = startOfWeek(selectedDate);
     return Array.from({ length: 7 }, (_, i) => addDays(start, i));
@@ -270,7 +261,6 @@ const DoctorAvailabilitySystem = () => {
     }
   };
 
-  // Loading state
   if (doctorsLoading || scheduleLoading || appointmentsLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -282,7 +272,6 @@ const DoctorAvailabilitySystem = () => {
     );
   }
 
-  // Error state
   if (doctorsError || scheduleError || appointmentsError) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -573,7 +562,6 @@ const DoctorAvailabilitySystem = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
@@ -594,8 +582,6 @@ const DoctorAvailabilitySystem = () => {
           </Button>
         </div>
       </div>
-
-      {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -663,13 +649,9 @@ const DoctorAvailabilitySystem = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Conflicts Alert */}
       {showConflicts && conflictsData && (
         <ConflictAlert conflicts={conflictsData.data || conflictsData} />
       )}
-
-      {/* Controls */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row gap-4 items-center">
@@ -717,8 +699,6 @@ const DoctorAvailabilitySystem = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Schedule Views */}
       <Tabs value={viewMode} onValueChange={setViewMode}>
         <TabsContent value="week" className="mt-0">
           <WeekView />
@@ -734,8 +714,6 @@ const DoctorAvailabilitySystem = () => {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* Time Off Requests */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">

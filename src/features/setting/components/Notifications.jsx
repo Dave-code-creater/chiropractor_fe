@@ -52,7 +52,6 @@ export default function Notifications() {
         </CardHeader>
 
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Reminder Channels */}
           <div>
             <Label className="mb-4 block">Appointment Reminders</Label>
             {Object.keys(reminders).map((label) => (
@@ -68,7 +67,6 @@ export default function Notifications() {
             ))}
           </div>
 
-          {/* Reminder Times */}
           <div>
             <Label className="mb-2 block">Reminder Times</Label>
             <div className="space-y-2">
@@ -101,7 +99,6 @@ export default function Notifications() {
             </div>
           </div>
 
-          {/* Follow-up */}
           <div>
             <Label className="mb-2 block">Follow-Up Check-Ins</Label>
             <RadioGroup value={followUp} onValueChange={setFollowUp}>
@@ -120,7 +117,6 @@ export default function Notifications() {
             </RadioGroup>
           </div>
 
-          {/* Lead Time */}
           <div>
             <Label className="mb-2 block">Reminder Lead Time</Label>
             <RadioGroup value={leadTime} onValueChange={setLeadTime}>

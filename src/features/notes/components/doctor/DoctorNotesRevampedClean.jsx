@@ -52,7 +52,6 @@ import InitialReportDisplay from "../InitialReportDisplay";
 import TreatmentPlanForm from "../TreatmentPlanForm";
 
 const DoctorNotesRevamped = ({ doctorId }) => {
-    // Validate required props
     if (!doctorId) {
         console.error('DoctorNotesRevamped: doctorId prop is required');
         return (
@@ -68,7 +67,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
         );
     }
 
-    // State management
     const [selectedPatient, setSelectedPatient] = useState(null);
     const [activeTab, setActiveTab] = useState("overview");
     const [searchTerm, setSearchTerm] = useState("");
@@ -79,11 +77,9 @@ const DoctorNotesRevamped = ({ doctorId }) => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [showQuickActions, setShowQuickActions] = useState(false);
 
-    // Data fetching
     const { patients, isLoading: isLoadingPatients, error: patientsError } = useDoctorPatientsWithIncidents(doctorId);
     const { incidentDetails, isLoading: isLoadingIncident, error: incidentError } = useIncidentDetails(selectedIncident?.id);
 
-    // Helper functions
     const getStatusColor = (status) => {
         const colors = {
             active: "bg-emerald-100 text-emerald-800 border-emerald-200",
@@ -127,7 +123,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
         return icons[type] || icons.default;
     };
 
-    // Error handling
     if (patientsError) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-6">
@@ -145,7 +140,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
         );
     }
 
-    // Filter patients
     const filteredPatients = useMemo(() => {
         if (!patients) return [];
 
@@ -157,7 +151,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
 
             const matchesStatus = filterStatus === "all" || patient?.status === filterStatus;
 
-            // Priority filter based on incident urgency
             let matchesPriority = filterPriority === "all";
             if (!matchesPriority && patient?.recent_incidents?.length > 0) {
                 matchesPriority = patient.recent_incidents.some(incident =>
@@ -189,7 +182,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
             >
                 <CardContent className="p-4">
                     <div className="flex items-start space-x-3">
-                        {/* Avatar */}
                         <div className="relative">
                             <Avatar className="w-10 h-10 border-2 border-white shadow-sm">
                                 <AvatarImage src={patient?.avatar} />
@@ -209,7 +201,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                             )}
                         </div>
 
-                        {/* Patient Info */}
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between">
                                 <h3 className={`font-semibold truncate text-sm ${isSelected ? 'text-blue-900' : 'text-slate-900'
@@ -229,7 +220,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                                 {patient?.email || 'No email'}
                             </p>
 
-                            {/* Status and Metrics */}
                             <div className="flex items-center justify-between mt-2">
                                 <Badge
                                     variant="outline"
@@ -254,7 +244,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                                 </div>
                             </div>
 
-                            {/* Quick Actions (on hover) */}
                             <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <div className="flex items-center space-x-1">
                                     <Button size="sm" variant="ghost" className="h-6 px-2 text-xs">
@@ -279,7 +268,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
             case "overview":
                 return (
                     <div className="p-6 space-y-6 overflow-y-auto">
-                        {/* Patient Information Card */}
                         <Card className="border border-slate-200 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center space-x-2">
@@ -324,8 +312,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                                 </div>
                             </CardContent>
                         </Card>
-
-                        {/* Quick Actions */}
                         <Card className="border border-slate-200 shadow-sm">
                             <CardHeader>
                                 <CardTitle className="flex items-center space-x-2">
@@ -542,7 +528,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
 
         return (
             <Card className="h-full shadow-lg border-0 bg-white/80 backdrop-blur-sm overflow-hidden">
-                {/* Enhanced Patient Header */}
                 <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-6 text-white">
                     <div className="flex items-start justify-between">
                         <div className="flex items-start space-x-4">
@@ -594,7 +579,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                         </div>
                     </div>
 
-                    {/* Quick Stats Cards */}
                     <div className="grid grid-cols-4 gap-4 mt-6">
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center">
                             <FileCheck className="w-6 h-6 mx-auto mb-1 text-blue-200" />
@@ -618,8 +602,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                         </div>
                     </div>
                 </div>
-
-                {/* Enhanced Tabs */}
                 <div className="flex-1 flex flex-col overflow-hidden">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col">
                         <div className="border-b border-slate-200 bg-white/50 backdrop-blur-sm">
@@ -671,7 +653,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
-            {/* Modern Header */}
             <div className="bg-white border-b border-slate-200 shadow-sm">
                 <div className="max-w-7xl mx-auto px-6 py-4">
                     <div className="flex items-center justify-between">
@@ -687,7 +668,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                             </div>
                         </div>
                         <div className="flex items-center space-x-3">
-                            {/* Quick Stats */}
                             <div className="hidden md:flex items-center space-x-4 bg-slate-50 rounded-lg px-4 py-2">
                                 <div className="text-center">
                                     <div className="text-lg font-semibold text-slate-900">{filteredPatients.length}</div>
@@ -700,7 +680,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                                 </div>
                             </div>
 
-                            {/* Action Buttons */}
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -720,10 +699,8 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                     </div>
                 </div>
             </div>
-
             <div className="max-w-7xl mx-auto px-6 py-6">
                 <div className="grid grid-cols-12 gap-6 min-h-[calc(100vh-200px)]">
-                    {/* Enhanced Sidebar */}
                     <div className={`transition-all duration-300 ${sidebarCollapsed ? 'col-span-1' : 'col-span-4'}`}>
                         <Card className="h-full shadow-lg border-0 bg-white/80 backdrop-blur-sm">
                             <CardHeader className="pb-4 border-b border-slate-100">
@@ -754,7 +731,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
 
                             {!sidebarCollapsed && (
                                 <CardContent className="p-4 space-y-4 flex-1 overflow-hidden flex flex-col">
-                                    {/* Enhanced Search and Filters */}
                                     <div className="space-y-3">
                                         <div className="relative">
                                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -793,7 +769,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                                         </div>
                                     </div>
 
-                                    {/* Patient List */}
                                     <div className="flex-1 overflow-y-auto space-y-2 pr-2">
                                         {isLoadingPatients ? (
                                             <div className="flex items-center justify-center py-8">
@@ -829,7 +804,6 @@ const DoctorNotesRevamped = ({ doctorId }) => {
                         </Card>
                     </div>
 
-                    {/* Main Content */}
                     <div className={`transition-all duration-300 ${sidebarCollapsed ? 'col-span-11' : 'col-span-8'}`}>
                         <div className="h-full">
                             {renderPatientDetails()}

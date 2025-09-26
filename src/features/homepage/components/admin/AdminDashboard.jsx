@@ -11,10 +11,9 @@ import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 export default function AdminDashboard() {
   const [currentHour, setCurrentHour] = useState("");
   const { data, isLoading } = useGetAppointmentsQuery({
-    status_not: 'cancelled', // Exclude cancelled appointments
+    status_not: 'cancelled',
   });
   
-  // Extract appointments from the correct API response structure
   const allAppointments = data?.metadata ?? data ?? [];
   const appointments = allAppointments;
   
@@ -35,12 +34,11 @@ export default function AdminDashboard() {
     };
 
     updateHour();
-    const interval = setInterval(updateHour, 60000); // Update every minute
+    const interval = setInterval(updateHour, 60000);
     return () => clearInterval(interval);
   }, []);
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
-      {/* Left Column (Main Content) */}
       <div className="md:col-span-2 space-y-4">
         <Card>
           <CardHeader>
@@ -61,7 +59,6 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-        {/* Redesigned Schedule */}
         <Card>
           <CardHeader>
             <CardTitle>Schedule</CardTitle>
@@ -70,7 +67,6 @@ export default function AdminDashboard() {
             <ScheduleGrid currentHour={currentHour} />
           </CardContent>
         </Card>
-        {/* Appointments */}
         <Card>
           <CardHeader>
             <CardTitle>Upcoming Appointments</CardTitle>
@@ -88,8 +84,6 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </div>
-      
-      {/* Right Column (Sidebar) */}
       <div className="space-y-4">
         <Card>
           <CardHeader>
@@ -107,7 +101,6 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        {/* Recent Chat Messages */}
         <RecentChatMessages 
           title="Recent Messages" 
           limit={4} 

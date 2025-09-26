@@ -4,10 +4,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthReady } from '../../hooks/useAuthReady';
 import { selectUserId, selectUserRole, selectIsAuthenticated } from '../../state/data/authSlice';
 
-/**
- * AuthSessionManager - Handles automatic session restoration and redirects
- * Similar to Facebook's behavior where logged-in users are redirected to dashboard
- */
+const AUTH_PAGES = ['/login', '/register', '/forgot-password', '/reset-password'];
+
 const AuthSessionManager = ({ children }) => {
     const navigate = useNavigate();
     const location = useLocation();
@@ -17,23 +15,18 @@ const AuthSessionManager = ({ children }) => {
     const userID = useSelector(selectUserId);
     const userRole = useSelector(selectUserRole);
 
-    // Auth-related pages that authenticated users shouldn't access
-    const authPages = ['/login', '/register', '/forgot-password', '/reset-password'];
-
     useEffect(() => {
-        // Only proceed if auth state is ready
-        if (!isReady) return;
+        if (!isReady)
+            return;
 
         const currentPath = location.pathname;
 
-        // If user is authenticated and trying to access auth pages, redirect to dashboard
-        if (isAuthenticated && userID && userRole && authPages.includes(currentPath)) {
+        if (isAuthenticated && userID && userRole && AUTH_PAGES.includes(currentPath)) {
             const dashboardPath = `/dashboard/${userRole.toLowerCase()}/${userID}`;
             navigate(dashboardPath, { replace: true });
             return;
         }
 
-        // If user is authenticated and on root path, redirect to dashboard
         if (isAuthenticated && userID && userRole && currentPath === '/') {
             const dashboardPath = `/dashboard/${userRole.toLowerCase()}/${userID}`;
             navigate(dashboardPath, { replace: true });

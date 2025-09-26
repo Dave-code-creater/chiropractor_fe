@@ -28,24 +28,21 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
     const [expanded, setExpanded] = useState(false);
     const [activeTab, setActiveTab] = useState("overview");
 
-    // Always fetch basic incident data for surface-level display
     const {
         data: detailedIncidentData,
         isLoading: isLoadingDetails,
         error: detailsError
-    } = useSmartReportFetch(basicIncident?.id, true, { // Always fetch detailed data
-        refetchOnMount: false,
+    } = useSmartReportFetch(basicIncident?.id, true, { refetchOnMount: false,
         refetchOnFocus: false,
         refetchOnReconnect: false,
-        staleTime: 15 * 60 * 1000, // 15 minutes
+        staleTime: 15 * 60 * 1000,
     });
 
-    // Prefetch on hover for better UX
     const handlePrefetchOnHover = usePrefetchOnHover(basicIncident?.id);
 
-    if (!basicIncident) return null;
+    if (!basicIncident)
+        return null;
 
-    // Use detailed data if available, otherwise use basic data
     const incident = detailedIncidentData?.data || basicIncident;
 
     const forms = incident.forms || [];
@@ -107,7 +104,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
 
     return (
         <div className="space-y-4">
-            {/* Enhanced Header Card */}
             <Card className="border-l-4 border-l-primary bg-gradient-to-r from-primary/5 to-transparent">
                 <CardHeader className="pb-4">
                     <div className="flex items-start justify-between">
@@ -171,7 +167,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                     </div>
                 </CardHeader>
 
-                {/* Quick Overview Cards - Always Visible */}
                 <CardContent className="pt-0">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <Card className="bg-muted border border-border shadow-sm">
@@ -251,7 +246,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                     </div>
                 </CardContent>
             </Card>
-
             {expanded && (
                 <Card className="mt-4">
                     <CardContent className="p-6">
@@ -284,7 +278,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
 
                         {!isLoadingDetails && !detailsError && (
                             <div className="space-y-6">
-                                {/* Enhanced Tab Navigation for Each Form Section */}
                                 <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                                     <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 h-12">
                                         <TabsTrigger value="overview" className="flex items-center gap-2">
@@ -313,9 +306,7 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                         </TabsTrigger>
                                     </TabsList>
 
-                                    {/* Overview Tab - Quick Summary */}
                                     <TabsContent value="overview" className="space-y-6">
-                                        {/* Patient Summary Card */}
                                         <Card className="border border-border bg-muted">
                                             <CardHeader>
                                                 <CardTitle className="flex items-center gap-2 text-foreground">
@@ -361,7 +352,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                             </CardContent>
                                         </Card>
 
-                                        {/* Chief Complaint Card */}
                                         <Card className="border border-border bg-muted">
                                             <CardHeader>
                                                 <CardTitle className="flex items-center gap-2 text-foreground">
@@ -398,7 +388,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                             </CardContent>
                                         </Card>
 
-                                        {/* Quick Medical Summary */}
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <Card className="border border-border bg-muted">
                                                 <CardHeader>
@@ -476,7 +465,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                         </div>
                                     </TabsContent>
 
-                                    {/* Patient Info Tab - Dedicated Patient Information */}
                                     <TabsContent value="patient-info" className="space-y-6">
                                         <Card className="border border-border bg-muted">
                                             <CardHeader>
@@ -544,7 +532,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                             </CardContent>
                                         </Card>
 
-                                        {/* Emergency Contact */}
                                         {patientInfo.emergency_contact_name && (
                                             <Card className="border border-border bg-muted">
                                                 <CardHeader>
@@ -573,7 +560,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                         )}
                                     </TabsContent>
 
-                                    {/* Medical History Tab */}
                                     <TabsContent value="medical-history" className="space-y-6">
                                         <Card className="border border-border bg-muted">
                                             <CardHeader>
@@ -660,7 +646,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                             </CardContent>
                                         </Card>
 
-                                        {/* Employment Information */}
                                         <Card className="border border-border bg-muted">
                                             <CardHeader>
                                                 <CardTitle className="flex items-center gap-2 text-foreground">
@@ -709,8 +694,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                         </Card>
                                     </TabsContent>
 
-                                    {/* Pain Assessment Tab */}
-                                    {/* Pain Assessment Tab */}
                                     <TabsContent value="pain-assessment" className="space-y-6">
                                         <Card className="border border-border bg-muted">
                                             <CardHeader>
@@ -831,7 +814,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                         </Card>
                                     </TabsContent>
 
-                                    {/* Insurance Tab */}
                                     <TabsContent value="insurance" className="space-y-6">
                                         <Card className="border border-border bg-muted">
                                             <CardHeader>
@@ -915,7 +897,6 @@ const InitialReportDisplay = ({ incident: basicIncident }) => {
                                         </Card>
                                     </TabsContent>
 
-                                    {/* Lifestyle Tab */}
                                     <TabsContent value="lifestyle" className="space-y-6">
                                         <Card className="border border-border bg-muted">
                                             <CardHeader>

@@ -6,11 +6,10 @@ export const userApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["User", "Patients", "Vitals", "Profile"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
-  refetchOnFocus: false,            // Prevent automatic refetch on window focus
-  refetchOnReconnect: true,         // Keep this for actual network issues
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
-    // User Profile Management
     getUserProfile: builder.query({
       query: () => ({
         url: "users/profile",
@@ -19,7 +18,6 @@ export const userApi = createApi({
       providesTags: ["User"],
     }),
 
-    // Patient Management
     createPatient: builder.mutation({
       query: (data) => ({
         url: "users/patients",
@@ -65,7 +63,6 @@ export const userApi = createApi({
       ],
     }),
 
-    // Profile Management (merged from profileApi)
     updateProfile: builder.mutation({
       query: (profileData) => ({
         url: "users/profile/personal",

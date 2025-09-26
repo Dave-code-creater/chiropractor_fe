@@ -1,9 +1,5 @@
 import React from 'react';
 
-/**
- * Enhanced loading component for session restoration
- * Shows a more polished loading experience similar to Facebook
- */
 const SessionLoadingScreen = ({ message = "Restoring your session..." }) => {
     return (
         <div style={{
@@ -19,7 +15,6 @@ const SessionLoadingScreen = ({ message = "Restoring your session..." }) => {
             backgroundColor: '#ffffff',
             zIndex: 9999
         }}>
-            {/* Logo/Brand */}
             <div style={{
                 marginBottom: '2rem',
                 fontSize: '2rem',
@@ -28,8 +23,6 @@ const SessionLoadingScreen = ({ message = "Restoring your session..." }) => {
             }}>
                 🩺 Chiropractor
             </div>
-
-            {/* Loading Spinner */}
             <div style={{
                 width: '40px',
                 height: '40px',
@@ -39,8 +32,6 @@ const SessionLoadingScreen = ({ message = "Restoring your session..." }) => {
                 animation: 'spin 1s linear infinite',
                 marginBottom: '1rem'
             }} />
-
-            {/* Loading Message */}
             <div style={{
                 fontSize: '16px',
                 color: '#6B7280',
@@ -49,8 +40,6 @@ const SessionLoadingScreen = ({ message = "Restoring your session..." }) => {
             }}>
                 {message}
             </div>
-
-            {/* CSS Animation */}
             <style>
                 {`
           @keyframes spin {

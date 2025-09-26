@@ -31,27 +31,25 @@ import { chatApi } from "../api/services/chatApi";
 import { clinicalNotesApi, doctorScheduleApi, doctorApi } from "../api";
 import { userApi } from "../api/services/userApi";
 
-// Enhanced persist config for better performance
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["settings", "uiState"], // Only persist non-sensitive data
+  whitelist: ["settings", "uiState"],
   version: 1,
   migrate: (state) => {
     return Promise.resolve(state);
   },
-  throttle: 500, // Reduced throttle for better responsiveness
+  throttle: 500,
   serialize: true,
   writeFailHandler: (err) => {
     console.warn("Redux persist write failed:", err);
   },
 };
 
-// Enhanced persist config for auth - now includes user profile data
 const authPersistConfig = {
   key: "auth",
   storage,
-  whitelist: ["accessToken", "refreshToken", "userID", "role", "email", "username", "profile", "preferences"], // Include user data
+  whitelist: ["accessToken", "refreshToken", "userID", "role", "email", "username", "profile", "preferences"],
   version: 1,
   migrate: (state) => {
     return Promise.resolve(state);
@@ -87,18 +85,16 @@ const rootReducer = combineReducers({
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
-// Enhanced store configuration with performance monitoring
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) => {
     const middleware = getDefaultMiddleware({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-        // Performance: Warn about large serialization times
-        warnAfter: 64, // Reduced from 128ms for better monitoring
+        warnAfter: 64,
       },
       immutableCheck: {
-        warnAfter: 64, // Reduced from 128ms for better monitoring
+        warnAfter: 64,
       },
     }).concat(
       authApi.middleware,
@@ -116,16 +112,12 @@ export const store = configureStore({
   },
 });
 
-// Setup listeners for RTK Query
 setupListeners(store.dispatch);
 
-// Create persistor
 export const persistor = persistStore(store);
 
-// Make store globally accessible for token refresh
 if (typeof window !== 'undefined') {
   window.__REDUX_STORE__ = store;
 }
 
-// Export for direct access in utilities
 export default store;

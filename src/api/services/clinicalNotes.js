@@ -5,7 +5,6 @@ export const clinicalNotesApi = createBaseApi({
   reducerPath: "clinicalNotesApi",
   tagTypes: ["ClinicalNote", "SOAPNote", "PatientNotes", "NoteTemplate", "TreatmentPlan", "IncidentDetails", "PatientIncidents", "DoctorPatients"],
   endpoints: (builder) => ({
-    // Get all clinical notes
     getClinicalNotes: builder.query({
       query: ({
         page = 1,
@@ -22,7 +21,6 @@ export const clinicalNotesApi = createBaseApi({
       providesTags: ["ClinicalNote"],
     }),
 
-    // Get clinical notes by patient
     getClinicalNotesByPatient: builder.query({
       query: (patient_id) => API_ENDPOINTS.CLINICAL_NOTES.BY_PATIENT(patient_id),
       providesTags: (result, error, patient_id) => [
@@ -31,7 +29,6 @@ export const clinicalNotesApi = createBaseApi({
       ],
     }),
 
-    // Get single clinical note
     getClinicalNote: builder.query({
       query: (noteId) => `${API_ENDPOINTS.CLINICAL_NOTES.BASE}/${noteId}`,
       providesTags: (result, error, noteId) => [
@@ -39,7 +36,6 @@ export const clinicalNotesApi = createBaseApi({
       ],
     }),
 
-    // Create clinical note
     createClinicalNote: builder.mutation({
       query: (noteData) => ({
         url: API_ENDPOINTS.CLINICAL_NOTES.BASE,
@@ -49,7 +45,6 @@ export const clinicalNotesApi = createBaseApi({
       invalidatesTags: ["ClinicalNote", "PatientNotes"],
     }),
 
-    // Update clinical note
     updateClinicalNote: builder.mutation({
       query: ({ noteId, ...noteData }) => ({
         url: `${API_ENDPOINTS.CLINICAL_NOTES.BASE}/${noteId}`,
@@ -62,7 +57,6 @@ export const clinicalNotesApi = createBaseApi({
       ],
     }),
 
-    // Delete clinical note
     deleteClinicalNote: builder.mutation({
       query: (noteId) => ({
         url: `${API_ENDPOINTS.CLINICAL_NOTES.BASE}/${noteId}`,
@@ -71,7 +65,6 @@ export const clinicalNotesApi = createBaseApi({
       invalidatesTags: ["ClinicalNote", "PatientNotes"],
     }),
 
-    // SOAP Note specific endpoints
     createSOAPNote: builder.mutation({
       query: (soapData) => ({
         url: API_ENDPOINTS.CLINICAL_NOTES.SOAP,
@@ -105,7 +98,6 @@ export const clinicalNotesApi = createBaseApi({
       providesTags: ["SOAPNote"],
     }),
 
-    // Search clinical notes
     searchClinicalNotes: builder.query({
       query: ({ query, patient_id, type, page = 1, limit = 20 }) => ({
         url: `${API_ENDPOINTS.CLINICAL_NOTES.BASE}/search`,
@@ -114,13 +106,11 @@ export const clinicalNotesApi = createBaseApi({
       providesTags: ["ClinicalNote"],
     }),
 
-    // Get note templates
     getNoteTemplates: builder.query({
       query: () => `${API_ENDPOINTS.CLINICAL_NOTES.TEMPLATES}`,
       providesTags: ["NoteTemplate"],
     }),
 
-    // Treatment Plan endpoints
     getTreatmentPlan: builder.query({
       query: (incidentId) => `/incidents/${incidentId}/treatment-plan`,
       providesTags: (result, error, incidentId) => [
@@ -152,7 +142,6 @@ export const clinicalNotesApi = createBaseApi({
       ],
     }),
 
-    // Patient Incidents endpoints
     getPatientIncidents: builder.query({
       query: (patientId) => `/incidents/patient/${patientId}`,
       providesTags: (result, error, patientId) => [
@@ -160,7 +149,6 @@ export const clinicalNotesApi = createBaseApi({
       ],
     }),
 
-    // Get doctor's assigned incidents
     getDoctorIncidents: builder.query({
       query: ({ doctorId, ...params }) => ({
         url: '/incidents',
@@ -171,7 +159,6 @@ export const clinicalNotesApi = createBaseApi({
       ],
     }),
 
-    // Get incident details
     getIncidentDetails: builder.query({
       query: (incidentId) => `/incidents/${incidentId}`,
       providesTags: (result, error, incidentId) => [
@@ -180,7 +167,6 @@ export const clinicalNotesApi = createBaseApi({
     }),
 
 
-    // Get patient case
     getPatientCase: builder.query({
       query: (patientId) => `/patients/${patientId}/case`,
       providesTags: (result, error, patientId) => [
@@ -188,7 +174,6 @@ export const clinicalNotesApi = createBaseApi({
       ]
     }),
 
-    // Get patient clinical notes
     getPatientNotes: builder.query({
       query: ({ patientId, limit, offset } = {}) => ({
         url: `/patients/${patientId}/notes`,
@@ -199,7 +184,6 @@ export const clinicalNotesApi = createBaseApi({
       ]
     }),
 
-    // Create clinical note for patient
     createPatientNote: builder.mutation({
       query: ({ patientId, ...noteData }) => ({
         url: `/patients/${patientId}/notes`,
@@ -212,7 +196,6 @@ export const clinicalNotesApi = createBaseApi({
       ]
     }),
 
-    // Update clinical note for patient
     updatePatientNote: builder.mutation({
       query: ({ patientId, noteId, ...noteData }) => ({
         url: `/patients/${patientId}/notes/${noteId}`,
@@ -225,7 +208,6 @@ export const clinicalNotesApi = createBaseApi({
       ]
     }),
 
-    // Delete clinical note for patient
     deletePatientNote: builder.mutation({
       query: ({ patientId, noteId }) => ({
         url: `/patients/${patientId}/notes/${noteId}`,
@@ -238,7 +220,6 @@ export const clinicalNotesApi = createBaseApi({
     }),
 
 
-    // Get doctor patients
     getDoctorPatients: builder.query({
       query: (doctorId) => `/doctors/${doctorId}/patients`,
       providesTags: (result, error, doctorId) => [
@@ -267,7 +248,6 @@ export const {
   useGetDoctorIncidentsQuery,
   useGetIncidentDetailsQuery,
   useGetDoctorPatientsQuery,
-  // Patient management endpoints
   useGetPatientCaseQuery,
   useGetPatientNotesQuery,
   useCreatePatientNoteMutation,

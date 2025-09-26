@@ -56,12 +56,10 @@ const BlogListing = () => {
     const [sortBy, setSortBy] = useState("newest");
     const [bookmarkedPosts, setBookmarkedPosts] = useState(new Set());
 
-    // Get user info from Redux state
     const userID = useSelector(selectUserId);
     const userRole = useSelector(selectUserRole);
     const isAuthenticated = useSelector(selectIsAuthenticated);
 
-    // Fetch published blog posts
     const {
         data: postsData,
         isLoading: postsLoading,
@@ -73,12 +71,9 @@ const BlogListing = () => {
 
     const posts = postsData?.data?.posts || postsData?.results || [];
 
-    // Filter and sort posts
     const filteredPosts = useMemo(() => {
-        // Create a copy of the posts array to avoid mutating the original
         let filtered = [...posts];
 
-        // Apply search filter
         if (searchTerm) {
             filtered = filtered.filter(
                 (post) =>
@@ -91,33 +86,30 @@ const BlogListing = () => {
             );
         }
 
-        // Apply category filter
         if (selectedCategory !== "all") {
             filtered = filtered.filter((post) => post.category === selectedCategory);
         }
 
-        // Apply sorting (now safe to mutate since we have a copy)
         switch (sortBy) {
-            case "newest":
-                filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                break;
-            case "oldest":
-                filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                break;
-            case "popular":
-                filtered.sort((a, b) => (b.view_count || 0) - (a.view_count || 0));
-                break;
-            case "title":
-                filtered.sort((a, b) => a.title.localeCompare(b.title));
-                break;
-            default:
-                break;
+        case "newest":
+            filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            break;
+        case "oldest":
+            filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+            break;
+        case "popular":
+            filtered.sort((a, b) => (b.view_count || 0) - (a.view_count || 0));
+            break;
+        case "title":
+            filtered.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+        default:
+            break;
         }
 
         return filtered;
     }, [posts, searchTerm, selectedCategory, sortBy]);
 
-    // Helper functions
     const formatDate = (dateString) => {
         return new Date(dateString).toLocaleDateString("en-US", {
             year: "numeric",
@@ -132,17 +124,14 @@ const BlogListing = () => {
         const wordsPerMinute = 200;
         let text = "";
 
-        // Handle different content types
         if (typeof content === "string") {
             text = content;
         } else if (typeof content === "object") {
-            // If content is an object (structured content), convert to string
             text = JSON.stringify(content);
         } else {
             return "1 min read";
         }
 
-        // Remove HTML tags and count words
         const words = text.replace(/<[^>]*>/g, "").split(" ").filter(word => word.trim().length > 0).length;
         const minutes = Math.ceil(words / wordsPerMinute);
         return `${minutes} min read`;
@@ -168,11 +157,9 @@ const BlogListing = () => {
     };
 
     const getBlogPostUrl = (post) => {
-        // Use current context - if in dashboard, stay in dashboard
         if (location.pathname.includes("/dashboard/")) {
             return `/dashboard/${userRole}/${userID}/blog/post/${post.id}`;
         }
-        // Otherwise use public blog URLs
         return `/blog/post/${post.id}`;
     };
 
@@ -202,25 +189,21 @@ const BlogListing = () => {
         }
     };
 
-    // Loading state
     if (postsLoading) {
         return (
             <div className="max-w-7xl mx-auto p-6">
                 <div className="space-y-6">
-                    {/* Header Skeleton */}
                     <div className="text-center">
                         <Skeleton className="h-12 w-64 mx-auto mb-4" />
                         <Skeleton className="h-6 w-96 mx-auto" />
                     </div>
 
-                    {/* Filters Skeleton */}
                     <div className="flex flex-col sm:flex-row gap-4">
                         <Skeleton className="h-12 flex-1" />
                         <Skeleton className="h-12 w-48" />
                         <Skeleton className="h-12 w-48" />
                     </div>
 
-                    {/* Posts Grid Skeleton */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <Card key={i} className="overflow-hidden">
@@ -242,7 +225,6 @@ const BlogListing = () => {
         );
     }
 
-    // Error state
     if (postsError) {
         return (
             <div className="max-w-7xl mx-auto p-6">
@@ -265,7 +247,6 @@ const BlogListing = () => {
     return (
         <div className="max-w-7xl mx-auto p-6">
             <div className="space-y-8">
-                {/* Header */}
                 <div className="text-center">
                     <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                         Health & Wellness Blog
@@ -276,7 +257,6 @@ const BlogListing = () => {
                     </p>
                 </div>
 
-                {/* Filters */}
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center">
@@ -286,7 +266,6 @@ const BlogListing = () => {
                     </CardHeader>
                     <CardContent>
                         <div className="flex flex-col lg:flex-row gap-4">
-                            {/* Search */}
                             <div className="flex-1">
                                 <div className="relative">
                                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -299,7 +278,6 @@ const BlogListing = () => {
                                 </div>
                             </div>
 
-                            {/* Category Filter */}
                             <div className="lg:w-64">
                                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                                     <SelectTrigger>
@@ -315,7 +293,6 @@ const BlogListing = () => {
                                 </Select>
                             </div>
 
-                            {/* Sort */}
                             <div className="lg:w-48">
                                 <Select value={sortBy} onValueChange={setSortBy}>
                                     <SelectTrigger>
@@ -333,7 +310,6 @@ const BlogListing = () => {
                     </CardContent>
                 </Card>
 
-                {/* Stats */}
                 {filteredPosts.length > 0 && (
                     <div className="flex items-center justify-between text-sm text-gray-600">
                         <span>
@@ -344,7 +320,6 @@ const BlogListing = () => {
                     </div>
                 )}
 
-                {/* No Results */}
                 {filteredPosts.length === 0 && !postsLoading && (
                     <Card>
                         <CardContent className="p-12">
@@ -372,11 +347,9 @@ const BlogListing = () => {
                     </Card>
                 )}
 
-                {/* Featured Post */}
                 {filteredPosts.length > 0 && (
                     <Card className="overflow-hidden">
                         <div className="md:flex">
-                            {/* Image */}
                             <div className="md:w-1/2">
                                 {filteredPosts[0].featured_image ? (
                                     <img
@@ -391,7 +364,6 @@ const BlogListing = () => {
                                 )}
                             </div>
 
-                            {/* Content */}
                             <div className="md:w-1/2 p-6 md:p-8">
                                 <div className="flex items-center gap-2 mb-4">
                                     <TrendingUp className="w-4 h-4 text-blue-500" />
@@ -440,12 +412,10 @@ const BlogListing = () => {
                     </Card>
                 )}
 
-                {/* Regular Posts Grid */}
                 {filteredPosts.length > 1 && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {filteredPosts.slice(1).map((post) => (
                             <Card key={post.id} className="overflow-hidden hover:shadow-lg transition-shadow group">
-                                {/* Image */}
                                 <div className="aspect-video overflow-hidden">
                                     {post.featured_image ? (
                                         <img
@@ -460,7 +430,6 @@ const BlogListing = () => {
                                     )}
                                 </div>
 
-                                {/* Content */}
                                 <CardContent className="p-6">
                                     <div className="flex items-center justify-between mb-3">
                                         {post.category && (
@@ -526,7 +495,6 @@ const BlogListing = () => {
                     </div>
                 )}
 
-                {/* Load More / Pagination could go here */}
                 {filteredPosts.length > 12 && (
                     <div className="text-center">
                         <Button variant="outline" size="lg">

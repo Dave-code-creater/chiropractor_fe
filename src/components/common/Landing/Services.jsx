@@ -64,16 +64,13 @@ export default function Services() {
 
   return (
     <section className="relative isolate px-6 pb-20 pt-16 sm:pb-24 sm:pt-20 lg:px-8">
-      {/* Soft radial background blob */}
       <div
         aria-hidden="true"
         className="absolute inset-0 -z-10 overflow-hidden"
       >
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[90%] aspect-[3/1] bg-earthfire-clay-100 opacity-30 rounded-full blur-3xl" />
       </div>
-
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Choose Your Care
@@ -92,7 +89,6 @@ export default function Services() {
           </p>
         </div>
 
-        {/* Service Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {chiropracticServices.map((service) => (
             <div
@@ -114,7 +110,6 @@ export default function Services() {
           ))}
         </div>
 
-        {/* Call to Action */}
         <div className="text-center">
           <button
             onClick={handleBookAppointment}

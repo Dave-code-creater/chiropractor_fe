@@ -13,7 +13,6 @@ export default function BlogCard() {
 
   const posts = data?.data?.posts || [];
 
-  // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -49,7 +48,6 @@ export default function BlogCard() {
                 >
                   <div className="p-3 sm:p-4 rounded-lg bg-background/50 border border-border/50 hover:bg-background/70 transition-all duration-200 group-hover:shadow-md">
                     <div className="space-y-2 sm:space-y-3">
-                      {/* Header with category and date */}
                       <div className="flex items-center justify-between gap-2">
                         <Badge
                           variant="secondary"
@@ -65,19 +63,16 @@ export default function BlogCard() {
                         </span>
                       </div>
 
-                      {/* Title */}
                       <h4 className="text-xs sm:text-sm font-medium text-foreground line-clamp-2 group-hover:text-primary transition-colors">
                         {post.title}
                       </h4>
 
-                      {/* Excerpt */}
                       {post.excerpt && (
                         <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                           {post.excerpt}
                         </p>
                       )}
 
-                      {/* Meta info */}
                       <div className="flex items-center justify-between text-xs text-muted-foreground">
                         <div className="flex items-center gap-2 sm:gap-3">
                           <div className="flex items-center gap-1">

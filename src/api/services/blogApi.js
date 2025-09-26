@@ -6,17 +6,16 @@ export const blogApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["BlogPosts", "Categories"],
   keepUnusedDataFor: CACHE_TIMES.LONG,
-  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
-  refetchOnFocus: false,            // Already correct
-  refetchOnReconnect: true,         // Keep this for actual network issues
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
-    // Get all blog posts
     getBlogPosts: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
 
-        // New status-based filtering (replaces published parameter)
-        if (params.status) queryParams.append("status", params.status);
+        if (params.status)
+          queryParams.append("status", params.status);
         if (params.category) queryParams.append("category", params.category);
         if (params.page) queryParams.append("page", params.page.toString());
         if (params.limit) queryParams.append("limit", params.limit.toString());
@@ -34,7 +33,6 @@ export const blogApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.LONG,
     }),
 
-    // Create new blog post
     createBlogPost: builder.mutation({
       query: (data) => ({
         url: "blog/posts",
@@ -44,7 +42,6 @@ export const blogApi = createApi({
       invalidatesTags: ["BlogPosts"],
     }),
 
-    // Get specific blog post
     getBlogPostById: builder.query({
       query: (id) => ({
         url: `blog/posts/${id}`,
@@ -53,7 +50,6 @@ export const blogApi = createApi({
       providesTags: (result, error, id) => [{ type: "BlogPosts", id }],
     }),
 
-    // Update blog post
     updateBlogPost: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `blog/posts/${id}`,
@@ -66,7 +62,6 @@ export const blogApi = createApi({
       ],
     }),
 
-    // Delete blog post (admin only)
     deleteBlogPost: builder.mutation({
       query: (id) => ({
         url: `blog/posts/${id}`,
@@ -75,7 +70,6 @@ export const blogApi = createApi({
       invalidatesTags: ["BlogPosts"],
     }),
 
-    // Publish blog post (change is_published to true)
     publishBlogPost: builder.mutation({
       query: (id) => ({
         url: `blog/posts/${id}`,
@@ -88,7 +82,6 @@ export const blogApi = createApi({
       ],
     }),
 
-    // Get public blog posts (published only)
     getPublicBlogPosts: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -111,7 +104,6 @@ export const blogApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.LONG,
     }),
 
-    // Get categories
     getCategories: builder.query({
       query: () => ({
         url: "blog/categories",

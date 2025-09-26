@@ -1,9 +1,7 @@
 import React from "react";
 
 const BlogContentRenderer = ({ content = [] }) => {
-  // Handle different content formats
   const renderContent = () => {
-    // If content is null or undefined
     if (!content) {
       return (
         <div className="text-gray-500 italic">
@@ -12,9 +10,7 @@ const BlogContentRenderer = ({ content = [] }) => {
       );
     }
 
-    // If content is a string (HTML, markdown, or plain text)
     if (typeof content === 'string') {
-      // If it's an empty string
       if (content.trim() === '') {
         return (
           <div className="text-gray-500 italic">
@@ -23,13 +19,11 @@ const BlogContentRenderer = ({ content = [] }) => {
         );
       }
 
-      // Split content by double newlines to create paragraphs
       const paragraphs = content.split('\n\n').filter(p => p.trim());
 
       return paragraphs.map((paragraph, index) => {
         const trimmedParagraph = paragraph.trim();
 
-        // Handle different markdown-style formatting
         if (trimmedParagraph.startsWith('### ')) {
           return (
             <h3 key={index} className="text-xl font-bold mb-4 text-gray-900">
@@ -68,7 +62,6 @@ const BlogContentRenderer = ({ content = [] }) => {
             </pre>
           );
         } else {
-          // Handle list items
           if (trimmedParagraph.includes('\n- ') || trimmedParagraph.startsWith('- ')) {
             const listItems = trimmedParagraph.split('\n').filter(item => item.trim().startsWith('- '));
             return (
@@ -92,7 +85,6 @@ const BlogContentRenderer = ({ content = [] }) => {
               </ol>
             );
           } else {
-            // Regular paragraph - handle line breaks within the paragraph
             const lines = trimmedParagraph.split('\n');
             return (
               <p key={index} className="mb-4 text-gray-700 leading-relaxed">
@@ -109,7 +101,6 @@ const BlogContentRenderer = ({ content = [] }) => {
       });
     }
 
-    // If content is an array (structured content)
     if (Array.isArray(content)) {
       if (content.length === 0) {
         return (
@@ -122,9 +113,7 @@ const BlogContentRenderer = ({ content = [] }) => {
       return content.map((block, index) => renderBlock(block, index));
     }
 
-    // If content is an object, try to extract text or handle specific structures
     if (typeof content === 'object' && content !== null) {
-      // Check if it has a text property
       if (content.text) {
         return (
           <div className="mb-4 text-gray-700 leading-relaxed">
@@ -133,17 +122,14 @@ const BlogContentRenderer = ({ content = [] }) => {
         );
       }
 
-      // Check if it has blocks or content property
       if (content.blocks && Array.isArray(content.blocks)) {
         return content.blocks.map((block, index) => renderBlock(block, index));
       }
 
       if (content.content) {
-        // Recursively render nested content
         return <BlogContentRenderer content={content.content} />;
       }
 
-      // Try to stringify the object as a fallback
       return (
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p className="text-sm text-blue-800 mb-2">
@@ -156,10 +142,8 @@ const BlogContentRenderer = ({ content = [] }) => {
       );
     }
 
-    // Fallback for other data types
     return (
-      <div className="text-gray-500 italic">
-        Unable to render content format. Content type: {typeof content}
+      <div className="text-gray-500 italic">Unable to render content format. Content type: {typeof content}
       </div>
     );
   };
@@ -167,7 +151,6 @@ const BlogContentRenderer = ({ content = [] }) => {
   const renderBlock = (block, index) => {
     switch (block.type) {
       case "paragraph":
-        // Handle paragraph with nested content structure
         if (block.content && Array.isArray(block.content)) {
           return (
             <p key={index} className="mb-4 text-gray-700 leading-relaxed">
@@ -180,7 +163,6 @@ const BlogContentRenderer = ({ content = [] }) => {
             </p>
           );
         }
-        // Fallback for simple text
         return (
           <p key={index} className="mb-4 text-gray-700 leading-relaxed">
             {block.text}
@@ -198,7 +180,6 @@ const BlogContentRenderer = ({ content = [] }) => {
           6: "text-sm font-bold mb-2 text-gray-900"
         };
 
-        // Handle heading with nested content structure
         let headingText = block.text;
         if (block.content && Array.isArray(block.content)) {
           headingText = block.content.map(item => {
@@ -225,13 +206,11 @@ const BlogContentRenderer = ({ content = [] }) => {
           ? "list-decimal list-inside mb-4 text-gray-700 space-y-1"
           : "list-disc list-inside mb-4 text-gray-700 space-y-1";
 
-        // Handle structured list content
         if (block.content && Array.isArray(block.content)) {
           return (
             <ListTag key={index} className={listClass}>
               {block.content.map((listItem, itemIndex) => {
                 if (listItem.type === "list_item" && listItem.content) {
-                  // Extract text from nested paragraph structure
                   const itemText = listItem.content.map(contentItem => {
                     if (contentItem.type === "paragraph" && contentItem.content) {
                       return contentItem.content.map(textItem => {
@@ -254,7 +233,6 @@ const BlogContentRenderer = ({ content = [] }) => {
           );
         }
 
-        // Fallback for simple array items
         return (
           <ListTag key={index} className={listClass}>
             {block.items?.map((item, itemIndex) => (
@@ -265,7 +243,6 @@ const BlogContentRenderer = ({ content = [] }) => {
       }
 
       case "ordered_list": {
-        // Handle ordered lists same as bullet_list but with ordered styling
         const listClass = "list-decimal list-inside mb-4 text-gray-700 space-y-1";
 
         if (block.content && Array.isArray(block.content)) {
@@ -360,7 +337,6 @@ const BlogContentRenderer = ({ content = [] }) => {
       }
 
       default:
-        // Fallback for unknown block types
         return (
           <div key={index} className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
             <p className="text-sm text-yellow-800">

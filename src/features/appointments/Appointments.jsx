@@ -11,7 +11,6 @@ import { AlertCircle } from "lucide-react";
 export default function Appointments() {
   const userRole = useSelector(selectUserRole);
 
-  // Handle loading state
   if (!userRole) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -23,36 +22,30 @@ export default function Appointments() {
     );
   }
 
-  // Render appropriate component based on role
   switch (userRole) {
-    case "admin":
-      return <AdminAppointments />;
-
-    case "doctor":
-      return <DoctorAppointments />;
-
-
-
-    case "patient":
-    case "user":
-      return <PatientAppointments />;
-
-    default:
-      return (
-        <Card className="max-w-md mx-auto mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-destructive" />
-              Access Denied
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Your role ({userRole}) does not have access to the appointments system.
-              Please contact your administrator for assistance.
-            </p>
-          </CardContent>
-        </Card>
-      );
+  case "admin":
+    return <AdminAppointments />;
+  case "doctor":
+    return <DoctorAppointments />;
+  case "patient":
+  case "user":
+    return <PatientAppointments />;
+  default:
+    return (
+      <Card className="max-w-md mx-auto mt-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <AlertCircle className="h-5 w-5 text-destructive" />
+            Access Denied
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground">
+            Your role ({userRole}) does not have access to the appointments system.
+            Please contact your administrator for assistance.
+          </p>
+        </CardContent>
+      </Card>
+    );
   }
 }

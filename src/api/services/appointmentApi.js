@@ -6,11 +6,10 @@ export const appointmentApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Appointments", "Doctors", "Availability"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
-  refetchOnFocus: false,            // Prevent automatic refetch on window focus
-  refetchOnReconnect: true,         // Keep this for actual network issues
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
-    // Public routes (no authentication required)
     getAvailableDoctors: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -42,7 +41,6 @@ export const appointmentApi = createApi({
     }),
 
 
-    // Protected routes (authentication required)
     createAppointment: builder.mutation({
       query: (data) => ({
         url: "appointments/",
@@ -59,7 +57,6 @@ export const appointmentApi = createApi({
       },
     }),
 
-    // Get current user's appointments (Patients only - /appointments/me)
     getMyAppointments: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -80,7 +77,6 @@ export const appointmentApi = createApi({
 
 
 
-    // Get all appointments (role-filtered)
     getAppointments: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -121,7 +117,6 @@ export const appointmentApi = createApi({
       },
     }),
 
-    // Get appointments by patient ID (Doctor/Staff only)
     getPatientAppointments: builder.query({
       query: ({ patient_id, ...params }) => {
         const queryParams = new URLSearchParams();
@@ -141,7 +136,6 @@ export const appointmentApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.SHORT,
     }),
 
-    // Check appointment availability
     checkAvailability: builder.mutation({
       query: (data) => ({
         url: "appointments/check-availability",
@@ -151,7 +145,6 @@ export const appointmentApi = createApi({
       invalidatesTags: ["Availability"],
     }),
 
-    // Get appointment statistics (Doctor/Staff only)
     getAppointmentStats: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -169,7 +162,6 @@ export const appointmentApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.LONG,
     }),
 
-    // Get specific appointment by ID
     getAppointmentById: builder.query({
       query: (id) => ({
         url: `appointments/${id}`,
@@ -179,7 +171,6 @@ export const appointmentApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.SHORT,
     }),
 
-    // Reschedule appointment
     rescheduleAppointment: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `appointments/${id}/reschedule`,
@@ -192,7 +183,6 @@ export const appointmentApi = createApi({
       ],
     }),
 
-    // Cancel appointment (replaces deleteAppointment for clarity)
     cancelAppointment: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `appointments/${id}`,
@@ -205,22 +195,17 @@ export const appointmentApi = createApi({
 });
 
 export const {
-  // Public queries
   useGetAvailableDoctorsQuery,
   useGetDoctorAvailabilityQuery,
 
-  // Patient queries
   useGetMyAppointmentsQuery,
 
-  // Staff/Doctor queries
   useGetPatientAppointmentsQuery,
   useGetAppointmentStatsQuery,
   useGetAppointmentByIdQuery,
 
-  // All roles queries
   useGetAppointmentsQuery,
 
-  // Mutations
   useCreateAppointmentMutation,
   useCheckAvailabilityMutation,
   useUpdateAppointmentMutation,

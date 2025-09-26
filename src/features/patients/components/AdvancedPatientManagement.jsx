@@ -73,7 +73,6 @@ const AdvancedPatientManagement = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Sample patient data with comprehensive information
   const [samplePatients] = useState([
     {
       id: "PAT-001",
@@ -258,7 +257,6 @@ const AdvancedPatientManagement = () => {
     setPatients(samplePatients);
   }, [samplePatients]);
 
-  // Filter and search patients
   const filteredPatients = useMemo(() => {
     return patients
       .filter((patient) => {
@@ -1002,7 +1000,6 @@ const AdvancedPatientManagement = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {/* Timeline items would be generated from various data sources */}
                     <div className="flex items-start space-x-4">
                       <div className="w-2 h-2 bg-blue-600 rounded-full mt-2"></div>
                       <div className="flex-1">
@@ -1059,7 +1056,6 @@ const AdvancedPatientManagement = () => {
 
   return (
     <div className="space-y-6 pb-20">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
@@ -1080,8 +1076,6 @@ const AdvancedPatientManagement = () => {
           </Button>
         </div>
       </div>
-
-      {/* Search and Filters */}
       <Card>
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row gap-4">
@@ -1142,8 +1136,6 @@ const AdvancedPatientManagement = () => {
           </div>
         </CardContent>
       </Card>
-
-      {/* Patient List and Details */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         <div className="lg:col-span-2">
           <Card>

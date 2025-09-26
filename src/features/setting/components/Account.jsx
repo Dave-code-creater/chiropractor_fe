@@ -21,7 +21,6 @@ export default function Account() {
           <CardTitle>Account Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-10">
-          {/* Profile Section */}
           <div>
             <h3 className="text-lg font-medium mb-4">Profile</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -49,7 +48,6 @@ export default function Account() {
 
           <Separator />
 
-          {/* Password Section */}
           <div>
             <h3 className="text-lg font-medium mb-2">Password</h3>
             <p className="text-sm text-muted-foreground mb-4">

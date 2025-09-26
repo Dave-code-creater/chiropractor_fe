@@ -58,7 +58,6 @@ export function RenderQuesFuncs({
           const value = formData[field.id] || "";
           const isReq = !!field.required;
 
-          // Determine if this field should use formatted input
           const isPhoneField = field.type === "tel" ||
             field.id.toLowerCase().includes("phone") ||
             field.placeholder?.includes("(") && field.placeholder?.includes(")");
@@ -210,11 +209,9 @@ export function RenderRadioQues({
   commonFieldsetClasses,
   errors = {},
 }) {
-  // Create shorter placeholder for mobile
   const getPlaceholder = () => {
     const label = question.label;
     if (label.length > 30) {
-      // Truncate long labels for mobile
       return `Select ${label.substring(0, 20)}...`;
     }
     return `Select ${label}`;

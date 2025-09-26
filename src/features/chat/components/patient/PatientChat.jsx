@@ -38,7 +38,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
-// Helper function to extract data from API response
 const extractDataFromResponse = (data) => {
   if (!data) return [];
   if (Array.isArray(data)) return data;
@@ -48,7 +47,6 @@ const extractDataFromResponse = (data) => {
   return [];
 };
 
-// Helper function to get role display name
 const getRoleDisplayName = (role) => {
   const roleNames = {
     patient: "Patient",
@@ -59,7 +57,6 @@ const getRoleDisplayName = (role) => {
   return roleNames[role?.toLowerCase()] || role || "User";
 };
 
-// New Conversation Modal Component
 const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUserRole, refetchConversations }) => {
   const [formData, setFormData] = useState({
     target_user_id: "",
@@ -72,7 +69,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
 
-  // Debounce search term to prevent excessive API calls
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -80,14 +76,13 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Get available users based on role restrictions
   const {
     data: availableUsersData,
     isLoading: isLoadingUsers,
     error: usersError
   } = useGetConversationUsersQuery({
     search_term: debouncedSearchTerm,
-    role: roleFilter === 'all' ? 'doctor' : roleFilter, // Default to 'doctor' instead of undefined
+    role: roleFilter === 'all' ? 'doctor' : roleFilter,
     per_page: 50
   }, {
     skip: !isOpen,
@@ -99,9 +94,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   const availableUsers = useMemo(() => {
     const users = extractDataFromResponse(availableUsersData);
 
-    // Filter users based on current user's role restrictions
     if (currentUserRole === 'patient') {
-      // Patients can only see doctors and admins
       return users.filter(user => {
         const userRole = user.role || user.type;
         return ['doctor', 'admin'].includes(userRole?.toLowerCase());
@@ -129,7 +122,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   };
 
   const handleSubmit = async () => {
-    // Validate form data
     const validation = validateConversationData(formData);
 
     if (!validation.isValid) {
@@ -137,7 +129,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
       return;
     }
 
-    // Find selected user to validate role restrictions
     const selectedUser = availableUsers.find(user => user.id.toString() === formData.target_user_id.toString());
 
     if (!selectedUser) {
@@ -145,10 +136,8 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
       return;
     }
 
-    // Get the target user's role
     const targetUserRole = selectedUser.role || selectedUser.type;
 
-    // Client-side role validation
     const canStart = canStartConversation(currentUserRole, targetUserRole);
 
     if (!canStart) {
@@ -168,7 +157,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
 
   const selectedUser = availableUsers.find(user => user.id.toString() === formData.target_user_id.toString());
 
-  // Role filter options
   const roleFilterOptions = [
     { value: "all", label: "All Healthcare Professionals", icon: Users },
     { value: "doctor", label: "Doctors Only", icon: Stethoscope },
@@ -189,7 +177,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
         </CardHeader>
         <CardContent className="space-y-4 sm:space-y-6 p-3 sm:p-6 pt-0">
 
-          {/* Role Info Alert */}
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
@@ -197,7 +184,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </AlertDescription>
           </Alert>
 
-          {/* Role Filter */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Filter by Role</label>
             <Select
@@ -223,7 +209,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </Select>
           </div>
 
-          {/* User Search */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Search Users</label>
             <div className="relative">
@@ -237,7 +222,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </div>
           </div>
 
-          {/* Available Users */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Select Recipient *</label>
             <div className="max-h-32 sm:max-h-48 overflow-y-auto border rounded-lg">
@@ -282,7 +266,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </div>
           </div>
 
-          {/* Subject */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Subject *</label>
             <Input
@@ -297,7 +280,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </div>
           </div>
 
-          {/* Initial Message */}
           <div className="space-y-2">
             <label className="text-xs sm:text-sm font-medium">Initial Message</label>
             <Textarea
@@ -313,7 +295,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-2 pt-2 sm:pt-4">
             <Button variant="outline" onClick={handleClose} className="flex-1 h-8 sm:h-10 text-xs sm:text-sm">
               Cancel
@@ -335,15 +316,12 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
 const PatientChat = () => {
   const [showNewConversationModal, setShowNewConversationModal] = useState(false);
 
-  // Get current user from Redux store
   const user = useSelector((state) => state?.auth);
   const userRole = user?.role || 'patient';
 
-  // Create conversation mutation
   const [createConversation, { isLoading: creatingConversation }] = useCreateConversationMutation();
 
   const {
-    // Extract all needed props from BaseChat
     selectedConversation,
     setSelectedConversation,
     messageInput,
@@ -361,7 +339,6 @@ const PatientChat = () => {
     formatMessageTime,
     useMessageStatus,
     isPolling,
-    // Components
     Button,
     Input,
     Textarea,
@@ -370,7 +347,6 @@ const PatientChat = () => {
     AvatarFallback,
     Card,
     CardContent,
-    // Icons
     Send,
     MessageCircle,
     Clock,
@@ -384,12 +360,10 @@ const PatientChat = () => {
         status: 'active',
         per_page: 50,
         page: 1,
-        // The backend will handle role-based filtering using the auth token
       },
     },
   });
 
-  // Handle creating new conversation
   const handleCreateConversation = async (formData) => {
     if (!isBackendAvailable) {
       toast.error("Chat service is currently unavailable.");
@@ -401,7 +375,6 @@ const PatientChat = () => {
       toast.success("Conversation created successfully!");
       setShowNewConversationModal(false);
 
-      // Handle different response structures from backend
       let newConversation = null;
       if (result?.data) {
         newConversation = result.data;
@@ -409,7 +382,6 @@ const PatientChat = () => {
         newConversation = result;
       }
 
-      // Set as selected conversation if we have valid data
       if (newConversation?.id) {
         setSelectedConversation(newConversation);
       }
@@ -428,7 +400,6 @@ const PatientChat = () => {
     <div className="h-screen min-h-screen max-h-screen mx-auto max-w-full">
       <Card className="h-full shadow-xl border-0 overflow-hidden rounded-none">
         <div className="flex h-full">
-          {/* Conversations Sidebar */}
           <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
             <div className="p-3 sm:p-4 lg:p-8 border-b bg-background/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8">
@@ -529,7 +500,6 @@ const PatientChat = () => {
             </ScrollArea>
           </div>
 
-          {/* Chat Area */}
           <div className={`${selectedConversation ? 'flex' : 'hidden lg:flex'} flex-1 flex-col bg-gradient-to-br from-background to-muted/20`}>
             {!selectedConversation ? (
               <div className="flex-1 flex items-center justify-center">
@@ -551,10 +521,8 @@ const PatientChat = () => {
               </div>
             ) : (
               <>
-                {/* Chat Header */}
                 <div className="p-3 sm:p-4 lg:p-6 border-b">
                   <div className="flex items-center gap-3 sm:gap-4">
-                    {/* Back button for mobile */}
                     <Button
                       variant="ghost"
                       size="sm"
@@ -580,7 +548,6 @@ const PatientChat = () => {
                   </div>
                 </div>
 
-                {/* Messages */}
                 <ScrollArea className="flex-1 p-3 sm:p-4 lg:p-6">
                   {messagesLoading ? (
                     <div className="flex items-center justify-center h-32">
@@ -631,7 +598,6 @@ const PatientChat = () => {
                   )}
                 </ScrollArea>
 
-                {/* Message Input */}
                 <div className="p-3 sm:p-4 lg:p-8 border-t bg-background/80 backdrop-blur-sm">
                   <form onSubmit={handleSendMessage} className="flex gap-2 sm:gap-3 lg:gap-4">
                     <Textarea
@@ -679,15 +645,13 @@ const PatientChat = () => {
           </div>
         </div>
       </Card>
-
-      {/* New Conversation Modal */}
       <NewConversationModal
         isOpen={showNewConversationModal}
         onClose={() => setShowNewConversationModal(false)}
         onSubmit={handleCreateConversation}
         isCreating={creatingConversation}
         currentUserRole={userRole}
-        refetchConversations={() => { }} // Placeholder, actual refetch would be handled by BaseChat or a separate hook
+        refetchConversations={() => { }}
       />
     </div>
   );

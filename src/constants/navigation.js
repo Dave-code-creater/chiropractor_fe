@@ -11,34 +11,9 @@ import {
   UserCog,
   Shield,
   Building2,
-  Stethoscope
+  Stethoscope,
 } from "lucide-react";
 
-// Base navigation items for different roles
-const baseNavigation = {
-  dashboard: {
-    label: "Dashboard",
-    items: []
-  },
-  clinical: {
-    label: "Clinical",
-    items: []
-  },
-  management: {
-    label: "Management",
-    items: []
-  },
-  communication: {
-    label: "Communication",
-    items: []
-  },
-  settings: {
-    label: "Settings",
-    items: []
-  }
-};
-
-// Navigation items by role
 const navigationByRole = {
   patient: {
     dashboard: {
@@ -283,12 +258,6 @@ const navigationByRole = {
   }
 };
 
-/**
- * Get navigation structure based on user role and ID
- * @param {string} role - User role (patient, doctor, admin, staff)
- * @param {string|number} userId - User ID for dynamic routes
- * @returns {object} Navigation structure for the role
- */
 export const getNavigationByRole = (role, userId) => {
   if (!role || !navigationByRole[role]) {
     return {};
@@ -296,12 +265,9 @@ export const getNavigationByRole = (role, userId) => {
 
   const roleNavigation = navigationByRole[role];
 
-  // Build the base dashboard path based on role
-  // Map staff to admin for routing purposes since staff routes don't exist
   const routeRole = role === 'staff' ? 'admin' : role;
   const baseDashboardPath = `/dashboard/${routeRole}/${userId}`;
 
-  // Filter out empty sections and return only sections with items
   const filteredNavigation = {};
 
   Object.entries(roleNavigation).forEach(([key, section]) => {
@@ -311,11 +277,9 @@ export const getNavigationByRole = (role, userId) => {
         items: section.items.map(item => {
           let updatedPath = item.path;
 
-          // Update paths based on role-specific routing structure
           if (item.path === '/dashboard') {
             updatedPath = baseDashboardPath;
           } else if (item.path.startsWith('/')) {
-            // Remove leading slash and append to base dashboard path
             const relativePath = item.path.substring(1);
             updatedPath = `${baseDashboardPath}/${relativePath}`;
           }

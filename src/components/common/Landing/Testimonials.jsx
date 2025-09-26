@@ -49,7 +49,6 @@ export default function Testimonials() {
     return (
         <section className="py-16 bg-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
                 <div className="text-center mb-12">
 
                     <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -61,10 +60,8 @@ export default function Testimonials() {
 
                 </div>
 
-                {/* Scrolling Testimonials Banner */}
                 <div className="relative overflow-hidden">
                     <div className="flex animate-scroll space-x-6">
-                        {/* First set of testimonials */}
                         {testimonials.map((testimonial) => (
                             <div
                                 key={`first-${testimonial.id}`}
@@ -92,7 +89,6 @@ export default function Testimonials() {
                             </div>
                         ))}
 
-                        {/* Duplicate set for seamless scrolling */}
                         {testimonials.map((testimonial) => (
                             <div
                                 key={`second-${testimonial.id}`}
@@ -122,7 +118,6 @@ export default function Testimonials() {
                     </div>
                 </div>
             </div>
-
             <style>{`
                 @keyframes scroll {
                     0% {
@@ -135,7 +130,7 @@ export default function Testimonials() {
                 
                 .animate-scroll {
                     animation: scroll 30s linear infinite;
-                    width: calc(400px * 8 + 6 * 24px); /* 8 cards + gaps */
+                    width: calc(400px * 8 + 6 * 24px);
                 }
                 
                 .animate-scroll:hover {

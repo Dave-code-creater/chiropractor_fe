@@ -1,8 +1,5 @@
 import { Users, UserCheck, Stethoscope, Shield } from "lucide-react";
 
-/**
- * Format message timestamp for display
- */
 export const formatMessageTime = (timestamp) => {
     if (!timestamp) return "";
 
@@ -10,36 +7,28 @@ export const formatMessageTime = (timestamp) => {
     const now = new Date();
     const diff = now - date;
 
-    // If less than 1 minute ago
     if (diff < 60000) {
         return "Just now";
     }
 
-    // If less than 1 hour ago
     if (diff < 3600000) {
         const minutes = Math.floor(diff / 60000);
         return `${minutes}m ago`;
     }
 
-    // If less than 24 hours ago
     if (diff < 86400000) {
         const hours = Math.floor(diff / 3600000);
         return `${hours}h ago`;
     }
 
-    // If less than 7 days ago
     if (diff < 604800000) {
         const days = Math.floor(diff / 86400000);
         return `${days}d ago`;
     }
 
-    // Otherwise, show date
     return date.toLocaleDateString();
 };
 
-/**
- * Get role icon component based on role
- */
 export const getRoleIconComponent = (role) => {
     const iconClass = "h-2.5 w-2.5 sm:h-3 sm:w-3";
 
@@ -55,26 +44,24 @@ export const getRoleIconComponent = (role) => {
     }
 };
 
-/**
- * Extract data from different API response structures
- */
 export const extractDataFromResponse = (data) => {
     if (!data) return [];
 
-    if (Array.isArray(data)) return data;
+    if (Array.isArray(data))
+        return data;
 
-    // Handle different response structures from API
     if (data.data) {
         if (Array.isArray(data.data)) return data.data;
         if (data.data.conversations) return data.data.conversations;
         if (data.data.messages) return data.data.messages;
-        if (data.data.users) return data.data.users;
+        if (data.data.users)
+            return data.data.users;
 
-        // Handle role-filtered responses from chat/admin-doctors endpoint
-        if (data.data.doctors && Array.isArray(data.data.doctors)) return data.data.doctors;
-        if (data.data.admin && Array.isArray(data.data.admin)) return data.data.admin;
+        if (data.data.doctors && Array.isArray(data.data.doctors))
+            return data.data.doctors;
+        if (data.data.admin && Array.isArray(data.data.admin))
+            return data.data.admin;
 
-        // Handle combined response when role=all
         if (data.data.doctors || data.data.admin) {
             const combined = [];
             if (data.data.doctors) combined.push(...data.data.doctors);
@@ -90,22 +77,16 @@ export const extractDataFromResponse = (data) => {
     return [];
 };
 
-/**
- * Get participant information for display
- */
 export const getParticipantInfo = (conversation, userRole) => {
     if (!conversation) {
         return { name: "Unknown", role: "unknown", avatar: null };
     }
 
-    // Determine the other participant (not the current user)
     const isCurrentUserPatient = userRole === 'patient';
 
     if (isCurrentUserPatient) {
-        // Current user is patient, show doctor info
         let doctorName = conversation.doctor_name || "Healthcare Provider";
 
-        // Remove 'null' or 'undefined' from the name string
         doctorName = doctorName.replace(/\b(null|undefined)\b/gi, '').replace(/ +/g, ' ').trim();
         if (!doctorName) doctorName = "Healthcare Provider";
 
@@ -115,7 +96,6 @@ export const getParticipantInfo = (conversation, userRole) => {
             avatar: null
         };
     } else {
-        // Current user is doctor/admin, show patient info
         let patientName =
             conversation.patient_name ||
             conversation.full_name ||

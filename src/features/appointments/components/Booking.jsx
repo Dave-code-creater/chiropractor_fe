@@ -1,5 +1,4 @@
-// src/features/appointments/components/Booking.jsx
-"use client";
+"use client"
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,32 +41,25 @@ export default function DoctorBooking() {
 
 
 
-  // Ensure doctors is always an array with fallback data and transform API response
   const doctors = useMemo(() => {
     let rawDoctors = [];
 
-    // Handle the actual backend response structure
     if (doctorsData?.data) {
-      // Backend returns { success: true, data: [...] }
       if (Array.isArray(doctorsData.data)) {
         rawDoctors = doctorsData.data;
       } else if (doctorsData.data.doctors && Array.isArray(doctorsData.data.doctors)) {
         rawDoctors = doctorsData.data.doctors;
       }
-    }
-    // Fallback to other possible structures
-    else if (doctorsData?.metadata) rawDoctors = doctorsData.metadata;
+    } else if (doctorsData?.metadata) rawDoctors = doctorsData.metadata;
     else if (doctorsData?.doctors) rawDoctors = doctorsData.doctors;
     else if (Array.isArray(doctorsData)) rawDoctors = doctorsData;
 
-    // Transform snake_case API response to camelCase for component compatibility
     const transformedDoctors = rawDoctors.map(doctor => ({
       ...doctor,
       firstName: doctor.first_name || doctor.firstName,
       lastName: doctor.last_name || doctor.lastName,
       profileImage: doctor.profile_image || doctor.profileImage,
       yearsOfExperience: doctor.years_of_experience || doctor.yearsOfExperience,
-      // Handle specialization data
       specialization: doctor.specialization || doctor.specialty || 'Chiropractor',
       specializations: doctor.specializations || {
         primary: doctor.specialization || doctor.specialty || 'Chiropractor'
@@ -81,26 +73,20 @@ export default function DoctorBooking() {
     setBookingData((prev) => {
       const updated = { ...prev, ...newData };
 
-      // If doctor changes, reset location, date, and time since availability might be different
       if (newData.doctor && newData.doctor !== prev.doctor) {
         updated.location = "";
         updated.date = null;
         updated.time = "";
-        // Reset manual navigation when user selects a new doctor (natural progression)
         setManualTabNavigation(false);
       }
 
-      // If location changes, reset date and time
       if (newData.location && newData.location !== prev.location) {
         updated.date = null;
         updated.time = "";
-        // Reset manual navigation when user selects a new location (natural progression)
         setManualTabNavigation(false);
       }
 
-      // If date or time changes, allow auto-advance to summary
       if ((newData.date && newData.date !== prev.date) || (newData.time && newData.time !== prev.time)) {
-        // Reset manual navigation when user selects date/time (natural progression)
         setManualTabNavigation(false);
       }
 
@@ -108,10 +94,9 @@ export default function DoctorBooking() {
     });
   };
 
-  // Auto-advance tabs when required fields are filled (only if not manually navigated)
   useEffect(() => {
-    // Only auto-advance if user hasn't manually navigated
-    if (manualTabNavigation) return;
+    if (manualTabNavigation)
+      return;
 
     if (activeTab === "doctor" && bookingData.doctor) {
       setActiveTab("location");
@@ -122,12 +107,9 @@ export default function DoctorBooking() {
     }
   }, [bookingData, activeTab, manualTabNavigation]);
 
-  // Custom tab change handler that tracks manual navigation
   const handleTabChange = (newTab) => {
     setManualTabNavigation(true);
     setActiveTab(newTab);
-
-    // Don't reset manual navigation automatically - only reset when user naturally fills form
   };
 
   const handleSubmit = async () => {
@@ -149,28 +131,20 @@ export default function DoctorBooking() {
     setIsSubmitting(true);
 
     try {
-      // Get selected doctor details
-      const selectedDoctor = getSelectedDoctor();
-
-      // Get selected location details
       const selectedLocation = getLocationByValue(bookingData.location) || DEFAULT_CLINIC_LOCATION;
 
-      // Format date to ISO date string (YYYY-MM-DD)
       const formattedDate = bookingData.date.toISOString().split('T')[0];
 
-      // Use time as is (24-hour format HH:MM from time input)
       const formattedTime = bookingData.time;
 
-      // Format the appointment data with unified sender/recipient structure
       const appointmentData = {
-        sender_id: user.userID,        // Patient booking for themselves
-        recipient_id: bookingData.doctor,  // Doctor receiving the appointment
+        sender_id: user.userID,
+        recipient_id: bookingData.doctor,
         appointment_date: formattedDate,
         appointment_time: formattedTime,
         reason_for_visit: bookingData.reason,
         additional_notes: bookingData.notes || "",
         status: "pending",
-        // Include location information
         location: selectedLocation.label,
         clinic_address: selectedLocation.address,
         clinic_phone: selectedLocation.phone,
@@ -181,7 +155,6 @@ export default function DoctorBooking() {
 
       if (result.success) {
         toast.success("Appointment booked successfully!");
-        // Reset form
         setBookingData({
           doctor: "",
           location: "",
@@ -190,12 +163,11 @@ export default function DoctorBooking() {
           notes: "",
           reason: "",
         });
-        setActiveTab("doctor"); // Reset to first step
+        setActiveTab("doctor");
       }
     } catch (error) {
       console.error('Appointment booking failed:', error);
 
-      // Handle specific API errors
       if (error.status === 409) {
         toast.error("This time slot is already booked. Please select a different time.");
       } else if (error.status === 400) {
@@ -234,7 +206,6 @@ export default function DoctorBooking() {
   return (
     <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
       <div className="grid lg:grid-cols-3 gap-3 sm:gap-6">
-        {/* Left: Form Steps */}
         <div className="lg:col-span-2">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid grid-cols-2 sm:grid-cols-4 mb-3 sm:mb-6 w-full h-auto gap-1 sm:gap-0">
@@ -290,7 +261,6 @@ export default function DoctorBooking() {
                 error={doctorsErrorDetails}
               />
 
-              {/* Mobile Progress Summary */}
               <div className="lg:hidden mt-3 sm:mt-6">
                 <Card className="bg-primary/5 border-primary/20">
                   <CardContent className="p-3">
@@ -312,7 +282,6 @@ export default function DoctorBooking() {
                 selectedDoctor={getSelectedDoctor()}
               />
 
-              {/* Mobile Progress Summary */}
               <div className="lg:hidden mt-3 sm:mt-6">
                 <Card className="bg-primary/5 border-primary/20">
                   <CardContent className="p-3">
@@ -334,7 +303,6 @@ export default function DoctorBooking() {
                 selectedDoctor={getSelectedDoctor()}
               />
 
-              {/* Mobile Progress Summary */}
               <div className="lg:hidden mt-3 sm:mt-6">
                 <Card className="bg-primary/5 border-primary/20">
                   <CardContent className="p-3">
@@ -367,7 +335,6 @@ export default function DoctorBooking() {
                 <CardContent className="space-y-4 sm:space-y-6">
                   <BookingSummary bookingData={bookingData} doctors={doctors} />
 
-                  {/* Additional Notes */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">
                       Additional Notes (Optional)
@@ -383,7 +350,6 @@ export default function DoctorBooking() {
                     />
                   </div>
 
-                  {/* Reason for Visit */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium">
                       Reason for Visit
@@ -399,7 +365,6 @@ export default function DoctorBooking() {
                     />
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
                     <Button
                       variant="outline"
@@ -422,7 +387,6 @@ export default function DoctorBooking() {
           </Tabs>
         </div>
 
-        {/* Right: Booking Summary Sidebar - Only show on large screens */}
         <div className="hidden lg:block">
           <Card className="sticky top-6">
             <CardHeader>

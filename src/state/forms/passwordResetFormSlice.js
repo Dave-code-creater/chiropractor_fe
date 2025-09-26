@@ -24,7 +24,6 @@ const passwordResetFormSlice = createSlice({
   name: "passwordResetForm",
   initialState,
   reducers: {
-    // Email field actions
     setEmail(state, action) {
       state.values.email = action.payload;
     },
@@ -35,7 +34,6 @@ const passwordResetFormSlice = createSlice({
       state.errors.email = "";
     },
 
-    // Password field actions
     setPassword(state, action) {
       state.values.password = action.payload;
     },
@@ -46,7 +44,6 @@ const passwordResetFormSlice = createSlice({
       state.errors.password = "";
     },
 
-    // Confirm password field actions
     setConfirmPassword(state, action) {
       state.values.confirmPassword = action.payload;
     },
@@ -57,7 +54,6 @@ const passwordResetFormSlice = createSlice({
       state.errors.confirmPassword = "";
     },
 
-    // Token field actions
     setToken(state, action) {
       state.values.token = action.payload;
     },
@@ -68,7 +64,6 @@ const passwordResetFormSlice = createSlice({
       state.errors.token = "";
     },
 
-    // Status actions
     setEmailSent(state, action) {
       state.status.isEmailSent = action.payload;
     },
@@ -79,7 +74,6 @@ const passwordResetFormSlice = createSlice({
       state.status.isResetSuccessful = action.payload;
     },
 
-    // Clear all errors
     clearAllErrors(state) {
       state.errors.email = "";
       state.errors.password = "";
@@ -87,7 +81,6 @@ const passwordResetFormSlice = createSlice({
       state.errors.token = "";
     },
 
-    // Reset form to initial state
     resetForm(state) {
       return initialState;
     },

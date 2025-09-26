@@ -3,13 +3,13 @@ import { Input } from '@/components/ui/input';
 import { autoFormatPhoneNumber, autoFormatSSN } from './FormUtils';
 
 const FormattedInput = ({
-  type = 'text', // 'phone' or 'ssn' for formatting
+  type = 'text',
   value,
   onChange,
   placeholder,
   className = '',
   disabled = false,
-  showError = true, // Allow parent to control error display
+  showError = true,
   ...props
 }) => {
   const [internalError, setInternalError] = useState(null);
@@ -39,7 +39,7 @@ const FormattedInput = ({
 
   const getInputType = () => {
     if (type === 'phone' || type === 'ssn') {
-      return 'tel'; // Use tel type for better mobile keyboard
+      return 'tel';
     }
     return type;
   };
@@ -51,7 +51,6 @@ const FormattedInput = ({
     return '';
   };
 
-  // Only show border error styling if there's an internal error and no external error styling
   const shouldShowErrorBorder = internalError && !className.includes('border-red');
   const inputClassName = `${className} ${shouldShowErrorBorder ? 'border-red-500' : ''}`;
 

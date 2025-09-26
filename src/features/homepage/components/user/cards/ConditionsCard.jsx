@@ -9,7 +9,6 @@ import { Link } from "react-router-dom";
 export default function ConditionsCard() {
   const user = useSelector((state) => state?.auth);
   
-  // Get user incidents to extract health conditions
   const { 
     data: incidentsData, 
     isLoading, 
@@ -26,7 +25,6 @@ export default function ConditionsCard() {
     }
   );
 
-  // Mock data to show multiple concurrent medical reports
   const mockMedicalReports = [
     {
       id: "report-001",
@@ -69,7 +67,6 @@ export default function ConditionsCard() {
     }
   ];
 
-  // Extract conditions from incident data
   const conditions = React.useMemo(() => {
     if (!incidentsData) return [];
     
@@ -80,7 +77,6 @@ export default function ConditionsCard() {
       rawIncidents = incidentsData;
     }
 
-    // Extract health conditions from incidents
     const extractedConditions = [];
     
     rawIncidents.forEach(incident => {
@@ -89,7 +85,6 @@ export default function ConditionsCard() {
           if (form.form_type === 'medical_history' && form.form_data) {
             const formData = typeof form.form_data === 'string' ? JSON.parse(form.form_data) : form.form_data;
             
-            // Extract medical conditions
             if (formData.medical_conditions && Array.isArray(formData.medical_conditions)) {
               formData.medical_conditions.forEach(condition => {
                 extractedConditions.push({
@@ -104,7 +99,6 @@ export default function ConditionsCard() {
               });
             }
             
-            // Extract chronic conditions
             if (formData.chronic_conditions && Array.isArray(formData.chronic_conditions)) {
               formData.chronic_conditions.forEach(condition => {
                 extractedConditions.push({
@@ -120,7 +114,6 @@ export default function ConditionsCard() {
             }
           }
           
-          // Extract pain conditions from pain assessment forms
           if (form.form_type === 'pain_assessment' && form.form_data) {
             const formData = typeof form.form_data === 'string' ? JSON.parse(form.form_data) : form.form_data;
             
@@ -142,7 +135,6 @@ export default function ConditionsCard() {
       }
     });
 
-    // Remove duplicates and limit to most recent
     const uniqueConditions = extractedConditions
       .filter((condition, index, self) => 
         index === self.findIndex(c => c.name === condition.name)

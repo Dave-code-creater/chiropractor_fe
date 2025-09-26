@@ -2,24 +2,19 @@ import { API_CONFIG, getBaseUrl } from '../config/config';
 import { logOut, setCredentials } from '../../state/data/authSlice';
 import { jwtDecode } from 'jwt-decode';
 
-// Token refresh state management
 let isRefreshing = false;
 let refreshPromise = null;
 let isLoggingOut = false;
 
-// Set logout flag - called by logout utility
 export const setLoggingOut = (value) => {
   isLoggingOut = value;
 };
 
-// Helper function to refresh tokens
 export const refreshTokens = async (api) => {
-  // Don't refresh if user is logging out
   if (isLoggingOut) {
     throw new Error('User is logging out');
   }
 
-  // Prevent multiple simultaneous refresh attempts
   if (isRefreshing && refreshPromise) {
     return refreshPromise;
   }
@@ -34,7 +29,6 @@ export const refreshTokens = async (api) => {
       throw new Error('No refresh token available');
     }
 
-    // Create the refresh promise
     refreshPromise = fetch(`${getBaseUrl()}/auth/refresh-token`, {
       method: 'POST',
       headers: {
@@ -49,7 +43,6 @@ export const refreshTokens = async (api) => {
       
       const data = await response.json();
       
-      // Update tokens in store (only if not logging out)
       if (data.token && data.user && !isLoggingOut) {
         api.dispatch(setCredentials({
           user: data.user,
@@ -57,12 +50,9 @@ export const refreshTokens = async (api) => {
           accessToken: data.token,
           refreshToken: data.refreshToken || refreshToken,
         }));
-        // Persist refreshed tokens to localStorage immediately so a reload
-        // or other window context sees the updated values while persistor writes.
         try {
           storeTokens(data.token, data.refreshToken || refreshToken, data.user);
         } catch (err) {
-          // Non-fatal: log and continue
           console.warn('Failed to persist refreshed tokens to localStorage:', err);
         }
 
@@ -76,7 +66,6 @@ export const refreshTokens = async (api) => {
     return newToken;
 
   } catch (error) {
-    // Only logout on explicit 401 Unauthorized from refresh endpoint
     if (!isLoggingOut && error.message?.includes('Refresh failed with status: 401')) {
       try {
         api.dispatch(logOut());
@@ -84,12 +73,10 @@ export const refreshTokens = async (api) => {
         console.warn('Failed to dispatch logout action:', e);
       }
 
-      // Redirect to login if not already there
       if (!window.location.pathname.includes('/login')) {
         window.location.href = '/login';
       }
     } else {
-      // For network / transient errors, bubble up but do not force logout here.
       console.warn('Token refresh error (non-401):', error);
     }
 
@@ -100,19 +87,15 @@ export const refreshTokens = async (api) => {
   }
 };
 
-// Periodic token checking
 let tokenCheckInterval = null;
 
 export const startPeriodicTokenCheck = (api) => {
-  // Clear existing interval
   if (tokenCheckInterval) {
     clearInterval(tokenCheckInterval);
   }
 
-  // Check every 5 minutes
   tokenCheckInterval = setInterval(async () => {
     try {
-      // Don't check if user is logging out or app is not ready
       if (isLoggingOut || !api?.getState) {
         return;
       }
@@ -122,7 +105,6 @@ export const startPeriodicTokenCheck = (api) => {
       const isAuthenticated = state?.auth?.isAuthenticated;
 
       if (isAuthenticated && accessToken) {
-        // Check if token expires within 5 minutes
         if (willExpireSoon(accessToken, API_CONFIG.TOKEN.REFRESH_BUFFER)) {
           await refreshTokens(api);
         }
@@ -140,12 +122,7 @@ export const stopPeriodicTokenCheck = () => {
   }
 };
 
-/**
- * Get the current access token from the Redux store
- * When using httpOnly cookies, this is mainly for client-side token validation
- */
 export const getToken = () => {
-  // When using httpOnly cookies, tokens are not accessible via JavaScript
   if (API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
     console.warn('Token access not available when using httpOnly cookies');
     return null;
@@ -155,7 +132,6 @@ export const getToken = () => {
     const store = window.__REDUX_STORE__;
     if (!store) {
       console.warn("Redux store not available on window");
-      // Fallback to localStorage
       return localStorage.getItem('accessToken') || null;
     }
     const state = store.getState();
@@ -166,12 +142,7 @@ export const getToken = () => {
   }
 };
 
-/**
- * Get the current refresh token from the Redux store
- * When using httpOnly cookies, this is mainly for client-side token validation
- */
 export const getRefreshToken = () => {
-  // When using httpOnly cookies, tokens are not accessible via JavaScript
   if (API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
     console.warn('Refresh token access not available when using httpOnly cookies');
     return null;
@@ -191,10 +162,6 @@ export const getRefreshToken = () => {
   }
 };
 
-/**
- * True when the JWT will expire within `buffer` seconds.
- * Default buffer is 60 s (one minute).
- */
 export const willExpireSoon = (token, buffer = 60) => {
   try {
     const { exp } = jwtDecode(token);
@@ -204,9 +171,6 @@ export const willExpireSoon = (token, buffer = 60) => {
   }
 };
 
-/**
- * Check if token is expired (for client-side UX only, not security)
- */
 export const isTokenExpired = (token) => {
   try {
     const { exp } = jwtDecode(token);
@@ -217,9 +181,6 @@ export const isTokenExpired = (token) => {
   }
 };
 
-/**
- * Get token expiration time
- */
 export const getTokenExpiration = (token) => {
   try {
     const { exp } = jwtDecode(token);
@@ -230,9 +191,6 @@ export const getTokenExpiration = (token) => {
   }
 };
 
-/**
- * Extract user info from token (for fallback purposes only)
- */
 export const extractUserFromToken = (token) => {
   try {
     const payload = jwtDecode(token);
@@ -253,9 +211,6 @@ export const extractUserFromToken = (token) => {
   }
 };
 
-/**
- * Validate token format
- */
 export const isValidTokenFormat = (token) => {
   if (!token || typeof token !== 'string') return false;
   
@@ -270,9 +225,6 @@ export const isValidTokenFormat = (token) => {
   }
 };
 
-/**
- * Get detailed token info
- */
 export const getTokenInfo = (token) => {
   if (!isValidTokenFormat(token)) {
     return {
@@ -302,14 +254,9 @@ export const getTokenInfo = (token) => {
   }
 };
 
-/**
- * Store tokens in localStorage (only when not using httpOnly cookies)
- */
 export const storeTokens = (accessToken, refreshToken, userData) => {
-  // When using httpOnly cookies, tokens are handled by the browser automatically
   if (API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
     console.info('Token storage handled by httpOnly cookies');
-    // Only store user data in localStorage for client-side access
     try {
       if (userData) {
         localStorage.setItem('userData', JSON.stringify(userData));
@@ -338,21 +285,16 @@ export const storeTokens = (accessToken, refreshToken, userData) => {
   }
 };
 
-/**
- * Clear stored tokens (and logout from httpOnly cookies if applicable)
- */
 export const clearTokens = () => {
   try {
-    // Clear localStorage tokens
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('userData');
 
-    // When using httpOnly cookies, make a logout request to clear server-side cookies
     if (API_CONFIG.SECURITY?.USE_HTTP_ONLY) {
       fetch(`${getBaseUrl()}/auth/logout`, {
         method: 'POST',
-        credentials: 'include', // Include cookies in the request
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -368,9 +310,6 @@ export const clearTokens = () => {
   }
 };
 
-/**
- * Get stored tokens
- */
 export const getStoredTokens = () => {
   try {
     return {

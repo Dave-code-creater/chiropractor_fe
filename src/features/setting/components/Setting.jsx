@@ -13,10 +13,11 @@ import Notifications from "./Notifications";
 import Display from "./Display";
 
 const tabs = [
-  { id: "account", label: "Account", icon: UserCog },
-  // { id: "appearance", label: "Appearance", icon: Paintbrush }, // Temporarily disabled
-  // { id: "notifications", label: "Notifications", icon: Bell },
-  // { id: "display", label: "Display", icon: Monitor },
+  {
+    id: "account",
+    label: "Account",
+    icon: UserCog
+  },
 ];
 
 function useIsMobile(breakpoint = 768) {
@@ -45,8 +46,6 @@ export default function Setting() {
     switch (tab) {
       case "account":
         return <Account />;
-      // case "appearance": // Temporarily disabled
-      //   return <Appearance />;
       case "notifications":
         return <Notifications />;
       case "display":
@@ -58,7 +57,6 @@ export default function Setting() {
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-background">
-      {/* Sidebar */}
       <div
         className={cn(
           "w-full md:w-1/3 lg:w-1/4 max-w-sm p-4",
@@ -82,8 +80,6 @@ export default function Setting() {
           ))}
         </ScrollArea>
       </div>
-
-      {/* Main Content */}
       {tab && (
         <div className="flex-1 flex flex-col bg-white border-l md:border-t-0 border-t">
           <div className="flex items-center p-4 border-b gap-3">

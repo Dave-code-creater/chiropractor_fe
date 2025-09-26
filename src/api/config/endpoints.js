@@ -1,6 +1,4 @@
-// API Endpoint Definitions
 export const API_ENDPOINTS = {
-  // Authentication
   AUTH: {
     LOGIN: "/auth/login",
     REGISTER: "/auth/register",
@@ -10,16 +8,12 @@ export const API_ENDPOINTS = {
     RESET_PASSWORD: "/auth/reset-password",
   },
 
-  // Users & Patients
   USERS: {
     BASE: "/users",
     PROFILE: "/users/profile",
     PATIENTS: "/users/patients",
   },
 
-  // Deprecated: REPORTS section removed - now using INCIDENTS system
-
-  // Incidents & Forms
   INCIDENTS: {
     BASE: "/incidents",
     FORMS: (incidentId) => `/incidents/${incidentId}/`,
@@ -29,14 +23,12 @@ export const API_ENDPOINTS = {
 
   },
 
-  // Appointments
   APPOINTMENTS: {
     BASE: "/appointments",
     BY_PATIENT: (patientId) => `/appointments/patient/${patientId}`,
     SCHEDULE: "/appointments/schedule",
   },
 
-  // Chat
   CHAT: {
     BASE: "/chat",
     CONVERSATIONS: "/chat/conversations",
@@ -46,7 +38,6 @@ export const API_ENDPOINTS = {
     AVAILABLE_USERS: "/chat/admin-doctors",
   },
 
-  // Clinical Notes
   CLINICAL_NOTES: {
     BASE: "/clinical-notes",
     BY_PATIENT: (patientId) => `/clinical-notes/patient/${patientId}`,
@@ -55,7 +46,6 @@ export const API_ENDPOINTS = {
     SEARCH: "/clinical-notes/search",
   },
 
-  // Blog
   BLOG: {
     BASE: "/blog",
     POSTS: "/blog/posts",

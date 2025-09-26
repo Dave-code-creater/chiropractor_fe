@@ -8,9 +8,7 @@ const initialState = {
 const entitiesSlice = createSlice({
   name: "entities",
   initialState,
-  reducers: {
-    // Add any post or comment related reducers here
-  },
+  reducers: {},
 });
 
 export const {} = entitiesSlice.actions;

@@ -6,11 +6,10 @@ export const doctorApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["DoctorPatients", "DoctorStats", "PatientDetails"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
-  refetchOnFocus: false,            // Prevent automatic refetch on window focus
-  refetchOnReconnect: true,         // Keep this for actual network issues
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
-    // Get doctor's assigned patients
     getDoctorPatients: builder.query({
       query: ({ doctorId, ...params }) => {
         const queryParams = new URLSearchParams();
@@ -34,7 +33,6 @@ export const doctorApi = createApi({
       keepUnusedDataFor: CACHE_TIMES.MEDIUM,
     }),
 
-    // Get specific patient details for doctor
     getPatientDetailsForDoctor: builder.query({
       query: ({ doctorId, patientId }) => ({
         url: `doctors/${doctorId}/patients/${patientId}`,
@@ -45,7 +43,6 @@ export const doctorApi = createApi({
       ],
     }),
 
-    // Get doctor's dashboard statistics
     getDoctorStats: builder.query({
       query: ({ doctorId, range }) => {
         const queryParams = new URLSearchParams();
@@ -59,7 +56,7 @@ export const doctorApi = createApi({
       providesTags: (result, error, { doctorId }) => [
         { type: "DoctorStats", id: doctorId },
       ],
-      keepUnusedDataFor: CACHE_TIMES.SHORT, // Stats should be fresher
+      keepUnusedDataFor: CACHE_TIMES.SHORT,
     }),
   }),
 });

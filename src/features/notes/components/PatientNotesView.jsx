@@ -46,7 +46,6 @@ const PatientNotesView = () => {
     const [selectedCase, setSelectedCase] = useState(null);
     const [expandedCases, setExpandedCases] = useState({});
 
-    // Create user object from auth state
     const user = {
         id: auth.userID,
         role: auth.role,
@@ -57,32 +56,22 @@ const PatientNotesView = () => {
         profile: auth.profile
     };
 
-    // Fetch current user's incidents (initial reports)
     const {
         data: userIncidents,
         isLoading: isLoadingIncidents,
         error: incidentsError
     } = useGetIncidentsQuery(user?.id, { skip: !user?.id });
 
-    // Get all notes from all cases (currently empty - will be populated from clinical notes API)
     const allNotes = useMemo(() => {
-        // This will be populated when we integrate with clinical notes API
         return [];
     }, []);
 
-    // Process incidents data - filter to show only current user's reports
     const incidents = useMemo(() => {
         if (!userIncidents?.data) return [];
         const incidentsList = Array.isArray(userIncidents.data) ? userIncidents.data : [];
 
-        // Filter to only show incidents belonging to the current user
-        // Check both camelCase and snake_case property names from backend
-        const filteredIncidents = incidentsList.filter(incident =>
-            incident.user_id === user?.id ||     // snake_case from backend
-            incident.userId === user?.id ||      // camelCase if transformed
-            incident.patient_id === user?.id ||  // snake_case from backend
-            incident.patientId === user?.id ||   // camelCase if transformed  
-            incident.patient?.id === user?.id    // nested object
+        const filteredIncidents = incidentsList.filter(incident => incident.user_id === user?.id || incident.userId === user?.id || incident.patient_id === user?.id || incident.patientId === user?.id ||
+        incident.patient?.id === user?.id
         );
 
         
@@ -91,7 +80,6 @@ const PatientNotesView = () => {
     }, [userIncidents, user?.id]);
 
     const filteredCases = useMemo(() => {
-        // Currently empty - will be populated when we integrate with clinical cases API
         return [];
     }, [searchTerm, filterType, filterStatus]);
 
@@ -192,12 +180,10 @@ const PatientNotesView = () => {
         }));
     };
 
-    // If viewing a specific note
     if (selectedNote) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
                 <div className="max-w-4xl mx-auto space-y-6">
-                    {/* Header with Back Button */}
                     <div className="flex items-center gap-4">
                         <Button
                             variant="outline"
@@ -217,7 +203,6 @@ const PatientNotesView = () => {
                         </div>
                     </div>
 
-                    {/* Note Details */}
                     <Card>
                         <CardHeader>
                             <div className="flex items-center justify-between">
@@ -354,7 +339,6 @@ const PatientNotesView = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
             <div className="max-w-6xl mx-auto space-y-6">
-                {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">
@@ -366,7 +350,6 @@ const PatientNotesView = () => {
                     </div>
                 </div>
 
-                {/* Search and Filters */}
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4 flex-wrap">
@@ -406,7 +389,6 @@ const PatientNotesView = () => {
                     </CardContent>
                 </Card>
 
-                {/* Cases Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <Card>
                         <CardContent className="pt-6">
@@ -462,7 +444,6 @@ const PatientNotesView = () => {
                     </Card>
                 </div>
 
-                {/* Initial Reports Section */}
                 {incidents && incidents.length > 0 && (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
@@ -477,7 +458,6 @@ const PatientNotesView = () => {
                     </div>
                 )}
 
-                {/* Error state for incidents */}
                 {incidentsError && (
                     <Card>
                         <CardContent className="text-center py-12">
@@ -492,7 +472,6 @@ const PatientNotesView = () => {
                     </Card>
                 )}
 
-                {/* Loading state for incidents */}
                 {isLoadingIncidents && (
                     <Card>
                         <CardContent className="text-center py-12">
@@ -504,7 +483,6 @@ const PatientNotesView = () => {
                     </Card>
                 )}
 
-                {/* Empty state for initial reports */}
                 {!isLoadingIncidents && !incidentsError && incidents.length === 0 && (
                     <Card>
                         <CardContent className="text-center py-12">
@@ -522,14 +500,13 @@ const PatientNotesView = () => {
                     </Card>
                 )}
 
-                {/* Cases List */}
                 {filteredCases.length > 0 ? (
                     <div className="space-y-6">
                         <h2 className="text-xl font-semibold">My Treatment Cases</h2>
                         {filteredCases.map((patientCase) => {
                             const Icon = getIncidentIcon(patientCase.incidentType);
                             const isExpanded = expandedCases[patientCase.id];
-                            return null; // This will be implemented when cases are available
+                            return null;
                         })}
                     </div>
                 ) : (

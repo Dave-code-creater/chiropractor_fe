@@ -174,8 +174,8 @@ export default function PainChartSection({
 
   const handleBodyClick = (part) => {
     const field = partMap[part];
-    if (!field) return;
-    // Handle both old number format and new object format
+    if (!field)
+      return;
     const existingData = painMap[field];
     const currentLevel = existingData && typeof existingData === 'object'
       ? existingData['pain-level']
@@ -199,7 +199,6 @@ export default function PainChartSection({
 
   return (
     <div className="w-full flex flex-col items-center px-2 sm:px-4">
-      {/* Mobile-friendly body component */}
       <div className="w-full max-w-md sm:max-w-lg scale-75 sm:scale-90 lg:scale-100">
         <Suspense fallback={
           <div className="flex items-center justify-center h-96">
@@ -220,8 +219,6 @@ export default function PainChartSection({
           />
         </Suspense>
       </div>
-
-      {/* Selected areas info */}
       <div className="w-full max-w-2xl mt-4 sm:mt-6">
         <Card className="bg-gray-50">
           <CardContent className="p-4">
@@ -281,8 +278,6 @@ export default function PainChartSection({
           </CardContent>
         </Card>
       </div>
-
-      {/* Responsive Pain Detail Modals */}
       {isMobile ? (
         <MobilePainDetailModal
           isOpen={Boolean(openFieldId)}

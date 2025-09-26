@@ -1,4 +1,3 @@
-// Safe auth selectors with null checks
 export const selectCurrentUser = (state) => state?.auth?.user ?? null;
 export const selectUserEmail = (state) => state?.auth?.email ?? null;
 export const selectUserName = (state) => state?.auth?.username ?? null;
@@ -22,7 +21,6 @@ export const selectUserDisplayName = (state) => {
     return "Dr. Admin";
   }
 
-  // For patients and other roles
   if (user?.profile?.full_name) {
     return user.profile.full_name;
   }

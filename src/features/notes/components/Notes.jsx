@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AlertCircle } from "lucide-react";
 import { useSelector } from "react-redux";
 
-// Import role-specific components
 import DoctorNotes from "./doctor/DoctorNotes";
 import DoctorNotesRevamped from "./doctor/DoctorNotesRevamped";
 import DoctorInitialReportsView from "./DoctorInitialReportsView";
@@ -14,18 +13,16 @@ const Notes = () => {
   const auth = useSelector((state) => state.auth);
   const [activeView, setActiveView] = useState("notes");
 
-  // Create user object from auth state
   const user = {
     id: auth.userID,
     role: auth.role,
     email: auth.email,
     username: auth.username,
-    firstName: auth.profile?.firstName || auth.username, // fallback to username if firstName not available
+    firstName: auth.profile?.firstName || auth.username,
     lastName: auth.profile?.lastName || '',
     profile: auth.profile
   };
 
-  // If user is not loaded yet, show loading
   if (!user) {
     return (
       <Card>
@@ -40,7 +37,6 @@ const Notes = () => {
     );
   }
 
-  // For admin demo purposes
   if (user?.role === "admin") {
     return (
       <div className="space-y-4">
@@ -90,17 +86,14 @@ const Notes = () => {
     );
   }
 
-  // Doctor view
   if (user?.role === "doctor") {
     return <DoctorNotesRevamped doctorId={user.id} />;
   }
 
-  // Patient view - make role check more robust
   if (user?.role === "patient" || user?.role?.toLowerCase() === "patient") {
     return <PatientNotesView />;
   }
 
-  // If user exists but doesn't match any role, show restricted access
   return (
     <Card>
       <CardContent className="p-8 text-center">

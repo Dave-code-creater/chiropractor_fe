@@ -14,12 +14,10 @@ export default function MessagesCard() {
   const userId = useSelector((state) => state.auth.userID);
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
-  // Navigation handlers
   const handleNavigateToChat = () => {
     navigate('/chat');
   };
   
-  // API query - using exact same pattern as NewChat component
   const { 
     data: conversationsData, 
     isLoading, 
@@ -33,13 +31,12 @@ export default function MessagesCard() {
 
 
 
-  // Extract conversations using the same helper function from NewChat
   const extractDataFromResponse = (data) => {
     if (!data) return [];
     
-    if (Array.isArray(data)) return data;
+    if (Array.isArray(data))
+      return data;
     
-    // Handle API response structure from your backend
     if (data.data) {
       if (Array.isArray(data.data)) return data.data;
       if (data.data.conversations) return data.data.conversations;
@@ -61,19 +58,15 @@ export default function MessagesCard() {
 
   const conversations = useMemo(() => {
     const allConversations = extractDataFromResponse(conversationsData);
-    // Filter to only show active conversations
     return allConversations.filter(conv => conv.status === 'active');
   }, [conversationsData]);
 
-  // Get current user role (same as NewChat component)
   const userRole = useSelector((state) => state?.auth?.role) || 'patient';
 
-  // Get participant info using same logic as NewChat component
   const getParticipantInfo = (conversation) => {
     const isCurrentUserPatient = userRole === 'patient';
     
     if (isCurrentUserPatient) {
-      // Current user is patient, show doctor info
       const doctorName = conversation.doctor_name || 
                         (conversation.doctor_first_name && conversation.doctor_last_name 
                           ? `${conversation.doctor_first_name} ${conversation.doctor_last_name}` 
@@ -86,7 +79,6 @@ export default function MessagesCard() {
         status: "online"
       };
     } else {
-      // Current user is doctor/admin, show patient info
       const patientName = conversation.patient_name || 
                          (conversation.patient_first_name && conversation.patient_last_name 
                            ? `${conversation.patient_first_name} ${conversation.patient_last_name}` 
@@ -101,7 +93,6 @@ export default function MessagesCard() {
     }
   };
 
-  // Format time helper
   const formatMessageTime = (timestamp) => {
     if (!timestamp) return "";
     
@@ -121,7 +112,6 @@ export default function MessagesCard() {
     }
   };
 
-  // Sort conversations by most recent activity (same as NewChat)
   const sortedConversations = useMemo(() => {
     return [...conversations].sort((a, b) => {
       const aTime = new Date(a.last_message_at || a.updated_at || a.created_at);

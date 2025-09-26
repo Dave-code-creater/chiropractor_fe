@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useTheme } from "@/contexts/ThemeContext";
+import useTheme from "@/contexts/useTheme";
 
 export default function Appearance() {
   const { theme, setTheme } = useTheme();
@@ -36,7 +36,7 @@ export default function Appearance() {
   const handleSidebarChange = (val) => {
     setSidebarPosition(val);
     localStorage.setItem("sidebar-position", val);
-    window.dispatchEvent(new Event("storage")); // trigger reactivity
+    window.dispatchEvent(new Event("storage"));
   };
 
   const handleButtonStyleChange = (val) => {

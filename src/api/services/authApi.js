@@ -29,9 +29,9 @@ export const authApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["User"],
   keepUnusedDataFor: CACHE_TIMES.SHORT,
-  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
-  refetchOnFocus: false,            // Prevent automatic refetch on window focus
-  refetchOnReconnect: false,        // Auth shouldn't auto-refetch on reconnect
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: false,
   endpoints: (builder) => ({
     login: builder.mutation({
       query: (credentials) => ({
@@ -57,10 +57,8 @@ export const authApi = createApi({
             })
           );
 
-          // Start periodic token checking after successful login
           startPeriodicTokenCheck({ dispatch, getState });
 
-          // Update user profile if additional data is available
           const profileSource = data.profile ?? data.user;
 
           if (profileSource) {
@@ -96,10 +94,8 @@ export const authApi = createApi({
           if (data.user && data.token) {
             dispatch(setCredentials(data));
 
-            // Start periodic token checking after successful registration
             startPeriodicTokenCheck({ dispatch, getState });
 
-            // Update user profile if additional data is available
             if (data.user) {
               dispatch(updateUserProfile({
                 firstName: data.user.first_name,
@@ -129,19 +125,15 @@ export const authApi = createApi({
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
-          // Set logging out flag to prevent token refresh attempts
           setLoggingOut(true);
           
-          // Stop periodic token checking
           stopPeriodicTokenCheck();
           
           await queryFulfilled;
           dispatch(logOut());
         } catch {
-          // Even if logout fails on server, clear local state
           dispatch(logOut());
         } finally {
-          // Reset logging out flag
           setLoggingOut(false);
         }
       },
@@ -171,7 +163,6 @@ export const authApi = createApi({
       }),
     }),
 
-    // OAuth login endpoint
     oauthLogin: builder.mutation({
       query: (oauthData) => ({
         url: "/auth/oauth",

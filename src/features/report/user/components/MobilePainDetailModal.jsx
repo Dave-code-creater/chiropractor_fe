@@ -146,7 +146,6 @@ const MobilePainDetailModal = ({
 
     return (
         <div className="fixed inset-0 z-50 bg-white flex flex-col">
-            {/* Header */}
             <div className="flex items-center justify-between p-4 border-b bg-white shadow-sm">
                 <Button
                     variant="ghost"
@@ -168,10 +167,7 @@ const MobilePainDetailModal = ({
                     <X className="h-5 w-5" />
                 </Button>
             </div>
-
-            {/* Content */}
             <div className="flex-1 overflow-y-auto p-4 space-y-6">
-                {/* Pain Level Section */}
                 <Card>
                     <CardHeader className="pb-3">
                         <CardTitle className="text-base">Pain Level</CardTitle>
@@ -208,7 +204,6 @@ const MobilePainDetailModal = ({
                     </CardContent>
                 </Card>
 
-                {/* Questions Section */}
                 <div className="space-y-4">
                     <h3 className="text-lg font-semibold">
                         Additional Information
@@ -224,8 +219,6 @@ const MobilePainDetailModal = ({
                     ))}
                 </div>
             </div>
-
-            {/* Bottom Actions */}
             <div className="border-t bg-white p-4 space-y-3">
                 {openFieldId && painMap[openFieldId] !== undefined && (
                     <Button

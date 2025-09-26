@@ -52,7 +52,6 @@ import {
 
 const PDFReportGenerator = () => {
   const [selectedTemplate, setSelectedTemplate] = useState("patient-summary");
-  const [reportData, setReportData] = useState({});
   const [generationProgress, setGenerationProgress] = useState(0);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedReports, setSelectedReports] = useState([]);
@@ -63,7 +62,6 @@ const PDFReportGenerator = () => {
     assignedTo: "all",
   });
 
-  // Report templates
   const [reportTemplates] = useState([
     {
       id: "patient-summary",
@@ -161,7 +159,6 @@ const PDFReportGenerator = () => {
     },
   ]);
 
-  // Sample report data
   const [sampleReports] = useState([
     {
       id: "RPT-001",
@@ -201,13 +198,11 @@ const PDFReportGenerator = () => {
     },
   ]);
 
-  // Generate report function
-  const generateReport = useCallback(async (templateId, data, options = {}) => {
+  const generateReport = useCallback(async (templateId) => {
     setIsGenerating(true);
     setGenerationProgress(0);
 
     try {
-      // Simulate report generation with progress
       const steps = [
         "Collecting data...",
         "Processing template...",
@@ -223,7 +218,6 @@ const PDFReportGenerator = () => {
         toast.info(steps[i]);
       }
 
-      // Simulate file download
       const blob = new Blob(["Sample PDF content"], {
         type: "application/pdf",
       });
@@ -237,7 +231,7 @@ const PDFReportGenerator = () => {
       URL.revokeObjectURL(url);
 
       toast.success("Report generated successfully!");
-    } catch (error) {
+    } catch {
       toast.error("Failed to generate report");
     } finally {
       setIsGenerating(false);
@@ -245,7 +239,6 @@ const PDFReportGenerator = () => {
     }
   }, []);
 
-  // Bulk report generation
   const generateBulkReports = useCallback(async (reportIds) => {
     setIsGenerating(true);
 
@@ -339,7 +332,7 @@ const PDFReportGenerator = () => {
           <CardTitle className="flex items-center justify-between">
             Configure Report: {template.name}
             <Button
-              onClick={() => generateReport(selectedTemplate, reportData)}
+              onClick={() => generateReport(selectedTemplate)}
             >
               <FileText className="h-4 w-4 mr-2" />
               Generate Report
@@ -350,7 +343,6 @@ const PDFReportGenerator = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Report Settings */}
           <div className="space-y-4">
             <h4 className="font-medium">Report Settings</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -377,7 +369,6 @@ const PDFReportGenerator = () => {
 
           <Separator />
 
-          {/* Data Selection */}
           <div className="space-y-4">
             <h4 className="font-medium">Data Selection</h4>
             <div className="space-y-3">
@@ -394,7 +385,6 @@ const PDFReportGenerator = () => {
 
           <Separator />
 
-          {/* Format Options */}
           <div className="space-y-4">
             <h4 className="font-medium">Format Options</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -441,7 +431,6 @@ const PDFReportGenerator = () => {
 
           <Separator />
 
-          {/* Branding Options */}
           <div className="space-y-4">
             <h4 className="font-medium">Branding & Customization</h4>
             <div className="space-y-3">
@@ -464,7 +453,6 @@ const PDFReportGenerator = () => {
             </div>
           </div>
 
-          {/* Custom Notes */}
           <div className="space-y-2">
             <Label>Additional Notes</Label>
             <Textarea
@@ -517,7 +505,6 @@ const PDFReportGenerator = () => {
         </div>
       </CardHeader>
       <CardContent>
-        {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <Select
             value={filterOptions.reportType}
@@ -572,7 +559,6 @@ const PDFReportGenerator = () => {
           </Select>
         </div>
 
-        {/* Progress Bar */}
         {isGenerating && (
           <div className="mb-6">
             <div className="flex items-center justify-between mb-2">
@@ -585,7 +571,6 @@ const PDFReportGenerator = () => {
           </div>
         )}
 
-        {/* Reports Table */}
         <div className="space-y-3">
           {filteredReports.map((report) => {
             const template = reportTemplates.find(
@@ -697,7 +682,6 @@ const PDFReportGenerator = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
@@ -718,8 +702,6 @@ const PDFReportGenerator = () => {
           </Button>
         </div>
       </div>
-
-      {/* Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4">
@@ -777,8 +759,6 @@ const PDFReportGenerator = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Main Content */}
       <Tabs defaultValue="generate" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="generate">Generate Report</TabsTrigger>

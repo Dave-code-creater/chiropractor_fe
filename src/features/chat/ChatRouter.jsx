@@ -2,7 +2,6 @@ import React from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-// Role-based components
 import DoctorChat from "./components/doctor/DoctorChat";
 import PatientChat from "./components/patient/PatientChat";
 import AdminChat from "./components/admin/AdminChat";
@@ -18,7 +17,6 @@ const ChatRouter = () => {
 
   return (
     <Routes>
-      {/* Role-based routes */}
       {userRole === "doctor" && (
         <Route path="/*" element={<DoctorChat />} />
       )}
@@ -28,9 +26,6 @@ const ChatRouter = () => {
       {userRole === "admin" && (
         <Route path="/*" element={<AdminChat />} />
       )}
-
-
-      {/* Fallback route */}
       <Route path="*" element={<Navigate to="/unauthorized" replace />} />
     </Routes>
   );

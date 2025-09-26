@@ -13,7 +13,6 @@ const MainLayout = () => {
     const location = useLocation();
     const isAuthenticated = useSelector(selectIsAuthenticated);
 
-    // Define public routes that should use the public navbar instead of sidebar
     const publicRoutes = [
         '/',
         '/about',
@@ -29,36 +28,29 @@ const MainLayout = () => {
         '/blog'
     ];
 
-    // Check if current route is public or if user is not authenticated
     const isPublicRoute = publicRoutes.some(route =>
         location.pathname === route ||
         (route === '/blog' && location.pathname.startsWith('/blog'))
     ) || !isAuthenticated;
 
     if (isPublicRoute) {
-        // Public Layout - Simple layout with public navbar
         return (
             <NotificationProvider>
                 <div className="min-h-screen bg-background flex flex-col">
-                    {/* Public Navbar */}
                     <PublicNavbar />
 
-                    {/* Main content area - no sidebar for public pages */}
                     <main className="flex-1">
                         <Outlet />
                     </main>
 
-                    {/* Footer */}
                     <Footer />
 
-                    {/* Enhanced Toast Notifications */}
                     <Toaster />
                 </div>
             </NotificationProvider>
         );
     }
 
-    // Authenticated Layout - Layout with sidebar for dashboard pages
     return (
         <NotificationProvider>
             <SidebarProvider>
@@ -71,7 +63,6 @@ const MainLayout = () => {
                     </main>
                     <Footer />
                 </SidebarInset>
-                {/* Enhanced Toast Notifications */}
                 <Toaster />
             </SidebarProvider>
         </NotificationProvider>

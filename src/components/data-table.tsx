@@ -110,7 +110,6 @@ export const schema = z.object({
   reviewer: z.string(),
 });
 
-// Create a separate component for the drag handle
 function DragHandle({ id }: { id: number }) {
   const { attributes, listeners } = useSortable({
     id,
@@ -373,8 +372,6 @@ export function DataTable({
           </Button>
         </div>
       </div>
-
-      {/* Mobile Card View */}
       {isMobile && (
         <div className="space-y-3">
           {table.getRowModel().rows.map((row) => (
@@ -439,8 +436,6 @@ export function DataTable({
           ))}
         </div>
       )}
-
-      {/* Desktop Table View */}
       {!isMobile && (
         <div className="rounded-md border">
           <DndContext
@@ -493,7 +488,6 @@ export function DataTable({
           </DndContext>
         </div>
       )}
-
       <div className="flex flex-col sm:flex-row items-center justify-between space-y-2 sm:space-y-0">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}

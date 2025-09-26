@@ -32,7 +32,6 @@ const DoctorInitialReportsView = () => {
     const [filterStatus, setFilterStatus] = useState("all");
     const [selectedIncident, setSelectedIncident] = useState(null);
 
-    // Fetch all incidents for doctor view
     const {
         data: allIncidents,
         isLoading: isLoadingIncidents,
@@ -40,13 +39,11 @@ const DoctorInitialReportsView = () => {
         refetch
     } = useGetIncidentsQuery(null);
 
-    // Process incidents data
     const incidents = useMemo(() => {
         if (!allIncidents?.data) return [];
         return Array.isArray(allIncidents.data) ? allIncidents.data : [];
     }, [allIncidents]);
 
-    // Filter incidents based on search and filters
     const filteredIncidents = useMemo(() => {
         let filtered = incidents;
 
@@ -142,7 +139,6 @@ const DoctorInitialReportsView = () => {
         const forms = incident.forms || [];
         const painAssessment = forms.find(f => f.form_type === 'pain_assessment')?.form_data || {};
         if (painAssessment.pain_level && painAssessment.pain_level.length > 0) {
-            // Get the highest pain level
             const levels = painAssessment.pain_level.map(level => {
                 const rating = level.split(':')[1];
                 return parseInt(rating) || 0;
@@ -152,12 +148,10 @@ const DoctorInitialReportsView = () => {
         return 'N/A';
     };
 
-    // If viewing a specific incident in detail
     if (selectedIncident) {
         return (
             <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
                 <div className="max-w-6xl mx-auto space-y-6">
-                    {/* Header with Back Button */}
                     <div className="flex items-center gap-4">
                         <Button
                             variant="outline"
@@ -177,7 +171,6 @@ const DoctorInitialReportsView = () => {
                         </div>
                     </div>
 
-                    {/* Detailed Initial Report Display */}
                     <InitialReportDisplay incident={selectedIncident} />
                 </div>
             </div>
@@ -187,7 +180,6 @@ const DoctorInitialReportsView = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
             <div className="max-w-7xl mx-auto space-y-6">
-                {/* Header */}
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-3xl font-bold text-foreground">
@@ -203,7 +195,6 @@ const DoctorInitialReportsView = () => {
                     </Button>
                 </div>
 
-                {/* Search and Filters */}
                 <Card>
                     <CardContent className="pt-6">
                         <div className="flex items-center gap-4 flex-wrap">
@@ -244,7 +235,6 @@ const DoctorInitialReportsView = () => {
                     </CardContent>
                 </Card>
 
-                {/* Statistics Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <Card>
                         <CardContent className="pt-6">
@@ -306,7 +296,6 @@ const DoctorInitialReportsView = () => {
                     </Card>
                 </div>
 
-                {/* Loading State */}
                 {isLoadingIncidents && (
                     <Card>
                         <CardContent className="text-center py-12">
@@ -321,7 +310,6 @@ const DoctorInitialReportsView = () => {
                     </Card>
                 )}
 
-                {/* Error State */}
                 {incidentsError && (
                     <Card>
                         <CardContent className="text-center py-12">
@@ -339,7 +327,6 @@ const DoctorInitialReportsView = () => {
                     </Card>
                 )}
 
-                {/* Patient Reports List */}
                 {!isLoadingIncidents && !incidentsError && (
                     <div className="space-y-4">
                         {filteredIncidents.length > 0 ? (
@@ -417,7 +404,6 @@ const DoctorInitialReportsView = () => {
                                                 </div>
                                             </div>
 
-                                            {/* Quick Summary */}
                                             <div className="mt-4 pt-4 border-t">
                                                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                                                     <div>

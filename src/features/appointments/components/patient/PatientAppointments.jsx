@@ -7,31 +7,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   useGetMyAppointmentsQuery,
-  useCreateAppointmentMutation,
-  useCancelAppointmentMutation,
-  useRescheduleAppointmentMutation,
-  useGetAvailableDoctorsQuery,
   useUpdateAppointmentMutation,
 } from "@/api/services/appointmentApi";
-import { useSelector } from 'react-redux';
-import { selectUserId } from '@/state/data/authSlice';
 import { extractList } from '@/utils/apiResponse';
 import {
   Calendar,
   Clock,
-  MapPin,
-  Phone,
-  Mail,
-  FileText,
-  AlertCircle,
   CheckCircle,
   XCircle,
   Plus,
-  Edit,
-  Trash2,
-  MessageSquare,
-  Star,
-  Download,
   User
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -39,46 +23,24 @@ import { format, isToday, isPast, isFuture } from 'date-fns';
 import Booking from "../Booking";
 
 export default function PatientAppointments() {
-  const currentUserId = useSelector(selectUserId);
   const [activeTab, setActiveTab] = useState('book');
-  const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [cancelModal, setCancelModal] = useState({ isOpen: false, appointment: null });
   const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, appointment: null });
   const [feedbackModal, setFeedbackModal] = useState({ isOpen: false, appointment: null });
 
-  // API queries - get current user's appointments
   const { data: appointmentsData, isLoading, error, refetch } = useGetMyAppointmentsQuery({
-    status_not: 'cancelled', // Exclude cancelled appointments
-    limit: 100 // Get more appointments to show full history
+    status_not: 'cancelled',
+    limit: 100
   });
 
-  // Fetch doctors separately to get full doctor information
-  const { data: doctorsData } = useGetAvailableDoctorsQuery();
-
-  // Mutations
   const [updateAppointment] = useUpdateAppointmentMutation();
 
-  // Process appointments data
   const appointments = useMemo(
     () => extractList(appointmentsData, 'appointments'),
     [appointmentsData]
   );
 
-  // Process doctors data
-  const doctors = useMemo(
-    () => extractList(doctorsData, 'doctors'),
-    [doctorsData]
-  );
-
-  // Helper function to get doctor by ID
-  const getDoctorById = (doctorId) => {
-    return doctors.find(doc => doc.id === doctorId || doc.id === parseInt(doctorId));
-  };
-
-  // Categorize appointments
   const categorizedAppointments = useMemo(() => {
-    const today = new Date();
-
     return {
       upcoming: appointments.filter(apt => {
         const appointmentDate = new Date(apt.appointment_date || apt.date || apt.datetime);
@@ -98,7 +60,6 @@ export default function PatientAppointments() {
     };
   }, [appointments]);
 
-  // Patient-specific stats
   const patientStats = useMemo(() => {
     const totalAppointments = appointments.length;
     const completedAppointments = appointments.filter(apt => apt.status === 'completed').length;
@@ -137,7 +98,6 @@ export default function PatientAppointments() {
     ];
   }, [appointments, categorizedAppointments]);
 
-  // Handle appointment actions
   const handleCancelAppointment = async (appointmentId) => {
     try {
       await updateAppointment({
@@ -169,7 +129,6 @@ export default function PatientAppointments() {
     }
   };
 
-  // Format appointment time
   const formatTime = (time) => {
     if (!time) return 'TBD';
     const [hours, minutes] = time.split(':');
@@ -179,7 +138,6 @@ export default function PatientAppointments() {
     return `${displayHour}:${minutes} ${ampm}`;
   };
 
-  // Get status color
   const getStatusColor = (status) => {
     switch (status) {
       case 'confirmed': return 'bg-green-100 text-green-800';
@@ -191,7 +149,6 @@ export default function PatientAppointments() {
     }
   };
 
-  // Appointment Card Component
   const AppointmentCard = ({ appointment, showActions = true }) => {
     const appointmentDate = new Date(appointment.appointment_date);
     const canCancel = ['pending', 'confirmed', 'scheduled'].includes(appointment.status) &&
@@ -314,8 +271,6 @@ export default function PatientAppointments() {
         <h1 className="text-2xl font-bold">My Appointments</h1>
 
       </div>
-
-      {/* Patient Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {patientStats.map((stat, index) => {
           const IconComponent = stat.icon;
@@ -336,8 +291,6 @@ export default function PatientAppointments() {
           );
         })}
       </div>
-
-      {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
           <TabsTrigger value="book" className="text-xs sm:text-sm py-2.5">
@@ -451,8 +404,6 @@ export default function PatientAppointments() {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Cancel Appointment Modal */}
       <Dialog open={cancelModal.isOpen} onOpenChange={(open) => setCancelModal({ isOpen: open, appointment: null })}>
         <DialogContent>
           <DialogHeader>
@@ -515,8 +466,6 @@ export default function PatientAppointments() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Reschedule Request Modal */}
       <Dialog open={rescheduleModal.isOpen} onOpenChange={(open) => setRescheduleModal({ isOpen: open, appointment: null })}>
         <DialogContent>
           <DialogHeader>
@@ -570,8 +519,6 @@ export default function PatientAppointments() {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Feedback Modal */}
       <Dialog open={feedbackModal.isOpen} onOpenChange={(open) => setFeedbackModal({ isOpen: open, appointment: null })}>
         <DialogContent>
           <DialogHeader>

@@ -1,24 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { createSelector } from "@reduxjs/toolkit";
 
-// Base selector
 const selectAuth = (state) => state.auth;
 
 const initialState = {
-  // Authentication tokens
   accessToken: null,
   refreshToken: null,
   isAuthenticated: false,
   loading: false,
   error: null,
 
-  // Complete user data (consolidated from entities.user)
   userID: null,
   role: null,
   email: null,
   username: null,
 
-  // User profile data
   profile: {
     firstName: null,
     lastName: null,
@@ -32,7 +28,6 @@ const initialState = {
     phoneVerified: false,
   },
 
-  // User preferences
   preferences: {
     theme: "light",
     notifications: true,
@@ -58,8 +53,8 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = null;
 
-        // Update profile data if available
-        if (user.first_name) state.profile.firstName = user.first_name;
+        if (user.first_name)
+          state.profile.firstName = user.first_name;
         if (user.last_name) state.profile.lastName = user.last_name;
         if (user.full_name) state.profile.fullName = user.full_name;
         if (user.phone_number) state.profile.phoneNumber = user.phone_number;
@@ -99,7 +94,6 @@ const authSlice = createSlice({
       state.loading = action.payload;
     },
 
-    // Session restoration action
     restoreSession: (state, action) => {
       const { accessToken, refreshToken, userID, role, email, username, profile } = action.payload;
 
@@ -120,9 +114,7 @@ const authSlice = createSlice({
       }
     },
 
-    // Check if session is valid
     validateSession: (state) => {
-      // If we have essential auth data, mark as authenticated
       if (state.accessToken && state.userID && state.role) {
         state.isAuthenticated = true;
       } else {
@@ -176,7 +168,6 @@ export const {
   validateSession,
 } = authSlice.actions;
 
-// Memoized selectors
 export const selectCurrentUser = createSelector(
   [selectAuth],
   (auth) => ({
@@ -216,22 +207,20 @@ export const selectUserPreferences = createSelector(
   (auth) => auth.preferences
 );
 
-// Enhanced display name selector
 export const selectUserDisplayName = createSelector(
   [selectAuth],
   (auth) => {
     const { role, profile, username, email } = auth;
 
-    if (!role) return "Welcome Back";
+    if (!role)
+      return "Welcome Back";
 
-    // Check profile data first (most detailed)
     if (profile.fullName && profile.fullName !== 'undefined undefined') {
       return role === "admin" || role === "doctor"
         ? `Dr. ${profile.fullName}`
         : profile.fullName;
     }
 
-    // Check for first/last name
     if (profile.firstName && profile.lastName) {
       const fullName = `${profile.firstName} ${profile.lastName}`;
       return role === "admin" || role === "doctor"
@@ -239,7 +228,6 @@ export const selectUserDisplayName = createSelector(
         : fullName;
     }
 
-    // Fallback to username or email
     if (username) {
       return role === "admin" || role === "doctor"
         ? `Dr. ${username}`
@@ -257,7 +245,6 @@ export const selectUserDisplayName = createSelector(
   }
 );
 
-// User initials selector
 export const selectUserInitials = createSelector(
   [selectAuth],
   (auth) => {
@@ -289,7 +276,6 @@ export const selectUserInitials = createSelector(
   }
 );
 
-// Additional selectors
 export const selectAuthLoading = (state) => state?.auth?.loading ?? false;
 export const selectAuthError = (state) => state?.auth?.error ?? null;
 export const selectUserEmail = (state) => state?.auth?.email;

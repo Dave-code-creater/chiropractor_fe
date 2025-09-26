@@ -13,8 +13,8 @@ export default function AppointmentsCard() {
   const userID = useSelector((state) => state?.auth?.userID);
   const { data, isLoading, error } = useGetMyAppointmentsQuery(
     {
-      status_not: 'cancelled', // Exclude cancelled appointments
-      date_from: new Date().toISOString().split('T')[0], // Only upcoming appointments
+      status_not: 'cancelled',
+      date_from: new Date().toISOString().split('T')[0],
       limit: 10
     },
     {
@@ -25,7 +25,6 @@ export default function AppointmentsCard() {
     }
   );
 
-  // Extract appointments from the correct API response structure
   const appointments = useMemo(() => {
     const rawAppointments = extractList(data, 'appointments');
 

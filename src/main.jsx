@@ -9,12 +9,10 @@ import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
 import SessionLoadingScreen from "./components/loading/SessionLoadingScreen";
 
-// Loading component during rehydration - Enhanced version
 const LoadingComponent = () => (
   <SessionLoadingScreen message="Loading your account..." />
 );
 
-// Conditional StrictMode wrapper - only in development
 const AppWrapper = ({ children }) => {
   return import.meta.env.DEV ? (
     <StrictMode>{children}</StrictMode>
@@ -23,7 +21,6 @@ const AppWrapper = ({ children }) => {
   );
 };
 
-// Create root only once and store it
 const container = document.getElementById("root");
 let root = container._reactRoot;
 
@@ -32,7 +29,6 @@ if (!root) {
   container._reactRoot = root;
 }
 
-// Render the app
 root.render(
   <AppWrapper>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || 'your_google_client_id'}>

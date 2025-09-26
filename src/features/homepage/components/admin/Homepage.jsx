@@ -32,7 +32,6 @@ import {
   Plus,
 } from "lucide-react";
 
-// Import the new feature components
 import DashboardStats from "@/components/dashboard/DashboardStats";
 import GlobalSearch from "@/components/advanced-search/GlobalSearch";
 import AdvancedPatientManagement from "@/features/patients/components/AdvancedPatientManagement";
@@ -61,7 +60,7 @@ const AdminDashboard = () => {
       description: "Register a new patient in the system",
       icon: Users,
       color: "blue",
-      action: () => { }, // TODO: Implement add patient functionality
+      action: () => { },
     },
     {
       id: "schedule-appointment",
@@ -69,7 +68,7 @@ const AdminDashboard = () => {
       description: "Book a new appointment",
       icon: Calendar,
       color: "green",
-      action: () => { }, // TODO: Implement schedule appointment functionality
+      action: () => { },
     }
   ]);
 
@@ -261,7 +260,6 @@ const AdminDashboard = () => {
 
   const OverviewTab = () => (
     <div className="space-y-6">
-      {/* System Alerts */}
       {systemAlerts.length > 0 && (
         <div className="space-y-3">
           {systemAlerts.map((alert) => (
@@ -283,7 +281,6 @@ const AdminDashboard = () => {
         </div>
       )}
 
-      {/* Key Statistics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Patients"
@@ -315,7 +312,6 @@ const AdminDashboard = () => {
         />
       </div>
 
-      {/* Quick Actions */}
       <Card>
         <CardHeader>
           <CardTitle>Quick Actions</CardTitle>
@@ -332,7 +328,6 @@ const AdminDashboard = () => {
         </CardContent>
       </Card>
 
-      {/* Recent Activity and System Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -433,7 +428,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
@@ -461,8 +455,6 @@ const AdminDashboard = () => {
           </Button>
         </div>
       </div>
-
-      {/* Main Content */}
       <Tabs
         value={activeTab}
         onValueChange={setActiveTab}
@@ -510,9 +502,7 @@ const AdminDashboard = () => {
         <TabsContent value="search">
           <div className="space-y-6">
             <GlobalSearch
-              onResultSelect={(result) => {
-                // TODO: Implement result selection handler
-              }}
+              onResultSelect={(result) => {}}
               userRole="admin"
             />
           </div>

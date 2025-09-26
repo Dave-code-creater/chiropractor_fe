@@ -6,12 +6,11 @@ export const chatApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Conversations", "Messages", "MessageStatus"],
   keepUnusedDataFor: CACHE_TIMES.SHORT,
-  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
-  refetchOnFocus: false,            // Prevent automatic refetch on window focus
-  refetchOnReconnect: true,         // Keep this for actual network issues
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
 
-    // Create a new conversation
     createConversation: builder.mutation({
       query: (data) => ({
         url: "chat/conversations",
@@ -27,7 +26,6 @@ export const chatApi = createApi({
       invalidatesTags: ["Conversations"],
     }),
 
-    // Get available users for creating conversations
     getConversationUsers: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -49,7 +47,6 @@ export const chatApi = createApi({
       providesTags: ["AvailableUsers"],
     }),
 
-    // Get user's conversations
     getConversations: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -75,7 +72,6 @@ export const chatApi = createApi({
       providesTags: ["Conversations"],
     }),
 
-    // Get specific conversation
     getConversation: builder.query({
       query: (id) => `chat/conversations/${id}`,
       transformResponse: (response) => {
@@ -87,7 +83,6 @@ export const chatApi = createApi({
       providesTags: (result, error, id) => [{ type: "Conversations", id }],
     }),
 
-    // Update conversation status
     updateConversationStatus: builder.mutation({
       query: ({ conversationId, status }) => ({
         url: `chat/conversations/${conversationId}/status`,
@@ -106,7 +101,6 @@ export const chatApi = createApi({
       ],
     }),
 
-    // Delete conversation
     deleteConversation: builder.mutation({
       query: (conversationId) => ({
         url: `chat/conversations/${conversationId}`,
@@ -122,7 +116,6 @@ export const chatApi = createApi({
     }),
 
 
-    // Get messages for a conversation (fallback for initial load)
     getMessages: builder.query({
       query: ({ conversationId, ...params }) => {
         const queryParams = new URLSearchParams();
@@ -152,7 +145,6 @@ export const chatApi = createApi({
       ],
     }),
 
-    // Send message to a conversation (Long-Polling compatible)
     sendMessage: builder.mutation({
       query: ({ conversationId, content, message_type = "text" }) => ({
         url: `chat/conversations/${conversationId}/messages`,
@@ -172,7 +164,6 @@ export const chatApi = createApi({
     }),
 
 
-    // Long-polling endpoint to get new messages (replaces regular GET messages)
     pollForNewMessages: builder.query({
       query: ({ conversationId, last_message_timestamp, timeout_seconds = 5, max_messages = 50 }) => {
         const queryParams = new URLSearchParams();
@@ -190,15 +181,12 @@ export const chatApi = createApi({
         }
         return response;
       },
-      // Don't cache polling requests - always fetch fresh
       keepUnusedDataFor: 0,
-      // Disable automatic refetching for polling
       refetchOnMountOrArgChange: false,
       refetchOnFocus: false,
       refetchOnReconnect: false,
     }),
 
-    // Get message status and delivery info
     getMessageStatus: builder.query({
       query: ({ conversationId, messageId }) =>
         `chat/conversations/${conversationId}/messages/${messageId}/status`,
@@ -208,12 +196,10 @@ export const chatApi = createApi({
         }
         return response;
       },
-      // Cache message status for a short time
       keepUnusedDataFor: 30,
     }),
 
 
-    // Get available users (legacy endpoint)
     getAvailableUsers: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -238,22 +224,18 @@ export const chatApi = createApi({
 });
 
 export const {
-  // Conversation hooks
   useCreateConversationMutation,
   useGetConversationUsersQuery,
   useGetConversationsQuery,
   useUpdateConversationStatusMutation,
   useDeleteConversationMutation,
 
-  // Message hooks
   useGetMessagesQuery,
   useSendMessageMutation,
 
-  // Polling hooks
   usePollForNewMessagesQuery,
   useGetMessageStatusQuery,
 
-  // Legacy hooks
   useGetAvailableUsersQuery,
 } = chatApi;
 

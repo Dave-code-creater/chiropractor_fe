@@ -185,7 +185,6 @@ export default function TermsOfService() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
       <div className="container mx-auto px-4 py-8 sm:py-12 max-w-4xl">
-        {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
           <div className="inline-flex items-center gap-2 mb-4">
             <Scale className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" />
@@ -202,7 +201,6 @@ export default function TermsOfService() {
           <Separator className="w-24 mx-auto mt-6" />
         </div>
 
-        {/* Introduction */}
         <Card className="mb-8 border-l-4 border-l-blue-500">
           <CardContent className="p-6">
             <div className="flex items-start gap-3">
@@ -222,7 +220,6 @@ export default function TermsOfService() {
           </CardContent>
         </Card>
 
-        {/* Sections */}
         <div className="space-y-6">
           {sections.map((section, index) => (
             <Card
@@ -371,7 +368,6 @@ export default function TermsOfService() {
           ))}
         </div>
 
-        {/* Footer */}
         <div className="mt-12 text-center">
           <Card className="bg-gradient-to-r from-blue-50 to-green-50 dark:from-blue-900/20 dark:to-green-900/20 border-blue-200">
             <CardContent className="p-6">

@@ -38,13 +38,11 @@ export default function PatientManagement() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const doctorId = useSelector(selectUserId);
 
-  // Fetch real data from API
   const { data: patientsData, isLoading: isLoadingPatients, error: patientsError } = useGetPatientsQuery();
   const { data: appointmentsData, isLoading: isLoadingAppointments } = useGetAppointmentsQuery({ 
     doctor_id: doctorId 
   });
 
-  // Process patients data
   const patients = useMemo(() => {
     if (isLoadingPatients || !patientsData) return [];
     if (Array.isArray(patientsData?.data)) return patientsData.data;
@@ -52,7 +50,6 @@ export default function PatientManagement() {
     return [];
   }, [patientsData, isLoadingPatients]);
 
-  // Process appointments data to get patient visit info
   const appointments = useMemo(() => {
     if (isLoadingAppointments || !appointmentsData) return [];
     if (Array.isArray(appointmentsData?.data)) return appointmentsData.data;
@@ -60,7 +57,6 @@ export default function PatientManagement() {
     return [];
   }, [appointmentsData, isLoadingAppointments]);
 
-  // Enhanced patients with appointment data
   const enhancedPatients = useMemo(() => {
     return patients.map(patient => {
       const patientAppointments = appointments.filter(apt => apt.patient_id === patient.id);
@@ -288,7 +284,6 @@ export default function PatientManagement() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
@@ -304,7 +299,6 @@ export default function PatientManagement() {
           </Button>
         </div>
 
-        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => {
             const IconComponent = stat.icon;
@@ -330,7 +324,6 @@ export default function PatientManagement() {
           })}
         </div>
 
-        {/* Search and Filters */}
         <Card>
           <CardContent className="p-6">
             <div className="flex flex-col sm:flex-row gap-4">
@@ -372,7 +365,6 @@ export default function PatientManagement() {
           </CardContent>
         </Card>
 
-        {/* Patient Table */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -404,7 +396,6 @@ export default function PatientManagement() {
           </CardContent>
         </Card>
 
-        {/* Patient Detail Modal */}
         {selectedPatient && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
             <Card className="w-full max-w-2xl max-h-[90vh] overflow-y-auto">

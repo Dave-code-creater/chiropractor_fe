@@ -56,9 +56,9 @@ const DoctorPatientManagement = ({ doctorId }) => {
       {
         id: 1,
         duration: "",
-        durationType: "weeks", // weeks, months
+        durationType: "weeks",
         frequency: "",
-        frequencyType: "per_week", // per_week, per_month
+        frequencyType: "per_week",
         description: ""
       }
     ]
@@ -66,7 +66,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
 
   const { patients, isLoading: isLoadingPatients } = useDoctorPatientsWithIncidents(doctorId);
 
-  // Filter patients based on search
   const filteredPatients = useMemo(() => {
     if (!patients) return [];
 
@@ -86,7 +85,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
 
   const { incidentDetails, isLoading: isLoadingIncident } = useIncidentDetails(selectedIncident?.id);
 
-  // Use treatment plan management hook from domain layer
   const {
     treatmentPlan: existingTreatmentPlan,
     isLoading: isLoadingTreatmentPlan,
@@ -100,7 +98,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
   const hasTreatmentPlan = existingTreatmentPlan && existingTreatmentPlan.data && !treatmentPlanError;
   const isEditingTreatmentPlan = showTreatmentPlan && hasTreatmentPlan;
 
-  // Load existing treatment plan data when editing (moved to top level)
   React.useEffect(() => {
     if (hasTreatmentPlan && showTreatmentPlan && existingTreatmentPlan.data) {
       const planData = existingTreatmentPlan.data;
@@ -797,13 +794,11 @@ const DoctorPatientManagement = ({ doctorId }) => {
       }
 
       try {
-        // Validate required fields
         if (!treatmentPlan.diagnosis || !treatmentPlan.goals || treatmentPlan.phases.length === 0) {
           alert("Please fill in all required fields (diagnosis, goals, and at least one phase)");
           return;
         }
 
-        // Validate all phases have required data
         const invalidPhases = treatmentPlan.phases.filter(phase =>
           !phase.duration || !phase.frequency
         );
@@ -813,7 +808,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
           return;
         }
 
-        // Prepare API payload
         const apiPayload = {
           patient_id: selectedPatient?.patient_id || selectedPatient?.id,
           doctor_id: doctorId,
@@ -831,7 +825,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
           status: "active"
         };
 
-        // Submit to API using domain layer methods
         if (isEditingTreatmentPlan) {
           await updateTreatmentPlan(apiPayload);
           alert("Treatment plan updated successfully!");
@@ -841,7 +834,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
         }
 
         setShowTreatmentPlan(false);
-        // Reset form
         setTreatmentPlan({
           diagnosis: "",
           goals: "",
@@ -935,8 +927,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
           </Button>
 
         </div>
-
-        {/* Action Buttons */}
         <div className="flex gap-3">
 
           {!activeIncidentId && (
@@ -946,11 +936,7 @@ const DoctorPatientManagement = ({ doctorId }) => {
             </div>
           )}
         </div>
-
-        {/* Treatment Plan Status */}
         {renderTreatmentPlanStatus()}
-
-        {/* Treatment Plan Form */}
         {showTreatmentPlan && (
           <Card className="mt-6">
             <CardHeader>
@@ -960,7 +946,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Basic Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="diagnosis">Diagnosis</Label>
@@ -982,7 +967,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
                 </div>
               </div>
 
-              {/* Treatment Phases */}
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold">Treatment Phases</h3>
@@ -1070,7 +1054,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
                           />
                         </div>
 
-                        {/* Phase Summary */}
                         {phase.duration && phase.frequency && (
                           <div className="mt-3 p-3 bg-earthfire-clay-50 rounded-lg">
                             <p className="text-sm text-earthfire-brick-700">
@@ -1085,7 +1068,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
                 </div>
               </div>
 
-              {/* Additional Notes */}
               <div>
                 <Label htmlFor="notes">Additional Notes</Label>
                 <Textarea
@@ -1097,7 +1079,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
                 />
               </div>
 
-              {/* Action Buttons */}
               <div className="flex gap-3">
                 <Button
                   onClick={handleSubmitTreatmentPlan}
@@ -1121,7 +1102,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
             </CardContent>
           </Card>
         )}
-
         <Card>
           <CardHeader>
             <CardTitle>Incidents ({selectedPatient.total_incidents || 0})</CardTitle>
@@ -1168,13 +1148,10 @@ const DoctorPatientManagement = ({ doctorId }) => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div>
         <h2 className="text-2xl font-bold">My Patients</h2>
         <p className="text-gray-600">View and manage your patients</p>
       </div>
-
-      {/* Search and Filter */}
       <div className="flex gap-4">
         <div className="flex-1">
           <div className="relative">
@@ -1199,7 +1176,6 @@ const DoctorPatientManagement = ({ doctorId }) => {
           </SelectContent>
         </Select>
       </div>
-      {/* Patient List */}
       <Card>
         <CardHeader>
           <CardTitle>Patients ({filteredPatients.length})</CardTitle>

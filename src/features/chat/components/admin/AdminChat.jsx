@@ -87,7 +87,6 @@ const AdminChat = () => {
     <div className="h-screen min-h-screen max-h-screen mx-auto max-w-full">
       <Card className="h-full shadow-xl border-0 overflow-hidden rounded-none">
         <div className="flex h-full">
-          {/* Conversations Sidebar */}
           <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
             <div className="p-8 border-b bg-background/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-8">
@@ -103,7 +102,7 @@ const AdminChat = () => {
                 <Button
                   variant="outline"
                   size="icon"
-                  onClick={() => {/* New conversation functionality not yet implemented */ }}
+                  onClick={() => {}}
                 >
                   <UserPlus className="h-4 w-4" />
                 </Button>
@@ -169,7 +168,6 @@ const AdminChat = () => {
             </ScrollArea>
           </div>
 
-          {/* Chat Area */}
           <div className={`${selectedConversation ? 'flex' : 'hidden lg:flex'} flex-1 flex-col bg-gradient-to-br from-background to-muted/20`}>
             {!selectedConversation ? (
               <div className="flex-1 flex items-center justify-center">
@@ -183,11 +181,9 @@ const AdminChat = () => {
               </div>
             ) : (
               <>
-                {/* Chat Header */}
                 <div className="p-3 sm:p-4 lg:p-8 border-b bg-background/80 backdrop-blur-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 sm:gap-3 lg:gap-6">
-                      {/* Back button for mobile */}
                       <Button
                         variant="ghost"
                         size="sm"
@@ -221,7 +217,6 @@ const AdminChat = () => {
                   </div>
                 </div>
 
-                {/* Messages */}
                 <ScrollArea className="flex-1 p-6">
                   {messagesLoading ? (
                     <div className="flex items-center justify-center h-32">
@@ -263,7 +258,6 @@ const AdminChat = () => {
                   )}
                 </ScrollArea>
 
-                {/* Message Input */}
                 <div className="p-8 border-t bg-background/80 backdrop-blur-sm">
                   <form onSubmit={handleSendMessage} className="flex gap-4">
                     <Textarea

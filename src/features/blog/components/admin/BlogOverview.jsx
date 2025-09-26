@@ -94,7 +94,6 @@ const BlogOverview = () => {
 
   const posts = postsData?.results || [];
 
-  // Calculate analytics
   const analytics = {
     totalPosts: posts.length,
     publishedPosts: posts.filter(p => p.is_published).length,
@@ -267,7 +266,6 @@ const BlogOverview = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Blog Administration</h1>
@@ -284,7 +282,6 @@ const BlogOverview = () => {
           </Button>
         </div>
       </div>
-
       <Tabs defaultValue="overview" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -293,7 +290,6 @@ const BlogOverview = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          {/* Analytics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Card>
               <CardContent className="p-4">
@@ -341,7 +337,6 @@ const BlogOverview = () => {
             </Card>
           </div>
 
-          {/* Recent Activity and Top Categories */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -393,7 +388,6 @@ const BlogOverview = () => {
         </TabsContent>
 
         <TabsContent value="posts" className="space-y-6">
-          {/* Filters and Bulk Actions */}
           <Card>
             <CardContent className="p-4">
               <div className="flex flex-col sm:flex-row gap-4 mb-4">
@@ -469,7 +463,6 @@ const BlogOverview = () => {
             </CardContent>
           </Card>
 
-          {/* Posts Table */}
           <Card>
             <CardHeader>
               <CardTitle>All Blog Posts</CardTitle>
@@ -676,8 +669,6 @@ const BlogOverview = () => {
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={!!deletePostId} onOpenChange={() => setDeletePostId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>

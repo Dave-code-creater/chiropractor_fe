@@ -56,8 +56,8 @@ import {
 } from "lucide-react";
 
 const SecurityManager = () => {
-  const [securityScore, setSecurityScore] = useState(85);
-  const [activeThreats, setActiveThreats] = useState(2);
+  const [securityScore] = useState(85);
+  const [activeThreats] = useState(2);
   const [auditLogs, setAuditLogs] = useState([]);
   const [accessAttempts, setAccessAttempts] = useState([]);
   const [securitySettings, setSecuritySettings] = useState({
@@ -73,7 +73,6 @@ const SecurityManager = () => {
     automaticLogout: true,
   });
 
-  // Sample security data
   const [sampleData] = useState({
     auditLogs: [
       {
@@ -206,16 +205,13 @@ const SecurityManager = () => {
     ],
   });
 
-  // Initialize data
   useEffect(() => {
     setAuditLogs(sampleData.auditLogs);
     setAccessAttempts(sampleData.accessAttempts);
   }, [sampleData]);
 
-  // Real-time security monitoring simulation
   useEffect(() => {
     const interval = setInterval(() => {
-      // Simulate new security events
       if (Math.random() > 0.95) {
         const newEvent = {
           id: `LOG-${Date.now()}`,
@@ -245,7 +241,6 @@ const SecurityManager = () => {
   };
 
   const handleThreatAction = (threatId, action) => {
-    // Handle threat actions (block, investigate, dismiss)
     toast.success(`Threat ${action} successfully`);
   };
 
@@ -788,7 +783,6 @@ const SecurityManager = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900">
@@ -810,11 +804,7 @@ const SecurityManager = () => {
           </Button>
         </div>
       </div>
-
-      {/* Security Overview */}
       <SecurityOverview />
-
-      {/* Main Content */}
       <Tabs defaultValue="audit" className="space-y-4">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="audit">Audit Logs</TabsTrigger>

@@ -1,5 +1,4 @@
-// src/features/appointments/components/LocationSelector.jsx
-"use client";
+"use client"
 
 import { useState } from "react";
 import { Check, ChevronsUpDown, MapPin, User, Clock } from "lucide-react";
@@ -39,7 +38,6 @@ export default function LocationSelector({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Header with Doctor Info */}
       <div>
         <h2 className="text-lg sm:text-xl font-semibold mb-1">Select Location</h2>
         <p className="text-sm sm:text-base text-foreground/70">
@@ -54,8 +52,6 @@ export default function LocationSelector({
           )}
         </p>
       </div>
-
-      {/* Selected Doctor Card */}
       {selectedDoctor && (
         <Card className="bg-green-50 border-green-200">
           <CardContent className="p-4">
@@ -80,8 +76,6 @@ export default function LocationSelector({
           </CardContent>
         </Card>
       )}
-
-      {/* Location Selector */}
       <div className="space-y-4">
         <Label className="text-sm font-medium">Choose Clinic Location</Label>
         <Popover open={open} onOpenChange={setOpen}>
@@ -144,8 +138,6 @@ export default function LocationSelector({
           </PopoverContent>
         </Popover>
       </div>
-
-      {/* Selected Location Details */}
       {selectedLocationData && (
         <Card className="bg-blue-50 border-blue-200">
           <CardHeader>
@@ -192,8 +184,6 @@ export default function LocationSelector({
           </CardContent>
         </Card>
       )}
-
-      {/* Map */}
       {selected && selectedLocationData?.mapEmbed && (
         <div>
           <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
@@ -214,8 +204,6 @@ export default function LocationSelector({
           </div>
         </div>
       )}
-
-      {/* Location Benefits */}
       {selectedLocationData && (
         <Card className="bg-muted/30 border-muted">
           <CardContent className="p-4">

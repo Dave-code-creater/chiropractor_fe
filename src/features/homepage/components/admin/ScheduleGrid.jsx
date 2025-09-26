@@ -1,6 +1,5 @@
 import React from "react";
 
-// Hours displayed across the schedule grid
 export const HOURS = [
   "08:00",
   "09:00",
@@ -11,7 +10,6 @@ export const HOURS = [
   "14:00",
 ];
 
-// Daily schedule blocks for each day of the week
 export const SCHEDULE = [
   {
     day: "Mon",
@@ -47,15 +45,10 @@ export const SCHEDULE = [
   },
 ];
 
-/**
- * Renders a weekly schedule grid for the admin dashboard.
- * @param {{currentHour: string}} props
- */
 export default function ScheduleGrid({ currentHour }) {
   return (
     <div className="overflow-x-auto">
       <div className="grid grid-cols-[60px_repeat(7,minmax(100px,1fr))] text-sm">
-        {/* Hours column */}
         <div></div>
         {HOURS.map((h) => (
           <div
@@ -69,7 +62,6 @@ export default function ScheduleGrid({ currentHour }) {
           </div>
         ))}
 
-        {/* Daily blocks */}
         {SCHEDULE.map(({ day, blocks }) => (
           <React.Fragment key={day}>
             <div className="font-medium flex items-center">{day}</div>

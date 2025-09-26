@@ -28,46 +28,39 @@ export default function DoctorDashboard() {
   const userID = useSelector(selectUserId);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Fetch appointments using the same API as other appointment components
   const {
     data: appointmentsData,
     isLoading: isLoadingAppointments,
     error,
   } = useGetAppointmentsQuery({
-    status_not: 'cancelled', // Exclude cancelled appointments
+    status_not: 'cancelled',
     limit: 50,
   });
 
-  // Fetch doctor's patients using doctor-specific API
   const { data: patientsData, isLoading: isLoadingPatients } = useGetDoctorPatientsQuery({
     doctorId: userID,
     limit: 50
   });
 
-  // Fetch doctor's dashboard stats
   const { data: statsData, isLoading: isLoadingStats } = useGetDoctorStatsQuery({
     doctorId: userID,
     range: "last_30_days"
   });
 
-  // Fetch conversations
   const { data: conversationsData, isLoading: isLoadingConversations } = useGetConversationsQuery({
     status: 'active'
   });
 
-  // Process appointments data - same logic as other appointment components
   const appointments = React.useMemo(
     () => (isLoadingAppointments || error ? [] : extractList(appointmentsData, 'appointments')),
     [appointmentsData, isLoadingAppointments, error]
   );
 
-  // Process patients data from doctor API
   const patients = React.useMemo(
     () => (isLoadingPatients ? [] : extractList(patientsData, 'patients')),
     [patientsData, isLoadingPatients]
   );
 
-  // Process dashboard stats
   const stats = React.useMemo(() => {
     if (isLoadingStats || !statsData) return {
       total_patients: 0,
@@ -83,7 +76,6 @@ export default function DoctorDashboard() {
     return statsData?.data || statsData;
   }, [statsData, isLoadingStats]);
 
-  // Process conversations data
   const conversations = React.useMemo(() => {
     if (isLoadingConversations || !conversationsData) return [];
     let conversationsArray = [];
@@ -95,7 +87,6 @@ export default function DoctorDashboard() {
     return conversationsArray.filter(conv => conv.status === 'active');
   }, [conversationsData, isLoadingConversations]);
 
-  // Calculate key metrics
   const today = new Date().toISOString().split("T")[0];
   const todayAppointments = appointments.filter(apt => {
     const appointmentDate = (apt.appointment_date || apt.date || apt.datetime)?.split('T')[0];
@@ -107,7 +98,6 @@ export default function DoctorDashboard() {
     return appointmentDate >= today && (apt.status === "confirmed" || apt.status === "scheduled");
   }).slice(0, 5);
 
-  // Use stats from API instead of calculated values
   const activePatients = stats.active_patients || 0;
   const totalPatients = stats.total_patients || 0;
   const totalIncidents = stats.total_incidents || 0;
@@ -157,7 +147,6 @@ export default function DoctorDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-earthfire-clay-50 via-white to-earthfire-brown-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 p-4 md:p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
@@ -192,7 +181,6 @@ export default function DoctorDashboard() {
           </div>
         </div>
 
-        {/* Key Metrics */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card className="hover:shadow-md transition-shadow">
             <CardContent className="p-4">
@@ -255,9 +243,7 @@ export default function DoctorDashboard() {
           </Card>
         </div>
 
-        {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Today's Schedule */}
           <Card className="lg:col-span-2">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xl font-semibold text-earthfire-brick-700">Today's Schedule</CardTitle>
@@ -300,7 +286,6 @@ export default function DoctorDashboard() {
             </CardContent>
           </Card>
 
-          {/* Quick Actions */}
           <Card>
             <CardHeader>
               <CardTitle className="text-xl font-semibold text-earthfire-brick-700">Quick Actions</CardTitle>
@@ -360,9 +345,7 @@ export default function DoctorDashboard() {
           </Card>
         </div>
 
-        {/* Recent Activity */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Recent Patients */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-lg font-semibold text-earthfire-brick-700">Recent Patients</CardTitle>
@@ -409,7 +392,6 @@ export default function DoctorDashboard() {
             </CardContent>
           </Card>
 
-          {/* Recent Messages */}
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-lg font-semibold text-earthfire-brick-700">Recent Messages</CardTitle>

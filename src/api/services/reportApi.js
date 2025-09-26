@@ -6,12 +6,11 @@ export const reportApi = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ["Reports", "Incidents"],
   keepUnusedDataFor: CACHE_TIMES.MEDIUM,
-  refetchOnMountOrArgChange: false, // Only refetch when explicitly needed
-  refetchOnFocus: false,            // Prevent automatic refetch on window focus
-  refetchOnReconnect: true,         // Keep this for actual network issues
+  refetchOnMountOrArgChange: false,
+  refetchOnFocus: false,
+  refetchOnReconnect: true,
   endpoints: (builder) => ({
 
-    // 1.1 Create Incident
     createIncident: builder.mutation({
       query: (data) => ({
         url: "incidents",
@@ -21,7 +20,6 @@ export const reportApi = createApi({
       invalidatesTags: ["Incidents"],
     }),
 
-    // 1.2 List User Incidents
     getIncidents: builder.query({
       query: (params = {}) => {
         const queryParams = new URLSearchParams();
@@ -40,7 +38,6 @@ export const reportApi = createApi({
       providesTags: ["Incidents"],
     }),
 
-    // 1.3 Get Incident Details
     getIncidentById: builder.query({
       query: (incidentId) => ({
         url: `incidents/${incidentId}`,
@@ -53,7 +50,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // 1.4 Update Incident
     updateIncident: builder.mutation({
       query: ({ incidentId, data }) => ({
         url: `incidents/${incidentId}`,
@@ -66,7 +62,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // 1.5 Delete Incident
     deleteIncident: builder.mutation({
       query: (incidentId) => ({
         url: `incidents/${incidentId}`,
@@ -75,7 +70,6 @@ export const reportApi = createApi({
       invalidatesTags: ["Incidents"],
     }),
 
-    // 1.6 Save/Update Form
     saveIncidentForm: builder.mutation({
       query: ({ incidentId, formType, formData, isCompleted = false, isRequired = false }) => ({
         url: `incidents/${incidentId}/forms`,
@@ -93,7 +87,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // 1.6 Update Form (PUT version)
     updateIncidentForm: builder.mutation({
       query: ({ incidentId, formType, formData, isCompleted = false, isRequired = false }) => ({
         url: `incidents/${incidentId}/forms/${formType}`,
@@ -111,7 +104,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // 1.7 Add Progress Note
     addIncidentNote: builder.mutation({
       query: ({ incidentId, noteText, noteType = "progress" }) => ({
         url: `incidents/${incidentId}/notes`,
@@ -127,7 +119,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // 1.8 Get Complete Incident Form Data (all sub-forms)
     getCompleteIncidentForms: builder.query({
       query: (incidentId) => ({
         url: `incidents/${incidentId}`,
@@ -139,7 +130,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // 1.9 Get specific form data for an incident
     getIncidentForm: builder.query({
       query: ({ incidentId, formType }) => ({
         url: `incidents/${incidentId}/forms/${formType}`,
@@ -151,7 +141,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // 1.10 Submit Complete Forms for Processing (breaks down into smaller components)
     submitIncidentForms: builder.mutation({
       query: ({ incidentId, allFormsData, processOptions = {} }) => ({
         url: `incidents/${incidentId}/submit-forms`,
@@ -174,7 +163,6 @@ export const reportApi = createApi({
     }),
 
 
-    // Submit Patient Info Form
     submitPatientInfoForm: builder.mutation({
       query: ({ incidentId, formData }) => ({
         url: `incidents/${incidentId}/patient-info`,
@@ -187,7 +175,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // Submit Health Insurance Form
     submitHealthInsuranceForm: builder.mutation({
       query: ({ incidentId, formData }) => ({
         url: `incidents/${incidentId}/health-insurance`,
@@ -200,7 +187,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // Submit Pain Description Form
     submitPainDescriptionFormNew: builder.mutation({
       query: ({ incidentId, formData }) => ({
         url: `incidents/${incidentId}/pain-description-form`,
@@ -213,7 +199,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // Submit Pain Assessment Form
     submitPainAssessmentFormNew: builder.mutation({
       query: ({ incidentId, formData }) => ({
         url: `incidents/${incidentId}/pain-assessment-form`,
@@ -226,7 +211,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // Submit Medical History Form
     submitMedicalHistoryFormNew: builder.mutation({
       query: ({ incidentId, formData }) => ({
         url: `incidents/${incidentId}/medical-history-form`,
@@ -239,7 +223,6 @@ export const reportApi = createApi({
       ],
     }),
 
-    // Submit Lifestyle Impact Form
     submitLifestyleImpactFormNew: builder.mutation({
       query: ({ incidentId, formData }) => ({
         url: `incidents/${incidentId}/lifestyle-impact-form`,
@@ -257,13 +240,11 @@ export const reportApi = createApi({
 });
 
 export const {
-  // Incident-based hooks
   useCreateIncidentMutation,
   useGetIncidentsQuery,
   useGetIncidentByIdQuery,
   useSaveIncidentFormMutation,
 
-  // Simple form submission hooks
   useSubmitPatientInfoFormMutation,
   useSubmitHealthInsuranceFormMutation,
   useSubmitPainDescriptionFormNewMutation,

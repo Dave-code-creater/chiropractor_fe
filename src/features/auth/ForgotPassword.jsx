@@ -36,7 +36,6 @@ export default function ForgotPassword() {
     e.preventDefault();
     dispatch(clearEmailError());
 
-    // Validate email before submission
     try {
       renderGmailExprs(email);
     } catch (err) {
@@ -48,7 +47,6 @@ export default function ForgotPassword() {
       await forgotPasswordMutation({ email }).unwrap();
       setIsSubmitted(true);
     } catch (error) {
-      // Error will be displayed via forgotPasswordError
       console.error("Forgot password error:", error);
     }
   };

@@ -47,7 +47,6 @@ import { extractList } from '@/utils/apiResponse';
 const DashboardStats = ({ userRole: _userRole = "admin" }) => {
   const [timeRange, setTimeRange] = useState("7d");
 
-  // Fetch data from APIs - using the same API as appointment components
   const { data: appointmentsData, isLoading: _isLoadingAppointments } = useGetAppointmentsQuery({
     status_not: 'cancelled',
     limit: 100
@@ -55,7 +54,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
   const { data: patientsData, isLoading: _isLoadingPatients } = useGetPatientsQuery();
   const { data: incidentsData, isLoading: _isLoadingIncidents } = useGetIncidentsQuery();
 
-  // Process appointments data - same logic as other appointment components
   const appointments = useMemo(
     () => extractList(appointmentsData, 'appointments'),
     [appointmentsData]
@@ -71,10 +69,9 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
     [incidentsData]
   );
 
-  // Calculate stats from real data
   const stats = useMemo(() => {
     const today = new Date().toISOString().split('T')[0];
-    const thisMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    const thisMonth = new Date().toISOString().slice(0, 7);
 
     const todayAppointments = appointments.filter(apt => {
       const aptDate = (apt.appointment_date || apt.date || apt.datetime)?.split('T')[0];
@@ -102,7 +99,7 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
           const createdDate = new Date(p.created_at || p.createdAt);
           return createdDate.toISOString().startsWith(thisMonth);
         }).length,
-        growth: 0, // Calculate based on historical data if available
+        growth: 0,
         demographics: {
           male: patients.filter(p => p.gender === "male").length,
           female: patients.filter(p => p.gender === "female").length,
@@ -123,7 +120,7 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
         noShow: appointments.filter(apt => apt.status === "no_show").length,
         completionRate: appointments.length ?
           (completedAppointments.length / appointments.length * 100).toFixed(1) : 0,
-        averageDuration: 30, // Default if not available in data
+        averageDuration: 30,
       },
       revenue: {
         today: calculateRevenue(todayAppointments),
@@ -134,9 +131,9 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
           return aptDate >= weekStart;
         })),
         thisMonth: calculateRevenue(thisMonthAppointments),
-        growth: 0, // Calculate based on historical data if available
-        target: 80000, // This should come from settings/goals
-        completion: 0, // Calculate based on target
+        growth: 0,
+        target: 80000,
+        completion: 0,
       },
       clinical: {
         notesToday: incidents.filter(i => {
@@ -148,7 +145,7 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
         patientSatisfaction: calculatePatientSatisfaction(incidents),
       },
       system: {
-        activeUsers: 0, // This should come from a real-time service
+        activeUsers: 0,
         systemHealth: 98.5,
         responseTime: 245,
         uptime: 99.9,
@@ -156,7 +153,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
     };
   }, [appointments, patients, incidents]);
 
-  // Helper functions for clinical metrics
   const calculateAveragePainReduction = (incidents) => {
     const incidentsWithPain = incidents.filter(i => {
       if (!i.forms) return false;
@@ -211,7 +207,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
     return (totalSatisfaction / incidentsWithSatisfaction.length).toFixed(1);
   };
 
-  // Generate chart data from real data
   const chartData = useMemo(() => ({
     patientTrends: generatePatientTrends(patients),
     appointmentTrends: generateAppointmentTrends(appointments),
@@ -219,7 +214,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
     treatmentOutcomes: generateTreatmentOutcomes(incidents),
   }), [patients, appointments, incidents]);
 
-  // Helper functions for chart data
   function generatePatientTrends(patients) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
     return months.map(month => {
@@ -229,7 +223,7 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
       });
       return {
         month,
-        patients: patients.length, // Cumulative
+        patients: patients.length,
         newPatients: monthPatients.length,
       };
     });
@@ -254,7 +248,7 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
 
   function generateRevenueTrends(appointments) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
-    const monthlyTarget = 80000; // This should come from settings
+    const monthlyTarget = 80000;
     return months.map(month => {
       const monthRevenue = appointments
         .filter(apt => {
@@ -283,7 +277,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
 
     return outcomes.map(outcome => {
       const matchingIncidents = incidents.filter(i => {
-        // Check incident status
         if (i.status === 'completed' || i.status === 'resolved') {
           return outcome.name === 'Excellent' || outcome.name === 'Good';
         } else if (i.status === 'in_progress') {
@@ -299,8 +292,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
       };
     });
   }
-
-  // Real-time data simulation (removed setStats since stats is computed from useMemo)
 
   const StatCard = ({
     title,
@@ -358,7 +349,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
 
   return (
     <div className="space-y-6">
-      {/* Time Range Selector */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900">
           Dashboard Analytics
@@ -394,8 +384,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
           </Button>
         </div>
       </div>
-
-      {/* Key Performance Indicators */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           title="Total Patients"
@@ -432,8 +420,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
           color="purple"
         />
       </div>
-
-      {/* Charts and Analytics */}
       <Tabs defaultValue="patients" className="space-y-4">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="patients">Patients</TabsTrigger>
@@ -792,8 +778,6 @@ const DashboardStats = ({ userRole: _userRole = "admin" }) => {
           </div>
         </TabsContent>
       </Tabs>
-
-      {/* System Health */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">

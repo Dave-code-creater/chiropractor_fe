@@ -13,20 +13,15 @@ import UnifiedPatientForm from './UnifiedPatientForm';
 export default function SimplePatientRecords({ onBack }) {
   const [showSuccess, setShowSuccess] = useState(false);
 
-  // Get current user ID
   const userId = useSelector(selectUserId);
   
-  // API hooks - fetch incidents for this user
   const { data: userIncidents, isLoading } = useGetIncidentsQuery(userId, { skip: !userId });
-
-  // No initialization needed - form will create incident on submission
 
   const handleFormComplete = () => {
     setShowSuccess(true);
     toast.success('All forms submitted successfully!');
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -38,7 +33,6 @@ export default function SimplePatientRecords({ onBack }) {
     );
   }
 
-  // Success state
   if (showSuccess) {
     return (
       <div className="max-w-2xl mx-auto p-6">
@@ -69,7 +63,6 @@ export default function SimplePatientRecords({ onBack }) {
     );
   }
 
-  // Check if user ID is available
   if (!userId) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -80,11 +73,9 @@ export default function SimplePatientRecords({ onBack }) {
     );
   }
 
-  // Main form
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-6">
-        {/* Header */}
         <div className="mb-6 flex items-center justify-between">
           <Button onClick={onBack} variant="outline">
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -92,7 +83,6 @@ export default function SimplePatientRecords({ onBack }) {
           </Button>
         </div>
 
-        {/* Unified Form */}
         <UnifiedPatientForm
           userId={userId}
           onComplete={handleFormComplete}

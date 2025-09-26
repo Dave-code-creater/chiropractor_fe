@@ -1,7 +1,3 @@
-/**
- * Form utility functions for validation and formatting
- */
-
 export function renderDate(getDate) {
   if (!getDate) return "";
   const digits = String(getDate).replace(/\D/g, "");
@@ -45,26 +41,21 @@ export function renderSSN(ssnNumber) {
   }
 }
 
-// NEW: Auto-format SSN as user types with validation
 export function autoFormatSSN(input) {
   if (!input) return { value: "", error: null };
 
   const inputStr = String(input);
 
-  // Check for alphabetic characters
   if (/[A-Za-z]/.test(inputStr)) {
     return { value: inputStr, error: "SSN cannot contain letters" };
   }
 
-  // Remove all non-digits
   const digits = inputStr.replace(/\D/g, "");
 
-  // Check length before formatting
   if (digits.length > 9) {
     return { value: inputStr, error: "SSN cannot be more than 9 digits" };
   }
 
-  // Format progressively as user types
   let formatted = digits;
   if (digits.length >= 4) {
     formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
@@ -73,12 +64,10 @@ export function autoFormatSSN(input) {
     formatted = `${digits.slice(0, 3)}-${digits.slice(3, 5)}-${digits.slice(5)}`;
   }
 
-  // Validate complete SSN
   let error = null;
   if (digits.length > 0 && digits.length < 9) {
-    error = null; // Allow partial input while typing
+    error = null;
   } else if (digits.length === 9) {
-    // Validate complete SSN
     if (digits === "000000000" || digits === "123456789") {
       error = "Invalid SSN format";
     }
@@ -120,31 +109,25 @@ export function validatePhoneNumber(phoneNumber) {
   return digits;
 }
 
-// NEW: Auto-format phone number as user types with validation
 export function autoFormatPhoneNumber(input) {
   if (!input) return { value: "", error: null };
 
   const inputStr = String(input);
 
-  // Check for alphabetic characters
   if (/[A-Za-z]/.test(inputStr)) {
     return { value: inputStr, error: "Phone Number cannot contain letters" };
   }
 
-  // Remove all non-digits
   const digits = inputStr.replace(/\D/g, "");
 
-  // Check length before formatting
   if (digits.length > 11) {
     return { value: inputStr, error: "Phone Number cannot be more than 11 digits" };
   }
 
-  // Format progressively as user types
   let formatted = digits;
 
   if (digits.length >= 1) {
     if (digits.length === 11 && digits.startsWith("1")) {
-      // Format as +1 (xxx) xxx-xxxx
       const area = digits.slice(1, 4);
       const prefix = digits.slice(4, 7);
       const line = digits.slice(7);
@@ -157,7 +140,6 @@ export function autoFormatPhoneNumber(input) {
         formatted = `+1 (${area}) ${prefix}-${line}`;
       }
     } else {
-      // Format as (xxx) xxx-xxxx
       if (digits.length <= 3) {
         formatted = digits;
       } else if (digits.length <= 6) {
@@ -173,7 +155,6 @@ export function autoFormatPhoneNumber(input) {
     }
   }
 
-  // Validate area code for complete numbers
   let error = null;
   if (digits.length === 10) {
     const areaCode = digits.slice(0, 3);
@@ -190,7 +171,7 @@ export function autoFormatPhoneNumber(input) {
       }
     }
   } else if (digits.length > 0 && digits.length < 10) {
-    error = null; // Allow partial input while typing
+    error = null;
   }
 
   return { value: formatted, error };

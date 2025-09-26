@@ -1,5 +1,4 @@
-// src/features/appointments/components/Date.jsx
-"use client";
+"use client"
 
 import { useState, useEffect } from "react";
 import { Calendar } from "@/components/ui/calendar";
@@ -19,7 +18,6 @@ export default function DateSelector({
   const [selectedDate, setSelectedDate] = useState(bookingData.date);
   const [availableSlots, setAvailableSlots] = useState([]);
 
-  // Get doctor availability when date and doctor are selected
   const { data: availabilityData, isLoading: isLoadingAvailability, error: availabilityError } =
     useGetDoctorAvailabilityQuery(
       {
@@ -33,16 +31,12 @@ export default function DateSelector({
 
   useEffect(() => {
     if (availabilityData?.available_slots) {
-      // Handle direct available_slots in response
       setAvailableSlots(availabilityData.available_slots);
     } else if (availabilityData?.data?.available_slots) {
-      // Handle nested available_slots in data object
       setAvailableSlots(availabilityData.data.available_slots);
     } else if (availabilityData?.slots) {
-      // Handle legacy slots format
       setAvailableSlots(availabilityData.slots);
     } else if (availabilityData?.data?.slots) {
-      // Handle legacy nested slots format
       setAvailableSlots(availabilityData.data.slots);
     } else {
       setAvailableSlots([]);
@@ -61,7 +55,7 @@ export default function DateSelector({
     setSelectedDate(date);
     updateBookingData({
       date: date,
-      time: "", // Reset time when date changes
+      time: "",
     });
   };
 
@@ -73,17 +67,16 @@ export default function DateSelector({
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Disable past dates
-    if (date < today) return true;
+    if (date < today)
+      return true;
 
-    // Disable dates more than 3 months in advance
     const threeMonthsFromNow = new Date();
     threeMonthsFromNow.setMonth(threeMonthsFromNow.getMonth() + 3);
-    if (date > threeMonthsFromNow) return true;
+    if (date > threeMonthsFromNow)
+      return true;
 
-    // Disable weekends (assuming clinic is closed)
     const dayOfWeek = date.getDay();
-    return dayOfWeek === 0 || dayOfWeek === 6; // Sunday = 0, Saturday = 6
+    return dayOfWeek === 0 || dayOfWeek === 6;
   };
 
   const getTimeSlotsByPeriod = () => {
@@ -109,7 +102,6 @@ export default function DateSelector({
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      {/* Header with Doctor Info */}
       <div>
         <h2 className="text-lg sm:text-xl font-semibold mb-1">Select Date & Time</h2>
         <p className="text-sm sm:text-base text-foreground/70">
@@ -124,8 +116,6 @@ export default function DateSelector({
           )}
         </p>
       </div>
-
-      {/* Selected Doctor Card */}
       {selectedDoctor && (
         <Card className="bg-green-50 border-green-200">
           <CardContent className="p-4">
@@ -145,9 +135,7 @@ export default function DateSelector({
           </CardContent>
         </Card>
       )}
-
       <div className="grid lg:grid-cols-2 gap-3 lg:gap-6">
-        {/* Calendar */}
         <Card className="order-1 lg:order-1">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -203,7 +191,6 @@ export default function DateSelector({
           </CardContent>
         </Card>
 
-        {/* Time Slots */}
         <Card className="order-2 lg:order-2">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
@@ -217,7 +204,6 @@ export default function DateSelector({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
-            {/* Loading State */}
             {isLoadingAvailability && (
               <div className="flex items-center justify-center py-6 sm:py-8">
                 <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-primary"></div>
@@ -227,7 +213,6 @@ export default function DateSelector({
               </div>
             )}
 
-            {/* Error State */}
             {availabilityError && (
               <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-md">
                 <AlertCircle className="h-4 w-4 text-red-600" />
@@ -237,7 +222,6 @@ export default function DateSelector({
               </div>
             )}
 
-            {/* No Date Selected */}
             {!selectedDate && !isLoadingAvailability && (
               <div className="text-center py-8">
                 <Clock className="h-12 w-12 text-foreground/40 mx-auto mb-3" />
@@ -247,7 +231,6 @@ export default function DateSelector({
               </div>
             )}
 
-            {/* No Doctor Selected */}
             {!bookingData.doctor && selectedDate && !isLoadingAvailability && (
               <div className="text-center py-6 sm:py-8">
                 <User className="h-10 w-10 sm:h-12 sm:w-12 text-foreground/40 mx-auto mb-3" />
@@ -257,14 +240,12 @@ export default function DateSelector({
               </div>
             )}
 
-            {/* Available Times */}
             {selectedDate &&
               bookingData.doctor &&
               !isLoadingAvailability &&
               !availabilityError &&
               availableSlots.length > 0 && (
                 <div className="space-y-3 sm:space-y-4">
-                  {/* Morning */}
                   {morning.length > 0 && (
                     <div>
                       <Label className="text-xs sm:text-sm font-medium text-foreground/80 mb-2 block">
@@ -299,7 +280,6 @@ export default function DateSelector({
                     </div>
                   )}
 
-                  {/* Afternoon */}
                   {afternoon.length > 0 && (
                     <div>
                       <Label className="text-xs sm:text-sm font-medium text-foreground/80 mb-2 block">
@@ -334,7 +314,6 @@ export default function DateSelector({
                     </div>
                   )}
 
-                  {/* Evening */}
                   {evening.length > 0 && (
                     <div>
                       <Label className="text-xs sm:text-sm font-medium text-foreground/80 mb-2 block">
@@ -371,7 +350,6 @@ export default function DateSelector({
                 </div>
               )}
 
-            {/* No Available Times */}
             {selectedDate &&
               bookingData.doctor &&
               !isLoadingAvailability &&
@@ -388,7 +366,6 @@ export default function DateSelector({
                 </div>
               )}
 
-            {/* Selected Time Info */}
             {bookingData.time && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
                 <div className="flex items-center gap-2 text-green-800">

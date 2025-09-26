@@ -17,7 +17,6 @@ import { useGetDoctorPatientsQuery } from "@/api/services/doctorApi";
 import { extractList } from "@/utils/apiResponse";
 import { useMemo } from "react";
 
-// Note type constants
 export const NOTE_TYPES = {
   PROGRESS: 'progress_note',
   SOAP: 'soap_note',
@@ -26,7 +25,6 @@ export const NOTE_TYPES = {
   FOLLOW_UP: 'follow_up'
 };
 
-// Role-based permissions
 export const NOTE_PERMISSIONS = {
   doctor: {
     canCreate: true,
@@ -45,16 +43,13 @@ export const NOTE_PERMISSIONS = {
   }
 };
 
-// Custom hook for note permissions
 export const useNotePermissions = (userRole) => {
   return NOTE_PERMISSIONS[userRole] || NOTE_PERMISSIONS.patient;
 };
 
-// Custom hook for managing notes
 export const useNoteManagement = (patientId, userRole) => {
   const permissions = useNotePermissions(userRole);
 
-  // Queries
   const {
     data: clinicalNotes = [],
     isLoading: isLoadingNotes
@@ -71,14 +66,12 @@ export const useNoteManagement = (patientId, userRole) => {
     { skip: !patientId || !permissions.canView }
   );
 
-  // Mutations
   const [createNote] = useCreateClinicalNoteMutation();
   const [updateNote] = useUpdateClinicalNoteMutation();
   const [deleteNote] = useDeleteClinicalNoteMutation();
   const [createSOAP] = useCreateSOAPNoteMutation();
   const [updateSOAP] = useUpdateSOAPNoteMutation();
 
-  // Note operations
   const createNewNote = async (noteData) => {
     if (!permissions.canCreate) {
       throw new Error('User does not have permission to create notes');
@@ -124,7 +117,6 @@ export const useNoteManagement = (patientId, userRole) => {
     }
   };
 
-  // Filter notes based on role permissions
   const filteredNotes = clinicalNotes.filter(note =>
     permissions.allowedTypes.includes(note.type)
   );
@@ -140,7 +132,6 @@ export const useNoteManagement = (patientId, userRole) => {
   };
 };
 
-// Custom hook for doctor's patient management
 export const useDoctorPatientManagement = (doctorId) => {
   const {
     data: patientsData = [],
@@ -150,7 +141,6 @@ export const useDoctorPatientManagement = (doctorId) => {
     { skip: !doctorId }
   );
 
-  // Process patients data structure
   const patients = useMemo(() => {
     let rawPatients = extractList(patientsData, "patients");
 
@@ -177,12 +167,9 @@ export const useDoctorPatientManagement = (doctorId) => {
   };
 };
 
-// Custom hook for doctor's patient management with incidents
 export const useDoctorPatientsWithIncidents = (doctorId) => {
   const { patients, isLoading: isLoadingPatients } = useDoctorPatientManagement(doctorId);
 
-  // Since incidents are now included in the patient data from the backend,
-  // we don't need to make separate API calls for each patient
   const patientsWithIncidents = useMemo(() => {
     return patients.map(patient => ({
       ...patient,
@@ -197,7 +184,6 @@ export const useDoctorPatientsWithIncidents = (doctorId) => {
   };
 };
 
-// Custom hook for incident details
 export const useIncidentDetails = (incidentId) => {
   const {
     data: incidentDetails,
@@ -215,7 +201,6 @@ export const useIncidentDetails = (incidentId) => {
   };
 };
 
-// Helper functions for note formatting and validation
 export const formatNoteDate = (dateString) => {
   if (!dateString) return 'N/A';
   return new Date(dateString).toLocaleDateString("en-US", {
@@ -254,9 +239,7 @@ export const validateNoteData = (noteData) => {
   };
 };
 
-// Custom hook for treatment plan management
 export const useTreatmentPlanManagement = (incidentId) => {
-  // Get existing treatment plan
   const {
     data: treatmentPlan,
     isLoading: isLoadingTreatmentPlan,
@@ -265,11 +248,9 @@ export const useTreatmentPlanManagement = (incidentId) => {
     skip: !incidentId
   });
 
-  // Mutation hooks
   const [createTreatmentPlanMutation, { isLoading: isCreating }] = useCreateTreatmentPlanMutation();
   const [updateTreatmentPlanMutation, { isLoading: isUpdating }] = useUpdateTreatmentPlanMutation();
 
-  // Wrapper functions for cleaner API
   const createTreatmentPlan = async (treatmentData) => {
     try {
       const result = await createTreatmentPlanMutation({

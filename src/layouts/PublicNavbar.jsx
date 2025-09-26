@@ -12,8 +12,10 @@ const PublicNavbar = () => {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
-    // { name: "Services", href: "/services" },
-    { name: "Blog", href: "/blog" },
+    {
+      name: "Blog",
+      href: "/blog"
+    },
     { name: "Contact", href: "/contact" },
     { name: "FAQ", href: "/faq" },
   ];
@@ -24,7 +26,6 @@ const PublicNavbar = () => {
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
             <img
               src={stethoscopeLogo}
@@ -36,7 +37,6 @@ const PublicNavbar = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link
@@ -53,7 +53,6 @@ const PublicNavbar = () => {
             ))}
           </nav>
 
-          {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
             <Button variant="ghost" asChild>
               <Link to="/login">Login</Link>
@@ -63,7 +62,6 @@ const PublicNavbar = () => {
             </Button>
           </div>
 
-          {/* Mobile Menu Button */}
           <Button
             variant="ghost"
             size="icon"
@@ -78,7 +76,6 @@ const PublicNavbar = () => {
           </Button>
         </div>
 
-        {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className="md:hidden border-t bg-background/95 backdrop-blur">
             <nav className="flex flex-col space-y-4 px-4 py-6">
