@@ -82,7 +82,7 @@ const authSlice = createSlice({
       if (role !== undefined) state.role = role;
     },
 
-    logOut: (state) => {
+    logOut: (_state) => {
       return initialState;
     },
 

@@ -1,13 +1,12 @@
-import React from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { useLocation, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
-import AppSidebar from "@/components/sidebar/Sidebar";
-import Footer from "@/layouts/Footer";
-import PublicNavbar from "@/layouts/PublicNavbar";
-import NotificationProvider from "@/components/notifications/NotificationProvider";
 import { selectIsAuthenticated } from "@/state/data/authSlice";
+import NotificationProvider from "@/components/notifications/NotificationProvider";
+import { Toaster } from "@/components/ui/sonner";
+import PublicNavbar from "@/layouts/PublicNavbar";
+import Footer from "@/layouts/Footer";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/sidebar/Sidebar";
 
 const MainLayout = () => {
     const location = useLocation();

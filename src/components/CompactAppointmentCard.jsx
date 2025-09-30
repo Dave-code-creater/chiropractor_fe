@@ -1,6 +1,3 @@
-import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 export default function CompactAppointmentCard({ appointment, showLocation = true }) {
   const isCanceled = appointment.is_cancel || appointment.is_cancelled || appointment.status === 'cancelled';
@@ -95,3 +92,5 @@ export default function CompactAppointmentCard({ appointment, showLocation = tru
     </div>
   );
 } 
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";

@@ -1,10 +1,5 @@
-import {
-  ArrowPath as ArrowPathIcon,
-  Heart as HeartIcon,
-  Home as HomeIcon,
-  Smartphone as DevicePhoneMobileIcon,
-  Building2 as BuildingOffice2Icon,
-} from "lucide-react";
+
+
 
 const NAV_LINKS = [
   { name: "Home", href: "/" },

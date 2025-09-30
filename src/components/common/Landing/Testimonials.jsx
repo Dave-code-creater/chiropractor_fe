@@ -1,6 +1,4 @@
-import React from "react";
 import { Star as StarIcon } from "lucide-react";
-
 const testimonials = [
     {
         id: 1,

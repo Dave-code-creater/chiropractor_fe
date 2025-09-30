@@ -1,9 +1,8 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { useLocation, Link } from "react-router-dom";
 import { useState } from "react";
 import stethoscopeLogo from "@/assets/images/stethoscope.svg";
+import { Button } from "@/components/ui/button";
+import { Menu, X } from "lucide-react";
 
 const PublicNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

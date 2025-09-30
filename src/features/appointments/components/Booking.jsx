@@ -1,21 +1,21 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect, useMemo } from "react";
 import {
   useCreateAppointmentMutation,
   useGetAvailableDoctorsQuery,
 } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
-import LocationSelector from "./Location";
-import DateSelector from "./Date";
-import DoctorSelector from "./Types";
-import BookingSummary from "./BookingSummary";
 import { cn } from "@/lib/utils";
 import { getLocationByValue, DEFAULT_CLINIC_LOCATION } from "@/constants/clinicLocations";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import BookingSummary from "./BookingSummary";
+import DoctorSelector from "./Types";
+import LocationSelector from "./Location";
+import DateSelector from "./Date";
 
 export default function DoctorBooking() {
   const [activeTab, setActiveTab] = useState("doctor");

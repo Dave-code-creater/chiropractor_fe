@@ -1,13 +1,12 @@
-import React, { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Inbox, MessageCircle, User, Stethoscope, AlertCircle, ExternalLink, ChevronRight } from "lucide-react";
+import { useMemo } from "react";
 import { useGetConversationsQuery } from "@/api/services/chatApi";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { MessageCircle, AlertCircle, Stethoscope, User } from "lucide-react";
 
 export default function MessagesCard() {
   const navigate = useNavigate();

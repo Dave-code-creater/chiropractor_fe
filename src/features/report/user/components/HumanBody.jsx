@@ -1,10 +1,5 @@
-import React, { useState, lazy, Suspense } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { useState, lazy } from "react";
 import { useScreenSize } from "@/hooks/useScreenSize";
-import MobilePainDetailModal from "./MobilePainDetailModal";
-import DesktopPainDetailDialog from "./DesktopPainDetailDialog";
 
 const BodyComponent = lazy(() =>
   import("reactjs-human-body").then((m) => ({
@@ -42,8 +37,8 @@ export default function PainChartSection({
   gender,
   painMap,
   setPainMap,
-  formData,
-  setFormData,
+  _formData,
+  _setFormData,
 }) {
   const objectHuman = {
     id: "3",
@@ -191,9 +186,7 @@ export default function PainChartSection({
     ]),
   );
 
-  const handleSliderChange = (value) => {
-    setPendingLevel(value[0]);
-  };
+  
 
   const closeDialog = () => setopenFieldId(null);
 

@@ -1,15 +1,4 @@
 import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   useGetAppointmentsQuery,
   useCreateAppointmentMutation,
@@ -21,22 +10,34 @@ import { useSelector } from 'react-redux';
 import { selectUserId, selectUserRole } from '@/state/data/authSlice';
 import {
   Calendar,
-  Search,
   CheckCircle,
-  XCircle,
   Clock,
-  Plus,
-  Edit,
   User,
   RefreshCw,
+  Search,
+  ChevronsLeft,
   ChevronLeft,
   ChevronRight,
-  ChevronsLeft,
-  ChevronsRight
+  ChevronsRight,
+  XCircle,
+  Plus,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, isToday, isPast, isFuture } from 'date-fns';
 import { extractList } from '@/utils/apiResponse';
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Table, TableHeader, TableBody, TableHead, TableRow, TableCell } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DatePickerInput } from "@/components/ui/date-picker";
+import TimePickerInput from "@/components/ui/time-picker";
 
 const DoctorAppointments = () => {
   const currentUserId = useSelector(selectUserId);
@@ -312,20 +313,20 @@ const DoctorAppointments = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
-            <Input
-              type="date"
+            <DatePickerInput
+              id="date"
               value={formData.appointment_date}
-              onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })}
+              onChange={(val) => setFormData({ ...formData, appointment_date: val })}
               required
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="time">Time</Label>
-            <Input
-              type="time"
+            <TimePickerInput
+              id="time"
               value={formData.appointment_time}
-              onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })}
+              onChange={(val) => setFormData({ ...formData, appointment_time: val })}
               required
             />
           </div>

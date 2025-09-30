@@ -81,7 +81,7 @@ const passwordResetFormSlice = createSlice({
       state.errors.token = "";
     },
 
-    resetForm(state) {
+    resetForm(_state) {
       return initialState;
     },
   },

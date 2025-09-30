@@ -1,10 +1,9 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { BookText, Clock, Eye, ArrowRight } from "lucide-react";
 import { useGetPublicBlogPostsQuery } from "@/api/services/blogApi";
+import { Link } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { BookText, Clock, Eye, ArrowRight } from "lucide-react";
 
 export default function BlogCard() {
   const { data, isLoading } = useGetPublicBlogPostsQuery({

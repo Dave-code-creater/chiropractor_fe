@@ -1,39 +1,19 @@
-import React, { useState, useMemo } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useState, useMemo } from "react";
+import { useLocation, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-    selectUserId,
-    selectUserRole,
-    selectIsAuthenticated,
-} from "@/state/data/authSlice";
+import { selectUserId, selectUserRole } from "@/state/data/authSlice";
 import { useGetPublicBlogPostsQuery } from "@/api/services/blogApi";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
-    Search,
-    Calendar,
-    Clock,
-    Eye,
-    User,
-    BookOpen,
-    Filter,
-    ArrowRight,
-    TrendingUp,
-    Share2,
-    Bookmark,
-    Heart,
-} from "lucide-react";
+import { Filter, Search, BookOpen, Bookmark, Share2, Calendar, Clock, Eye, ArrowRight } from "lucide-react";
+
+
+
+
 import { toast } from "sonner";
 
 const BLOG_CATEGORIES = [
@@ -49,7 +29,6 @@ const BLOG_CATEGORIES = [
 ];
 
 const BlogListing = () => {
-    const navigate = useNavigate();
     const location = useLocation();
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [searchTerm, setSearchTerm] = useState("");
@@ -58,7 +37,6 @@ const BlogListing = () => {
 
     const userID = useSelector(selectUserId);
     const userRole = useSelector(selectUserRole);
-    const isAuthenticated = useSelector(selectIsAuthenticated);
 
     const {
         data: postsData,

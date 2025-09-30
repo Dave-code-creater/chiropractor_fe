@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Input } from '@/components/ui/input';
+import { useState } from 'react';
 import { autoFormatPhoneNumber, autoFormatSSN } from './FormUtils';
+import { Input } from "@/components/ui/input";
 
 const FormattedInput = ({
   type = 'text',

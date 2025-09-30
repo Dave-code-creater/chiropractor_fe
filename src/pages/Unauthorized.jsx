@@ -1,10 +1,9 @@
-import React from "react";
 import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ShieldX, Home, ArrowLeft } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import { selectUserRole, selectUserId } from "../state/data/authSlice";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ShieldX, ArrowLeft, Home } from "lucide-react";
 
 export default function Unauthorized() {
   const navigate = useNavigate();

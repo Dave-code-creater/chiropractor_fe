@@ -1,10 +1,9 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileText, AlertCircle, Eye, Car, Briefcase, Activity, Heart } from "lucide-react";
+import { FileText, Car, Briefcase, Activity, Heart, AlertCircle } from "lucide-react";
 import { useGetIncidentsQuery } from "@/api/services/reportApi";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ConditionsCard() {
   const user = useSelector((state) => state?.auth);

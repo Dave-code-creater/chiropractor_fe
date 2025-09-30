@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useLoginMutation, useOauthLoginMutation } from "../../api/services/authApi";
-import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { validateEmail, validatePassword } from "../../components/forms/FormUtils";
-import PasswordInput from "../../components/forms/PasswordInput";
-import OAuthLogin from "../../components/auth/OAuthLogin";
 import {
   setEmailError,
   clearEmailError,
@@ -12,9 +10,10 @@ import {
   clearPasswordError,
 } from "../../state/forms/loginFormSlice";
 import { useAuthReady } from "../../hooks/useAuthReady";
-import { toast } from "sonner";
 import { enhancedToast } from "@/components/notifications/SimpleToast";
 import { selectUserId, selectUserRole } from "../../state/data/authSlice";
+import PasswordInput from "@/components/forms/PasswordInput";
+import OAuthLogin from "@/components/auth/OAuthLogin";
 
 const ROLE_REDIRECTS = {
   admin: (id) => `/dashboard/admin/${id}`,
@@ -24,8 +23,7 @@ const ROLE_REDIRECTS = {
 
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { isReady, isAuthenticated, role } = useAuthReady();
+  const { isReady, isAuthenticated } = useAuthReady();
   const userID = useSelector(selectUserId);
   const userRole = useSelector(selectUserRole);
   const [email, setEmail] = useState("");

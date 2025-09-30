@@ -1,59 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
+import { useState, useCallback, useMemo } from "react";
+
+
+
+
 import { toast } from "sonner";
-import {
-  Calendar as CalendarIcon,
-  Clock,
-  Plus,
-  Edit,
-  Trash2,
-  Save,
-  X,
-  AlertTriangle,
-  CheckCircle,
-  User,
-  Settings,
-  Copy,
-  RefreshCw,
-  Filter,
-  Search,
-  MoreHorizontal,
-  Eye,
-  EyeOff,
-  MapPin,
-  Phone,
-  Mail,
-  Activity,
-  TrendingUp,
-  Users,
-  FileText,
-  Loader2,
-} from "lucide-react";
+
+
 import {
   format,
   addDays,
@@ -79,7 +31,7 @@ const DoctorAvailabilitySystem = () => {
   const [selectedDoctor, setSelectedDoctor] = useState("all");
   const [viewMode, setViewMode] = useState("week");
   const [showConflicts, setShowConflicts] = useState(true);
-  const [editingSchedule, setEditingSchedule] = useState(null);
+  
 
   const dateRange = useMemo(() => {
     const start = startOfWeek(selectedDate);

@@ -1,21 +1,7 @@
-import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import {
-    RenderQuesFuncs,
-    RenderTextAreaQues,
-    RenderRadioQues,
-    RenderCheckboxQues,
-    RenderOtherQues,
-} from "@/components/forms/FormComponents";
+
+
+
+
 
 const DesktopPainDetailDialog = ({
     isOpen,

@@ -2,6 +2,7 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import unusedImports from 'eslint-plugin-unused-imports'
 
 export default [
   { 
@@ -32,15 +33,23 @@ export default [
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
+      'unused-imports': unusedImports,
     },
     rules: {
       ...js.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      'no-unused-vars': ['error', { 
-        varsIgnorePattern: '^[A-Z_]|^_',
-        argsIgnorePattern: '^_',
-        ignoreRestSiblings: true 
-      }],
+      // Unused imports/vars handled by base rule below
+      'unused-imports/no-unused-imports': 'off',
+      'unused-imports/no-unused-vars': 'off',
+      // Backstop for other unused-var cases in non-import contexts
+      'no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^[A-Z_]|^_',
+          argsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
       'no-empty': ['error', { allowEmptyCatch: true }],
       'no-prototype-builtins': 'warn',
       'no-sparse-arrays': 'error',

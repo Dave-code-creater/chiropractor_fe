@@ -7,10 +7,7 @@ import {
   Users,
   ClipboardList,
   BookOpen,
-  Activity,
   UserCog,
-  Shield,
-  Building2,
   Stethoscope,
 } from "lucide-react";
 
@@ -111,6 +108,11 @@ const navigationByRole = {
           name: "Blog",
           path: "/blog",
           icon: BookOpen
+        },
+        {
+          name: "Write Blog",
+          path: "/blog/editor",
+          icon: FileText
         }
       ]
     },

@@ -1,73 +1,22 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   useGetBlogPostsQuery,
   useDeleteBlogPostMutation,
   useUpdateBlogPostMutation,
 } from "@/api/services/blogApi";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Plus,
-  Search,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Clock,
-  FileText,
-  Filter,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  BarChart3,
-  TrendingUp,
-  Users,
-  MessageSquare,
-  Settings,
-  Shield,
-} from "lucide-react";
+
+
+
+
+
+
+
+
+
+
+
+
 import { toast } from "sonner";
 
 const BlogOverview = () => {

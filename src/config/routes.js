@@ -71,6 +71,9 @@ export const routeStatuses = {
   "/dashboard/doctor/:id/profile": RouteStatus.ACTIVE,
   "/dashboard/doctor/:id/settings": RouteStatus.ACTIVE,
   "/dashboard/doctor/:id/blog": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/blog/editor": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/blog/manage": RouteStatus.ACTIVE,
+  "/dashboard/doctor/:id/blog/management": RouteStatus.ACTIVE,
 
 
 };

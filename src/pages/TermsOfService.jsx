@@ -1,14 +1,8 @@
+
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar,
-  Shield,
-  AlertTriangle,
-  Scale,
-  FileText,
-  Users,
-} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { FileText, Scale, Users, Shield, Calendar, AlertTriangle } from "lucide-react";
 
 export default function TermsOfService() {
   const lastUpdated = new Date().toLocaleDateString("en-US", {

@@ -1,16 +1,4 @@
-import React, { useState, useMemo } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DataTable } from "@/components/data-table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useState, useMemo } from 'react';
 import {
   useGetAppointmentsQuery,
   useUpdateAppointmentMutation,
@@ -21,27 +9,36 @@ import {
 import { useGetPatientsQuery } from '@/api/services/userApi';
 import {
   Calendar,
-  Search,
-  Plus,
   Clock,
   CheckCircle,
   XCircle,
   Users,
-  Phone,
-  Edit,
-  Trash2,
-  Download,
-  RefreshCw,
-  Mail,
   UserCheck,
-  BarChart3,
   TrendingUp,
   AlertTriangle,
-  Eye
+  Mail,
+  Phone,
+  RefreshCw,
+  Search,
+  Edit,
+  Trash2,
+  Eye,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, isToday, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 import { extractList } from '@/utils/apiResponse';
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { DatePickerInput } from "@/components/ui/date-picker";
+import TimePickerInput from "@/components/ui/time-picker";
+import { DataTable } from "@/components/data-table";
 
 const AdminAppointments = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -479,20 +476,20 @@ const AdminAppointments = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label htmlFor="date">Date</Label>
-            <Input
-              type="date"
+            <DatePickerInput
+              id="date"
               value={formData.appointment_date}
-              onChange={(e) => setFormData({ ...formData, appointment_date: e.target.value })}
+              onChange={(val) => setFormData({ ...formData, appointment_date: val })}
               required
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="time">Time</Label>
-            <Input
-              type="time"
+            <TimePickerInput
+              id="time"
               value={formData.appointment_time}
-              onChange={(e) => setFormData({ ...formData, appointment_time: e.target.value })}
+              onChange={(val) => setFormData({ ...formData, appointment_time: val })}
               required
             />
           </div>

@@ -1,38 +1,30 @@
 import React, { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Search,
-  User,
-  FileText,
-  Calendar,
-  ChevronRight,
-  ChevronLeft,
-  AlertCircle,
-  CheckCircle,
   Car,
   Briefcase,
   Activity,
   Heart,
   FileCheck,
+  Search,
+  Calendar,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  FileText,
+  User,
+  Save,
   Plus,
   Trash2,
-  Save,
-  CalendarPlus,
-  Users
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
   useDoctorPatientsWithIncidents,

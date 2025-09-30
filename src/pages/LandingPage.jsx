@@ -1,8 +1,7 @@
-import React from "react";
-import Hero from "../components/common/Landing/Hero";
-import Services from "../components/common/Landing/Services";
-import Testimonials from "../components/common/Landing/Testimonials";
-import About from "./About";
+import Hero from "@/components/common/Landing/Hero";
+import Services from "@/components/common/Landing/Services";
+import Testimonials from "@/components/common/Landing/Testimonials";
+import About from "@/pages/About";
 
 export default function LandingPage() {
   return (

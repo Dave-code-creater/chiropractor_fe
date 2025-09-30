@@ -1,13 +1,13 @@
-import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { StrictMode } from "react";
 import { BrowserRouter } from "react-router-dom";
-import { GoogleOAuthProvider } from '@react-oauth/google';
-import "./index.css";
-import App from "./App.jsx";
-import { store, persistor } from "./store/store";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import App from "./App";
 import SessionLoadingScreen from "./components/loading/SessionLoadingScreen";
+import "./index.css";
+import { store, persistor } from "./store/store";
 
 const LoadingComponent = () => (
   <SessionLoadingScreen message="Loading your account..." />

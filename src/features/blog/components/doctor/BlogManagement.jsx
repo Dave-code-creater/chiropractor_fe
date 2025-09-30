@@ -1,78 +1,31 @@
-import React, { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   useGetBlogPostsQuery,
   useDeleteBlogPostMutation,
   useUpdateBlogPostMutation,
   usePublishBlogPostMutation,
 } from "@/api/services/blogApi";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Plus,
-  Search,
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Eye,
-  Calendar,
-  Clock,
-  FileText,
-  Filter,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-} from "lucide-react";
+
+
+
+
+
+
+
+
+
+
+
+
 import { toast } from "sonner";
 
 const BlogManagement = () => {
   const navigate = useNavigate();
   const { id: doctorId } = useParams();
   const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [deletePostId, setDeletePostId] = useState(null);
-  const [activeTab, setActiveTab] = useState("published");
   const [draftSearchTerm, setDraftSearchTerm] = useState("");
 
   const getBlogPath = (path) => `/dashboard/doctor/${doctorId}/blog/${path}`;
@@ -91,7 +44,7 @@ const BlogManagement = () => {
   const {
     data: draftsData,
     isLoading: isDraftsLoading,
-    error: draftsError,
+    error: _draftsError,
     refetch: refetchDrafts,
   } = useGetBlogPostsQuery({
     search: draftSearchTerm || undefined,
@@ -148,22 +101,7 @@ const BlogManagement = () => {
     }
   };
 
-  const getStatusBadge = (isPublished) => {
-    if (isPublished) {
-      return (
-        <Badge variant="default" className="bg-green-500">
-          <CheckCircle className="h-3 w-3 mr-1" />
-          Published
-        </Badge>
-      );
-    }
-    return (
-      <Badge variant="secondary">
-        <AlertCircle className="h-3 w-3 mr-1" />
-        Draft
-      </Badge>
-    );
-  };
+  //
 
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {

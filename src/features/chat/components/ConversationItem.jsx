@@ -1,14 +1,5 @@
-import React from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Clock, MoreVertical, Trash2 } from "lucide-react";
+
+
 import { formatConversationType, formatPriority, canUpdateConversationStatus } from "../constants/roles";
 import { formatMessageTime, getRoleIconComponent } from "../utils/chatUtils";
 

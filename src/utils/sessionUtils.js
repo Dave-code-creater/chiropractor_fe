@@ -1,4 +1,4 @@
-import { validateSession, restoreSession } from '../state/data/authSlice';
+import { validateSession } from '../state/data/authSlice';
 import { getTokenInfo, isValidTokenFormat, startPeriodicTokenCheck } from '../api/core/tokenManager';
 
 export const attemptSessionRestore = (store) => {

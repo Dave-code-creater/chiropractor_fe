@@ -1,33 +1,12 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Plus,
-  FileText,
-  Calendar,
-  Clock,
-  Search,
-  Filter,
-  ChevronLeft,
-  Users,
-  Stethoscope,
-} from "lucide-react";
+import { useState } from "react";
+
+
+
+
 import { toast } from "sonner";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/state/data/authSlice";
 
-import TreatmentPlanForm from "../TreatmentPlanForm";
-import DoctorPatientManagement from "./DoctorPatientManagement";
 import { useNoteManagement, NOTE_TYPES, validateNoteData } from "../../domain/noteService";
 
 const DoctorNotes = ({ patientId, patientName }) => {

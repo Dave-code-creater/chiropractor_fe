@@ -1,55 +1,14 @@
-import React, { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useMemo } from "react";
+
+
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
-    Search,
     User,
-    FileText,
-    Calendar,
-    Clock,
-    ChevronRight,
-    ChevronLeft,
     AlertCircle,
     Car,
     Briefcase,
-    Activity,
-    FileCheck,
-    Phone,
-    Mail,
-    Eye,
-    Users,
-    ClipboardList,
-    Target,
-    TrendingUp,
-    Plus,
-    Filter,
-    MoreVertical,
-    UserPlus,
-    Download,
-    BarChart3,
-    MessageSquare,
-    Star,
-    AlertTriangle,
-    ChevronUp,
-    ExternalLink,
-    Zap,
 } from "lucide-react";
 
 import { useDoctorPatientsWithIncidents, useIncidentDetails } from "../../domain/noteService";
-import { useGetTreatmentPlanQuery } from "@/api/services/clinicalNotes";
-import InitialReportDisplay from "../InitialReportDisplay";
-import TreatmentPlanForm from "../TreatmentPlanForm";
 
 const DoctorNotesRevamped = ({ doctorId }) => {
     if (!doctorId) {

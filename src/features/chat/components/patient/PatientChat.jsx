@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import BaseChat from "../BaseChat";
 import {
-  useGetAvailableUsersQuery,
   useCreateConversationMutation,
   useGetConversationUsersQuery,
 } from "@/api/services/chatApi";
@@ -13,30 +12,31 @@ import {
   canStartConversation,
   validateConversationData,
   getRoleRestrictionError,
-  formatPriority,
   getAllowedRoles,
 } from "../../constants/roles";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
-  AlertCircle,
   Users,
   Stethoscope,
   Shield,
+  AlertCircle,
   Search,
   X,
 } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+
+
 
 const extractDataFromResponse = (data) => {
   if (!data) return [];
@@ -57,7 +57,7 @@ const getRoleDisplayName = (role) => {
   return roleNames[role?.toLowerCase()] || role || "User";
 };
 
-const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUserRole, refetchConversations }) => {
+const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUserRole, _refetchConversations }) => {
   const [formData, setFormData] = useState({
     target_user_id: "",
     subject: "",
@@ -79,7 +79,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   const {
     data: availableUsersData,
     isLoading: isLoadingUsers,
-    error: usersError
+    error: _usersError
   } = useGetConversationUsersQuery({
     search_term: debouncedSearchTerm,
     role: roleFilter === 'all' ? 'doctor' : roleFilter,
@@ -155,7 +155,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     onClose();
   };
 
-  const selectedUser = availableUsers.find(user => user.id.toString() === formData.target_user_id.toString());
+  
 
   const roleFilterOptions = [
     { value: "all", label: "All Healthcare Professionals", icon: Users },
@@ -337,8 +337,8 @@ const PatientChat = () => {
     sendingMessage,
     handleSendMessage,
     formatMessageTime,
-    useMessageStatus,
     isPolling,
+    isFromCurrentUser,
     Button,
     Input,
     Textarea,
@@ -398,7 +398,7 @@ const PatientChat = () => {
 
   return (
     <div className="h-screen min-h-screen max-h-screen mx-auto max-w-full">
-      <Card className="h-full shadow-xl border-0 overflow-hidden rounded-none">
+      <Card className="h-full shadow-none border-0 overflow-hidden rounded-none">
         <div className="flex h-full">
           <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
             <div className="p-3 sm:p-4 lg:p-8 border-b bg-background/80 backdrop-blur-sm">
@@ -560,18 +560,15 @@ const PatientChat = () => {
                   ) : (
                     <div className="space-y-3 sm:space-y-4 lg:space-y-6">
                       {messages.map((message) => {
-                        const isCurrentUser = message.sender_type === "patient" || message.sender_id === user?.userID;
+                        const senderType = (message?.sender_type || "").toString().toLowerCase();
+                        const isCurrentUser = isFromCurrentUser(message) || senderType === "patient";
                         return (
                           <div
                             key={message.id}
-                            className={`flex ${isCurrentUser ? "justify-end" : "justify-start"
-                              }`}
+                            className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
                           >
                             <div
-                              className={`max-w-[85%] sm:max-w-md lg:max-w-lg rounded-xl p-3 sm:p-4 lg:p-5 ${isCurrentUser
-                                  ? "bg-primary text-primary-foreground"
-                                  : "bg-muted"
-                                }`}
+                              className={`max-w-[85%] sm:max-w-md lg:max-w-lg rounded-xl p-3 sm:p-4 lg:p-5 ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"}`}
                             >
                               <p className="text-sm sm:text-base leading-relaxed">{message.content || message.message_content}</p>
                               <div className="flex items-center gap-2 mt-2 sm:mt-3 text-xs opacity-70">

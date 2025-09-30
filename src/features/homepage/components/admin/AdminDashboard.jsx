@@ -1,11 +1,5 @@
-import { DataTable } from "@/components/data-table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React from "react";
 import { useState, useEffect } from "react";
-import { Users, FileText } from "lucide-react";
-import RecentChatMessages from "@/components/dashboard/RecentChatMessages";
 
-import ScheduleGrid from "./ScheduleGrid";
 import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 
 export default function AdminDashboard() {

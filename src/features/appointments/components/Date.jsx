@@ -1,13 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Clock, CalendarDays, AlertCircle, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Calendar } from "@/components/ui/calendar";
+import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { CalendarDays, Clock, AlertCircle, User } from "lucide-react";
 import { useGetDoctorAvailabilityQuery } from "@/api/services/appointmentApi";
 
 export default function DateSelector({

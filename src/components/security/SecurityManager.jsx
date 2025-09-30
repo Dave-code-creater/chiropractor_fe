@@ -1,60 +1,17 @@
-import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import {
-  Shield,
-  Lock,
-  Eye,
-  EyeOff,
-  Key,
-  AlertTriangle,
-  CheckCircle,
-  X,
-  Settings,
-  Users,
-  Activity,
-  FileText,
-  Clock,
-  MapPin,
-  Smartphone,
-  Monitor,
-  Globe,
-  Download,
-  Upload,
-  Filter,
-  Search,
-  RefreshCw,
-  Ban,
-  UserCheck,
-  Zap,
-  Database,
-  Wifi,
-  Server,
-} from "lucide-react";
-
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Shield, AlertTriangle, Activity, Users, UserCheck, FileText, Clock, Database, Eye, Ban, Download, RefreshCw, Globe, Settings, Monitor, CheckCircle } from "lucide-react";
 const SecurityManager = () => {
   const [securityScore] = useState(85);
   const [activeThreats] = useState(2);

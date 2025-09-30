@@ -1,10 +1,9 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-
+import { Routes, Route, Navigate } from "react-router-dom";
+import AdminChat from "./components/admin/AdminChat";
 import DoctorChat from "./components/doctor/DoctorChat";
 import PatientChat from "./components/patient/PatientChat";
-import AdminChat from "./components/admin/AdminChat";
+
 
 
 const ChatRouter = () => {

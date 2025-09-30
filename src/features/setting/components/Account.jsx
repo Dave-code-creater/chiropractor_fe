@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import PasswordInput from "../../../components/forms/PasswordInput";
+import { useState } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import PasswordInput from "@/components/forms/PasswordInput";
 
 export default function Account() {
   const [username, setUsername] = useState("john.doe");

@@ -1,6 +1,5 @@
-import React from 'react';
-import { GoogleLogin } from '@react-oauth/google';
 import { toast } from 'sonner';
+import { GoogleLogin } from '@react-oauth/google';
 
 const OAuthLogin = ({ onLoginSuccess, onLoginError }) => {
 

@@ -1,8 +1,4 @@
-import React from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import ProtectRoute from "./ProtectRoute";
-import RouteProvider from "./RouteProvider";
-import MainLayout from "../layouts/MainLayout";
+import { Routes, Route, useLocation, useParams } from "react-router-dom";
 
 import LandingPage from "../pages/LandingPage";
 import About from "../pages/About";
@@ -10,28 +6,28 @@ import Contact from "../pages/Contact";
 import FAQ from "../pages/FAQ";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import TermsOfService from "../pages/TermsOfService";
-import NotFound from "../pages/NotFound";
-import Unauthorized from "../pages/Unauthorized";
 import Login from "../features/auth/Login";
 import Register from "../features/auth/Register";
 import ForgotPassword from "../features/auth/ForgotPassword";
 import ResetPassword from "../features/auth/ResetPassword";
-
-import AdminDashboard from "../features/homepage/components/admin/AdminDashboard";
-import DoctorDashboard from "../features/homepage/components/doctor/DoctorDashboard";
+import NotFound from "../pages/NotFound";
+import Unauthorized from "../pages/Unauthorized";
+import MainLayout from "../layouts/MainLayout";
+import RouteProvider from "./RouteProvider";
+import ProtectRoute from "./ProtectRoute";
+import BlogRouter from "../features/blog/BlogRouter";
+import ChatRouter from "../features/chat/ChatRouter";
 import HomePage from "../features/homepage/components/user/HomePage";
-
-import Appointments from "../features/appointments/Appointments";
+import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
 import Report from "../features/report/user/Report";
 import Notes from "../features/notes/components/Notes";
 import Profile from "../features/profile/components/Profile";
 import Setting from "../features/setting/components/Setting";
-import BlogRouter from "../features/blog/BlogRouter";
-import ChatRouter from "../features/chat/ChatRouter";
-import PatientAppointments from "../features/appointments/components/patient/PatientAppointments";
+import DoctorDashboard from "../features/homepage/components/doctor/DoctorDashboard";
+import Appointments from "../features/appointments/Appointments";
 import PatientManagement from "../features/patients/components/PatientManagement";
+import AdminDashboard from "../features/homepage/components/admin/AdminDashboard";
 import DoctorPatientManagement from "../features/notes/components/doctor/DoctorPatientManagement";
-import { useParams } from "react-router-dom";
 
 import { getRouteStatus, RouteStatus } from "../config/routes";
 

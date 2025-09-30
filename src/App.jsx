@@ -1,11 +1,11 @@
 import "./App.css";
 import { useEffect } from "react";
-import AppRoutes from "./routes/AppRoutes";
-import ThemeProvider from "./contexts/ThemeContext.jsx";
-import AuthSessionManager from "./components/auth/AuthSessionManager";
-import TokenExpirationMonitor from "./components/auth/TokenExpirationMonitor";
 import { attemptSessionRestore } from "./utils/sessionUtils";
 import store from "./store/store";
+import ThemeProvider from "./contexts/ThemeContext";
+import AuthSessionManager from "./components/auth/AuthSessionManager";
+import TokenExpirationMonitor from "./components/auth/TokenExpirationMonitor";
+import AppRoutes from "./routes/AppRoutes";
 
 const App = () => {
 

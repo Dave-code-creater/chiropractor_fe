@@ -1,58 +1,25 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useCreateBlogPostMutation, useUpdateBlogPostMutation } from "@/api/services/blogApi";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-import {
-  Bold,
-  Italic,
-  Underline,
-  List,
-  ListOrdered,
-  Quote,
-  Link,
-  Image,
-  Code,
-  Heading1,
-  Heading2,
-  Heading3,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Save,
-  Eye,
-  Upload,
-  X,
-  Plus,
-} from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Eye, Save, Bold, Italic, Underline, Heading1, Heading2, Heading3, List, ListOrdered, Quote, Link, Image, Code, Plus, X } from "lucide-react";
+
+
+
+
+
+
+
+
 import { toast } from "sonner";
 
 const BLOG_CATEGORIES = [
@@ -66,7 +33,7 @@ const BLOG_CATEGORIES = [
   { value: "clinic-news", label: "Clinic News" },
 ];
 
-const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
+const BlogEditor = ({ initialPost = null, onSave, _onCancel }) => {
   const navigate = useNavigate();
   const { id: userId } = useParams();
   const userRole = useSelector((state) => state.auth.role);
@@ -590,7 +557,6 @@ const BlogEditor = ({ initialPost = null, onSave, onCancel }) => {
               <Select
                 value={formData.category}
                 onValueChange={(value) => {
-                  const selectedCategory = BLOG_CATEGORIES.find(cat => cat.value === value);
                   setFormData(prev => ({ ...prev, category: value }));
                 }}
               >

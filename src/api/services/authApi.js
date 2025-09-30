@@ -88,28 +88,43 @@ export const authApi = createApi({
         method: "POST",
         body: userData,
       }),
+      // Normalize to support multiple backend response shapes
+      transformResponse: (response) => normalizeAuthResponse(response),
       async onQueryStarted(arg, { dispatch, queryFulfilled, getState }) {
         try {
           const { data } = await queryFulfilled;
-          if (data.user && data.token) {
-            dispatch(setCredentials(data));
 
-            startPeriodicTokenCheck({ dispatch, getState });
+          if (!data?.user) {
+            console.error("normalizeAuthResponse returned no user", data);
+            return;
+          }
 
-            if (data.user) {
-              dispatch(updateUserProfile({
-                firstName: data.user.first_name,
-                lastName: data.user.last_name,
-                fullName: data.user.full_name,
-                phoneNumber: data.user.phone_number,
-                dateOfBirth: data.user.date_of_birth,
-                gender: data.user.gender,
-                marriageStatus: data.user.marriage_status,
-                race: data.user.race,
-                isVerified: data.user.is_verified,
-                phoneVerified: data.user.phone_verified,
-              }));
-            }
+          dispatch(
+            setCredentials({
+              user: data.user,
+              accessToken: data.tokens?.accessToken ?? data.token ?? null,
+              refreshToken: data.tokens?.refreshToken ?? null,
+            })
+          );
+
+          startPeriodicTokenCheck({ dispatch, getState });
+
+          const profileSource = data.profile ?? data.user;
+          if (profileSource) {
+            dispatch(
+              updateUserProfile({
+                firstName: profileSource.first_name,
+                lastName: profileSource.last_name,
+                fullName: profileSource.full_name,
+                phoneNumber: profileSource.phone_number,
+                dateOfBirth: profileSource.date_of_birth,
+                gender: profileSource.gender,
+                marriageStatus: profileSource.marriage_status,
+                race: profileSource.race,
+                isVerified: profileSource.is_verified,
+                phoneVerified: profileSource.phone_verified,
+              })
+            );
           }
         } catch (error) {
           console.error("Registration failed:", error);

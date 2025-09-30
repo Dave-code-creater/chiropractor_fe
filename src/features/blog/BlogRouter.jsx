@@ -1,17 +1,15 @@
-import React from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-
-import BlogEditor from "./components/doctor/BlogEditor";
-import BlogManagement from "./components/doctor/BlogManagement";
-import BlogOverview from "./components/admin/BlogOverview";
-
+import { Routes, Route, Navigate } from "react-router-dom";
 import BlogListing from "./components/BlogListing";
 import BlogViewer from "./components/BlogViewer";
+import BlogManagement from "./components/doctor/BlogManagement";
+import BlogEditor from "./components/doctor/BlogEditor";
+import BlogOverview from "./components/admin/BlogOverview";
+
+
 
 const BlogRouter = () => {
   const userRole = useSelector((state) => state.auth.role);
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   const canAccessEditor = userRole === "doctor" || userRole === "admin";
   const canAccessManagement = userRole === "doctor" || userRole === "admin";

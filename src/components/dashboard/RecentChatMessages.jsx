@@ -1,14 +1,14 @@
 import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MessageCircle, Clock, User, Stethoscope, Eye, AlertCircle } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { MessageCircle, Eye, AlertCircle, Clock, Stethoscope, User } from "lucide-react";
 import { useGetConversationsQuery } from "@/api/services/chatApi";
 import { useGetAvailableDoctorsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { selectUserId, selectUserRole } from "../../state/data/authSlice";
 
 export default function RecentChatMessages({ 

@@ -1,54 +1,11 @@
-import React, { useState, useCallback, useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
+import { useState, useCallback, useMemo } from "react";
+
+
+
+
 import { toast } from "sonner";
-import {
-  FileText,
-  Download,
-  Upload,
-  Settings,
-  Plus,
-  Edit,
-  Trash2,
-  Eye,
-  Share,
-  Mail,
-  Printer,
-  Filter,
-  Search,
-  Calendar,
-  User,
-  Activity,
-  BarChart3,
-  PieChart,
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  AlertTriangle,
-  X,
-} from "lucide-react";
+
+
 
 const PDFReportGenerator = () => {
   const [selectedTemplate, setSelectedTemplate] = useState("patient-summary");

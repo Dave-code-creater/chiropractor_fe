@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
 import BaseChat from "../BaseChat";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Input as UIInput } from "@/components/ui/input";
+
+
 import {
   useGetConversationUsersQuery,
   useCreateConversationMutation,
@@ -18,31 +19,17 @@ import {
   PRIORITY_LEVELS,
   validateConversationData,
 } from "../../constants/roles";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+
+
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import {
-  Filter,
-  MoreVertical,
-  UserPlus,
-  Archive,
-  AlertTriangle,
-  X,
-  AlertCircle,
   Users,
   Stethoscope,
   Shield,
   Search,
+  AlertCircle,
+  Filter,
+  UserPlus,
+  AlertTriangle,
 } from "lucide-react";
 
 const extractDataFromResponse = (data) => {
@@ -198,7 +185,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             <label className="text-xs sm:text-sm font-medium">Search Users</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-              <Input
+              <UIInput
                 placeholder="Search by name, email, or role..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -357,6 +344,7 @@ const DoctorChat = () => {
     handleSendMessage,
     formatMessageTime,
     isPolling,
+    isFromCurrentUser,
     Button: BaseChatButton,
     Input,
     Textarea,
@@ -372,6 +360,7 @@ const DoctorChat = () => {
     CheckCheck,
     WifiOff,
     Plus,
+    refetchConversations,
   } = BaseChat({
     roleSpecificProps: {
       conversationQueryParams: {
@@ -400,7 +389,10 @@ const DoctorChat = () => {
         setSelectedConversation(result);
       }
 
-      window.location.reload();
+      // Refresh the conversation list without a full page reload
+      try {
+        await refetchConversations();
+      } catch { }
     } catch (error) {
       console.error('Failed to create conversation:', error);
       toast.error(error?.data?.message || "Failed to create conversation. Please try again.");
@@ -418,9 +410,9 @@ const DoctorChat = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <Card className="flex-1 shadow-xl border-0 overflow-hidden">
+      <Card className="flex-1 shadow-none border-0 overflow-hidden">
         <div className="flex h-full">
-          <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
+          <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[360px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
             <div className="p-3 sm:p-4 lg:p-6 border-b bg-background/80 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <div className="flex items-center gap-3 sm:gap-4">
@@ -529,7 +521,18 @@ const DoctorChat = () => {
                 if (conversations.length === 0) {
                   return (
                     <div className="text-center p-4">
-                      <p className="text-muted-foreground">No conversations found</p>
+                      <MessageCircle className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-sm sm:text-base text-muted-foreground mb-3">No conversations yet</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setShowNewConversationModal(true)}
+                        disabled={!isBackendAvailable}
+                        className="w-full"
+                      >
+                        <Plus className="h-3 w-3 mr-2" />
+                        Start New Conversation
+                      </Button>
                     </div>
                   );
                 }
@@ -541,8 +544,8 @@ const DoctorChat = () => {
                       setSelectedConversation(conversation);
                     }}
                     className={`p-4 rounded-xl mb-3 cursor-pointer transition-all duration-200 ${selectedConversation?.id === conversation.id
-                      ? "bg-primary/10 border-l-4 border-primary shadow-sm"
-                      : "hover:bg-muted/50 hover:shadow-sm"
+                      ? "bg-primary/10 border-l-4 border-primary"
+                      : "hover:bg-muted/50"
                       }`}
                   >
                     <div className="flex items-center gap-3">
@@ -578,10 +581,16 @@ const DoctorChat = () => {
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center p-4">
                   <MessageCircle className="h-8 w-8 sm:h-10 sm:w-10 lg:h-12 lg:w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-base sm:text-lg font-medium mb-2">Select a Conversation</h3>
-                  <p className="text-sm sm:text-base text-muted-foreground">
-                    Choose a patient conversation from the sidebar
-                  </p>
+                  <h3 className="text-base sm:text-lg font-medium mb-2">No conversation selected</h3>
+                  <p className="text-sm sm:text-base text-muted-foreground mb-4">Select a conversation or start a new one</p>
+                  <Button
+                    onClick={() => setShowNewConversationModal(true)}
+                    disabled={!isBackendAvailable}
+                    className="h-8 sm:h-10"
+                  >
+                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                    Start New Conversation
+                  </Button>
                 </div>
               </div>
             ) : (
@@ -662,33 +671,44 @@ const DoctorChat = () => {
 
                     return (
                       <div className="space-y-4">
-                        {messages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${message.sender_type === "doctor"
-                              ? "justify-end"
-                              : "justify-start"
-                              }`}
-                          >
+                        {messages.map((message) => {
+                          const senderType = (message?.sender_type || "").toString().toLowerCase();
+                          const isCurrentUser = isFromCurrentUser(message) || senderType === "doctor";
+
+                          // Read/delivered status using available fields
+                          const isRead = Boolean(message?.is_read || message?.read_at);
+                          const isDelivered = Boolean(message?.is_delivered || message?.delivered_at);
+
+                          return (
                             <div
-                              className={`max-w-[80%] rounded-lg p-3 ${message.sender_type === "doctor"
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted"
-                                }`}
+                              key={message.id}
+                              className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
                             >
-                              <p className="text-sm leading-relaxed">
-                                {message.content || message.message_content}
-                              </p>
-                              <div className="flex items-center gap-2 mt-2 text-xs opacity-70">
-                                <Clock className="h-3 w-3" />
-                                {formatMessageTime(message.sent_at || message.created_at)}
-                                {message.sender_type === "doctor" && (
-                                  <Check className="h-3 w-3" />
-                                )}
+                              <div
+                                className={`max-w-[85%] sm:max-w-md lg:max-w-lg rounded-xl p-3 sm:p-4 ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+                              >
+                                <p className="text-sm leading-relaxed">
+                                  {message.content || message.message_content}
+                                </p>
+                                <div className="flex items-center gap-2 mt-2 text-xs opacity-70">
+                                  <Clock className="h-3 w-3" />
+                                  {formatMessageTime(message.sent_at || message.created_at)}
+                                  {isCurrentUser && (
+                                    <span className="flex items-center ml-2">
+                                      {isRead ? (
+                                        <CheckCheck className="h-3 w-3 text-blue-400" />
+                                      ) : isDelivered ? (
+                                        <CheckCheck className="h-3 w-3" />
+                                      ) : (
+                                        <Check className="h-3 w-3" />
+                                      )}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                         <div ref={messagesEndRef} />
                       </div>
                     );

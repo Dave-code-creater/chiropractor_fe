@@ -1,26 +1,10 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 import {
-    Eye,
-    ChevronDown,
-    ChevronRight,
-    User,
-    MapPin,
-    Shield,
     Briefcase,
-    CheckCircle,
-    Calendar,
-    FileText,
-    AlertCircle,
     Activity,
     Heart,
     Car,
     FileCheck,
-    ClipboardCheck,
-    RefreshCw,
 } from "lucide-react";
 import { useSmartReportFetch, usePrefetchOnHover } from "@/hooks/useOptimizedReportFetching";
 

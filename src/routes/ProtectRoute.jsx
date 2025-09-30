@@ -1,10 +1,10 @@
-import { useLocation, Outlet, Navigate } from "react-router-dom";
+import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useAuthReady } from "../hooks/useAuthReady";
-import SessionLoadingScreen from "../components/loading/SessionLoadingScreen";
+import SessionLoadingScreen from "@/components/loading/SessionLoadingScreen";
 
 export default function ProtectRoute({ allowedRoles }) {
   const location = useLocation();
-  const { isReady, isAuthenticated, userID, role } = useAuthReady();
+  const { isReady, isAuthenticated, role } = useAuthReady();
 
   if (!isReady) {
     return <SessionLoadingScreen message="Verifying access..." />;

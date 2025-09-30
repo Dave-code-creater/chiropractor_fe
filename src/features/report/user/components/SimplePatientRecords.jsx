@@ -1,21 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { 
   useGetIncidentsQuery,
 } from '@/api';
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@/state/data/authSlice';
-import UnifiedPatientForm from './UnifiedPatientForm';
 
 export default function SimplePatientRecords({ onBack }) {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const userId = useSelector(selectUserId);
   
-  const { data: userIncidents, isLoading } = useGetIncidentsQuery(userId, { skip: !userId });
+  const { isLoading } = useGetIncidentsQuery(userId, { skip: !userId });
 
   const handleFormComplete = () => {
     setShowSuccess(true);

@@ -1,19 +1,6 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/textarea";
-import FormattedInput from "@/components/forms/FormattedInput";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import HumanBody from "./HumanBody";
+import { useState, useEffect, useMemo } from "react";
+
+
 import {
   useCreateIncidentMutation,
   useSubmitPatientInfoFormMutation,
@@ -119,7 +106,7 @@ export default function UnifiedPatientForm({
 
   const [errors, setErrors] = useState({});
 
-  const { data: userIncidents } = useGetIncidentsQuery(userId, { skip: !userId });
+  useGetIncidentsQuery(userId, { skip: !userId });
   const { data: doctorsData, isLoading: isDoctorsLoading, isError: isDoctorsError, error: doctorsError } = useGetAvailableDoctorsQuery();
   const [createIncident] = useCreateIncidentMutation();
   const [submitPatientInfo] = useSubmitPatientInfoFormMutation();
@@ -262,7 +249,7 @@ export default function UnifiedPatientForm({
       const incidentResponse = await createIncident(incidentData).unwrap();
       const incidentId = incidentResponse.data.id;
 
-      const submissions = await Promise.all([
+      await Promise.all([
         submitPatientInfo({
           incidentId,
           formData: {
@@ -482,11 +469,10 @@ export default function UnifiedPatientForm({
               </div>
               <div>
                 <Label htmlFor="date_of_birth">Date of Birth*</Label>
-                <Input
+                <DatePickerInput
                   id="date_of_birth"
-                  type="date"
                   value={formData.date_of_birth}
-                  onChange={(e) => handleChange("date_of_birth", e.target.value)}
+                  onChange={(val) => handleChange("date_of_birth", val)}
                   required
                 />
               </div>
@@ -1192,20 +1178,18 @@ export default function UnifiedPatientForm({
               </div>
               <div>
                 <Label htmlFor="accidentDate">Date of Accident</Label>
-                <Input
+                <DatePickerInput
                   id="accidentDate"
-                  type="date"
                   value={formData.accidentDate}
-                  onChange={(e) => handleChange("accidentDate", e.target.value)}
+                  onChange={(val) => handleChange("accidentDate", val)}
                 />
               </div>
               <div>
                 <Label htmlFor="accidentTime">Time of Accident</Label>
-                <Input
+                <TimePickerInput
                   id="accidentTime"
-                  type="time"
                   value={formData.accidentTime}
-                  onChange={(e) => handleChange("accidentTime", e.target.value)}
+                  onChange={(val) => handleChange("accidentTime", val)}
                 />
               </div>
               <div>

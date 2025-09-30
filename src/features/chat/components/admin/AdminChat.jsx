@@ -1,29 +1,17 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useSelector } from "react-redux";
 import BaseChat from "../BaseChat";
-import { Badge } from "@/components/ui/badge";
+
+
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Filter,
-  MoreVertical,
   UserPlus,
-  Archive,
-  AlertTriangle,
-  Settings,
   Shield,
-  Ban,
-  Lock,
-  Unlock,
-  X,
 } from "lucide-react";
 
 const AdminChat = () => {
-  const [statusFilter, setStatusFilter] = useState("active");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, _setStatusFilter] = useState("active");
+  const [roleFilter, _setRoleFilter] = useState("all");
+  const _user = useSelector((state) => state?.auth);
 
   const {
     selectedConversation,
@@ -41,6 +29,7 @@ const AdminChat = () => {
     sendingMessage,
     handleSendMessage,
     formatMessageTime,
+    isFromCurrentUser,
     Button,
     Input,
     Textarea,
@@ -66,12 +55,7 @@ const AdminChat = () => {
     },
   });
 
-  const roles = [
-    { id: "all", name: "All Users", icon: Shield },
-    { id: "patient", name: "Patients", icon: UserPlus },
-    { id: "doctor", name: "Doctors", icon: Shield },
-
-  ];
+  
 
   const getRoleBadgeColor = (role) => {
     const colors = {
@@ -85,7 +69,7 @@ const AdminChat = () => {
 
   return (
     <div className="h-screen min-h-screen max-h-screen mx-auto max-w-full">
-      <Card className="h-full shadow-xl border-0 overflow-hidden rounded-none">
+      <Card className="h-full shadow-none border-0 overflow-hidden rounded-none">
         <div className="flex h-full">
           <div className={`${selectedConversation ? 'hidden lg:flex' : 'flex'} w-full lg:w-[400px] border-r bg-gradient-to-b from-muted/10 to-muted/30 flex-col`}>
             <div className="p-8 border-b bg-background/80 backdrop-blur-sm">
@@ -228,31 +212,29 @@ const AdminChat = () => {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      {messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex ${message.sender_type === "admin"
-                            ? "justify-end"
-                            : "justify-start"
-                            }`}
-                        >
+                      {messages.map((message) => {
+                        const senderType = (message?.sender_type || "").toString().toLowerCase();
+                        const isCurrentUser = isFromCurrentUser(message) || senderType === "admin";
+                        return (
                           <div
-                            className={`max-w-[85%] rounded-xl p-5 ${message.sender_type === "admin"
-                              ? "bg-primary text-primary-foreground"
-                              : "bg-muted"
-                              }`}
+                            key={message.id}
+                            className={`flex ${isCurrentUser ? "justify-end" : "justify-start"}`}
                           >
-                            <p className="text-base leading-relaxed">{message.content}</p>
-                            <div className="flex items-center gap-2 mt-3 text-xs opacity-70">
-                              <Clock className="h-3 w-3" />
-                              {formatMessageTime(message.sent_at || message.created_at)}
-                              {message.sender_type === "admin" && (
-                                <Check className="h-3 w-3" />
-                              )}
+                            <div
+                              className={`max-w-[85%] rounded-xl p-5 ${isCurrentUser ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+                            >
+                              <p className="text-base leading-relaxed">{message.content || message.message_content}</p>
+                              <div className="flex items-center gap-2 mt-3 text-xs opacity-70">
+                                <Clock className="h-3 w-3" />
+                                {formatMessageTime(message.sent_at || message.created_at)}
+                                {isCurrentUser && (
+                                  <Check className="h-3 w-3" />
+                                )}
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                       <div ref={messagesEndRef} />
                     </div>
                   )}

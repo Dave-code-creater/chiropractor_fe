@@ -1,32 +1,12 @@
-import React, { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { DataTable } from "@/components/data-table";
+import { useState, useMemo } from "react";
 import {
-  Search,
-  Plus,
-  MoreHorizontal,
-  Phone,
-  Mail,
   Calendar,
-  FileText,
-  Edit,
-  Eye,
   CheckCircle,
-  Clock,
   Users,
   TrendingUp,
-  Loader2,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+
+
 import { useGetPatientsQuery } from "@/api/services/userApi";
 import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";

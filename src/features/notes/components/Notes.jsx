@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AlertCircle } from "lucide-react";
+import { useState } from "react";
 import { useSelector } from "react-redux";
-
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { AlertCircle } from "lucide-react";
 import DoctorNotes from "./doctor/DoctorNotes";
-import DoctorNotesRevamped from "./doctor/DoctorNotesRevamped";
 import DoctorInitialReportsView from "./DoctorInitialReportsView";
+import DoctorNotesRevamped from "./doctor/DoctorNotesRevamped";
 import PatientNotesView from "./PatientNotesView";
+
 
 const Notes = () => {
   const auth = useSelector((state) => state.auth);

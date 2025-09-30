@@ -1,18 +1,18 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Mail, ArrowLeft, AlertCircle, CheckCircle } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { useForgotPasswordMutation } from "../../api/services/authApi";
-import { Link, useNavigate } from "react-router-dom";
-import { renderGmailExprs, validateEmail } from "../../components/forms/FormUtils";
+import { renderGmailExprs } from "../../components/forms/FormUtils";
 import {
   setEmailError,
   clearEmailError,
 } from "../../state/forms/loginFormSlice";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Mail, ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");

@@ -1,25 +1,18 @@
 "use client"
 
 import { useState } from "react";
-import { Check, ChevronsUpDown, MapPin, User, Clock } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Command, CommandList, CommandInput, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { MapPin, ChevronsUpDown, Check, User, Clock } from "lucide-react";
+
+
+
+
 import { CLINIC_LOCATIONS, getLocationByValue } from "@/constants/clinicLocations";
 
 export default function LocationSelector({

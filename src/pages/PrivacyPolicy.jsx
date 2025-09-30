@@ -1,20 +1,10 @@
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import {
-  Shield,
-  Lock,
-  Eye,
-  Database,
-  UserCheck,
-  AlertTriangle,
-  FileText,
-  Users,
-  Mail,
-  Clock,
-} from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { FileText, Shield, Database, UserCheck, Users, Lock, Mail, Eye, Clock, AlertTriangle } from "lucide-react";
+
 
 export default function PrivacyPolicy() {
   const lastUpdated = new Date().toLocaleDateString("en-US", {

@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useRegisterMutation } from "../../api/services/authApi";
 import { useNavigate } from "react-router-dom";
-import FormattedInput from "../../components/forms/FormattedInput";
-import PasswordInput from "../../components/forms/PasswordInput";
 import {
   renderPhoneNumber,
   renderGmailExprs,

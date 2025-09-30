@@ -1,12 +1,10 @@
 import {
   useGetClinicalNotesByPatientQuery,
-  useGetClinicalNoteQuery,
   useCreateClinicalNoteMutation,
   useUpdateClinicalNoteMutation,
   useDeleteClinicalNoteMutation,
   useCreateSOAPNoteMutation,
   useUpdateSOAPNoteMutation,
-  useGetSOAPNotesQuery,
   useGetPatientIncidentsQuery,
   useGetIncidentDetailsQuery,
   useGetTreatmentPlanQuery,
@@ -186,7 +184,7 @@ export const useDoctorPatientsWithIncidents = (doctorId) => {
 
 export const useIncidentDetails = (incidentId) => {
   const {
-    data: incidentDetails,
+    data: rawIncidentDetails,
     isLoading: isLoadingDetails,
     error: detailsError
   } = useGetIncidentDetailsQuery(
@@ -195,7 +193,9 @@ export const useIncidentDetails = (incidentId) => {
   );
 
   return {
-    incidentDetails,
+    // Many endpoints return a { success, message, data } wrapper.
+    // Normalize here so callers can consume the plain object shape.
+    incidentDetails: rawIncidentDetails?.data || rawIncidentDetails,
     isLoading: isLoadingDetails,
     error: detailsError
   };

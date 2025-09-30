@@ -1,40 +1,17 @@
-import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  FileText,
-  Calendar,
-  Clock,
-  Search,
-  ChevronDown,
-  ChevronRight,
-  AlertCircle,
-  CheckCircle,
-} from "lucide-react";
+import { useState } from "react";
+
+
+
+
 
 import { useNoteManagement, NOTE_TYPES, formatNoteDate } from "../../domain/noteService";
 
 const PatientNotes = ({ userId }) => {
-  const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all");
   const [expandedNotes, setExpandedNotes] = useState(new Set());
 
-  const {
-    notes,
-    incidents,
-    isLoading,
-    permissions
-  } = useNoteManagement(userId, 'patient');
+  const { notes, isLoading } = useNoteManagement(userId, 'patient');
 
   const filteredNotes = notes.filter(note => {
     const matchesSearch = note.content?.toLowerCase().includes(searchTerm.toLowerCase()) ||

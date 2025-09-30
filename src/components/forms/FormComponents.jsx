@@ -1,28 +1,10 @@
-import React from "react";
-import {
-  HoverCard,
-  HoverCardTrigger,
-  HoverCardContent,
-} from "@/components/ui/hover-card";
-import { Info } from "lucide-react";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+
+
+
+
+
+
 import { renderCalAge, renderDate } from "./FormUtils";
-import FormattedInput from "./FormattedInput";
 
 export function FormatLegend({ question }) {
   return (

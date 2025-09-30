@@ -1,14 +1,10 @@
-import React, { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useSelector } from "react-redux";
 import {
   useGetConversationsQuery,
-  useGetMessagesQuery,
   useSendMessageMutation,
   usePollForNewMessagesQuery,
   useGetMessageStatusQuery,
-  useCreateConversationMutation,
-  useUpdateConversationStatusMutation,
-  useDeleteConversationMutation,
 } from "@/api/services/chatApi";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -55,7 +51,7 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
   const {
     data: initialMessagesData,
     isLoading: messagesLoading,
-    error: messagesError,
+    error: _messagesError,
   } = usePollForNewMessagesQuery(
     selectedConversation?.conversation_id || selectedConversation?.id ? {
       conversationId: selectedConversation?.conversation_id || selectedConversation?.id,
@@ -81,7 +77,14 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
     }
 
     if (messagesToLoad.length > 0) {
-      const sortedMessages = [...messagesToLoad].sort((a, b) => {
+      const normalizeMessage = (m) => ({
+        ...m,
+        content: m?.content || m?.message_content,
+        message_content: m?.content || m?.message_content,
+        sender_type: typeof m?.sender_type === 'string' ? m.sender_type.toLowerCase() : m?.sender_type,
+      });
+
+      const sortedMessages = [...messagesToLoad].map(normalizeMessage).sort((a, b) => {
         const timeA = new Date(a.sent_at || a.created_at || a.timestamp);
         const timeB = new Date(b.sent_at || b.created_at || b.timestamp);
         return timeA - timeB;
@@ -111,8 +114,6 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
   );
 
   const [sendMessage, { isLoading: sendingMessage }] = useSendMessageMutation();
-  const [updateConversationStatus] = useUpdateConversationStatusMutation();
-  const [deleteConversation] = useDeleteConversationMutation();
 
   const conversations = useMemo(() => {
     if (!conversationsData?.conversations) {
@@ -125,12 +126,19 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
   useEffect(() => {
     if (realtimePollingData?.messages && realtimePollingData.messages.length > 0) {
       setMessages(prevMessages => {
+        const normalizeMessage = (m) => ({
+          ...m,
+          content: m?.content || m?.message_content,
+          message_content: m?.content || m?.message_content,
+          sender_type: typeof m?.sender_type === 'string' ? m.sender_type.toLowerCase() : m?.sender_type,
+        });
+
         const newMessages = [...prevMessages];
 
         realtimePollingData.messages.forEach(newMessage => {
           const exists = newMessages.some(msg => msg.id === newMessage.id);
           if (!exists) {
-            newMessages.push(newMessage);
+            newMessages.push(normalizeMessage(newMessage));
           }
         });
 
@@ -146,6 +154,40 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
       setLastMessageTimestamp(timestamp);
     }
   }, [realtimePollingData]);
+
+  // Heuristic: determine if a message was sent by the logged-in user
+  const isFromCurrentUser = useCallback((message) => {
+    if (!message) return false;
+
+    // Compare common id fields
+    const currentId = user?.userID != null ? String(user.userID) : null;
+    if (currentId) {
+      const idKeys = [
+        'sender_id', 'user_id', 'author_id', 'from_user_id', 'from_id', 'senderId', 'created_by', 'userId'
+      ];
+      for (const key of idKeys) {
+        const v = message?.[key];
+        if (v != null && String(v) === currentId) return true;
+      }
+    }
+
+    // Compare role-like fields
+    const role = (userRole || '').toString().toLowerCase();
+    if (role) {
+      const roleKeys = ['sender_type', 'sender_role', 'role', 'from_role', 'user_role', 'author_role', 'type'];
+      for (const key of roleKeys) {
+        const v = message?.[key];
+        if (typeof v === 'string' && v.toLowerCase() === role) return true;
+      }
+
+      // Sometimes APIs provide a generic 'sender' string
+      if (typeof message?.sender === 'string' && message.sender.toLowerCase().includes(role)) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [user?.userID, userRole]);
 
   useEffect(() => {
     if (selectedConversation && messages.length > 0) {
@@ -171,7 +213,7 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
             if (isPolling) {
               startPolling();
             }
-          } catch (error) {
+          } catch (_error) {
             if (isPolling) {
               pollingTimeoutRef.current = setTimeout(startPolling, 5000);
             }
@@ -216,7 +258,15 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
       setMessageInput("");
 
       if (result.message) {
-        setMessages(prev => [...prev, result.message]);
+        const normalized = {
+          ...result.message,
+          content: result.message.content || result.message.message_content || messageData.content,
+          message_content: result.message.content || result.message.message_content || messageData.content,
+          sender_id: result.message.sender_id || user?.userID,
+          sender_type: (result.message.sender_type || userRole || 'patient').toLowerCase(),
+          sent_at: result.message.sent_at || new Date().toISOString(),
+        };
+        setMessages(prev => [...prev, normalized]);
 
         const timestamp = result.message.sent_at || result.message.created_at || new Date().toISOString();
         setLastMessageTimestamp(timestamp);
@@ -267,7 +317,9 @@ const BaseChat = ({ roleSpecificProps = {} }) => {
 
     handleSendMessage,
     formatMessageTime,
+    isFromCurrentUser,
     useMessageStatus,
+    refetchConversations,
 
     Button,
     Input,

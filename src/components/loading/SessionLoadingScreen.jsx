@@ -1,4 +1,3 @@
-import React from 'react';
 
 const SessionLoadingScreen = ({ message = "Restoring your session..." }) => {
     return (

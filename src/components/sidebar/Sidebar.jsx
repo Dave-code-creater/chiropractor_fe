@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import { useLogoutMutation } from "@/api/services/authApi";
 import { getNavigationByRole } from "@/constants/navigation";
 import {
@@ -11,21 +11,21 @@ import {
   logOut,
 } from "@/state/data/authSlice";
 import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
+  useSidebar,
   Sidebar,
+  SidebarTrigger,
+  SidebarHeader,
   SidebarContent,
+  SidebarFooter,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarHeader,
-  SidebarFooter,
-  SidebarTrigger,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import ThemeToggleButton from "@/components/theme/ThemeToggleButton";
 

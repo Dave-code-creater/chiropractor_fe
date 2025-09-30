@@ -1,15 +1,9 @@
 "use client"
 
-import {
-  CalendarDays,
-  Clock,
-  MapPin,
-  User,
-  FileText,
-} from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { MapPin, CalendarDays, Clock, FileText, User } from "lucide-react";
 import { getLocationByValue } from "@/constants/clinicLocations";
 
 export default function BookingSummary({ bookingData, doctors = [] }) {

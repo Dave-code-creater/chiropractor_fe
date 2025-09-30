@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import TimePickerInput from "@/components/ui/time-picker";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function Notifications() {
@@ -72,10 +72,10 @@ export default function Notifications() {
             <div className="space-y-2">
               {reminderTimes.map((time, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  <Input
-                    type="time"
+                  <TimePickerInput
+                    id={`reminder-${index}`}
                     value={time}
-                    onChange={(e) => handleTimeChange(index, e.target.value)}
+                    onChange={(val) => handleTimeChange(index, val)}
                     className="w-full"
                   />
                   <Button

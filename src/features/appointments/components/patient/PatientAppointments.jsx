@@ -1,10 +1,4 @@
-import React, { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useState, useMemo } from "react";
 import {
   useGetMyAppointmentsQuery,
   useUpdateAppointmentMutation,
@@ -14,21 +8,32 @@ import {
   Calendar,
   Clock,
   CheckCircle,
+  MapPin,
   XCircle,
-  Plus,
-  User
+  FileText,
+  Edit,
+  Star,
+  User,
+  AlertCircle,
 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import Booking from "@/features/appointments/components/Booking";
 import { toast } from 'sonner';
 import { format, isToday, isPast, isFuture } from 'date-fns';
-import Booking from "../Booking";
 
 export default function PatientAppointments() {
   const [activeTab, setActiveTab] = useState('book');
   const [cancelModal, setCancelModal] = useState({ isOpen: false, appointment: null });
   const [rescheduleModal, setRescheduleModal] = useState({ isOpen: false, appointment: null });
   const [feedbackModal, setFeedbackModal] = useState({ isOpen: false, appointment: null });
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
-  const { data: appointmentsData, isLoading, error, refetch } = useGetMyAppointmentsQuery({
+  const { data: appointmentsData, isLoading, refetch } = useGetMyAppointmentsQuery({
     status_not: 'cancelled',
     limit: 100
   });
@@ -589,6 +594,62 @@ export default function PatientAppointments() {
               Submit Feedback
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!selectedAppointment} onOpenChange={(open) => !open && setSelectedAppointment(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Appointment Details</DialogTitle>
+            <DialogDescription>
+              Full details for this appointment
+            </DialogDescription>
+          </DialogHeader>
+
+          {selectedAppointment && (
+            <div className="space-y-4">
+              <div className="p-4 bg-muted rounded-lg space-y-2">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span className="font-medium">
+                    {format(new Date(selectedAppointment.appointment_date || selectedAppointment.date), 'EEEE, MMMM d, yyyy')}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  <span>{formatTime(selectedAppointment.appointment_time)}</span>
+                </div>
+                {selectedAppointment.location && (
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    <span>{selectedAppointment.location}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>
+                    {selectedAppointment.doctor
+                      ? `Dr. ${selectedAppointment.doctor.first_name} ${selectedAppointment.doctor.last_name}`
+                      : 'Dr. Unknown'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4" />
+                  <span>{selectedAppointment.reason_for_visit || 'No reason provided'}</span>
+                </div>
+                <div>
+                  <Badge className={getStatusColor(selectedAppointment.status)}>
+                    {selectedAppointment.status}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={() => setSelectedAppointment(null)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

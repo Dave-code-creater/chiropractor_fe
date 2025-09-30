@@ -1,15 +1,14 @@
 "use client";
 
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Separator } from "@/components/ui/separator";
-import { Heart, Stethoscope } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   selectUserId,
   selectIsAuthenticated,
   selectUserRole,
 } from "@/state/data/authSlice";
+import { Separator } from "@/components/ui/separator";
+import { Heart, Stethoscope } from "lucide-react";
 
 const Footer = () => {
 

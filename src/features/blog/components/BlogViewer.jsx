@@ -1,29 +1,12 @@
-import React from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-    selectUserId,
-    selectUserRole,
-    selectIsAuthenticated,
-} from "@/state/data/authSlice";
+import { selectUserId, selectUserRole } from "@/state/data/authSlice";
 import {
     useGetBlogPostByIdQuery,
 } from "@/api/services/blogApi";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import {
-    Calendar,
-    Clock,
-    Eye,
-    BookOpen,
-    ArrowLeft,
-    Share2,
-} from "lucide-react";
+
+
 import { toast } from "sonner";
-import BlogContentRenderer from "./BlogContentRenderer";
 
 const BLOG_CATEGORIES = [
     { value: "chiropractic-care", label: "Chiropractic Care" },
@@ -43,7 +26,6 @@ const BlogViewer = () => {
 
     const userID = useSelector(selectUserId);
     const userRole = useSelector(selectUserRole);
-    const isAuthenticated = useSelector(selectIsAuthenticated);
 
     const postIdentifier = id || slug;
 

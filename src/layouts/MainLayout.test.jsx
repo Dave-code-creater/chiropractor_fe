@@ -1,9 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { Provider } from "react-redux";
 import { configureStore } from "@reduxjs/toolkit";
 import { describe, expect, it, vi } from "vitest";
-import MainLayout from "./MainLayout";
 
 vi.mock("@/components/sidebar/Sidebar", () => ({
   __esModule: true,

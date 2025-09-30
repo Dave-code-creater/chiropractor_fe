@@ -4,27 +4,21 @@ import {
   useVerifyResetTokenQuery,
 } from "../../api/services/authApi";
 import { useNavigate, useSearchParams, Link } from "react-router-dom";
-import { renderPwRegister, validatePassword } from "../../components/forms/FormUtils";
-import PasswordInput from "../../components/forms/PasswordInput";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import PasswordInput from "@/components/forms/PasswordInput";
+import { AlertCircle, CheckCircle, Lock, ArrowLeft } from "lucide-react";
+import { renderPwRegister } from "../../components/forms/FormUtils";
 import {
   setPasswordError,
   clearPasswordError,
   setConfirmPasswordError,
   clearConfirmPasswordError,
 } from "../../state/forms/passwordResetFormSlice";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import {
-  Lock,
-  CheckCircle,
-  AlertCircle,
-  Eye,
-  EyeOff,
-  ArrowLeft,
-} from "lucide-react";
+
+
 import { useResetPasswordMutation } from "../../api/services/authApi";
 
 export default function ResetPassword() {

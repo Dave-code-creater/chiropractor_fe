@@ -6,7 +6,7 @@ export const openExternalLink = (url) => {
                 shell.openExternal(url);
                 return;
             }
-        } catch (error) {
+        } catch {
             console.warn('Electron shell not available, falling back to window.open');
         }
     }

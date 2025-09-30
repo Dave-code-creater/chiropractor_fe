@@ -1,11 +1,7 @@
-import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { ClipboardCheck, AlertCircle, Eye } from "lucide-react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ClipboardCheck } from "lucide-react";
 
 export default function DoctorNotesCard() {
   const user = useSelector((state) => state?.auth);

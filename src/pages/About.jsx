@@ -1,4 +1,3 @@
-import React from "react";
 import dr from "../assets/images/dr.png";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";

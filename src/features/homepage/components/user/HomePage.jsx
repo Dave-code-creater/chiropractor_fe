@@ -1,10 +1,3 @@
-import React from "react";
-import AppointmentsCard from "./cards/AppointmentsCard";
-import DoctorNotesCard from "./cards/DoctorNotesCard";
-import ConditionsCard from "./cards/ConditionsCard";
-import MessagesCard from "./cards/MessagesCard";
-import BlogCard from "./cards/BlogCard";
-import { Link } from "react-router-dom";
 
 export default function HomePage() {
   return (
@@ -33,3 +26,9 @@ export default function HomePage() {
     </div>
   );
 }
+import { Link } from "react-router-dom";
+import AppointmentsCard from "./cards/AppointmentsCard";
+import DoctorNotesCard from "./cards/DoctorNotesCard";
+import ConditionsCard from "./cards/ConditionsCard";
+import MessagesCard from "./cards/MessagesCard";
+import BlogCard from "./cards/BlogCard";

@@ -1,12 +1,11 @@
-import React from "react";
 import { useSelector } from "react-redux";
 import { selectUserRole } from "@/state/data/authSlice";
+import AdminAppointments from "./components/admin/AdminAppointments";
 import DoctorAppointments from "./components/doctor/DoctorAppointments";
 import PatientAppointments from "./components/patient/PatientAppointments";
-
-import AdminAppointments from "./components/admin/AdminAppointments";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { AlertCircle } from "lucide-react";
+
 
 export default function Appointments() {
   const userRole = useSelector(selectUserRole);

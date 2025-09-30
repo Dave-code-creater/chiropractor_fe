@@ -1,66 +1,13 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useState, useEffect, useMemo } from "react";
+
+
+
+
+
+
 import { toast } from "sonner";
-import {
-  User,
-  Search,
-  Filter,
-  Plus,
-  Edit,
-  Trash2,
-  Phone,
-  Mail,
-  MapPin,
-  CalendarIcon,
-  Clock,
-  AlertTriangle,
-  CheckCircle,
-  FileText,
-  Activity,
-  Heart,
-  Pill,
-  Shield,
-  TrendingUp,
-  TrendingDown,
-  MoreHorizontal,
-  Download,
-  Upload,
-  Eye,
-  MessageSquare,
-  Star,
-  Flag,
-  Users,
-  BarChart3,
-} from "lucide-react";
+
+
 import { format } from "date-fns";
 
 const AdvancedPatientManagement = () => {
@@ -71,7 +18,7 @@ const AdvancedPatientManagement = () => {
   const [filterDoctor, setFilterDoctor] = useState("all");
   const [sortBy, setSortBy] = useState("name");
   const [viewMode, setViewMode] = useState("grid");
-  const [isLoading, setIsLoading] = useState(false);
+  //
 
   const [samplePatients] = useState([
     {
@@ -294,13 +241,7 @@ const AdvancedPatientManagement = () => {
     setSelectedPatient(patient);
   };
 
-  const handlePatientUpdate = (updatedPatient) => {
-    setPatients((prev) =>
-      prev.map((p) => (p.id === updatedPatient.id ? updatedPatient : p)),
-    );
-    setSelectedPatient(updatedPatient);
-    toast.success("Patient information updated successfully");
-  };
+  
 
   const handleAddAlert = (patientId, alert) => {
     const newAlert = {

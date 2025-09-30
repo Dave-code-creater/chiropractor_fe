@@ -1,37 +1,24 @@
-import React, { useState, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useMemo } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import {
-    Search,
-    Plus,
-    FileText,
-    Calendar,
-    Clock,
-    User,
-    Stethoscope,
-    ChevronLeft,
-    AlertCircle,
     Activity,
-    Target,
-    TrendingUp,
-    ChevronDown,
-    ChevronRight,
     Car,
     Briefcase,
     Heart,
-    Eye,
-    FileCheck,
     ClipboardCheck,
+    Stethoscope,
+    Target,
     CheckCircle,
+    TrendingUp,
+    Calendar,
+    FileCheck,
+    AlertCircle,
+    ChevronLeft,
+    Search,
 } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useGetIncidentsQuery } from "@/api";

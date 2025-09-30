@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
+import { UserCog, ArrowLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, UserCog, Paintbrush, Bell, Monitor } from "lucide-react";
-import { cn } from "@/lib/utils";
-
+import { Button } from "@/components/ui/button";
 import Account from "./Account";
-import Appearance from "./Appearance";
 import Notifications from "./Notifications";
 import Display from "./Display";
+
 
 const tabs = [
   {

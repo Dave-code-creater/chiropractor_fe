@@ -1,26 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-  Calendar,
-  Clock,
-  Users,
-  FileText,
-  MessageSquare,
-  Plus,
-  ArrowRight,
-  Activity,
-  CheckCircle,
-} from "lucide-react";
-import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { Link } from "react-router-dom";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Calendar, Users, MessageSquare, FileText, Activity, ArrowRight, Plus, Clock } from "lucide-react";
+
+
+import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { selectCurrentUser, selectUserId } from "../../../../state/data/authSlice";
 import { useGetDoctorPatientsQuery, useGetDoctorStatsQuery } from '@/api/services/doctorApi';
 import { useGetConversationsQuery } from '@/api/services/chatApi';
-import { useGetBlogPostsQuery } from '@/api/services/blogApi';
 import { extractList } from '@/utils/apiResponse';
 
 export default function DoctorDashboard() {
@@ -255,6 +247,7 @@ export default function DoctorDashboard() {
               </Link>
             </CardHeader>
             <CardContent>
+              <div className="rounded-lg border border-earthfire-brown-200 bg-white/60 p-3">
               {isLoadingAppointments ? (
                 <div className="flex items-center justify-center h-32">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-earthfire-brick-600"></div>
@@ -265,24 +258,27 @@ export default function DoctorDashboard() {
                   <p className="text-muted-foreground">No appointments scheduled for today</p>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {todayAppointments.map((apt) => (
-                    <div key={apt.id} className="flex items-center justify-between p-3 bg-earthfire-clay-50/80 rounded-lg border border-earthfire-clay-100">
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4 text-muted-foreground" />
-                          <span className="font-medium">{formatTime(apt.time || apt.datetime)}</span>
+                <ScrollArea type="hover" className="h-64 pr-1">
+                  <div className="space-y-3">
+                    {todayAppointments.map((apt) => (
+                      <div key={apt.id} className="flex items-center justify-between p-3 bg-earthfire-clay-50/80 rounded-lg border border-earthfire-clay-100">
+                        <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2">
+                            <Clock className="w-4 h-4 text-muted-foreground" />
+                            <span className="font-medium">{formatTime(apt.time || apt.datetime)}</span>
+                          </div>
+                          <div>
+                            <p className="font-medium">{apt.patientName || apt.patientFullName || 'Patient'}</p>
+                            <p className="text-sm text-muted-foreground">{apt.type || 'Consultation'}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-medium">{apt.patientName || apt.patientFullName || 'Patient'}</p>
-                          <p className="text-sm text-muted-foreground">{apt.type || 'Consultation'}</p>
-                        </div>
+                        <Badge className={getStatusColor(apt.status)}>{apt.status}</Badge>
                       </div>
-                      <Badge className={getStatusColor(apt.status)}>{apt.status}</Badge>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </ScrollArea>
               )}
+              </div>
             </CardContent>
           </Card>
 
@@ -357,6 +353,7 @@ export default function DoctorDashboard() {
               </Link>
             </CardHeader>
             <CardContent>
+              <div className="rounded-lg border border-earthfire-brown-200 bg-white/60 p-3">
               {isLoadingPatients ? (
                 <div className="flex items-center justify-center h-24">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-earthfire-brick-600"></div>
@@ -364,31 +361,34 @@ export default function DoctorDashboard() {
               ) : patients.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">No patients found</p>
               ) : (
-                <div className="space-y-3">
-                  {patients.slice(0, 3).map((patient) => (
-                    <div key={patient.patient_id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={patient.avatar} />
-                          <AvatarFallback>{patient.first_name?.[0]}{patient.last_name?.[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{patient.first_name} {patient.last_name}</p>
-                          <p className="text-sm text-muted-foreground">{patient.email}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {patient.total_incidents} incidents | {patient.total_appointments} appointments
-                          </p>
+                <ScrollArea type="hover" className="h-64 pr-1">
+                  <div className="space-y-3">
+                    {patients.slice(0, 20).map((patient) => (
+                      <div key={patient.patient_id} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={patient.avatar} />
+                            <AvatarFallback>{patient.first_name?.[0]}{patient.last_name?.[0]}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{patient.first_name} {patient.last_name}</p>
+                            <p className="text-sm text-muted-foreground">{patient.email}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {patient.total_incidents} incidents | {patient.total_appointments} appointments
+                            </p>
+                          </div>
                         </div>
+                        <Link to={`/dashboard/doctor/${userID}/patients/${patient.patient_id}`}>
+                          <Button size="sm" variant="ghost">
+                            View
+                          </Button>
+                        </Link>
                       </div>
-                      <Link to={`/dashboard/doctor/${userID}/patients/${patient.patient_id}`}>
-                        <Button size="sm" variant="ghost">
-                          View
-                        </Button>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </ScrollArea>
               )}
+              </div>
             </CardContent>
           </Card>
 
@@ -403,6 +403,7 @@ export default function DoctorDashboard() {
               </Link>
             </CardHeader>
             <CardContent>
+              <div className="rounded-lg border border-earthfire-brown-200 bg-white/60 p-3">
               {isLoadingConversations ? (
                 <div className="flex items-center justify-center h-24">
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-earthfire-brick-600"></div>
@@ -410,37 +411,40 @@ export default function DoctorDashboard() {
               ) : conversations.length === 0 ? (
                 <p className="text-muted-foreground text-center py-4">No recent messages</p>
               ) : (
-                <div className="space-y-3">
-                  {conversations.slice(0, 3).map((conv) => (
-                    <div key={conv.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={conv.avatar} />
-                          <AvatarFallback>{conv.title?.[0] || 'C'}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <p className="font-medium">{conv.title || 'Conversation'}</p>
-                          <p className="text-sm text-muted-foreground truncate max-w-[200px]">
-                            {conv.lastMessage || 'No messages yet'}
-                          </p>
+                <ScrollArea type="hover" className="h-64 pr-1">
+                  <div className="space-y-3">
+                    {conversations.slice(0, 20).map((conv) => (
+                      <div key={conv.id} className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={conv.avatar} />
+                            <AvatarFallback>{conv.title?.[0] || 'C'}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{conv.title || 'Conversation'}</p>
+                            <p className="text-sm text-muted-foreground truncate max-w-[200px]">
+                              {conv.lastMessage || 'No messages yet'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {conv.unread_count > 0 && (
+                            <Badge className="bg-earthfire-brick-500 text-white text-xs">
+                              {conv.unread_count}
+                            </Badge>
+                          )}
+                          <Link to={`/dashboard/doctor/${userID}/chat/${conv.id}`}>
+                            <Button size="sm" variant="ghost">
+                              Open
+                            </Button>
+                          </Link>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {conv.unread_count > 0 && (
-                          <Badge className="bg-earthfire-brick-500 text-white text-xs">
-                            {conv.unread_count}
-                          </Badge>
-                        )}
-                        <Link to={`/dashboard/doctor/${userID}/chat/${conv.id}`}>
-                          <Button size="sm" variant="ghost">
-                            Open
-                          </Button>
-                        </Link>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </ScrollArea>
               )}
+              </div>
             </CardContent>
           </Card>
         </div>

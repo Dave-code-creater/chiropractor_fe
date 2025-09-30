@@ -1,12 +1,13 @@
-import React, { useState, useMemo } from "react";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CalendarDays, AlertCircle } from "lucide-react";
+import { useState, useMemo } from "react";
 import { useGetMyAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";
-import CompactAppointmentCard from "@/components/CompactAppointmentCard";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { extractList } from '@/utils/apiResponse';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { AlertCircle, CalendarDays } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { isFuture, isToday } from 'date-fns';
+import CompactAppointmentCard from "@/components/CompactAppointmentCard";
 
 export default function AppointmentsCard() {
   const [rescheduling, setRescheduling] = useState(false);
@@ -14,8 +15,7 @@ export default function AppointmentsCard() {
   const { data, isLoading, error } = useGetMyAppointmentsQuery(
     {
       status_not: 'cancelled',
-      date_from: new Date().toISOString().split('T')[0],
-      limit: 10
+      limit: 100
     },
     {
       skip: !userID,
@@ -28,27 +28,104 @@ export default function AppointmentsCard() {
   const appointments = useMemo(() => {
     const rawAppointments = extractList(data, 'appointments');
 
-    const activeAppointments = rawAppointments.filter(appt => !appt.is_cancel && !appt.is_cancelled && appt.status !== 'cancelled');
+    const now = new Date();
 
-    return activeAppointments.slice(0, 3).map(appt => ({
+    const formatTime = (time) => {
+      if (!time) return 'TBD';
+      const str = String(time).trim();
+      const ampm = str.match(/^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$/);
+      if (ampm) {
+        return `${ampm[1]}:${ampm[2]} ${ampm[3].toUpperCase()}`;
+      }
+      const hhmm = str.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+      if (hhmm) {
+        let hours = parseInt(hhmm[1], 10);
+        const minutes = hhmm[2];
+        const suffix = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12 || 12;
+        return `${hours}:${minutes} ${suffix}`;
+      }
+      return str;
+    };
+
+    const parseTimeToMinutes = (time) => {
+      if (!time) return 0;
+      const str = String(time).trim();
+      const hhmm = str.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+      if (hhmm) {
+        const hours = parseInt(hhmm[1], 10);
+        const minutes = parseInt(hhmm[2], 10);
+        return hours * 60 + minutes;
+      }
+      const ampm = str.match(/^(\d{1,2}):(\d{2})\s*([AaPp][Mm])$/);
+      if (ampm) {
+        let hours = parseInt(ampm[1], 10);
+        const minutes = parseInt(ampm[2], 10);
+        const isPM = ampm[3].toUpperCase() === 'PM';
+        if (hours === 12) hours = 0;
+        return (isPM ? hours + 12 : hours) * 60 + minutes;
+      }
+      return 0;
+    };
+
+    const todaysMinutes = now.getHours() * 60 + now.getMinutes();
+    const allowedStatuses = new Set(['pending', 'confirmed', 'scheduled']);
+
+    const normalizeStatus = (status) => (status || '').toString().trim().toLowerCase();
+
+    const withinFutureWindow = (appointment) => {
+      const appointmentDate = new Date(
+        appointment.appointment_date || appointment.date || appointment.datetime
+      );
+      if (Number.isNaN(appointmentDate.getTime())) return false;
+
+      if (isToday(appointmentDate)) {
+        return parseTimeToMinutes(appointment.appointment_time) >= todaysMinutes;
+      }
+
+      return isFuture(appointmentDate);
+    };
+
+    const activeAppointments = rawAppointments.filter((appt) => {
+      const normalizedStatus = normalizeStatus(appt.status);
+      if (!allowedStatuses.has(normalizedStatus)) return false;
+      if (appt.is_cancel || appt.is_cancelled || normalizedStatus === 'cancelled') return false;
+      return withinFutureWindow(appt);
+    });
+
+    const toComparableTimestamp = (appt) => {
+      const appointmentDate = new Date(
+        appt.appointment_date || appt.date || appt.datetime
+      );
+      if (Number.isNaN(appointmentDate.getTime())) return Number.POSITIVE_INFINITY;
+      const dayStart = new Date(appointmentDate);
+      dayStart.setHours(0, 0, 0, 0);
+      return dayStart.getTime() + parseTimeToMinutes(appt.appointment_time) * 60 * 1000;
+    };
+
+    const getDateValue = (appt) => appt.appointment_date || appt.date || appt.datetime;
+
+    const upcomingSorted = [...activeAppointments].sort(
+      (a, b) => toComparableTimestamp(a) - toComparableTimestamp(b)
+    );
+
+    return upcomingSorted.slice(0, 1).map(appt => ({
       id: appt.id,
       doctorName: appt.doctor
         ? `Dr. ${appt.doctor.first_name} ${appt.doctor.last_name}`
-        : 'Dr. Unknown',
-      specialty: appt.doctor?.specialization || 'Chiropractic',
-      date: new Date(appt.appointment_date).toLocaleDateString("en-US", {
+        : appt.doctor_name
+          ? `Dr. ${appt.doctor_name}`
+          : 'Dr. Unknown',
+      specialty: appt.doctor?.specialization || appt.doctor_specialization || 'Chiropractic',
+      date: new Date(getDateValue(appt)).toLocaleDateString("en-US", {
         weekday: "long",
         month: "long",
         day: "numeric",
         year: "numeric"
       }),
-      time: new Date(`1970-01-01T${appt.appointment_time}`).toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true
-      }),
+      time: formatTime(appt.appointment_time),
       duration: `${appt.duration_minutes || 30} minutes`,
-      location: appt.location || "Clinic",
+      location: appt.location || appt.clinic_location || "Clinic",
       status: appt.status,
       is_cancel: appt.is_cancel || appt.is_cancelled || false
     }));
@@ -63,11 +140,7 @@ export default function AppointmentsCard() {
           </div>
           <span className="hidden sm:inline">Upcoming Appointment</span>
           <span className="sm:hidden">Appointments</span>
-          {appointments.length > 1 && (
-            <span className="ml-auto text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded-full">
-              {appointments.length}
-            </span>
-          )}
+          {/* Showing only the next appointment; omit count badge */}
         </CardTitle>
       </CardHeader>
       {!rescheduling ? (

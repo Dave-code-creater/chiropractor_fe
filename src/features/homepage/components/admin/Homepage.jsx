@@ -1,44 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
+
+
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  BarChart3,
   Users,
   Calendar,
   FileText,
   Shield,
-  Package,
-  Search,
-  Bell,
-  Settings,
   Activity,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
   DollarSign,
-  Download,
-  Eye,
-  Plus,
 } from "lucide-react";
 
-import DashboardStats from "@/components/dashboard/DashboardStats";
-import GlobalSearch from "@/components/advanced-search/GlobalSearch";
-import AdvancedPatientManagement from "@/features/patients/components/AdvancedPatientManagement";
-import DoctorAvailabilitySystem from "@/features/doctors/components/DoctorAvailabilitySystem";
-import PDFReportGenerator from "@/components/reports/PDFReportGenerator";
-import BulkOperationsManager from "@/components/bulk-operations/BulkOperationsManager";
-import SecurityManager from "@/components/security/SecurityManager";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");

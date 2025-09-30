@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import FormattedInput from "../components/forms/FormattedInput";
+import { useState } from "react";
 import callCenter from "../assets/images/call-center.jpg";
 import { openExternalLink } from "../utils/electronUtils";
+import FormattedInput from "@/components/forms/FormattedInput";
 
 export default function Contact() {
   const [name, setName] = useState("");
