@@ -1,5 +1,5 @@
 
-export default function CompactAppointmentCard({ appointment, showLocation = true }) {
+export default function AppointmentCardCompact({ appointment, showLocation = true }) {
   const isCanceled = appointment.is_cancel || appointment.is_cancelled || appointment.status === 'cancelled';
   
   return (

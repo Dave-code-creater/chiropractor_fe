@@ -1,6 +1,6 @@
 import { useState } from "react";
 import callCenter from "../assets/images/call-center.jpg";
-import { openExternalLink } from "../utils/electronUtils";
+import { openExternalLink } from "../utils/platformUtils";
 import FormattedInput from "@/components/forms/FormattedInput";
 
 export default function Contact() {

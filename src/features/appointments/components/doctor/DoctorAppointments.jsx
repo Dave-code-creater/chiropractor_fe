@@ -38,6 +38,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Checkbox } from "@/components/ui/checkbox";
 import { DatePickerInput } from "@/components/ui/date-picker";
 import TimePickerInput from "@/components/ui/time-picker";
+import AppointmentClinicalNote from "@/features/clinicalNotes/components/AppointmentClinicalNote";
 
 const DoctorAppointments = () => {
   const currentUserId = useSelector(selectUserId);
@@ -47,6 +48,7 @@ const DoctorAppointments = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedAppointments, setSelectedAppointments] = useState([]);
   const [activeTab, setActiveTab] = useState('today');
+  const [viewDetailModal, setViewDetailModal] = useState({ isOpen: false, appointment: null });
 
   React.useEffect(() => {
     setCurrentPage(1);
@@ -587,6 +589,13 @@ const DoctorAppointments = () => {
                               </TableCell>
                               <TableCell>
                                 <div className="flex items-center gap-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setViewDetailModal({ isOpen: true, appointment })}
+                                  >
+                                    View
+                                  </Button>
                                   {canCancel && (
                                     <Button
                                       variant="outline"
@@ -683,6 +692,93 @@ const DoctorAppointments = () => {
             appointment={editModal.appointment}
             onClose={() => setEditModal({ isOpen: false, appointment: null })}
           />
+        </DialogContent>
+      </Dialog>
+      
+      {/* Appointment Detail View with Clinical Notes */}
+      <Dialog open={viewDetailModal.isOpen} onOpenChange={(open) => !open && setViewDetailModal({ isOpen: false, appointment: null })}>
+        <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Appointment Details & Clinical Notes</DialogTitle>
+            <DialogDescription>
+              View appointment information and add/edit clinical notes
+            </DialogDescription>
+          </DialogHeader>
+
+          {viewDetailModal.appointment && (
+            <div className="space-y-6">
+              {/* Appointment Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Appointment Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Patient</Label>
+                      <p className="font-medium">
+                        {viewDetailModal.appointment.patient
+                          ? `${viewDetailModal.appointment.patient.first_name} ${viewDetailModal.appointment.patient.last_name}`
+                          : 'Unknown Patient'}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Status</Label>
+                      <div>
+                        <Badge className={getStatusColor(viewDetailModal.appointment.status)}>
+                          {viewDetailModal.appointment.status}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Date</Label>
+                      <p className="font-medium">
+                        {viewDetailModal.appointment.appointment_date
+                          ? format(new Date(viewDetailModal.appointment.appointment_date), 'EEEE, MMMM d, yyyy')
+                          : 'Not set'}
+                      </p>
+                    </div>
+                    <div>
+                      <Label className="text-sm text-muted-foreground">Time</Label>
+                      <p className="font-medium">
+                        {viewDetailModal.appointment.appointment_time
+                          ? formatTime(viewDetailModal.appointment.appointment_time)
+                          : 'TBD'}
+                      </p>
+                    </div>
+                    {viewDetailModal.appointment.reason_for_visit && (
+                      <div className="col-span-2">
+                        <Label className="text-sm text-muted-foreground">Reason for Visit</Label>
+                        <p className="text-sm">{viewDetailModal.appointment.reason_for_visit}</p>
+                      </div>
+                    )}
+                    {viewDetailModal.appointment.additional_notes && (
+                      <div className="col-span-2">
+                        <Label className="text-sm text-muted-foreground">Appointment Notes</Label>
+                        <p className="text-sm">{viewDetailModal.appointment.additional_notes}</p>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Clinical Notes Section */}
+              <AppointmentClinicalNote
+                appointmentId={viewDetailModal.appointment.id}
+                appointmentData={viewDetailModal.appointment}
+                userRole={userRole}
+              />
+
+              <div className="flex justify-end gap-2 pt-4 border-t">
+                <Button
+                  variant="outline"
+                  onClick={() => setViewDetailModal({ isOpen: false, appointment: null })}
+                >
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

@@ -1,12 +1,17 @@
 import { useState, useMemo } from "react";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   Calendar,
   CheckCircle,
   Users,
   TrendingUp,
+  Search,
+  Phone,
+  Mail,
 } from "lucide-react";
-
-
 import { useGetPatientsQuery } from "@/api/services/userApi";
 import { useGetAppointmentsQuery } from "@/api/services/appointmentApi";
 import { useSelector } from "react-redux";

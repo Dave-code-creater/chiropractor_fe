@@ -1,5 +1,9 @@
-import { useState, lazy } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useScreenSize } from "@/hooks/useScreenSize";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import DesktopPainDetailDialog from "./DesktopPainDetailDialog";
+import MobilePainDetailModal from "./MobilePainDetailModal";
 
 const BodyComponent = lazy(() =>
   import("reactjs-human-body").then((m) => ({

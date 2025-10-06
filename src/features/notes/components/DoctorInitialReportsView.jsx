@@ -7,14 +7,19 @@ import {
     Car,
     Briefcase,
     Heart,
+    ClipboardList,
+    Plus,
 } from "lucide-react";
-import { useGetIncidentsQuery } from "@/api";
+import { useGetIncidentsQuery, useGetTreatmentPlanQuery, useCreateTreatmentPlanMutation } from "@/api";
+import TreatmentPlanForm from "./TreatmentPlanForm";
+import { toast } from "sonner";
 
 const DoctorInitialReportsView = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterType, setFilterType] = useState("all");
     const [filterStatus, setFilterStatus] = useState("all");
     const [selectedIncident, setSelectedIncident] = useState(null);
+    const [showTreatmentPlanForm, setShowTreatmentPlanForm] = useState(false);
 
     const {
         data: allIncidents,
@@ -22,6 +27,14 @@ const DoctorInitialReportsView = () => {
         error: incidentsError,
         refetch
     } = useGetIncidentsQuery(null);
+
+    // Fetch treatment plan for selected incident
+    const { data: treatmentPlanData, isLoading: isLoadingPlan } = useGetTreatmentPlanQuery(
+        selectedIncident?.id,
+        { skip: !selectedIncident?.id }
+    );
+
+    const [createTreatmentPlan, { isLoading: isCreatingPlan }] = useCreateTreatmentPlanMutation();
 
     const incidents = useMemo(() => {
         if (!allIncidents?.data) return [];
@@ -67,6 +80,37 @@ const DoctorInitialReportsView = () => {
         });
     };
 
+    const handleCreateTreatmentPlan = async (treatmentData) => {
+        try {
+            await createTreatmentPlan({
+                incidentId: selectedIncident.id,
+                ...treatmentData
+            }).unwrap();
+            
+            toast.success("Treatment Plan Created Successfully", {
+                description: "The patient can now book appointments based on this plan."
+            });
+            
+            setShowTreatmentPlanForm(false);
+        } catch (error) {
+            console.error("Failed to create treatment plan:", error);
+            toast.error("Failed to Create Treatment Plan", {
+                description: error?.data?.message || "Please try again"
+            });
+        }
+    };
+
+    const getPatientName = (incident) => {
+        const forms = incident?.forms || [];
+        const patientInfo = forms.find(f => f.form_type === 'patient_info')?.form_data || {};
+        return `${patientInfo.first_name || ''} ${patientInfo.last_name || ''}`.trim() || 'Unknown Patient';
+    };
+
+    const getPatientInfo = (incident) => {
+        const forms = incident?.forms || [];
+        return forms.find(f => f.form_type === 'patient_info')?.form_data || {};
+    };
+
     const getIncidentIcon = (incidentType) => {
         switch (incidentType) {
             case 'car_accident':
@@ -95,12 +139,6 @@ const DoctorInitialReportsView = () => {
             default:
                 return 'bg-gray-50 text-gray-700 border-gray-200';
         }
-    };
-
-    const getPatientName = (incident) => {
-        const forms = incident.forms || [];
-        const patientInfo = forms.find(f => f.form_type === 'patient_info')?.form_data || {};
-        return `${patientInfo.first_name || ''} ${patientInfo.last_name || ''}`.trim() || 'Unknown Patient';
     };
 
     const getPatientAge = (incident) => {
@@ -133,6 +171,45 @@ const DoctorInitialReportsView = () => {
     };
 
     if (selectedIncident) {
+        const existingPlan = treatmentPlanData?.data;
+        const patientName = getPatientName(selectedIncident);
+        const patientInfo = getPatientInfo(selectedIncident);
+
+        if (showTreatmentPlanForm) {
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
+                    <div className="max-w-6xl mx-auto space-y-6">
+                        <div className="flex items-center gap-4">
+                            <Button
+                                variant="outline"
+                                onClick={() => setShowTreatmentPlanForm(false)}
+                                className="flex items-center gap-2"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                                Back to Report
+                            </Button>
+                            <div className="flex-1">
+                                <h1 className="text-3xl font-bold text-foreground">
+                                    Create Treatment Plan - {patientName}
+                                </h1>
+                                <p className="text-muted-foreground mt-1">
+                                    Define treatment phases, session frequency, and overall treatment goals
+                                </p>
+                            </div>
+                        </div>
+
+                        <TreatmentPlanForm
+                            patientId={patientInfo.patient_id || selectedIncident.user_id}
+                            patientName={patientName}
+                            onSubmit={handleCreateTreatmentPlan}
+                            onCancel={() => setShowTreatmentPlanForm(false)}
+                            isEditing={false}
+                        />
+                    </div>
+                </div>
+            );
+        }
+
         return (
             <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 p-6">
                 <div className="max-w-6xl mx-auto space-y-6">
@@ -147,13 +224,63 @@ const DoctorInitialReportsView = () => {
                         </Button>
                         <div className="flex-1">
                             <h1 className="text-3xl font-bold text-foreground">
-                                Patient Initial Report - {getPatientName(selectedIncident)}
+                                Patient Initial Report - {patientName}
                             </h1>
                             <p className="text-muted-foreground mt-1">
                                 Detailed view for clinical assessment and treatment planning
                             </p>
                         </div>
+                        {!isLoadingPlan && !existingPlan && (
+                            <Button
+                                onClick={() => setShowTreatmentPlanForm(true)}
+                                className="flex items-center gap-2"
+                            >
+                                <ClipboardList className="w-4 h-4" />
+                                Create Treatment Plan
+                            </Button>
+                        )}
+                        {existingPlan && (
+                            <Badge className="px-4 py-2 text-sm" variant="secondary">
+                                <ClipboardList className="w-4 h-4 mr-2" />
+                                Treatment Plan Created
+                            </Badge>
+                        )}
                     </div>
+
+                    {existingPlan && (
+                        <Card className="border-l-4 border-l-green-500 bg-green-50/50">
+                            <CardHeader>
+                                <CardTitle className="flex items-center gap-2 text-green-700">
+                                    <ClipboardList className="w-5 h-5" />
+                                    Active Treatment Plan
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-3">
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Diagnosis</p>
+                                        <p className="font-medium">{existingPlan.diagnosis}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Treatment Goal</p>
+                                        <p className="font-medium">{existingPlan.overall_goal || existingPlan.treatment_goals}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-muted-foreground">Total Duration</p>
+                                        <p className="font-medium">{existingPlan.total_duration} weeks • {existingPlan.total_appointments} appointments</p>
+                                    </div>
+                                    <div className="flex items-center gap-2 pt-2">
+                                        <Badge variant="outline" className="bg-white">
+                                            {existingPlan.status?.toUpperCase() || 'ACTIVE'}
+                                        </Badge>
+                                        <span className="text-sm text-muted-foreground">
+                                            Patient can now book appointments based on this plan
+                                        </span>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    )}
 
                     <InitialReportDisplay incident={selectedIncident} />
                 </div>

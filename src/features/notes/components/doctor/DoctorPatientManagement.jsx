@@ -7,6 +7,7 @@ import {
   FileCheck,
   Search,
   Calendar,
+  CalendarPlus,
   AlertCircle,
   ChevronLeft,
   ChevronRight,
@@ -16,6 +17,7 @@ import {
   Save,
   Plus,
   Trash2,
+  CheckCircle,
 } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -263,6 +265,74 @@ const DoctorPatientManagement = ({ doctorId }) => {
     return String(value)
       .replace(/_/g, ' ')
       .replace(/\b\w/g, char => char.toUpperCase());
+  };
+
+  const handleSubmitTreatmentPlan = async () => {
+    if (!activeIncidentId) {
+      alert("No incident found. Cannot create treatment plan.");
+      return;
+    }
+
+    try {
+      if (!treatmentPlan.diagnosis || !treatmentPlan.goals || treatmentPlan.phases.length === 0) {
+        alert("Please fill in all required fields (diagnosis, goals, and at least one phase)");
+        return;
+      }
+
+      const invalidPhases = treatmentPlan.phases.filter(phase =>
+        !phase.duration || !phase.frequency
+      );
+
+      if (invalidPhases.length > 0) {
+        alert("Please fill in duration and frequency for all phases");
+        return;
+      }
+
+      const apiPayload = {
+        patient_id: selectedPatient?.patient_id || selectedPatient?.id || selectedIncident?.patient_id,
+        doctor_id: doctorId,
+        diagnosis: treatmentPlan.diagnosis,
+        treatment_goals: treatmentPlan.goals,
+        additional_notes: treatmentPlan.notes,
+        treatment_phases: treatmentPlan.phases.map(phase => ({
+          duration: parseInt(phase.duration),
+          duration_type: phase.durationType,
+          frequency: parseInt(phase.frequency),
+          frequency_type: phase.frequencyType,
+          description: phase.description || null
+        })),
+        created_at: new Date().toISOString(),
+        status: "active"
+      };
+
+      if (isEditingTreatmentPlan) {
+        await updateTreatmentPlan(apiPayload);
+        alert("Treatment plan updated successfully!");
+      } else {
+        await createTreatmentPlan(apiPayload);
+        alert("Treatment plan created successfully!");
+      }
+
+      setShowTreatmentPlan(false);
+      setTreatmentPlan({
+        diagnosis: "",
+        goals: "",
+        notes: "",
+        phases: [
+          {
+            id: 1,
+            duration: "",
+            durationType: "weeks",
+            frequency: "",
+            frequencyType: "per_week",
+            description: ""
+          }
+        ]
+      });
+    } catch (error) {
+      console.error("Error submitting treatment plan:", error);
+      alert(`Failed to ${isEditingTreatmentPlan ? 'update' : 'create'} treatment plan. Please try again.`);
+    }
   };
 
   const renderIncidentDetails = () => {
@@ -720,215 +790,32 @@ const DoctorPatientManagement = ({ doctorId }) => {
                     <p className="font-medium">{planData.additional_notes}</p>
                   </div>
                 )}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No treatment plan found for this incident.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Initial Reports ({totalReports})</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {reports && reports.length > 0 ? (
-              <div className="space-y-3">
-                {reports.map(report => {
-                  const Icon = getIncidentIcon(report.incident_type || incidentDetails.incident_type);
-                  const statusLabel = humanize(report.status || 'pending');
-                  return (
-                    <div
-                      key={report.id}
-                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50"
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className="w-5 h-5 text-blue-600" />
-                        <div>
-                          <p className="font-medium">{report.title}</p>
-                          <p className="text-sm text-gray-600">{formatNoteDate(report.created_at)}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={getStatusColor((report.status || 'pending').toLowerCase())}>
-                          {statusLabel}
-                        </Badge>
-                        <ChevronRight className="w-4 h-4 text-gray-400" />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center py-8">
-                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No reports found for this incident.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  };
-
-  if (selectedIncident) {
-    return renderIncidentDetails();
-  }
-
-  if (selectedPatient) {
-    const handleSubmitTreatmentPlan = async () => {
-      if (!activeIncidentId) {
-        alert("No incident found for this patient. Cannot create treatment plan.");
-        return;
-      }
-
-      try {
-        if (!treatmentPlan.diagnosis || !treatmentPlan.goals || treatmentPlan.phases.length === 0) {
-          alert("Please fill in all required fields (diagnosis, goals, and at least one phase)");
-          return;
-        }
-
-        const invalidPhases = treatmentPlan.phases.filter(phase =>
-          !phase.duration || !phase.frequency
-        );
-
-        if (invalidPhases.length > 0) {
-          alert("Please fill in duration and frequency for all phases");
-          return;
-        }
-
-        const apiPayload = {
-          patient_id: selectedPatient?.patient_id || selectedPatient?.id,
-          doctor_id: doctorId,
-          diagnosis: treatmentPlan.diagnosis,
-          treatment_goals: treatmentPlan.goals,
-          additional_notes: treatmentPlan.notes,
-          treatment_phases: treatmentPlan.phases.map(phase => ({
-            duration: parseInt(phase.duration),
-            duration_type: phase.durationType,
-            frequency: parseInt(phase.frequency),
-            frequency_type: phase.frequencyType,
-            description: phase.description || null
-          })),
-          created_at: new Date().toISOString(),
-          status: "active"
-        };
-
-        if (isEditingTreatmentPlan) {
-          await updateTreatmentPlan(apiPayload);
-          alert("Treatment plan updated successfully!");
-        } else {
-          await createTreatmentPlan(apiPayload);
-          alert("Treatment plan created successfully!");
-        }
-
-        setShowTreatmentPlan(false);
-        setTreatmentPlan({
-          diagnosis: "",
-          goals: "",
-          notes: "",
-          phases: [
-            {
-              id: 1,
-              duration: "",
-              durationType: "weeks",
-              frequency: "",
-              frequencyType: "per_week",
-              description: ""
-            }
-          ]
-        });
-      } catch (error) {
-        console.error("Error submitting treatment plan:", error);
-        alert(`Failed to ${isEditingTreatmentPlan ? 'update' : 'create'} treatment plan. Please try again.`);
-      }
-    };
-
-    const renderTreatmentPlanStatus = () => {
-      if (isLoadingTreatmentPlan) {
-        return (
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-            Checking for existing treatment plan...
-          </div>
-        );
-      }
-
-      if (hasTreatmentPlan) {
-        const planData = existingTreatmentPlan.data;
-        return (
-          <Card className="mt-4">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-earthfire-brick-700">
-                <CheckCircle className="w-5 h-5" />
-                Existing Treatment Plan
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-600">Diagnosis</p>
-                  <p className="font-medium">{planData?.diagnosis || 'No diagnosis specified'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Treatment Goals</p>
-                  <p className="font-medium">{planData?.treatment_goals || 'No treatment goals specified'}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600">Phases</p>
-                  <div className="space-y-2">
-                    {planData.treatment_phases?.map((phase, index) => (
-                      <div key={index} className="p-2 bg-gray-50 rounded text-sm">
-                        <strong>Phase {index + 1}:</strong> {phase.frequency} visits {phase.frequency_type?.replace('_', ' ')} for {phase.duration} {phase.duration_type}
-                        {phase.description && ` - ${phase.description}`}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <div className="flex gap-2 pt-2">
+                <div className="pt-4">
                   <Button
                     onClick={() => setShowTreatmentPlan(true)}
                     variant="outline"
-                    size="sm"
+                    className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
                   >
                     Edit Treatment Plan
                   </Button>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        );
-      }
+            ) : (
+              <div className="text-center py-8">
+                <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 mb-4">No treatment plan found for this incident.</p>
+                <Button
+                  onClick={() => setShowTreatmentPlan(true)}
+                  className="bg-emerald-600 hover:bg-emerald-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create Treatment Plan
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-      return null;
-    };
-
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            onClick={() => setSelectedPatient(null)}
-            className="flex items-center gap-2"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Back to Patients
-          </Button>
-
-        </div>
-        <div className="flex gap-3">
-
-          {!activeIncidentId && (
-            <div className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
-              <AlertCircle className="w-4 h-4 inline mr-1" />
-              No recent incident found. Treatment plan requires an incident.
-            </div>
-          )}
-        </div>
-        {renderTreatmentPlanStatus()}
         {showTreatmentPlan && (
           <Card className="mt-6">
             <CardHeader>
@@ -1075,10 +962,10 @@ const DoctorPatientManagement = ({ doctorId }) => {
                 <Button
                   onClick={handleSubmitTreatmentPlan}
                   className="flex items-center gap-2"
-                  disabled={isCreating || isUpdating}
+                  disabled={isCreatingTreatmentPlan || isUpdatingTreatmentPlan}
                 >
                   <Save className="w-4 h-4" />
-                  {isCreating || isUpdating
+                  {isCreatingTreatmentPlan || isUpdatingTreatmentPlan
                     ? (isEditingTreatmentPlan ? 'Updating...' : 'Creating...')
                     : (isEditingTreatmentPlan ? 'Update Treatment Plan' : 'Save Treatment Plan')
                   }
@@ -1086,7 +973,7 @@ const DoctorPatientManagement = ({ doctorId }) => {
                 <Button
                   variant="outline"
                   onClick={() => setShowTreatmentPlan(false)}
-                  disabled={isCreating || isUpdating}
+                  disabled={isCreatingTreatmentPlan || isUpdatingTreatmentPlan}
                 >
                   Cancel
                 </Button>
@@ -1094,6 +981,28 @@ const DoctorPatientManagement = ({ doctorId }) => {
             </CardContent>
           </Card>
         )}
+      </div>
+    );
+  };
+
+  if (selectedIncident) {
+    return renderIncidentDetails();
+  }
+
+  if (selectedPatient) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="outline"
+            onClick={() => setSelectedPatient(null)}
+            className="flex items-center gap-2"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            Back to Patients
+          </Button>
+        </div>
+
         <Card>
           <CardHeader>
             <CardTitle>Incidents ({selectedPatient.total_incidents || 0})</CardTitle>

@@ -40,7 +40,11 @@ export const API_ENDPOINTS = {
 
   CLINICAL_NOTES: {
     BASE: "/clinical-notes",
-    BY_PATIENT: (patientId) => `/clinical-notes/patient/${patientId}`,
+    BY_ID: (noteId) => `/clinical-notes/${noteId}`,
+    BY_PATIENT: (patientId) => `/patients/${patientId}/clinical-notes`,
+    BY_APPOINTMENT: (appointmentId) => `/appointments/${appointmentId}/clinical-notes`,
+    MY_NOTES: "/clinical-notes/my-notes",
+    MY_RECORDS: "/clinical-notes/my-records", // For patients to view their own medical records
     SOAP: "/clinical-notes/soap",
     TEMPLATES: "/clinical-notes/templates",
     SEARCH: "/clinical-notes/search",

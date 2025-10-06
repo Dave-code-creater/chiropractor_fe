@@ -30,6 +30,11 @@ export default [
         sourceType: 'module',
       },
     },
+    settings: {
+      react: {
+        version: 'detect',
+      },
+    },
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
@@ -38,9 +43,13 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
-      // Unused imports/vars handled by base rule below
-      'unused-imports/no-unused-imports': 'off',
-      'unused-imports/no-unused-vars': 'off',
+      
+      // Catch undefined variables (like missing imports)
+      'no-undef': 'error', // This will catch <Card> if Card is not imported
+      
+      // Unused imports/vars
+      'unused-imports/no-unused-imports': 'warn',
+      'unused-imports/no-unused-vars': 'warn',
       // Backstop for other unused-var cases in non-import contexts
       'no-unused-vars': [
         'error',

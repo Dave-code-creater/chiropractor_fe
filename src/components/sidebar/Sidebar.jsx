@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LogOut } from "lucide-react";
 import ThemeToggleButton from "@/components/theme/ThemeToggleButton";
+import PatientHealthReport from "@/components/reports/PatientHealthReport";
 
 const AppSidebar = () => {
   const navigate = useNavigate();
@@ -189,6 +190,11 @@ const AppSidebar = () => {
         </SidebarContent>
 
         <SidebarFooter className="border-t bg-gradient-to-br from-card to-muted/20 p-6">
+          {userRole === "patient" && (
+            <div className="mb-3">
+              <PatientHealthReport />
+            </div>
+          )}
           <Button
             variant="outline"
             className="w-full justify-start gap-3 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20 transition-all duration-200 text-base py-3"

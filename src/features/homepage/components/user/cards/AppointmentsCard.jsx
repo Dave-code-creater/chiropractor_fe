@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { AlertCircle, CalendarDays } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { isFuture, isToday } from 'date-fns';
-import CompactAppointmentCard from "@/components/CompactAppointmentCard";
+import AppointmentCardCompact from "@/components/AppointmentCardCompact";
 
 export default function AppointmentsCard() {
   const [rescheduling, setRescheduling] = useState(false);
@@ -165,7 +165,7 @@ export default function AppointmentsCard() {
             <ScrollArea className="flex-1">
               <div className="space-y-3 sm:space-y-4 pr-2">
                 {appointments.map((appt) => (
-                  <CompactAppointmentCard
+                  <AppointmentCardCompact
                     key={appt.id || appt.date}
                     appointment={appt}
                   />

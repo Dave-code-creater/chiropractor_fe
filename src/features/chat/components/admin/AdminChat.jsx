@@ -1,8 +1,12 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import BaseChat from "../BaseChat";
-
-
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   UserPlus,
   Shield,

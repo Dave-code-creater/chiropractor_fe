@@ -1,9 +1,12 @@
-
-
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Trash2 } from "lucide-react";
 import { formatConversationType, formatPriority, canUpdateConversationStatus } from "../constants/roles";
-import { formatMessageTime, getRoleIconComponent } from "../utils/chatUtils";
-
-const ConversationItem = ({
+import { formatMessageTime, getRoleIconComponent } from "../utils/chatUtils";const ConversationItem = ({
     conversation,
     selectedConversation,
     onSelect,

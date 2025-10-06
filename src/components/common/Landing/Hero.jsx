@@ -2,39 +2,67 @@
 
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { selectUserId, selectIsAuthenticated } from "../../../state/data/authSlice";
 
-import background1 from '../../../assets/background-1.jpg';
-import background2 from '../../../assets/background-2.jpg';
-import background3 from '../../../assets/background-3.jpg';
-import background4 from '../../../assets/background-4.jpg';
-
+// Lazy load images - only load what's needed
+const backgroundImages = [
+  { url: () => import('../../../assets/background-1.jpg'), loaded: false },
+  { url: () => import('../../../assets/background-2.jpg'), loaded: false },
+  { url: () => import('../../../assets/background-3.jpg'), loaded: false },
+  { url: () => import('../../../assets/background-4.jpg'), loaded: false }
+];
 
 export default function Hero() {
   const navigate = useNavigate();
   const user = useSelector(selectUserId);
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-  const backgroundImages = [
-    { url: background1 },
-    { url: background2 },
-    { url: background3 },
-    { url: background4 }
-
-  ];
-
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [loadedImages, setLoadedImages] = useState({});
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  const preloadedImages = useRef(new Set());
+
+  // Preload current and next image
+  useEffect(() => {
+    const preloadImage = async (index) => {
+      if (preloadedImages.current.has(index) || loadedImages[index]) {
+        return;
+      }
+
+      try {
+        const imageModule = await backgroundImages[index].url();
+        setLoadedImages(prev => ({
+          ...prev,
+          [index]: imageModule.default
+        }));
+        preloadedImages.current.add(index);
+        
+        if (index === 0) {
+          setIsImageLoading(false);
+        }
+      } catch (error) {
+        console.error(`Failed to load image ${index}:`, error);
+      }
+    };
+
+    // Load current image first
+    preloadImage(currentImageIndex);
+    
+    // Preload next image in background
+    const nextIndex = (currentImageIndex + 1) % backgroundImages.length;
+    setTimeout(() => preloadImage(nextIndex), 100);
+  }, [currentImageIndex, loadedImages]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImageIndex((prevIndex) =>
-        prevIndex === backgroundImages.length - 1 ? 0 : prevIndex + 1
+        prevIndex >= 3 ? 0 : prevIndex + 1 // Fixed to use constant instead of array length
       );
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [backgroundImages.length]);
+  }, []); // No dependencies needed
 
   const handleBookAppointment = () => {
     if (isAuthenticated && user?.id) {
@@ -46,14 +74,24 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden">
-      {backgroundImages.map((image, index) => (
+      {/* Only render images that have been loaded */}
+      {Object.entries(loadedImages).map(([index, imageUrl]) => (
         <div
           key={index}
-          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-            }`}
-          style={{ backgroundImage: `url(${image.url})` }}
+          className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000 ${
+            parseInt(index) === currentImageIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{ backgroundImage: `url(${imageUrl})` }}
         />
       ))}
+      
+      {/* Loading state for first image */}
+      {isImageLoading && (
+        <div className="absolute inset-0 bg-gray-900 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        </div>
+      )}
+      
       <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/60 to-black/40 z-0" />
       <div className="relative z-10 mx-auto max-w-4xl px-6 text-center py-20 sm:py-32 lg:py-40">
         <div className="mb-6 inline-block rounded-full bg-white/10 px-4 py-1 text-sm font-medium text-earthfire-clay-200 backdrop-blur-sm ring-1 ring-white/20">

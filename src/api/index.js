@@ -5,7 +5,34 @@ export { API_RESPONSE_TYPES, ApiError, handleApiResponse } from './config/errors
 export { createBaseApi, baseApi, baseQueryWithReauth, CACHE_TIMES, performanceTracker } from './core/baseApi';
 export { refreshTokens, startPeriodicTokenCheck, stopPeriodicTokenCheck, setLoggingOut } from './core/tokenManager';
 
-export { clinicalNotesApi, useGetClinicalNotesQuery, useGetClinicalNotesByPatientQuery, useGetClinicalNoteQuery, useCreateClinicalNoteMutation, useUpdateClinicalNoteMutation, useDeleteClinicalNoteMutation, useCreateSOAPNoteMutation, useUpdateSOAPNoteMutation, useGetSOAPNotesQuery, useSearchClinicalNotesQuery, useGetNoteTemplatesQuery, useGetTreatmentPlanQuery, useUpdateTreatmentPlanMutation, useCreateTreatmentPlanMutation, useGetPatientIncidentsQuery, useGetIncidentDetailsQuery } from './services/clinicalNotes';
+export {
+  clinicalNotesApi,
+  useGetMyNotesQuery,
+  useGetMyRecordsQuery,
+  useGetClinicalNoteQuery,
+  useGetClinicalNotesByPatientQuery,
+  useGetClinicalNoteByAppointmentQuery,
+  useCreateOrUpdateNoteForAppointmentMutation,
+  useUpdateClinicalNoteMutation,
+  useDeleteClinicalNoteMutation,
+  useCreateSOAPNoteMutation,
+  useUpdateSOAPNoteMutation,
+  useGetSOAPNotesQuery,
+  useSearchClinicalNotesQuery,
+  useGetNoteTemplatesQuery,
+  useGetTreatmentPlanQuery,
+  useUpdateTreatmentPlanMutation,
+  useCreateTreatmentPlanMutation,
+  useGetPatientIncidentsQuery,
+  useGetDoctorIncidentsQuery,
+  useGetIncidentDetailsQuery,
+  // useGetDoctorPatientsQuery - removed duplicate, exported from doctorApi
+  useGetPatientCaseQuery,
+  useGetPatientNotesQuery,
+  useCreatePatientNoteMutation,
+  useUpdatePatientNoteMutation,
+  useDeletePatientNoteMutation,
+} from './services/clinicalNotes';
 
 export {
   doctorScheduleApi,

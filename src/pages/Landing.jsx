@@ -3,7 +3,7 @@ import Services from "@/components/common/Landing/Services";
 import Testimonials from "@/components/common/Landing/Testimonials";
 import About from "@/pages/About";
 
-export default function LandingPage() {
+export default function Landing() {
   return (
     <div className="bg-gray-100">
       <Hero />

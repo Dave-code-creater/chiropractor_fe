@@ -23,6 +23,7 @@ import {
 import { useSelector } from "react-redux";
 import { useGetIncidentsQuery } from "@/api";
 import InitialReportDisplay from "./InitialReportDisplay";
+import PatientTreatmentPlanView from "../../appointments/components/patient/PatientTreatmentPlanView";
 
 const PatientNotesView = () => {
     const auth = useSelector((state) => state.auth);
@@ -434,13 +435,22 @@ const PatientNotesView = () => {
                 {incidents && incidents.length > 0 && (
                     <div className="space-y-6">
                         <div className="flex items-center justify-between">
-                            <h2 className="text-xl font-semibold">My Initial Reports</h2>
+                            <h2 className="text-xl font-semibold">My Initial Reports & Treatment Plans</h2>
                             <Badge variant="secondary" className="text-xs">
                                 {incidents.length} {incidents.length === 1 ? 'Report' : 'Reports'}
                             </Badge>
                         </div>
                         {incidents.map((incident) => (
-                            <InitialReportDisplay key={incident.id} incident={incident} />
+                            <div key={incident.id} className="space-y-4">
+                                <InitialReportDisplay incident={incident} />
+                                {/* Show treatment plan if exists for this incident */}
+                                <div className="pl-6 border-l-4 border-l-primary/20">
+                                    <PatientTreatmentPlanView 
+                                        incidentId={incident.id} 
+                                        patientId={user?.id}
+                                    />
+                                </div>
+                            </div>
                         ))}
                     </div>
                 )}

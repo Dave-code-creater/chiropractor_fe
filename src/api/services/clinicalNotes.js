@@ -3,68 +3,94 @@ import { API_ENDPOINTS } from '../config/endpoints';
 
 export const clinicalNotesApi = createBaseApi({
   reducerPath: "clinicalNotesApi",
-  tagTypes: ["ClinicalNote", "SOAPNote", "PatientNotes", "NoteTemplate", "TreatmentPlan", "IncidentDetails", "PatientIncidents", "DoctorPatients"],
+  tagTypes: ["ClinicalNote", "SOAPNote", "PatientNotes", "AppointmentNote", "MyNotes", "MyRecords", "NoteTemplate", "TreatmentPlan", "IncidentDetails", "PatientIncidents", "DoctorPatients"],
   endpoints: (builder) => ({
-    getClinicalNotes: builder.query({
-      query: ({
-        page = 1,
-        limit = 20,
-        patient_id,
-        doctor_id,
-        type,
-        date_from,
-        date_to,
-      } = {}) => ({
-        url: API_ENDPOINTS.CLINICAL_NOTES.BASE,
-        params: { page, limit, patient_id, doctor_id, type, date_from, date_to },
+    // Get doctor's own clinical notes
+    getMyNotes: builder.query({
+      query: ({ page = 1, limit = 10 } = {}) => ({
+        url: API_ENDPOINTS.CLINICAL_NOTES.MY_NOTES,
+        params: { page, limit },
       }),
-      providesTags: ["ClinicalNote"],
+      providesTags: ["MyNotes"],
     }),
 
-    getClinicalNotesByPatient: builder.query({
-      query: (patient_id) => API_ENDPOINTS.CLINICAL_NOTES.BY_PATIENT(patient_id),
-      providesTags: (result, error, patient_id) => [
-        { type: "PatientNotes", id: patient_id },
-        "ClinicalNote",
-      ],
+    // Get patient's own medical records
+    getMyRecords: builder.query({
+      query: ({ page = 1, limit = 10 } = {}) => ({
+        url: API_ENDPOINTS.CLINICAL_NOTES.MY_RECORDS,
+        params: { page, limit },
+      }),
+      providesTags: ["MyRecords"],
     }),
 
+    // Get clinical note by ID
     getClinicalNote: builder.query({
-      query: (noteId) => `${API_ENDPOINTS.CLINICAL_NOTES.BASE}/${noteId}`,
+      query: (noteId) => API_ENDPOINTS.CLINICAL_NOTES.BY_ID(noteId),
       providesTags: (result, error, noteId) => [
         { type: "ClinicalNote", id: noteId },
       ],
     }),
 
-    createClinicalNote: builder.mutation({
-      query: (noteData) => ({
-        url: API_ENDPOINTS.CLINICAL_NOTES.BASE,
+    // Get all clinical notes for a patient (paginated)
+    getClinicalNotesByPatient: builder.query({
+      query: ({ patientId, page = 1, limit = 10 }) => ({
+        url: API_ENDPOINTS.CLINICAL_NOTES.BY_PATIENT(patientId),
+        params: { page, limit },
+      }),
+      providesTags: (result, error, { patientId }) => [
+        { type: "PatientNotes", id: patientId },
+        "ClinicalNote",
+      ],
+    }),
+
+    // Get clinical note for specific appointment
+    getClinicalNoteByAppointment: builder.query({
+      query: (appointmentId) => API_ENDPOINTS.CLINICAL_NOTES.BY_APPOINTMENT(appointmentId),
+      providesTags: (result, error, appointmentId) => [
+        { type: "AppointmentNote", id: appointmentId },
+        "ClinicalNote",
+      ],
+    }),
+
+    // Create or update SOAP note for appointment
+    createOrUpdateNoteForAppointment: builder.mutation({
+      query: ({ appointmentId, ...noteData }) => ({
+        url: API_ENDPOINTS.CLINICAL_NOTES.BY_APPOINTMENT(appointmentId),
         method: "POST",
         body: noteData,
       }),
-      invalidatesTags: ["ClinicalNote", "PatientNotes"],
+      invalidatesTags: (result, error, { appointmentId }) => [
+        { type: "AppointmentNote", id: appointmentId },
+        "ClinicalNote",
+        "PatientNotes",
+        "MyNotes",
+      ],
     }),
 
+    // Update clinical note by ID
     updateClinicalNote: builder.mutation({
       query: ({ noteId, ...noteData }) => ({
-        url: `${API_ENDPOINTS.CLINICAL_NOTES.BASE}/${noteId}`,
+        url: API_ENDPOINTS.CLINICAL_NOTES.BY_ID(noteId),
         method: "PUT",
         body: noteData,
       }),
       invalidatesTags: (result, error, { noteId }) => [
         { type: "ClinicalNote", id: noteId },
         "PatientNotes",
+        "MyNotes",
       ],
     }),
 
+    // Delete clinical note (admin only)
     deleteClinicalNote: builder.mutation({
       query: (noteId) => ({
-        url: `${API_ENDPOINTS.CLINICAL_NOTES.BASE}/${noteId}`,
+        url: API_ENDPOINTS.CLINICAL_NOTES.BY_ID(noteId),
         method: "DELETE",
       }),
-      invalidatesTags: ["ClinicalNote", "PatientNotes"],
+      invalidatesTags: ["ClinicalNote", "PatientNotes", "MyNotes"],
     }),
 
+    // Legacy SOAP endpoints (for backward compatibility)
     createSOAPNote: builder.mutation({
       query: (soapData) => ({
         url: API_ENDPOINTS.CLINICAL_NOTES.SOAP,
@@ -230,23 +256,32 @@ export const clinicalNotesApi = createBaseApi({
 });
 
 export const {
-  useGetClinicalNotesQuery,
-  useGetClinicalNotesByPatientQuery,
+  // New SOAP endpoints matching backend
+  useGetMyNotesQuery,
+  useGetMyRecordsQuery,
   useGetClinicalNoteQuery,
-  useCreateClinicalNoteMutation,
+  useGetClinicalNotesByPatientQuery,
+  useGetClinicalNoteByAppointmentQuery,
+  useCreateOrUpdateNoteForAppointmentMutation,
   useUpdateClinicalNoteMutation,
   useDeleteClinicalNoteMutation,
+
+  // Legacy SOAP endpoints
   useCreateSOAPNoteMutation,
   useUpdateSOAPNoteMutation,
   useGetSOAPNotesQuery,
   useSearchClinicalNotesQuery,
   useGetNoteTemplatesQuery,
+
+  // Treatment plans and incidents
   useGetTreatmentPlanQuery,
   useUpdateTreatmentPlanMutation,
   useCreateTreatmentPlanMutation,
   useGetPatientIncidentsQuery,
   useGetDoctorIncidentsQuery,
   useGetIncidentDetailsQuery,
+
+  // Doctor and patient management
   useGetDoctorPatientsQuery,
   useGetPatientCaseQuery,
   useGetPatientNotesQuery,

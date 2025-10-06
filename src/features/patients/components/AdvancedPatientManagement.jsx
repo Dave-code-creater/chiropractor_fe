@@ -1,13 +1,22 @@
 import { useState, useEffect, useMemo } from "react";
-
-
-
-
-
-
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Search,
+  User,
+  Users,
+  Phone,
+  Mail,
+  MapPin,
+  Calendar,
+  AlertTriangle,
+  Edit,
+  Plus,
+  Download
+} from "lucide-react";
 import { toast } from "sonner";
-
-
 import { format } from "date-fns";
 
 const AdvancedPatientManagement = () => {

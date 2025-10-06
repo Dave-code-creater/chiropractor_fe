@@ -5,6 +5,10 @@ import {
 } from '@/api';
 import { useSelector } from 'react-redux';
 import { selectUserId } from '@/state/data/authSlice';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { CheckCircle, ArrowLeft } from 'lucide-react';
+import UnifiedPatientForm from './UnifiedPatientForm';
 
 export default function SimplePatientRecords({ onBack }) {
   const [showSuccess, setShowSuccess] = useState(false);

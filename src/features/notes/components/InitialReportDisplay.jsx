@@ -5,7 +5,23 @@ import {
     Heart,
     Car,
     FileCheck,
+    AlertCircle,
+    CheckCircle,
+    ChevronDown,
+    ChevronRight,
+    User,
+    MapPin,
+    Calendar,
+    Eye,
+    RefreshCw,
+    ClipboardCheck,
+    FileText,
+    Shield,
 } from "lucide-react";
+import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useSmartReportFetch, usePrefetchOnHover } from "@/hooks/useOptimizedReportFetching";
 
 const InitialReportDisplay = ({ incident: basicIncident }) => {

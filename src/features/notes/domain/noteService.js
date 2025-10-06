@@ -1,8 +1,8 @@
 import {
   useGetClinicalNotesByPatientQuery,
-  useCreateClinicalNoteMutation,
-  useUpdateClinicalNoteMutation,
-  useDeleteClinicalNoteMutation,
+  useCreatePatientNoteMutation,
+  useUpdatePatientNoteMutation,
+  useDeletePatientNoteMutation,
   useCreateSOAPNoteMutation,
   useUpdateSOAPNoteMutation,
   useGetPatientIncidentsQuery,
@@ -49,12 +49,14 @@ export const useNoteManagement = (patientId, userRole) => {
   const permissions = useNotePermissions(userRole);
 
   const {
-    data: clinicalNotes = [],
+    data: clinicalNotesData,
     isLoading: isLoadingNotes
   } = useGetClinicalNotesByPatientQuery(
-    patientId,
+    { patientId, page: 1, limit: 100 },
     { skip: !patientId || !permissions.canView }
   );
+
+  const clinicalNotes = clinicalNotesData?.data || [];
 
   const {
     data: incidents = [],
@@ -64,9 +66,9 @@ export const useNoteManagement = (patientId, userRole) => {
     { skip: !patientId || !permissions.canView }
   );
 
-  const [createNote] = useCreateClinicalNoteMutation();
-  const [updateNote] = useUpdateClinicalNoteMutation();
-  const [deleteNote] = useDeleteClinicalNoteMutation();
+  const [createNote] = useCreatePatientNoteMutation();
+  const [updateNote] = useUpdatePatientNoteMutation();
+  const [deleteNote] = useDeletePatientNoteMutation();
   const [createSOAP] = useCreateSOAPNoteMutation();
   const [updateSOAP] = useUpdateSOAPNoteMutation();
 
@@ -79,7 +81,7 @@ export const useNoteManagement = (patientId, userRole) => {
       if (noteData.type === NOTE_TYPES.SOAP) {
         return await createSOAP(noteData).unwrap();
       }
-      return await createNote(noteData).unwrap();
+      return await createNote({ patientId, ...noteData }).unwrap();
     } catch (error) {
       console.error('Failed to create note:', error);
       throw error;
@@ -95,7 +97,7 @@ export const useNoteManagement = (patientId, userRole) => {
       if (noteData.type === NOTE_TYPES.SOAP) {
         return await updateSOAP({ noteId, ...noteData }).unwrap();
       }
-      return await updateNote({ noteId, ...noteData }).unwrap();
+      return await updateNote({ patientId, noteId, ...noteData }).unwrap();
     } catch (error) {
       console.error('Failed to update note:', error);
       throw error;
@@ -108,7 +110,7 @@ export const useNoteManagement = (patientId, userRole) => {
     }
 
     try {
-      return await deleteNote(noteId).unwrap();
+      return await deleteNote({ patientId, noteId }).unwrap();
     } catch (error) {
       console.error('Failed to delete note:', error);
       throw error;

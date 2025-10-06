@@ -7,7 +7,10 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Input as UIInput } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 
 
 import {
@@ -60,7 +63,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   });
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [roleFilter, setRoleFilter] = useState("patient");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -72,9 +75,10 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   const {
     data: availableUsersData,
     isLoading: isLoadingUsers,
+    error: usersError,
   } = useGetConversationUsersQuery({
     search_term: debouncedSearchTerm,
-    role: roleFilter === 'all' ? 'patient' : roleFilter,
+    role: roleFilter,
     per_page: 50
   }, {
     skip: !isOpen,
@@ -102,7 +106,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
     });
     setSearchTerm("");
     setDebouncedSearchTerm("");
-    setRoleFilter("all");
+    setRoleFilter("patient");
   };
 
   const handleSubmit = async () => {
@@ -130,7 +134,6 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
   };
 
   const roleFilterOptions = [
-    { value: "all", label: "All Users", icon: Users },
     { value: "patient", label: "Patients Only", icon: Users },
     { value: "doctor", label: "Doctors Only", icon: Stethoscope },
     { value: "admin", label: "Administrators Only", icon: Shield },
@@ -185,7 +188,7 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
             <label className="text-xs sm:text-sm font-medium">Search Users</label>
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-              <UIInput
+              <Input
                 placeholder="Search by name, email, or role..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -200,6 +203,10 @@ const NewConversationModal = ({ isOpen, onClose, onSubmit, isCreating, currentUs
               {isLoadingUsers ? (
                 <div className="p-3 sm:p-4 text-center">
                   <p className="text-xs sm:text-sm text-muted-foreground">Loading users...</p>
+                </div>
+              ) : usersError ? (
+                <div className="p-3 sm:p-4 text-center">
+                  <p className="text-xs sm:text-sm text-red-500">Error loading users. Please try again.</p>
                 </div>
               ) : availableUsers.length === 0 ? (
                 <div className="p-3 sm:p-4 text-center">

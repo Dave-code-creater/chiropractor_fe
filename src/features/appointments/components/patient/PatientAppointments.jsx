@@ -15,6 +15,7 @@ import {
   Star,
   User,
   AlertCircle,
+  Stethoscope,
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +24,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Booking from "@/features/appointments/components/Booking";
+import PatientClinicalNote from "@/features/clinicalNotes/components/PatientClinicalNote";
 import { toast } from 'sonner';
 import { format, isToday, isPast, isFuture } from 'date-fns';
 
@@ -597,53 +599,97 @@ export default function PatientAppointments() {
         </DialogContent>
       </Dialog>
       <Dialog open={!!selectedAppointment} onOpenChange={(open) => !open && setSelectedAppointment(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Appointment Details</DialogTitle>
             <DialogDescription>
-              Full details for this appointment
+              Full details and visit notes for this appointment
             </DialogDescription>
           </DialogHeader>
 
           {selectedAppointment && (
             <div className="space-y-4">
-              <div className="p-4 bg-muted rounded-lg space-y-2">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4" />
-                  <span className="font-medium">
-                    {format(new Date(selectedAppointment.appointment_date || selectedAppointment.date), 'EEEE, MMMM d, yyyy')}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span>{formatTime(selectedAppointment.appointment_time)}</span>
-                </div>
-                {selectedAppointment.location && (
-                  <div className="flex items-center gap-2">
-                    <MapPin className="h-4 w-4" />
-                    <span>{selectedAppointment.location}</span>
+              {/* Appointment Information Card */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">Appointment Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-start gap-2">
+                      <Calendar className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Date</p>
+                        <p className="font-medium text-sm">
+                          {format(new Date(selectedAppointment.appointment_date || selectedAppointment.date), 'EEEE, MMMM d, yyyy')}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Clock className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Time</p>
+                        <p className="font-medium text-sm">{formatTime(selectedAppointment.appointment_time)}</p>
+                      </div>
+                    </div>
+                    {selectedAppointment.location && (
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                        <div>
+                          <p className="text-xs text-muted-foreground">Location</p>
+                          <p className="font-medium text-sm">{selectedAppointment.location}</p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-start gap-2">
+                      <User className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Doctor</p>
+                        <p className="font-medium text-sm">
+                          {selectedAppointment.doctor
+                            ? `Dr. ${selectedAppointment.doctor.first_name} ${selectedAppointment.doctor.last_name}`
+                            : 'Dr. Unknown'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2 sm:col-span-2">
+                      <FileText className="h-4 w-4 mt-0.5 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Reason for Visit</p>
+                        <p className="font-medium text-sm">{selectedAppointment.reason_for_visit || 'No reason provided'}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Status</p>
+                        <Badge className={getStatusColor(selectedAppointment.status)}>
+                          {selectedAppointment.status}
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <User className="h-4 w-4" />
-                  <span>
-                    {selectedAppointment.doctor
-                      ? `Dr. ${selectedAppointment.doctor.first_name} ${selectedAppointment.doctor.last_name}`
-                      : 'Dr. Unknown'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  <span>{selectedAppointment.reason_for_visit || 'No reason provided'}</span>
-                </div>
-                <div>
-                  <Badge className={getStatusColor(selectedAppointment.status)}>
-                    {selectedAppointment.status}
-                  </Badge>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
-              <div className="flex justify-end">
+              {/* Clinical Notes - Show for completed or in-progress appointments */}
+              {['completed', 'in-progress'].includes(selectedAppointment.status) && (
+                <PatientClinicalNote
+                  appointmentId={selectedAppointment.id}
+                  appointmentData={selectedAppointment}
+                />
+              )}
+
+              {/* Info for upcoming appointments */}
+              {['pending', 'confirmed', 'scheduled'].includes(selectedAppointment.status) && (
+                <Alert>
+                  <Stethoscope className="h-4 w-4" />
+                  <AlertDescription>
+                    Visit notes and treatment details will be added by your doctor after your appointment.
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              <div className="flex justify-end pt-2">
                 <Button variant="outline" onClick={() => setSelectedAppointment(null)}>
                   Close
                 </Button>
